@@ -7,7 +7,7 @@ import {
   Button,
   Link,
   IconButton,
-  InputAdornment
+  InputAdornment,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
@@ -24,7 +24,7 @@ export default function Login() {
         height: "100vh",
         display: "flex",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
       }}
     >
       <Card
@@ -34,7 +34,7 @@ export default function Login() {
           borderRadius: 3,
           boxShadow: "0px 4px 20px rgba(0,0,0,0.08)",
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
         }}
       >
         <Typography
@@ -43,7 +43,7 @@ export default function Login() {
             textAlign: "center",
             mb: 4,
             fontWeight: 600,
-            fontSize: "26px"
+            fontSize: "26px",
           }}
         >
           Log in
@@ -63,8 +63,8 @@ export default function Login() {
             sx={{
               "& .MuiOutlinedInput-root": {
                 height: 48,
-                borderRadius: 2
-              }
+                borderRadius: 2,
+              },
             }}
           />
         </Box>
@@ -84,8 +84,8 @@ export default function Login() {
             sx={{
               "& .MuiOutlinedInput-root": {
                 height: 48,
-                borderRadius: 2
-              }
+                borderRadius: 2,
+              },
             }}
             InputProps={{
               endAdornment: (
@@ -94,7 +94,7 @@ export default function Login() {
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
-              )
+              ),
             }}
           />
         </Box>
@@ -116,7 +116,7 @@ export default function Login() {
             borderRadius: 2,
             fontWeight: 600,
             fontSize: 15,
-            "&:hover": { backgroundColor: "#5a32a3" }
+            "&:hover": { backgroundColor: "#5a32a3" },
           }}
         >
           Log in
