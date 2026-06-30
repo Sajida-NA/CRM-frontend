@@ -1,7 +1,15 @@
 import Login from "./Pages/login";
+import CreateTicket from "./Pages/CreateTicket";
 
 function App() {
-  return <Login />;
+  return(
+  
+
+<div>
+  <Login />;
+  <CreateTicket></CreateTicket>
+  </div>
+  )
 }
 
 export default App;
