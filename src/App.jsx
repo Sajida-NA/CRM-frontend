@@ -1,16 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
-import Leadslist from "./Pages/Leads/Leadslist";
+import Login from "./Pages/login";
+import LeadsPage from "./Pages/Leads/LeadsPage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/leads" element={<Leadslist />} />
         <Route path="/" element={<Login />} />
+        <Route path="/leads" element={<LeadsPage />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
 export default App;
