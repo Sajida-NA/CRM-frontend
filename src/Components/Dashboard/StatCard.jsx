@@ -33,7 +33,7 @@ const stats = [
 
 const StatsCards = () => {
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={8}>
       {stats.map((item) => (
         <Grid item xs={12} sm={6} md={3} key={item.label}>
           <Card
@@ -41,16 +41,20 @@ const StatsCards = () => {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              p: 2,
+              p: 4,
               borderRadius: 2,
+              gap:2,
+              width: "100%",
+              height:"100%",
+               boxSizing: "border-box",
             }}
           >
             {/* Left side: text */}
-            <CardContent sx={{ flexGrow: 1 }}>
+            <CardContent sx={{ flexGrow: 1  }}>
               <Typography variant="subtitle2" color="textSecondary">
                 {item.label}
               </Typography>
-              <Typography variant="h5" fontWeight="bold">
+              <Typography variant="h4" fontWeight="bold">
                 {item.value}
               </Typography>
             </CardContent>
@@ -58,8 +62,8 @@ const StatsCards = () => {
             {/* Right side: circular icon with blurred bg */}
             <Box
               sx={{
-                width: 56,
-                height: 56,
+                width: 80,
+                height: 80,
                 borderRadius: "50%",
                 display: "flex",
                 alignItems: "center",

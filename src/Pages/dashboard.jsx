@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid} from "@mui/material";
 import Header from "../Components/Layout/Header";
 import Sidebar from "../Components/Layout/Sidebar";
 import StatsCards from "../Components/Dashboard/StatCard";
@@ -7,7 +7,7 @@ import ConversionFunnel from "../Components/Dashboard/ConversionFunnel";
 import SalesReports from "../Components/Dashboard/SalesReports";
 import TeamPerformance from "../Components/Dashboard/TeamPerformance";
 
-const Dashboard = () => {
+ const Dashboard = () => {
   return (
     <Box sx={{ bgcolor: "#F5F7FB", minHeight: "100vh" }}>
       <Header />
@@ -78,6 +78,8 @@ const Dashboard = () => {
       </Box>
     </Box>
   );
-};
+}
 
 export default Dashboard;
+
+
