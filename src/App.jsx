@@ -1,7 +1,10 @@
-import Login from "./Pages/login";
+
+import Dashboard from "./Pages/dashboard";
+
 
 function App() {
-  return <Login />;
+  return  <Dashboard />
+  
 }
 
 export default App;
