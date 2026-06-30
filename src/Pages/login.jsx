@@ -112,7 +112,7 @@ export default function Login() {
           variant="contained"
           sx={{
             backgroundColor: "#6f42c1",
-            height: 48,
+            height: 47,
             borderRadius: 2,
             fontWeight: 600,
             fontSize: 15,
