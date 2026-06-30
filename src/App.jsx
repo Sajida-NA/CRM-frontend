@@ -1,7 +1,7 @@
-import Login from "./Pages/login";
+import EmailRecord from "./Pages/EmailRecord";
 
 function App() {
-  return <Login />;
+  return <EmailRecord />;
 }
 
 export default App;
