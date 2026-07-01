@@ -4,7 +4,7 @@ import Login from "./Pages/login";
 import Dashboard from "./Pages/dashboard";
 import CreateTicket from "./Pages/CreateTicket";
 import EmailRecord from "./Pages/EmailRecord";
-import CompanyDetails from "./Pages/CompanyDetails"
+import CompanyDetails from "./Pages/CompanyDetails";
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/CreateTicket" element={<CreateTicket/>}/>
-        <Route Path="/companydetails" element={<CompanyDetails/>}/>
+        <Route path="/company/:id" element={<CompanyDetails />} />
       </Routes>
     </BrowserRouter>
     </>
