@@ -9,6 +9,7 @@ function App() {
     <>
     <BrowserRouter>
       <Routes>
+        <Route path="/emailrecord" element={<EmailRecord />} />  
         <Route path="/" element={<Login />} />
         {/* <Route path="/leads" element={<LeadsPage />} /> */}
         <Route path="/dashboard" element={<Dashboard />} />
