@@ -3,6 +3,7 @@ import Login from "./Pages/login";
 // import LeadsPage from "./Pages/Leads/LeadsPage";
 import Dashboard from "./Pages/dashboard";
 import CreateTicket from "./Pages/CreateTicket";
+import EmailRecord from "./Pages/EmailRecord";
 
 
 function App() {
