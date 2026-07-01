@@ -16,12 +16,8 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/CreateTicket" element={<CreateTicket/>}/>
-<<<<<<< HEAD
-        <Route Path="/companydetails" element={<CompanyDetails/>}/>
-        <Route path="/leadslist" element={<Leadslist/>}/>
-=======
         <Route path="/company/:id" element={<CompanyDetails />} />
->>>>>>> 3dbd75c67874d6b906634c2d444db0149adf0632
+        <Route path="/leadslist" element={<Leadslist/>}/>
       </Routes>
     </BrowserRouter>
     </>
