@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
-export default function FilterSection() {
+
+export default function FilterSection({ children }) {
   return (
     <Box
       sx={{
@@ -12,6 +13,8 @@ export default function FilterSection() {
         borderRadius: 2,
         mb: 3,
       }}
-    ></Box>
+    >
+      {children}
+    </Box>
   );
 }
