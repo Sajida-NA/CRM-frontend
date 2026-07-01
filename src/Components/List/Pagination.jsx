@@ -22,7 +22,7 @@ export default function CustomPagination({ page, onPageChange }) {
             fontWeight: 500,
             padding: "6px 10px",
             minWidth: "36px",
-            border: "1px solid #6b4eb1",
+            border: "1px solid #E0E0E0",
           },
           "& .Mui-selected": {
             backgroundColor: "#6C63FF",
