@@ -89,6 +89,7 @@ import SelectField from "../../Components/common/SelectField";
 import StatusChip from "../../Components/common/StatusChip";
 import DataTable from "../../Components/common/DataTable";
 import Pagination from "../../Components/common/Pagination";
+import CreateDealModal from "./components/CreateDealModal";
 
 export default function Dealslist() {
   const [page, setPage] = useState(1);

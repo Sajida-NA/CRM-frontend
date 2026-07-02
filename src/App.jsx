@@ -22,7 +22,7 @@ function App() {
         <Route path="/leadslist" element={<Leadslist/>}/>
         <Route path="/forgotpassword" element={<ForgotPassword/>}/>
         <Route path="/dealslist" element={<DealsList/>}/>
-         
+         <Route path="/dealsprofile" element={<DealProfile/>}/>
         {/* <Route path="/register" element={<Register/>}/> */}
       </Routes>
     </BrowserRouter>

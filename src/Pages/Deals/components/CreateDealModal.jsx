@@ -10,9 +10,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import CreateDealModal from "../components/CreateDealModal";
 
-export default function DealsList() {
+
+export default function CreateDealModal() {
   const navigate = useNavigate();
   const [openCreate, setOpenCreate] = useState(false);
 
@@ -141,10 +141,10 @@ export default function DealsList() {
       </Box>
 
       {/* Create Deal Modal */}
-      <CreateDealModal
+      {/* <CreateDealModal
         open={openCreate}
-        onClose={() => setOpenCreate(false)}
-      />
+        onClose={() => setOpenCreate(false)} */}
+      {/* /> */}
     </Box>
   );
 }
