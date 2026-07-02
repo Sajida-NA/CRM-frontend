@@ -7,7 +7,7 @@ import Leadslist from "./Pages/Leads/Leadslist";
 import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
 import CreateTicket from "./Pages/Tickets/components/CreateTicket"; 
 import ForgotPassword from "./Pages/Auth/ForgotPassword/ForgotPassword";
-import DealsList from "./Pages/Deals/DealsList";
+import DealsList from "./Pages/Deals/DealsList"
 
 function App() {
   return (

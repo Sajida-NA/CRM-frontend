@@ -1,142 +1,277 @@
-import {
-  Box,
-  Typography,
-  Button,
-  Chip,
-  IconButton,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+// import { Box, Typography, Button, Chip } from "@mui/material";
+// import AddIcon from "@mui/icons-material/Add";
+// import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import CreateDealModal from "../../Pages/Deals/components/CreateDealModal"
+
+// export default function DealsList() {
+//   const navigate = useNavigate();
+//   const [openCreate, setOpenCreate] = useState(false);
+
+//   const deals = [
+//     {
+//       id: "DL-101",
+//       name: "CRM Pro Subscription",
+//       company: "TrustSphere",
+//       value: "$12,000",
+//       stage: "Negotiation",
+//       owner: "Maria Johnson",
+//     },
+//     {
+//       id: "DL-102",
+//       name: "CRM Basic Package",
+//       company: "BlueWave Technologies",
+//       value: "$4,500",
+//       stage: "Proposal Sent",
+//       owner: "Raj Sharma",
+//     },
+//   ];
+
+//   const stageColor = {
+//     Negotiation: "warning",
+//     "Proposal Sent": "info",
+//     "Closed Won": "success",
+//     "Closed Lost": "error",
+//   };
+
+//   return (
+//     <Box sx={{ p: 2 }}>
+//       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+//         <Typography variant="h5">Deals</Typography>
+
+//         <Button
+//           variant="contained"
+//           startIcon={<AddIcon />}
+//           onClick={() => setOpenCreate(true)}
+//         >
+//           Create Deal
+//         </Button>
+//       </Box>
+
+//       {deals.map((d) => (
+//         <Box
+//           key={d.id}
+//           sx={{
+//             display: "flex",
+//             gap: 2,
+//             p: 2,
+//             borderBottom: "1px solid #ddd",
+//             cursor: "pointer",
+//           }}
+//           onClick={() => navigate(`/deals/${d.id}`)}
+//         >
+//           <Box>{d.id}</Box>
+//           <Box>{d.name}</Box>
+//           <Box>{d.company}</Box>
+//           <Chip
+//             label={d.stage}
+//             color={stageColor[d.stage] || "default"}
+//             size="small"
+//           />
+//         </Box>
+//       ))}
+
+//       <CreateDealModal
+//         open={openCreate}
+//         onClose={() => setOpenCreate(false)}
+//       />
+//     </Box>
+//   );
+// }
+import { useState } from "react";
+import { Box, IconButton, Button, TableRow, TableCell } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import CreateDealModal from "./components/CreateDealModal";
+import PageHeader from "../../Components/common/PageHeader";
+import FilterSection from "../../Components/common/FilterSection";
+import InputField from "../../Components/common/InputField";
+import SelectField from "../../Components/common/SelectField";
+import StatusChip from "../../Components/common/StatusChip";
+import DataTable from "../../Components/common/DataTable";
+import Pagination from "../../Components/common/Pagination";
 
-export default function DealsList() {
-  const navigate = useNavigate();
-  const [openCreate, setOpenCreate] = useState(false);
-
-  const deals = [
+export default function Dealslist() {
+  const [page, setPage] = useState(1);
+  const [status, setStatus] = useState("");
+  const [createdDate, setCreatedDate] = useState("");
+  const leads = [
     {
-      id: "DL-101",
-      name: "CRM Pro Subscription",
-      company: "TrustSphere",
-      value: "$12,000",
-      stage: "Negotiation",
-      owner: "Maria Johnson",
-      created: "Apr 8, 2025",
+      name: "Jane Cooper",
+      email: "janecooper@gmail.com",
+      phone: "078 5432 8505",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "Open",
     },
     {
-      id: "DL-102",
-      name: "CRM Basic Package",
-      company: "BlueWave Technologies",
-      value: "$4,500",
-      stage: "Proposal Sent",
-      owner: "Raj Sharma",
-      created: "Apr 8, 2025",
+      name: "Wade Warren",
+      email: "wadewarren@gmail.com",
+      phone: "077 5465 8785",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "New",
+    },
+    {
+      name: "Brooklyn Simmons",
+      email: "brooklynsimmons@gmail.com",
+      phone: "070 4531 9507",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "New",
+    },
+    {
+      name: "Leslie Alexander",
+      email: "lesliealexander@gmail.com",
+      phone: "078 2824 3534",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "New",
+    },
+    {
+      name: "Jenny Wilson",
+      email: "jennywilson@gmail.com",
+      phone: "079 6761 9681",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "New",
+    },
+    {
+      name: "Guy Hawkins",
+      email: "guyhawkins@gmail.com",
+      phone: "077 5465 8785",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "New",
+    },
+    {
+      name: "Robert Fox",
+      email: "robertfox@gmail.com",
+      phone: "077 5465 8785",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "New",
+    },
+    {
+      name: "Cameron Williamson",
+      email: "cameronwilliamson@gmail.com",
+      phone: "078 2824 3534",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "In Progress",
     },
   ];
 
-  const stageColor = {
-    "Negotiation": "warning",
-    "Proposal Sent": "info",
-    "Closed Won": "success",
-    "Closed Lost": "error",
-  };
-
   return (
-    <Box sx={{ p: 2 }}>
-      {/* Header */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-        <Typography sx={{ fontSize: 24, fontWeight: 700 }}>
-          Deals
-        </Typography>
+    <Box
+      sx={{
+        maxWidth: "1000px",
+        margin: "0 auto",
+        marginTop: "40px",
+        padding: "32px",
+        width: "100%",
+        minHeight: "100vh",
+      }}
+    >
+      {/* ⭐ LEADS + IMPORT + CREATE LEAD  */}
 
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          sx={{ borderRadius: 2, textTransform: "none", fontWeight: 600 }}
-          onClick={() => setOpenCreate(true)}
-        >
-          Create Deal
-        </Button>
-      </Box>
-
-      {/* Table */}
       <Box
         sx={{
-          background: "#fff",
-          borderRadius: 2,
-          boxShadow: "0px 4px 12px rgba(0,0,0,0.05)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 3,
         }}
       >
-        {/* Table Header */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns:
-              "120px 1fr 150px 150px 150px 150px 100px",
-            p: 2,
-            fontWeight: 600,
-            color: "#555",
-            borderBottom: "1px solid #eee",
-          }}
-        >
-          <Box>ID</Box>
-          <Box>Deal Name</Box>
-          <Box>Company</Box>
-          <Box>Value</Box>
-          <Box>Stage</Box>
-          <Box>Owner</Box>
-          <Box>Actions</Box>
-        </Box>
+        {/* Left: Page Title */}
+        <PageHeader title="Deals" />
 
-        {/* Table Rows */}
-        {deals.map((d) => (
-          <Box
-            key={d.id}
+        {/* Right: Import + Create Lead */}
+        <Box sx={{ display: "flex", gap: 2 }}>
+          <Button
+            variant="outlined"
             sx={{
-              display: "grid",
-              gridTemplateColumns:
-                "120px 1fr 150px 150px 150px 150px 100px",
-              p: 2,
-              borderBottom: "1px solid #f0f0f0",
-              cursor: "pointer",
-              ":hover": { background: "#fafafa" },
+              textTransform: "none",
+              borderRadius: 2,
             }}
-            onClick={() => navigate(`/deals/${d.id}`)}
           >
-            <Box sx={{ fontWeight: 600 }}>{d.id}</Box>
-            <Box>{d.name}</Box>
-            <Box>{d.company}</Box>
-            <Box>{d.value}</Box>
+            Import
+          </Button>
 
-            <Chip
-              label={d.stage}
-              color={stageColor[d.stage] || "default"}
-              size="small"
-              sx={{ fontWeight: 600 }}
-            />
-
-            <Box>{d.owner}</Box>
-
-            <Box onClick={(e) => e.stopPropagation()}>
-              <IconButton size="small">
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <IconButton size="small">
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          </Box>
-        ))}
+          <Button
+            variant="contained"
+            sx={{
+              textTransform: "none",
+              borderRadius: 2,
+              backgroundColor: "#6C63FF",
+              px: 3,
+            }}
+          >
+            Create Lead
+          </Button>
+        </Box>
       </Box>
 
-      {/* Create Deal Modal */}
-      <CreateDealModal
-        open={openCreate}
-        onClose={() => setOpenCreate(false)}
-      />
+      {/* ⭐ SEARCH + PAGINATION*/}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 3,
+        }}
+      >
+        <InputField
+          label="Search"
+          placeholder="Search Phone, Name, Email"
+          width={380}
+        />
+
+        <Pagination page={page} totalPages={5} onPageChange={setPage} />
+      </Box>
+
+      {/* ⭐ FILTERS */}
+      <FilterSection>
+        <SelectField
+          label="Lead Status"
+          options={["Open", "New", "In Progress"]}
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        />
+
+        <InputField
+          label="Created Date"
+          placeholder="YYYY-MM-DD"
+          width={180}
+          value={createdDate}
+          onChange={(e) => setCreatedDate(e.target.value)}
+        />
+
+        <Box sx={{ flexGrow: 1 }} />
+      </FilterSection>
+
+      {/* ⭐ TABLE */}
+      <DataTable
+        columns={[
+          "Name",
+          "Email",
+          "Phone Number",
+          "Created Date",
+          "Lead Status",
+          "Actions",
+        ]}
+      >
+        {leads.map((lead, index) => (
+          <TableRow key={index}>
+            <TableCell>{lead.name}</TableCell>
+            <TableCell>{lead.email}</TableCell>
+            <TableCell>{lead.phone}</TableCell>
+            <TableCell>{lead.date}</TableCell>
+            <TableCell>
+              <StatusChip status={lead.status} />
+            </TableCell>
+            <TableCell>
+              <IconButton color="primary">
+                <EditIcon />
+              </IconButton>
+              <IconButton color="error">
+                <DeleteIcon />
+              </IconButton>
+            </TableCell>
+          </TableRow>
+        ))}
+      </DataTable>
     </Box>
   );
 }

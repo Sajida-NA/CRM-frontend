@@ -1,141 +1,150 @@
-import { Box, Button, TextField, MenuItem } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  Chip,
+  IconButton,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
-import ModalWrapper from "../../../Components/common/ModalWrapper"
+import { useNavigate } from "react-router-dom";
+import CreateDealModal from "../components/CreateDealModal";
 
-export default function CreateDealModal({ open, onClose, onSave }) {
-  const [form, setForm] = useState({
-    name: "",
-    company: "",
-    value: "",
-    stage: "",
-    owner: "",
-    closeDate: "",
-    pipeline: "",
-    probability: "",
-  });
+export default function DealsList() {
+  const navigate = useNavigate();
+  const [openCreate, setOpenCreate] = useState(false);
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const deals = [
+    {
+      id: "DL-101",
+      name: "CRM Pro Subscription",
+      company: "TrustSphere",
+      value: "$12,000",
+      stage: "Negotiation",
+      owner: "Maria Johnson",
+      created: "Apr 8, 2025",
+    },
+    {
+      id: "DL-102",
+      name: "CRM Basic Package",
+      company: "BlueWave Technologies",
+      value: "$4,500",
+      stage: "Proposal Sent",
+      owner: "Raj Sharma",
+      created: "Apr 8, 2025",
+    },
+  ];
 
-  const handleSave = () => {
-    if (onSave) onSave(form);
-    onClose();
+  const stageColor = {
+    Negotiation: "warning",
+    "Proposal Sent": "info",
+    "Closed Won": "success",
+    "Closed Lost": "error",
   };
 
   return (
-    <ModalWrapper
-      open={open}
-      onClose={onClose}
-      title="Create Deal"
-      maxWidth="sm"
-    >
-      <Box sx={{ mt: 1, display: "grid", gap: 2 }}>
-        <TextField
-          label="Deal Name"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          fullWidth
-          size="small"
-        />
+    <Box sx={{ p: 2 }}>
+      {/* Header */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+        <Typography sx={{ fontSize: 24, fontWeight: 700 }}>
+          Deals
+        </Typography>
 
-        <TextField
-          label="Company"
-          name="company"
-          value={form.company}
-          onChange={handleChange}
-          fullWidth
-          size="small"
-        />
-
-        <TextField
-          label="Deal Value"
-          name="value"
-          value={form.value}
-          onChange={handleChange}
-          fullWidth
-          size="small"
-          placeholder="$10,000"
-        />
-
-        <TextField
-          select
-          label="Stage"
-          name="stage"
-          value={form.stage}
-          onChange={handleChange}
-          fullWidth
-          size="small"
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            fontWeight: 600,
+          }}
+          onClick={() => setOpenCreate(true)}
         >
-          <MenuItem value="Qualification">Qualification</MenuItem>
-          <MenuItem value="Proposal Sent">Proposal Sent</MenuItem>
-          <MenuItem value="Negotiation">Negotiation</MenuItem>
-          <MenuItem value="Closed Won">Closed Won</MenuItem>
-          <MenuItem value="Closed Lost">Closed Lost</MenuItem>
-        </TextField>
-
-        <TextField
-          label="Owner"
-          name="owner"
-          value={form.owner}
-          onChange={handleChange}
-          fullWidth
-          size="small"
-          placeholder="Assign owner"
-        />
-
-        <TextField
-          label="Close Date"
-          name="closeDate"
-          type="date"
-          value={form.closeDate}
-          onChange={handleChange}
-          fullWidth
-          size="small"
-          InputLabelProps={{ shrink: true }}
-        />
-
-        <TextField
-          select
-          label="Pipeline"
-          name="pipeline"
-          value={form.pipeline}
-          onChange={handleChange}
-          fullWidth
-          size="small"
-        >
-          <MenuItem value="Sales Pipeline">Sales Pipeline</MenuItem>
-          <MenuItem value="Enterprise Pipeline">Enterprise Pipeline</MenuItem>
-        </TextField>
-
-        <TextField
-          label="Probability (%)"
-          name="probability"
-          value={form.probability}
-          onChange={handleChange}
-          fullWidth
-          size="small"
-          placeholder="e.g. 60"
-        />
-
-        {/* Buttons */}
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-          <Button
-            onClick={onClose}
-            sx={{ textTransform: "none", mr: 2 }}
-          >
-            Cancel
-          </Button>
-
-          <Button
-            variant="contained"
-            sx={{ textTransform: "none" }}
-            onClick={handleSave}
-          >
-            Create Deal
-          </Button>
-        </Box>
+          Create Deal
+        </Button>
       </Box>
-    </ModalWrapper>
+
+      {/* Table Container */}
+      <Box
+        sx={{
+          background: "#fff",
+          borderRadius: 2,
+          boxShadow: "0px 4px 12px rgba(0,0,0,0.05)",
+        }}
+      >
+        {/* Table Header */}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns:
+              "120px 1fr 150px 150px 150px 150px 120px",
+            p: 2,
+            fontWeight: 600,
+            color: "#555",
+            borderBottom: "1px solid #eee",
+          }}
+        >
+          <Box>ID</Box>
+          <Box>Deal Name</Box>
+          <Box>Company</Box>
+          <Box>Value</Box>
+          <Box>Stage</Box>
+          <Box>Owner</Box>
+          <Box>Actions</Box>
+        </Box>
+
+        {/* Table Rows */}
+        {deals.map((d) => (
+          <Box
+            key={d.id}
+            sx={{
+              display: "grid",
+              gridTemplateColumns:
+                "120px 1fr 150px 150px 150px 150px 120px",
+              p: 2,
+              borderBottom: "1px solid #f0f0f0",
+              cursor: "pointer",
+              ":hover": { background: "#fafafa" },
+            }}
+            onClick={() => navigate(`/deals/${d.id}`)}
+          >
+            <Box sx={{ fontWeight: 600 }}>{d.id}</Box>
+            <Box>{d.name}</Box>
+            <Box>{d.company}</Box>
+            <Box>{d.value}</Box>
+
+            <Chip
+              label={d.stage}
+              color={stageColor[d.stage] || "default"}
+              size="small"
+              sx={{ fontWeight: 600 }}
+            />
+
+            <Box>{d.owner}</Box>
+
+            {/* Actions */}
+            <Box
+              onClick={(e) => e.stopPropagation()}
+              sx={{ display: "flex", gap: 1 }}
+            >
+              <IconButton size="small">
+                <EditIcon fontSize="small" />
+              </IconButton>
+              <IconButton size="small">
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          </Box>
+        ))}
+      </Box>
+
+      {/* Create Deal Modal */}
+      <CreateDealModal
+        open={openCreate}
+        onClose={() => setOpenCreate(false)}
+      />
+    </Box>
   );
 }
