@@ -4,7 +4,7 @@ import Dashboard from "./Pages/Dashboard/dashboard";
 import CreateTicket from "./Pages/CreateTicket";
 import EmailRecord from "./Pages/EmailRecord";
 import Leadslist from "./Pages/Leads/Leadslist";
-import CompanyDetails from "./Pages/CompanyDetails";
+import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
 
 
 function App() {
