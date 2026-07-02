@@ -1,10 +1,10 @@
-import company from "../data/companyData";
-import activities from "../data/activityData";
+import company from "./data/companyData";
+import activities from "./data/activityData";
 import { Box } from "@mui/material";
 
-import CompanyInfo from "../Components/details/CompanyInfo";
-import ActivityPanel from "../Components/details/ActivityPanel";
-import AISummary from "../Components/details/AISummary";
+import CompanyInfo from "../components/CompanyInfo";
+import ActivityPanel from "../components/ActivityPanel";
+import AISummary from "../components/AISummary";
 
 function CompanyDetails() {
   return (
