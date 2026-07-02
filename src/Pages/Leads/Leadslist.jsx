@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Box, IconButton, Button, TableRow, TableCell } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import PageHeader from "../../Components/List/PageHeader";
-import FilterSection from "../../Components/List/FilterSection";
-import InputField from "../../Components/List/InputField";
-import SelectField from "../../Components/List/SelectField";
-import StatusChip from "../../Components/List/StatusChip";
-import DataTable from "../../Components/List/DataTable";
-import Pagination from "../../Components/List/Pagination";
+import PageHeader from "../../Components/common/PageHeader";
+import FilterSection from "../../Components/common/FilterSection";
+import InputField from "../../Components/common/InputField";
+import SelectField from "../../Components/common/SelectField";
+import StatusChip from "../../Components/common/StatusChip";
+import DataTable from "../../Components/common/DataTable";
+import Pagination from "../../Components/common/Pagination";
 
 export default function Leadslist() {
   const [page, setPage] = useState(1);
