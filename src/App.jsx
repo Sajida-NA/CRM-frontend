@@ -7,7 +7,7 @@ import Leadslist from "./Pages/Leads/Leadslist";
 import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
 import CreateTicket from "./Pages/Tickets/components/CreateTicket"; 
 import ForgotPassword from "./Pages/Auth/ForgotPassword/ForgotPassword";
-
+import DealsList from "./Pages/Deals/DealsList";
 
 function App() {
   return (
@@ -21,7 +21,8 @@ function App() {
         <Route path="/company/:id" element={<CompanyDetails />} />
         <Route path="/leadslist" element={<Leadslist/>}/>
         <Route path="/forgotpassword" element={<ForgotPassword/>}/>
-       
+        <Route path="/dealslist" element={<DealsList/>}/>
+         
         {/* <Route path="/register" element={<Register/>}/> */}
       </Routes>
     </BrowserRouter>
