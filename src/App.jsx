@@ -1,14 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./Pages/login";
-import Dashboard from "./Pages/dashboard";
-import CreateTicket from "./Pages/CreateTicket";
+import Dashboard from "./Pages/Dashboard/dashboard";
+
 import EmailRecord from "./Pages/EmailRecord";
 import Leadslist from "./Pages/Leads/Leadslist";
-import CompanyDetails from "./Pages/CompanyDetails";
-import { RoundaboutLeftTwoTone } from "@mui/icons-material";
-import Register from "./Pages/Register";
-
-
+import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
+import CreateTicket from "./Pages/Tickets/components/CreateTicket"; 
 
 function App() {
   return (
@@ -21,7 +18,7 @@ function App() {
         <Route path="/CreateTicket" element={<CreateTicket/>}/>
         <Route path="/company/:id" element={<CompanyDetails />} />
         <Route path="/leadslist" element={<Leadslist/>}/>
-        <Route path="/register" element={<Register/>}/>
+        {/* <Route path="/register" element={<Register/>}/> */}
       </Routes>
     </BrowserRouter>
     </>

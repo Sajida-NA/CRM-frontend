@@ -1,11 +1,11 @@
 import React from "react";
 import { Box, Grid} from "@mui/material";
-import Header from "../Components/Layout/Header";
-import Sidebar from "../Components/Layout/Sidebar";
-import StatsCards from "../Components/Dashboard/StatCard";
-import ConversionFunnel from "../Components/Dashboard/ConversionFunnel";
-import SalesReports from "../Components/Dashboard/SalesReports";
-import TeamPerformance from "../Components/Dashboard/TeamPerformance";
+import Header from "../../Components/common/Header";
+import Sidebar from "../../Components/common/Sidebar";
+import StatsCards from "./components/StatCard";
+import ConversionFunnel from "./components/ConversionFunnel";
+import SalesReports from "./components/SalesReports";
+import TeamPerformance from "./components/TeamPerformance";
 
  const Dashboard = () => {
   return (
