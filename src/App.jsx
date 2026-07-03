@@ -7,6 +7,7 @@ import Leadslist from "./Pages/Leads/Leadslist";
 import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
 import CreateTicket from "./Pages/Tickets/components/CreateTicket"; 
 import ForgotPassword from "./Pages/Auth/ForgotPassword/ForgotPassword";
+import CompaniesList from "./Pages/Companies/CompaniesList/CompaniesList";
 
 
 function App() {
@@ -21,7 +22,7 @@ function App() {
         <Route path="/company/:id" element={<CompanyDetails />} />
         <Route path="/leadslist" element={<Leadslist/>}/>
         <Route path="/forgotpassword" element={<ForgotPassword/>}/>
-       
+        <Route path="/companieslist" element={<CompaniesList />} />
         {/* <Route path="/register" element={<Register/>}/> */}
       </Routes>
     </BrowserRouter>
