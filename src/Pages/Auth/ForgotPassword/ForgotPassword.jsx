@@ -1,5 +1,3 @@
-// src/pages/Auth/ForgotPassword/ForgotPassword.jsx
-
 import { useState } from "react";
 import {
   Box,
@@ -9,15 +7,23 @@ import {
   Button,
   Link,
 } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: call your authService.forgotPassword(email)
-    setSubmitted(true);
+
+    setLoading(true);
+
+    // TODO: API call (authService.forgotPassword)
+    setTimeout(() => {
+      setSubmitted(true);
+      setLoading(false);
+    }, 1000);
   };
 
   return (
@@ -61,7 +67,7 @@ export default function ForgotPassword() {
 
           {submitted && (
             <Typography sx={{ color: "success.main", fontSize: 14, mb: 2 }}>
-              If an account exists with this email, a reset link has been sent.
+              Check your email inbox for reset link.
             </Typography>
           )}
 
@@ -69,14 +75,19 @@ export default function ForgotPassword() {
             type="submit"
             variant="contained"
             fullWidth
-            sx={{ borderRadius: 2, textTransform: "none", mb: 2 }}
+            disabled={loading || submitted}
+            sx={{
+              borderRadius: 2,
+              textTransform: "none",
+              mb: 2,
+            }}
           >
-            Send reset link
+            {submitted ? "Link Sent" : loading ? "Sending..." : "Send reset link"}
           </Button>
         </form>
 
         <Box sx={{ textAlign: "center", mt: 1 }}>
-          <Link href="/login" underline="hover" sx={{ fontSize: 14 }}>
+          <Link component={RouterLink} to="/login" underline="hover" sx={{ fontSize: 14 }}>
             Back to login
           </Link>
         </Box>
