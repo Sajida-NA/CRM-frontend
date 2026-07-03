@@ -21,7 +21,7 @@ function App() {
         <Route path="/CreateTicket" element={<CreateTicket/>}/>
         <Route path="/company/:id" element={<CompanyDetails />} />
         <Route path="/leadslist" element={<Leadslist/>}/>
-        <Route path="/forgotpassword" element={<ForgotPassword/>}/>
+        <Route path="/forgot-password" element={<ForgotPassword/>}/>
         <Route path="/companieslist" element={<CompaniesList />} />
         <Route path="/register" element={<Register/>}/>
       </Routes>
