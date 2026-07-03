@@ -457,6 +457,41 @@ export default function Leadslist() {
       date: "Apr 8, 2025 2:35 PM GMT+5:30",
       status: "New",
     },
+    {
+      name: "Leslie Alexander",
+      email: "lesliealexander@gmail.com",
+      phone: "078 2824 3534",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "New",
+    },
+    {
+      name: "Jenny Wilson",
+      email: "jennywilson@gmail.com",
+      phone: "079 6761 9681",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "New",
+    },
+    {
+      name: "Guy Hawkins",
+      email: "guyhawkins@gmail.com",
+      phone: "077 5465 8785",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "New",
+    },
+    {
+      name: "Robert Fox",
+      email: "robertfox@gmail.com",
+      phone: "077 5465 8785",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "New",
+    },
+    {
+      name: "Cameron Williamson",
+      email: "cameronwilliamson@gmail.com",
+      phone: "078 2824 3534",
+      date: "Apr 8, 2025 2:35 PM GMT+5:30",
+      status: "In Progress",
+    },
   ];
 
   return (
@@ -571,15 +606,3 @@ export default function Leadslist() {
 
 
 
-const headerStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  mb: 3,
-};
-
-const topBarStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  mb: 3,
-};
