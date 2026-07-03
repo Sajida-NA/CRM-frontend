@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  Box,
-  IconButton,
-  TableRow,
-  TableCell,
-} from "@mui/material";
+import { Box, IconButton, TableRow, TableCell } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -86,25 +81,26 @@ export default function Leadslist() {
 
   return (
     <MainLayout>
-      <Box sx={{
-        maxWidth: "1000",
-        margin: "0 auto",
-        marginTop: "10px",
-        padding: "20px",
-        width: "100%",
-        minHeight: "100vh",
-      }}
-    >
-
-        {/* HEADER */}
-        <Box sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 3,
+      <Box
+        sx={{
+          maxWidth: "1000",
+          margin: "0 auto",
+          marginTop: "10px",
+          padding: "20px",
+          width: "100%",
+          minHeight: "100vh",
         }}
       >
-        {/* Left: Page Title */}
+        {/* HEADER */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: 3,
+          }}
+        >
+          {/* Left: Page Title */}
           <PageHeader title="Leads" />
 
           <Box sx={{ display: "flex", gap: 2 }}>
@@ -114,13 +110,14 @@ export default function Leadslist() {
         </Box>
 
         {/* SEARCH + PAGINATION */}
-        <Box sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 3,
-        }}
-      > 
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mb: 3,
+          }}
+        >
           <InputField
             label="Search Name, Email, Phone"
             placeholder="Search Phone, Name, Email"
@@ -188,11 +185,7 @@ export default function Leadslist() {
             </TableRow>
           ))}
         </DataTable>
-
       </Box>
     </MainLayout>
   );
 }
-
-
-
