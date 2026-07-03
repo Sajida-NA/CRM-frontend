@@ -9,7 +9,7 @@ import SelectField from "../../Components/common/SelectField";
 import StatusChip from "../../Components/common/StatusChip";
 import DataTable from "../../Components/common/DataTable";
 import Pagination from "../../Components/common/Pagination";
-
+import MainLayout from "../../layout/MainLayout";
 export default function Leadslist() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
@@ -74,6 +74,17 @@ export default function Leadslist() {
   ];
 
   return (
+    <MainLayout>
+      <Box
+      sx={{
+        maxWidth: "1000",
+        margin: "0 auto",
+        marginTop: "10px",
+        padding: "20px",
+        width: "100%",
+        minHeight: "100vh",
+      }}
+    ></Box>
     <Box
       sx={{
         maxWidth: "1000px",
@@ -193,5 +204,6 @@ export default function Leadslist() {
         ))}
       </DataTable>
     </Box>
+  </MainLayout>
   );
 }
