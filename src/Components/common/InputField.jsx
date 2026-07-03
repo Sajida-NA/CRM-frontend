@@ -1,10 +1,15 @@
 import { TextField } from "@mui/material";
 
-export default function InputField({ width = 200, sx, ...props }) {
+export default function InputField({
+  width = "100%",
+  size = "small",
+  sx = {},
+  ...props
+}) {
   return (
     <TextField
       {...props}
-      size="small"
+      size={size}
       sx={{
         width,
         ...sx,

@@ -1,92 +1,87 @@
 import { useState } from "react";
 import {
   Box,
-  Card,
-  TextField,
+  Paper,
   Typography,
+  TextField,
   Button,
   Link,
   IconButton,
-  InputAdornment,
+  InputAdornment
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+
   const [showPassword, setShowPassword] = useState(false);
 
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
   const togglePassword = () => setShowPassword((prev) => !prev);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // TODO: authService.login(form)
+    console.log("Login:", form);
+  };
 
   return (
     <Box
       sx={{
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
-        justifyContent: "center",
         alignItems: "center",
+        justifyContent: "center",
+        background: "#f5f5f9",
+        p: 2,
       }}
     >
-      <Card
+      <Paper
+        elevation={3}
         sx={{
-          width: 400,
+          width: 380,
           p: 4,
           borderRadius: 3,
-          boxShadow: "0px 4px 20px rgba(0,0,0,0.08)",
-          display: "flex",
-          flexDirection: "column",
         }}
       >
-        <Typography
-          variant="h5"
-          sx={{
-            textAlign: "center",
-            mb: 4,
-            fontWeight: 600,
-            fontSize: "26px",
-          }}
-        >
+        <Typography sx={{ fontSize: 26, fontWeight: 700, mb: 1 }}>
           Log in
         </Typography>
 
-        {/* Email */}
-        <Box sx={{ mb: 3 }}>
-          <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 0.5 }}>
-            Email
-          </Typography>
+        <Typography sx={{ color: "#666", mb: 3 }}>
+          Welcome back! Please enter your details.
+        </Typography>
 
+        <form onSubmit={handleSubmit}>
+          {/* Email */}
           <TextField
+            label="Email"
+            name="email"
+            type="email"
             fullWidth
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                height: 48,
-                borderRadius: 2,
-              },
-            }}
+            size="small"
+            value={form.email}
+            onChange={handleChange}
+            sx={{ mb: 2 }}
+            required
           />
-        </Box>
 
-        {/* Password */}
-        <Box sx={{ mb: 2 }}>
-          <Typography sx={{ fontSize: 14, fontWeight: 600, mb: 0.5 }}>
-            Password
-          </Typography>
-
+          {/* Password */}
           <TextField
-            fullWidth
+            label="Password"
+            name="password"
             type={showPassword ? "text" : "password"}
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                height: 48,
-                borderRadius: 2,
-              },
-            }}
+            fullWidth
+            size="small"
+            value={form.password}
+            onChange={handleChange}
+            sx={{ mb: 1 }}
+            required
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -97,39 +92,38 @@ export default function Login() {
               ),
             }}
           />
-        </Box>
 
-        {/* Forgot Password */}
-        <Box textAlign="right" mt={1} mb={3}>
-          <Link underline="hover" sx={{ fontSize: 14, fontWeight: 500 }}>
-            Forgot password?
-          </Link>
-        </Box>
+          {/* Forgot Password */}
+          <Box sx={{ textAlign: "right", mb: 3 }}>
+            <Link href="/forgot-password" underline="hover" sx={{ fontSize: 14 }}>
+              Forgot password?
+            </Link>
+          </Box>
 
-        {/* Login Button */}
-        <Button
-          fullWidth
-          variant="contained"
-          sx={{
-            backgroundColor: "#6f42c1",
-            height: 47,
-            borderRadius: 2,
-            fontWeight: 600,
-            fontSize: 15,
-            "&:hover": { backgroundColor: "#5a32a3" },
-          }}
-        >
-          Log in
-        </Button>
+          {/* Login Button */}
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{
+              height: 45,
+              borderRadius: 2,
+              textTransform: "none",
+              fontWeight: 600,
+            }}
+          >
+            Log in
+          </Button>
+        </form>
 
-        {/* Signup */}
-        <Typography textAlign="center" mt={4} sx={{ fontSize: 14 }}>
+        {/* Signup Link */}
+        <Typography sx={{ textAlign: "center", mt: 3, fontSize: 14 }}>
           Don’t have an account?{" "}
-          <Link underline="hover" sx={{ fontWeight: 600 }}>
+          <Link href="/register" underline="hover" sx={{ fontWeight: 600 }}>
             Sign up
           </Link>
         </Typography>
-      </Card>
+      </Paper>
     </Box>
   );
 }
