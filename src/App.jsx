@@ -8,11 +8,12 @@ import CreateTicket from "./Pages/Tickets/components/CreateTicket";
 import ForgotPassword from "./Pages/Auth/ForgotPassword/ForgotPassword";
 import CompaniesList from "./Pages/Companies/CompaniesList/CompaniesList";
 import Register from "./Pages/Auth/Register/Register";
-
-
+// import theme from "./theme/theme";
+// import { ThemeProvider } from "@mui/material";
 function App() {
   return (
     <>
+    {/* <ThemeProvider theme={theme}> */}
     <BrowserRouter>
       <Routes>
         <Route path="/emailrecord" element={<EmailRecord />} />  
@@ -26,6 +27,7 @@ function App() {
         <Route path="/register" element={<Register/>}/>
       </Routes>
     </BrowserRouter>
+    {/* </ThemeProvider> */}
     </>
   );
 

@@ -102,16 +102,31 @@ export default function Leadslist() {
           alignItems: "center",
           justifyContent: "space-between",
           mb: 3,
+          
         }}
       >
         {/* Left: Page Title */}
           <PageHeader title="Leads" />
 
           <Box sx={{ display: "flex", gap: 2 }}>
-            <CommonButton>Import</CommonButton>
-            <CommonButton>Create Lead</CommonButton>
+          <CommonButton
+            variant="outlined"
+            sx={{
+              textTransform: "none",
+              borderRadius: 2,
+              px:3,
+              
+            }}
+          >
+            Import
+          </CommonButton>
+         
+          <CommonButton onClick={() => setOpenCreate(true)}>Create Lead</CommonButton>
           </Box>
+
+        
         </Box>
+  <Box sx={{ borderBottom: "1px solid #eee", mb: 2 }} />
 
         {/* SEARCH + PAGINATION */}
         <Box sx={{
@@ -129,6 +144,7 @@ export default function Leadslist() {
 
           <Pagination page={page} totalPages={5} onPageChange={setPage} />
         </Box>
+  <Box sx={{ borderBottom: "1px solid #eee", mb: 2 }} />
 
         {/* FILTERS */}
         <FilterSection>
