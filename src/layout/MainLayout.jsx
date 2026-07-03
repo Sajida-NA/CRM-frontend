@@ -1,0 +1,27 @@
+import { Box } from "@mui/material";
+import Header from "../Components/common/Header";
+import Sidebar from "../Components/common/Sidebar";
+
+function MainLayout({ children }) {
+  return (
+    <>
+      <Header />
+
+      <Box sx={{ display: "flex" }}>
+        <Sidebar />
+
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
+            p: 3,
+          }}
+        >
+          {children}
+        </Box>
+      </Box>
+    </>
+  );
+}
+
+export default MainLayout;

@@ -2,18 +2,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./Pages/Auth/Login/login";
 import Dashboard from "./Pages/Dashboard/dashboard";
-
 import EmailRecord from "./Pages/Leads/components/EmailRecord";
 import Leadslist from "./Pages/Leads/Leadslist";
 
 import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
 import CreateTicket from "./Pages/Tickets/components/CreateTicket"; 
 import ForgotPassword from "./Pages/Auth/ForgotPassword/ForgotPassword";
-
-// FIXED IMPORTS
-// import DealsList from "./Pages/Deals/DealsList"
-// import DealProfile from "./Pages/Deals/DealProfile";
-
+import CompaniesList from "./Pages/Companies/CompaniesList/CompaniesList";
+import Register from "./Pages/Auth/Register/Register";
 function App() {
   return (
     <BrowserRouter>
@@ -23,12 +19,10 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/CreateTicket" element={<CreateTicket />} />
         <Route path="/company/:id" element={<CompanyDetails />} />
-        <Route path="/leadslist" element={<Leadslist />} />
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
-        {/* <Route path="/createdealmodal" element={<CreateDealModal />} /> */}
-        {/* FIXED ROUTES */}
-        {/* <Route path="/dealslist" element={<DealsList />} /> */}
-        {/* <Route path="/dealprofile/:id" element={<DealProfile />} /> */}
+        <Route path="/leadslist" element={<Leadslist/>}/>
+        <Route path="/forgotpassword" element={<ForgotPassword/>}/>
+        <Route path="/companieslist" element={<CompaniesList />} />
+        <Route path="/register" element={<Register/>}/>
       </Routes>
     </BrowserRouter>
   );
