@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, IconButton,Checkbox,TableRow, TableCell } from "@mui/material";
+import { Box, IconButton, Checkbox, TableRow, TableCell } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -14,7 +14,7 @@ import DataTable from "../../Components/common/DataTable";
 import Pagination from "../../Components/common/Pagination";
 
 import CommonButton from "../../Components/common/CommonButton";
-import CreateLeadsDrawer from "../Leads/components/CreateLeadsDrawer"
+import CreateLeadsDrawer from "../Leads/components/CreateLeadsDrawer";
 export default function Leadslist() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
@@ -83,14 +83,14 @@ export default function Leadslist() {
     <MainLayout>
       <Box
         sx={{
-        maxWidth: "1000",
-        margin: "0 auto",
-        marginTop: "10px",
-        padding: "20px",
-        width: "100%",
-        minHeight: "100vh",
-      }}
-    >
+          maxWidth: "1000",
+          margin: "0 auto",
+          marginTop: "10px",
+          padding: "20px",
+          width: "100%",
+          minHeight: "100vh",
+        }}
+      >
         {/* HEADER */}
         <Box
           sx={{
@@ -107,15 +107,14 @@ export default function Leadslist() {
               Import
             </CommonButton>
 
-
-           
             <CommonButton onClick={() => setOpenCreate(true)}>
               Create Lead
             </CommonButton>
-
-           
           </Box>
-            <CreateLeadsDrawer open={openCreate} onClose={() => setOpenCreate(false)} />
+          <CreateLeadsDrawer
+            open={openCreate}
+            onClose={() => setOpenCreate(false)}
+          />
         </Box>
         <Box sx={{ borderBottom: "1px solid #eee", mb: 2 }} />
 
