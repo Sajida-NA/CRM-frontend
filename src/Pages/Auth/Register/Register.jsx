@@ -5,7 +5,6 @@ import { flex } from '@mui/system';
 import Grid from '@mui/system/Grid';
 import { InputLabel, TextField } from '@mui/material';
 import Button from "@mui/material/Button";
-
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
@@ -17,16 +16,23 @@ export default function Register() {
   const [role,setRole]=useState()
   return (
     <div>
-
+<Box sx={{
+   
+    display: "flex",
+    flexDirection:'column',
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop:8,
+   
+}}>
       <Box sx={{
         width:700,
         border:"1px solid #ccc",
         boxShadow:10,
         borderRadius:"16px",
         p:3,
-          // display:'flex',
-          //       justifyContent:'center',
-          //       alignItems:'center',
+        marginBottom:2
+        
       }}>
 
         <Typography sx={{
@@ -44,13 +50,17 @@ export default function Register() {
           <Grid container rowSpacing={1}  columnSpacing={2} >
            
             <Grid size={6}>
-                <Typography>First Name</Typography>
+                <Typography >First Name</Typography>
                 <TextField 
                  required
             fullWidth
             variant="outlined"
             placeholder="Enter your first name"
-            size="small"></TextField>
+            size="small"
+            sx={{   marginBottom:1}}
+            
+            
+            ></TextField>
               </Grid>
       
 
@@ -62,7 +72,9 @@ export default function Register() {
             fullWidth
             variant="outlined"
             placeholder="Enter your last name"
-            size="small"></TextField>
+            size="small"
+              sx={{   marginBottom:1}}
+            ></TextField>
               </Grid>
       
 
@@ -76,7 +88,7 @@ export default function Register() {
             placeholder="Enter your email"
             size="small"
             type='email'
-            
+             sx={{   marginBottom:1}}
             ></TextField>
               </Grid>
       
@@ -94,6 +106,7 @@ export default function Register() {
             placeholder="Enter your number"
             size="small"
             type='number'
+              sx={{   marginBottom:1}}
             
             ></TextField>
               </Grid>
@@ -110,7 +123,7 @@ export default function Register() {
             placeholder="Enter your password"
             size="small"
             type='password'
-            
+              sx={{   marginBottom:1}}
             ></TextField>
               </Grid>
 
@@ -124,7 +137,7 @@ export default function Register() {
             placeholder="Enter your confirm password"
             size="small"
             type='password'
-            
+              sx={{   marginBottom:1}}
             ></TextField>
               </Grid>
 
@@ -139,7 +152,7 @@ export default function Register() {
             placeholder="Enter your company name"
             size="small"
             type='text'
-            
+              sx={{   marginBottom:1}}
             ></TextField>
               </Grid>
       
@@ -156,10 +169,11 @@ export default function Register() {
           
           onChange={(e) => setIndustry(e.target.value)}
           size='small'
+            sx={{   marginBottom:1}}
         >
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
+          <MenuItem value={10}></MenuItem>
+          <MenuItem value={20}></MenuItem>
+          <MenuItem value={30}></MenuItem>
         </Select>
       </FormControl>
  </Grid>
@@ -175,6 +189,7 @@ export default function Register() {
             placeholder="Enter your country or Region"
             size="small"
             type='text'
+              sx={{   marginBottom:1}}
             
             ></TextField>
               </Grid>
@@ -194,10 +209,11 @@ export default function Register() {
           
           onChange={(e) => setRole(e.target.value)}
           size='small'
+            sx={{   marginBottom:1}}
         >
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
+          <MenuItem value={10}></MenuItem>
+          <MenuItem value={20}></MenuItem>
+          <MenuItem value={30}></MenuItem>
         </Select>
       </FormControl>
  </Grid>
@@ -209,7 +225,7 @@ export default function Register() {
                            variant="contained"
                            fullWidth
                            
-                           sx={{  backgroundColor: "#52289e" ,borderRadius:1}}
+                           sx={{  backgroundColor: "#52289e" ,borderRadius:1,marginBottom:1}}
                          >
                           Register
                          </Button>  
@@ -221,12 +237,13 @@ export default function Register() {
          {/* ---------------- */}
           </Grid>
 
-<Typography   sx={{ textAlign: "center" }}  
->Already have an account? <a   style={{ textDecoration: "none", }}>Login</a></Typography>
+
 
       </Box>
+<Typography   sx={{ textAlign: "center",marginBottom:1 }}  
+>Already have an account? <a style={{ textDecoration: "none", color:'#52289e'}}>Login</a></Typography>
 
-      
+      </Box>
     </div>
   )
 }
