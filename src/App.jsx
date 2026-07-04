@@ -11,6 +11,8 @@ import TicketProfile from "./Pages/Ticket/TicketProfile/TicketProfile";
 import CompaniesList from "./Pages/Companies/CompaniesList/CompaniesList";
 import Register from "./Pages/Auth/Register/Register";
 import DealsList from "./Pages/Deals/DealsList/DealsList";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 // import theme from "./theme/theme";
 // import { ThemeProvider } from "@mui/material";
 
@@ -18,6 +20,7 @@ function App() {
   return (
     <>
       {/* <ThemeProvider theme={theme}> */}
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -34,6 +37,7 @@ function App() {
           
           </Routes>
       </BrowserRouter>
+      </LocalizationProvider>
       {/* </ThemeProvider> */}
     </>
   );

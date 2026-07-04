@@ -349,7 +349,7 @@ function DealsList() {
     <MainLayout>
       <Box
         sx={{
-          maxWidth: "1000px",
+          maxWidth: "1000",
           margin: "0 auto",
           marginTop: "10px",
           padding: "20px",
