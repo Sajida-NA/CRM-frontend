@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Drawer, Box } from "@mui/material";
-
 import DrawerHeader from "../../../Components/common/DrawerHeader";
 import CommonInput from "../../../Components/common/CommonInput";
 import CommonButton from "../../../Components/common/CommonButton";
@@ -48,12 +47,20 @@ export default function CreateLeadsDrawer({ open, onClose }) {
         <DrawerHeader title="Create Lead" onClose={onClose} />
 
         {/* FORM */}
-        <Box sx={{ flex: 1, p: 3, display: "flex", flexDirection: "column", gap: 2, overflowY: "auto" }}>
-
+        <Box
+          sx={{
+            flex: 1,
+            p: 3,
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            overflowY: "auto",
+          }}
+        >
           {/* Email */}
           <CommonInput
             label="Email"
-             required
+            required
             name="email"
             value={formData.email}
             onChange={handleChange}
@@ -64,7 +71,7 @@ export default function CreateLeadsDrawer({ open, onClose }) {
           {/* First Name */}
           <CommonInput
             label="First Name"
-             required
+            required
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
@@ -75,7 +82,7 @@ export default function CreateLeadsDrawer({ open, onClose }) {
           {/* Last Name */}
           <CommonInput
             label="Last Name"
-             required
+            required
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
@@ -86,7 +93,7 @@ export default function CreateLeadsDrawer({ open, onClose }) {
           {/* Phone */}
           <PhoneInputField
             label="Phone Number"
-             required
+            required
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
@@ -127,8 +134,7 @@ export default function CreateLeadsDrawer({ open, onClose }) {
             name="products"
             value={formData.products}
             onChange={handleChange}
-             options={["CRM Software", "Marketing Tool", "Analytics Tool"]}
-           
+            options={["CRM Software", "Marketing Tool", "Analytics Tool"]}
           />
 
           {/* Company TYPE (label added + dropdown type) */}
@@ -148,11 +154,12 @@ export default function CreateLeadsDrawer({ open, onClose }) {
             onChange={handleChange}
             options={["Dubai", "Abu Dhabi", "Sharjah", "Ajman"]}
           />
-
         </Box>
 
         {/* FOOTER */}
-        <Box sx={{ display: "flex", gap: 2, p: 3, borderTop: "1px solid #E5E7EB" }}>
+        <Box
+          sx={{ display: "flex", gap: 2, p: 3, borderTop: "1px solid #E5E7EB" }}
+        >
           <CommonButton variant="outlined" fullWidth onClick={onClose}>
             Cancel
           </CommonButton>

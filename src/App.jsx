@@ -11,12 +11,16 @@ import TicketProfile from "./Pages/Ticket/TicketProfile/TicketProfile";
 import CompaniesList from "./Pages/Companies/CompaniesList/CompaniesList";
 import Register from "./Pages/Auth/Register/Register";
 
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+
 // import theme from "./theme/theme";
 // import { ThemeProvider } from "@mui/material";
 
 function App() {
   return (
     <>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       {/* <ThemeProvider theme={theme}> */}
       <BrowserRouter>
         <Routes>
@@ -33,8 +37,12 @@ function App() {
         </Routes>
       </BrowserRouter>
       {/* </ThemeProvider> */}
+      </LocalizationProvider>
     </>
   );
 }
 
 export default App;
+
+
+ 

@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Box, IconButton, Checkbox, TableRow, TableCell } from "@mui/material";
-
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-
 import MainLayout from "../../layout/MainLayout";
 import PageHeader from "../../Components/common/PageHeader";
 import FilterSection from "../../Components/common/FilterSection";
@@ -12,14 +10,15 @@ import SelectField from "../../Components/common/SelectField";
 import StatusChip from "../../Components/common/StatusChip";
 import DataTable from "../../Components/common/DataTable";
 import Pagination from "../../Components/common/Pagination";
-
 import CommonButton from "../../Components/common/CommonButton";
 import CreateLeadsDrawer from "../Leads/components/CreateLeadsDrawer";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 export default function Leadslist() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
-  const [createdDate, setCreatedDate] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
+  const [createdDate, setCreatedDate] = useState(null);
   const leads = [
     {
       name: "Jane Cooper",
@@ -128,8 +127,8 @@ export default function Leadslist() {
           }}
         >
           <InputField
-            label="Search"
-            placeholder="Search Phone, Name, Email"
+            label="Search Phone,Name,Email"
+            placeholder="Search"
             width={380}
           />
 
@@ -145,15 +144,18 @@ export default function Leadslist() {
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           />
-
-          <InputField
+          <DatePicker
             label="Created Date"
-            placeholder="YYYY-MM-DD"
-            width={180}
             value={createdDate}
-            onChange={(e) => setCreatedDate(e.target.value)}
+            onChange={(newValue) => setCreatedDate(newValue)}
+            format="YYYY-MM-DD"
+            slotProps={{
+              textField: {
+                size: "small",
+                sx: { width: 180 },
+              },
+            }}
           />
-
           <Box sx={{ flexGrow: 1 }} />
         </FilterSection>
 
