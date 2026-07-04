@@ -12,13 +12,17 @@ import DataTable from "../../Components/common/DataTable";
 import Pagination from "../../Components/common/Pagination";
 import CommonButton from "../../Components/common/CommonButton";
 import CreateLeadsDrawer from "../Leads/components/CreateLeadsDrawer";
+import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
+
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 export default function Leadslist() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
+  const [createdDate, setCreatedDate] = useState("null");
+  const [search, setSearch] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
-  const [createdDate, setCreatedDate] = useState(null);
+ // Dummy Leads Data
   const leads = [
     {
       name: "Jane Cooper",
@@ -110,6 +114,7 @@ export default function Leadslist() {
               Create Lead
             </CommonButton>
           </Box>
+            {/* Create Lead Drawer */}
           <CreateLeadsDrawer
             open={openCreate}
             onClose={() => setOpenCreate(false)}
@@ -126,12 +131,13 @@ export default function Leadslist() {
             mb: 3,
           }}
         >
+           {/* Search Input */}
           <InputField
-            label="Search Phone,Name,Email"
-            placeholder="Search"
+            label="Search"
+            placeholder="Search Phone, Name, Email"
             width={380}
           />
-
+          {/* Pagination */}
           <Pagination page={page} totalPages={5} onPageChange={setPage} />
         </Box>
         <Box sx={{ borderBottom: "1px solid #eee", mb: 2 }} />
@@ -144,18 +150,18 @@ export default function Leadslist() {
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           />
+          {/* Created Date Filter */}
           <DatePicker
             label="Created Date"
-            value={createdDate}
-            onChange={(newValue) => setCreatedDate(newValue)}
-            format="YYYY-MM-DD"
+            value={createdDate ? dayjs(createdDate) : null}
+            onChange={(newValue) =>
+              setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
+            }
             slotProps={{
-              textField: {
-                size: "small",
-                sx: { width: 180 },
-              },
+              textField: { size: "small", width: 180, error: false },
             }}
           />
+
           <Box sx={{ flexGrow: 1 }} />
         </FilterSection>
 
@@ -176,16 +182,16 @@ export default function Leadslist() {
               <TableCell>
                 <Checkbox size="small" />
               </TableCell>
-
+               {/* Lead Details */}
               <TableCell>{lead.name}</TableCell>
               <TableCell>{lead.email}</TableCell>
               <TableCell>{lead.phone}</TableCell>
               <TableCell>{lead.date}</TableCell>
-
+                {/* Lead Status */}
               <TableCell>
                 <StatusChip status={lead.status} />
               </TableCell>
-
+               {/* Action Buttons */}
               <TableCell>
                 <IconButton color="primary">
                   <EditIcon />
