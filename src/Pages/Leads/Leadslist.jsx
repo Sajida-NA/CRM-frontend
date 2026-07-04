@@ -22,8 +22,7 @@ export default function Leadslist() {
   const [createdDate, setCreatedDate] = useState("null");
   const [search, setSearch] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
-
-  
+ // Dummy Leads Data
   const leads = [
     {
       name: "Jane Cooper",
@@ -115,6 +114,7 @@ export default function Leadslist() {
               Create Lead
             </CommonButton>
           </Box>
+            {/* Create Lead Drawer */}
           <CreateLeadsDrawer
             open={openCreate}
             onClose={() => setOpenCreate(false)}
@@ -131,12 +131,13 @@ export default function Leadslist() {
             mb: 3,
           }}
         >
+           {/* Search Input */}
           <InputField
             label="Search"
             placeholder="Search Phone, Name, Email"
             width={380}
           />
-
+          {/* Pagination */}
           <Pagination page={page} totalPages={5} onPageChange={setPage} />
         </Box>
         <Box sx={{ borderBottom: "1px solid #eee", mb: 2 }} />
@@ -149,22 +150,17 @@ export default function Leadslist() {
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           />
-
-          {/* <InputField
+          {/* Created Date Filter */}
+          <DatePicker
             label="Created Date"
-            placeholder="YYYY-MM-DD"
-            width={180}
-            value={createdDate}
-            onChange={(e) => setCreatedDate(e.target.value)}
-          /> */}
-         <DatePicker
-  label="Created Date"
-  value={createdDate ? dayjs(createdDate) : null}
-  onChange={(newValue) =>
-    setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
-  }
-  slotProps={{ textField: { size: "small", width: 180,error: false } }}
-/>
+            value={createdDate ? dayjs(createdDate) : null}
+            onChange={(newValue) =>
+              setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
+            }
+            slotProps={{
+              textField: { size: "small", width: 180, error: false },
+            }}
+          />
 
           <Box sx={{ flexGrow: 1 }} />
         </FilterSection>
@@ -186,16 +182,16 @@ export default function Leadslist() {
               <TableCell>
                 <Checkbox size="small" />
               </TableCell>
-
+               {/* Lead Details */}
               <TableCell>{lead.name}</TableCell>
               <TableCell>{lead.email}</TableCell>
               <TableCell>{lead.phone}</TableCell>
               <TableCell>{lead.date}</TableCell>
-
+                {/* Lead Status */}
               <TableCell>
                 <StatusChip status={lead.status} />
               </TableCell>
-
+               {/* Action Buttons */}
               <TableCell>
                 <IconButton color="primary">
                   <EditIcon />
