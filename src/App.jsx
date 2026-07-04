@@ -20,8 +20,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 function App() {
   return (
     <>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
       {/* <ThemeProvider theme={theme}> */}
+       <LocalizationProvider dateAdapter={AdapterDayjs}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -43,6 +43,3 @@ function App() {
 }
 
 export default App;
-
-
- 

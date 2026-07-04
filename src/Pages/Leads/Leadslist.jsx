@@ -12,13 +12,18 @@ import DataTable from "../../Components/common/DataTable";
 import Pagination from "../../Components/common/Pagination";
 import CommonButton from "../../Components/common/CommonButton";
 import CreateLeadsDrawer from "../Leads/components/CreateLeadsDrawer";
+import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
+
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 export default function Leadslist() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
+  const [createdDate, setCreatedDate] = useState("null");
+  const [search, setSearch] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
-  const [createdDate, setCreatedDate] = useState(null);
+
+  
   const leads = [
     {
       name: "Jane Cooper",
@@ -127,8 +132,8 @@ export default function Leadslist() {
           }}
         >
           <InputField
-            label="Search Phone,Name,Email"
-            placeholder="Search"
+            label="Search"
+            placeholder="Search Phone, Name, Email"
             width={380}
           />
 
@@ -144,18 +149,23 @@ export default function Leadslist() {
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           />
-          <DatePicker
+
+          {/* <InputField
             label="Created Date"
+            placeholder="YYYY-MM-DD"
+            width={180}
             value={createdDate}
-            onChange={(newValue) => setCreatedDate(newValue)}
-            format="YYYY-MM-DD"
-            slotProps={{
-              textField: {
-                size: "small",
-                sx: { width: 180 },
-              },
-            }}
-          />
+            onChange={(e) => setCreatedDate(e.target.value)}
+          /> */}
+         <DatePicker
+  label="Created Date"
+  value={createdDate ? dayjs(createdDate) : null}
+  onChange={(newValue) =>
+    setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
+  }
+  slotProps={{ textField: { size: "small", width: 180,error: false } }}
+/>
+
           <Box sx={{ flexGrow: 1 }} />
         </FilterSection>
 
