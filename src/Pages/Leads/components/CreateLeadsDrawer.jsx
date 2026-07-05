@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Drawer, Box } from "@mui/material";
-
 import DrawerHeader from "../../../Components/common/DrawerHeader";
 import CommonInput from "../../../Components/common/CommonInput";
 import CommonButton from "../../../Components/common/CommonButton";
@@ -48,12 +47,20 @@ export default function CreateLeadsDrawer({ open, onClose }) {
         <DrawerHeader title="Create Lead" onClose={onClose} />
 
         {/* FORM */}
-        <Box sx={{ flex: 1, p: 3, display: "flex", flexDirection: "column", gap: 2, overflowY: "auto" }}>
-
+        <Box
+          sx={{
+            flex: 1,
+            p: 3,
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            overflowY: "auto",
+          }}
+        >
           {/* Email */}
           <CommonInput
             label="Email"
-             required
+            required
             name="email"
             value={formData.email}
             onChange={handleChange}
