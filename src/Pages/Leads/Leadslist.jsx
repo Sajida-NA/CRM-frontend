@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Box, IconButton, Checkbox, TableRow, TableCell } from "@mui/material";
+import { Box, IconButton, Button, TableRow, TableCell } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import MainLayout from "../../layout/MainLayout";
+import CreateLeadsDrawer from "./components/CreateLeadsDrawer";
 import PageHeader from "../../Components/common/PageHeader";
 import FilterSection from "../../Components/common/FilterSection";
 import InputField from "../../Components/common/InputField";
@@ -10,19 +10,15 @@ import SelectField from "../../Components/common/SelectField";
 import StatusChip from "../../Components/common/StatusChip";
 import DataTable from "../../Components/common/DataTable";
 import Pagination from "../../Components/common/Pagination";
-import CommonButton from "../../Components/common/CommonButton";
-import CreateLeadsDrawer from "../Leads/components/CreateLeadsDrawer";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
-
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import CommonButton from "../../Components/common/CommonButton";
+import Mainlayout from "../../layout/MainLayout";
 export default function Leadslist() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
-  const [createdDate, setCreatedDate] = useState("null");
-  const [search, setSearch] = useState("");
-  const [openCreate, setOpenCreate] = useState(false);
- // Dummy Leads Data
+  const [createdDate, setCreatedDate] = useState("");
+  const [openDrawer, setOpenDrawer] = useState(false);
   const leads = [
     {
       name: "Jane Cooper",
@@ -83,66 +79,80 @@ export default function Leadslist() {
   ];
 
   return (
-    <MainLayout>
+    <Mainlayout>
       <Box
         sx={{
           maxWidth: "1000",
-          margin: "0 auto",
-          marginTop: "10px",
-          padding: "20px",
-          width: "100%",
-          minHeight: "100vh",
+        margin: "0 auto",
+        marginTop: "10px",
+        padding: "20px",
+        width: "100%",
+        minHeight: "100vh",
         }}
       >
-        {/* HEADER */}
+        {/* Header */}
         <Box
           sx={{
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
+            alignItems: "center",
             mb: 3,
           }}
         >
           <PageHeader title="Leads" />
 
           <Box sx={{ display: "flex", gap: 2 }}>
-            <CommonButton variant="outlined" sx={{ px: 3 }}>
+            <CommonButton
+              variant="outlined"
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+              }}
+            >
               Import
             </CommonButton>
 
-            <CommonButton onClick={() => setOpenCreate(true)}>
+            <CommonButton
+              variant="contained"
+              onClick={() => setOpenDrawer(true)}
+              sx={{
+                textTransform: "none",
+                borderRadius: 2,
+                backgroundColor: "#6C63FF",
+                px: 3,
+              }}
+            >
               Create Lead
             </CommonButton>
           </Box>
-            {/* Create Lead Drawer */}
-          <CreateLeadsDrawer
-            open={openCreate}
-            onClose={() => setOpenCreate(false)}
-          />
         </Box>
-        <Box sx={{ borderBottom: "1px solid #eee", mb: 2 }} />
 
-        {/* SEARCH + PAGINATION */}
+        <Box sx={{ borderBottom: "1px solid #eee", mb: 3 }} />
+
+        <CreateLeadsDrawer
+          open={openDrawer}
+          onClose={() => setOpenDrawer(false)}
+        />
+
+        {/* ⭐ SEARCH + PAGINATION*/}
         <Box
           sx={{
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
+            alignItems: "center",
             mb: 3,
           }}
         >
-           {/* Search Input */}
           <InputField
             label="Search"
             placeholder="Search Phone, Name, Email"
             width={380}
           />
-          {/* Pagination */}
+
           <Pagination page={page} totalPages={5} onPageChange={setPage} />
         </Box>
-        <Box sx={{ borderBottom: "1px solid #eee", mb: 2 }} />
-
-        {/* FILTERS */}
+        <Box sx={{ borderBottom: "1px solid #eee", mb: 3 }} />
+        {/* Filters */}
         <FilterSection>
           <SelectField
             label="Lead Status"
@@ -150,6 +160,7 @@ export default function Leadslist() {
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           />
+
           {/* Created Date Filter */}
           <DatePicker
             label="Created Date"
@@ -165,37 +176,31 @@ export default function Leadslist() {
           <Box sx={{ flexGrow: 1 }} />
         </FilterSection>
 
-        {/* TABLE */}
+        {/* Table */}
         <DataTable
           columns={[
-            <Checkbox size="small" />,
-            "NAME",
-            "EMAIL",
-            "PHONE NUMBER",
-            "CREATED DATE",
-            "LEAD STATUS",
-            "ACTIONS",
+            "Name",
+            "Email",
+            "Phone Number",
+            "Created Date",
+            "Lead Status",
+            "Actions",
           ]}
         >
-          {leads.map((lead) => (
-            <TableRow key={lead.email}>
-              <TableCell>
-                <Checkbox size="small" />
-              </TableCell>
-               {/* Lead Details */}
+          {leads.map((lead, index) => (
+            <TableRow key={index}>
               <TableCell>{lead.name}</TableCell>
               <TableCell>{lead.email}</TableCell>
               <TableCell>{lead.phone}</TableCell>
               <TableCell>{lead.date}</TableCell>
-                {/* Lead Status */}
               <TableCell>
                 <StatusChip status={lead.status} />
               </TableCell>
-               {/* Action Buttons */}
               <TableCell>
                 <IconButton color="primary">
                   <EditIcon />
                 </IconButton>
+
                 <IconButton color="error">
                   <DeleteIcon />
                 </IconButton>
@@ -204,6 +209,6 @@ export default function Leadslist() {
           ))}
         </DataTable>
       </Box>
-    </MainLayout>
+    </Mainlayout>
   );
 }
