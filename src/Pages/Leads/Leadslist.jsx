@@ -83,11 +83,11 @@ export default function Leadslist() {
       <Box
         sx={{
           maxWidth: "1000",
-          mx: "auto",
-          mt: 5,
-          p: 4,
-          width: "100%",
-          minHeight: "100vh",
+        margin: "0 auto",
+        marginTop: "10px",
+        padding: "20px",
+        width: "100%",
+        minHeight: "100vh",
         }}
       >
         {/* Header */}
@@ -102,7 +102,7 @@ export default function Leadslist() {
           <PageHeader title="Leads" />
 
           <Box sx={{ display: "flex", gap: 2 }}>
-            <Button
+            <CommonButton
               variant="outlined"
               sx={{
                 textTransform: "none",
@@ -110,9 +110,9 @@ export default function Leadslist() {
               }}
             >
               Import
-            </Button>
+            </CommonButton>
 
-            <Button
+            <CommonButton
               variant="contained"
               onClick={() => setOpenDrawer(true)}
               sx={{
@@ -123,11 +123,12 @@ export default function Leadslist() {
               }}
             >
               Create Lead
-            </Button>
+            </CommonButton>
           </Box>
         </Box>
 
         <Box sx={{ borderBottom: "1px solid #eee", mb: 3 }} />
+
         <CreateLeadsDrawer
           open={openDrawer}
           onClose={() => setOpenDrawer(false)}
@@ -150,7 +151,7 @@ export default function Leadslist() {
 
           <Pagination page={page} totalPages={5} onPageChange={setPage} />
         </Box>
-
+        <Box sx={{ borderBottom: "1px solid #eee", mb: 3 }} />
         {/* Filters */}
         <FilterSection>
           <SelectField
