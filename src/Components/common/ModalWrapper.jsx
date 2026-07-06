@@ -1,59 +1,72 @@
-import { Box, Modal, IconButton, Typography } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
+  Box
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-const ModalWrapper = ({ open, onClose, title, children, width = 520 }) => {
+export default function ModalWrapper({
+  open,
+  onClose,
+  title,
+  children,
+  maxWidth = "sm"
+}) {
   return (
-    <Modal open={open} onClose={onClose}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth={maxWidth}
+      PaperProps={{
+        sx: {
+          borderRadius: 3,
+          boxShadow: "0px 8px 24px rgba(0,0,0,0.15)",
+          p: 1,
+          animation: "fadeIn 0.25s ease-in-out",
+        },
+      }}
+    >
+      {/* Header */}
       <Box
         sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width,
-          bgcolor: "#fff",
-          borderRadius: 2,
-          boxShadow: "0px 4px 20px rgba(0,0,0,0.08)",
-          maxHeight: "90vh",
           display: "flex",
-          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-between",
+          px: 2,
+          pt: 1,
+          pb: 0.5,
         }}
       >
-        {/* HEADER */}
-        <Box
+        <DialogTitle
           sx={{
-            p: 3,
-            borderBottom: "1px solid #E5E5E5",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
+            p: 0,
+            fontSize: "1.25rem",
+            fontWeight: 600,
           }}
         >
-          <Typography variant="h6" fontWeight={600}>
-            {title}
-          </Typography>
+          {title}
+        </DialogTitle>
 
-          <IconButton onClick={onClose} size="small">
-            <CloseIcon />
-          </IconButton>
-        </Box>
-
-        {/* CONTENT */}
-        <Box
-          sx={{
-            p: 3,
-            overflowY: "auto",
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-          }}
-        >
-          {children}
-        </Box>
+        <IconButton onClick={onClose} size="small">
+          <CloseIcon />
+        </IconButton>
       </Box>
-    </Modal>
-  );
-};
 
-export default ModalWrapper;
+      {/* Body */}
+      <DialogContent
+        dividers
+        sx={{
+          px: 2,
+          py: 2,
+          backgroundColor: "#fafafa",
+          borderRadius: 2,
+        }}
+      >
+        {children}
+      </DialogContent>
+    </Dialog>
+  );
+}
