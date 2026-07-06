@@ -3,18 +3,18 @@ import { Box, IconButton, TableRow, TableCell, Button } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Checkbox from "@mui/material/Checkbox";
-import PageHeader from "../../Components/common/PageHeader";
-import FilterSection from "../../Components/common/FilterSection";
-import InputField from "../../Components/common/InputField";
-import SelectField from "../../Components/common/SelectField";
-import StatusChip from "../../Components/common/StatusChip";
-import DataTable from "../../Components/common/DataTable";
-import Pagination from "../../Components/common/Pagination";
+import PageHeader from "../../../Components/common/PageHeader";
+import FilterSection from "../../../Components/common/FilterSection";
+import InputField from "../../../Components/common/InputField";
+import SelectField from "../../../Components/common/SelectField";
+import StatusChip from "../../../Components/common/StatusChip";
+import DataTable from "../../../Components/common/DataTable";
+import Pagination from "../../../Components/common/Pagination";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-import CreateLeadsDrawer from "../Leads/components/CreateLeadsDrawer";
-import MainLayout from "../../layout/MainLayout";
-import CommonButton from "../../Components/common/CommonButton";
+import CreateLeadsDrawer from "../components/CreateLeadsDrawer";
+import MainLayout from "../../../layout/MainLayout";
+import CommonButton from "../../../Components/common/CommonButton";
 
 export default function Leadslist() {
   const [page, setPage] = useState(1);
