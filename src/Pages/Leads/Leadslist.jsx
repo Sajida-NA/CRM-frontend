@@ -146,7 +146,80 @@ export default function Leadslist() {
           width={380}
         />
 
-        <Pagination page={page} totalPages={5} onPageChange={setPage} />
+        {/*  SEARCH + PAGINATION*/}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
+          <InputField
+            label="Search"
+            placeholder="Search Phone, Name, Email"
+            width={380}
+          />
+
+          <Pagination page={page} totalPages={5} onPageChange={setPage} />
+        </Box>
+        <Box sx={{ borderBottom: "1px solid #eee", mb: 3 }} />
+        {/* Filters */}
+        <FilterSection>
+          <SelectField
+            label="Lead Status"
+            options={["Open", "New", "In Progress"]}
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+          />
+
+          {/* Created Date Filter */}
+          <DatePicker
+            label="Created Date"
+            value={createdDate ? dayjs(createdDate) : null}
+            onChange={(newValue) =>
+              setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
+            }
+            slotProps={{
+              textField: { size: "small", width: 180, error: false },
+            }}
+          />
+
+          <Box sx={{ flexGrow: 1 }} />
+        </FilterSection>
+
+        {/* Table */}
+        <DataTable
+          columns={[
+            "Name",
+            "Email",
+            "Phone Number",
+            "Created Date",
+            "Lead Status",
+            "Actions",
+          ]}
+        >
+          {leads.map((lead, index) => (
+            <TableRow key={index}>
+              <TableCell>{lead.name}</TableCell>
+              <TableCell>{lead.email}</TableCell>
+              <TableCell>{lead.phone}</TableCell>
+              <TableCell>{lead.date}</TableCell>
+              <TableCell>
+                <StatusChip status={lead.status} />
+              </TableCell>
+              <TableCell>
+                <IconButton color="primary">
+                  <EditIcon />
+                </IconButton>
+
+                <IconButton color="error">
+                  <DeleteIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          ))}
+        </DataTable>
       </Box>
 
       {/* ⭐ FILTERS */}
