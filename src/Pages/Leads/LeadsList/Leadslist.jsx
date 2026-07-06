@@ -175,12 +175,12 @@ export default function Leadslist() {
         <DataTable
           columns={[
             <Checkbox size="small" />,
-            "Name",
-            "Email",
-            "Phone Number",
-            "Created Date",
-            "Lead Status",
-            "Actions",
+            "NAME",
+            "EMAIL",
+            "PHONE NUMBER",
+            "CREATED DATE",
+            "LEAD STATUS",
+            "ACTIONS",
           ]}
         >
           {leads.map((lead, index) => (
