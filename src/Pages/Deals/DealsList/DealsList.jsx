@@ -11,7 +11,7 @@ import DataTable from "../../../Components/common/DataTable";
 import Pagination from "../../../Components/common/Pagination";
 import MainLayout from "../../../layout/MainLayout";
 import CommonButton from "../../../Components/common/CommonButton";
-
+import CreateDealsDrawer from "../components/CreateDealsDrawer"
 function DealsList() {
   const [page, setPage] = useState(1);
   const [dealStage, setDealStage] = useState("");
