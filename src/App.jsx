@@ -13,15 +13,17 @@ import Register from "./Pages/Auth/Register/Register";
 
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import LeadProfile from "./Pages/Leads/LeadProfile";
 
-// import theme from "./theme/theme";
-// import { ThemeProvider } from "@mui/material";
+// import theme from "./theme";
+import { ThemeProvider } from "@mui/material";
 
 function App() {
   return (
     <>
-      {/* <ThemeProvider theme={theme}> */}
-       <LocalizationProvider dateAdapter={AdapterDayjs}>
+     <LocalizationProvider dateAdapter={AdapterDayjs}>
+      {/* <ThemeProvider theme={theme}>
+       */}
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -34,7 +36,8 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/companieslist" element={<CompaniesList />} />
           <Route path="/register" element={<Register />} />
-        </Routes>
+          <Route path="/lead-profile" element={<LeadProfile/>}/>
+          </Routes>
       </BrowserRouter>
       {/* </ThemeProvider> */}
       </LocalizationProvider>
