@@ -134,7 +134,7 @@ export default function Leadslist() {
           onClose={() => setOpenDrawer(false)}
         />
 
-        {/* ⭐ SEARCH + PAGINATION*/}
+        {/*  SEARCH + PAGINATION*/}
         <Box
           sx={{
             display: "flex",
