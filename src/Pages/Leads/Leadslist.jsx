@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, IconButton,Checkbox,TableRow, TableCell } from "@mui/material";
+import { Box, IconButton,Checkbox,TableRow, TableCell,Button } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -146,20 +146,6 @@ export default function Leadslist() {
           width={380}
         />
 
-        {/*  SEARCH + PAGINATION*/}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 3,
-          }}
-        >
-          <InputField
-            label="Search"
-            placeholder="Search Phone, Name, Email"
-            width={380}
-          />
 
           <Pagination page={page} totalPages={5} onPageChange={setPage} />
         </Box>
@@ -222,57 +208,5 @@ export default function Leadslist() {
         </DataTable>
       </Box>
 
-      {/* ⭐ FILTERS */}
-      <FilterSection>
-        <SelectField
-          label="Lead Status"
-          options={["Open", "New", "In Progress"]}
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        />
-
-        <InputField
-          label="Created Date"
-          placeholder="YYYY-MM-DD"
-          width={180}
-          value={createdDate}
-          onChange={(e) => setCreatedDate(e.target.value)}
-        />
-
-        <Box sx={{ flexGrow: 1 }} />
-      </FilterSection>
-
-      {/* ⭐ TABLE */}
-      <DataTable
-        columns={[
-          "Name",
-          "Email",
-          "Phone Number",
-          "Created Date",
-          "Lead Status",
-          "Actions",
-        ]}
-      >
-        {leads.map((lead, index) => (
-          <TableRow key={index}>
-            <TableCell>{lead.name}</TableCell>
-            <TableCell>{lead.email}</TableCell>
-            <TableCell>{lead.phone}</TableCell>
-            <TableCell>{lead.date}</TableCell>
-            <TableCell>
-              <StatusChip status={lead.status} />
-            </TableCell>
-            <TableCell>
-              <IconButton color="primary">
-                <EditIcon />
-              </IconButton>
-              <IconButton color="error">
-                <DeleteIcon />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-        ))}
-      </DataTable>
-    </Box>
   );
 }
