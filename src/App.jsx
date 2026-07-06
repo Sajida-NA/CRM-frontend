@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./Pages/Auth/Login/login";
 import Dashboard from "./Pages/Dashboard/dashboard";
 import EmailRecord from "./Pages/Leads/components/EmailRecord";
-import Leadslist from "./Pages/Leads/Leadslist";
+import Leadslist from "./Pages/Leads/LeadsList/Leadslist";
 import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
 
 import ForgotPassword from "./Pages/Auth/ForgotPassword/ForgotPassword";

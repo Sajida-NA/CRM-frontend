@@ -1,13 +1,13 @@
 import { useState } from "react";
-import PageHeader from "../../components/common/PageHeader";
-import ProfileLayout from "../../components/profile/ProfileLayout";
+import PageHeader from "../../../components/common/PageHeader";
+import ProfileLayout from "../../../components/profile/ProfileLayout";
 
-import CreateNoteModal from "./components/CreateNoteModal";
-import LogCallModal from "./components/LogCallModal";
-import EmailComposerModal from "./components/EmailComposerModal";
-import TaskModal from "./components/TaskModal";
-import MeetingModal from "./components/MeetingModal";
-import MainLayout from "../../layout/MainLayout";
+import CreateNoteModal from "../components/CreateNoteModal";
+import LogCallModal from "../components/LogCallModal";
+import EmailComposerModal from "../components/EmailComposerModal";
+import TaskModal from "../components/TaskModal";
+import MeetingModal from "../components/MeetingModal";
+import MainLayout from "../../../layout/MainLayout";
 
 const LeadProfile = () => {
   // MODAL STATES
