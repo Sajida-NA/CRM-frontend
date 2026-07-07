@@ -1,11 +1,14 @@
 import { Box } from "@mui/material";
-import TicketInfo from "../../../Components/Ticket/TicketInfo";
-import TicketActivityPanel from "../../../Components/Ticket/TicketActivityPanel";
-import AITicketSummary from "../../../Components/Ticket/AITicketSummary";
+import TicketInfo from "../../../Components/Profiles/TicketInfo";
+import TicketActivityPanel from "../../../Components/Profiles/TicketActivityPanel";
+import AITicketSummary from "../../../Components/Profiles/AITicketSummary";
 import ticketActivities from "../../../data/ticketActivityData";
 import ticketData from "../../../data/ticketData";
+import MainLayout from "../../../layout/MainLayout";
 function TicketProfile() {
   return (
+    <MainLayout>
+     
     <Box
       sx={{
         p: 3,
@@ -31,6 +34,7 @@ function TicketProfile() {
 <AITicketSummary />
       </Box>
     </Box>
+    </MainLayout>
   );
 }
 
