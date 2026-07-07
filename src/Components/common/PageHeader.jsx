@@ -1,7 +1,8 @@
 import { Box, Typography } from "@mui/material";
 export default function PageHeader({ title, action }) {
   return (
-    <Box
+
+<Box
       sx={{
         display: "flex",
         justifyContent: "space-between",
@@ -9,11 +10,14 @@ export default function PageHeader({ title, action }) {
         mb: 3,
       }}
     >
+      
       <Typography variant="h5" fontWeight={600}>
-        {title}
+       <b> {title} </b>
       </Typography>
-
+ 
       {action}
     </Box>
+
+   
   );
 }
