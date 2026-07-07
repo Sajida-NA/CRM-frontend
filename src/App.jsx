@@ -23,29 +23,19 @@ function App() {
        {/* <ThemeProvider theme={theme}>  */}
       <BrowserRouter>
         <Routes>
-          // Authentication Routes
           <Route path="/" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/register" element={<Register />} />
-
-          // Dashboard
           <Route path="/dashboard" element={<Dashboard />} />
-
-
           <Route path="/emailrecord" element={<EmailRecord />} />
           <Route path="/create-ticket" element={<CreateTicketDrawer />} />
-
-          // Profile Pages
           <Route path="/company-profile" element={<CompanyProfile />} />
           <Route path="/ticket-profile" element={<TicketProfile />} />
-          
-        
-          // CRM List Pages
-          <Route path="/leadslist" element={<Leadslist />} />
-          <Route path="/companieslist" element={<CompaniesList />} />
           <Route path="/ticketslist" element={<TicketsList />} />
-          <Route path="/dealslist" element={<DealsList />} />    
-         
+          <Route path="/leadslist" element={<Leadslist />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/companieslist" element={<CompaniesList />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dealslist" element={<DealsList />} />
+      
         </Routes>
       </BrowserRouter>
         {/* </ThemeProvider> */}
