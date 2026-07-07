@@ -1,29 +1,27 @@
 import { useState } from "react";
-import {
-  Box,
-  IconButton,
-  TableRow,
-  TableCell,
-} from "@mui/material";
-
+import { Box, IconButton, TableRow, TableCell, Button } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-
-import MainLayout from "../../layout/MainLayout";
-import PageHeader from "../../Components/common/PageHeader";
-import FilterSection from "../../Components/common/FilterSection";
-import InputField from "../../Components/common/InputField";
-import SelectField from "../../Components/common/SelectField";
-import StatusChip from "../../Components/common/StatusChip";
-import DataTable from "../../Components/common/DataTable";
-import Pagination from "../../Components/common/Pagination";
 import Checkbox from "@mui/material/Checkbox";
-import CommonButton from "../../Components/common/CommonButton";
+import PageHeader from "../../../Components/common/PageHeader";
+import FilterSection from "../../../Components/common/FilterSection";
+import InputField from "../../../Components/common/InputField";
+import SelectField from "../../../Components/common/SelectField";
+import StatusChip from "../../../Components/common/StatusChip";
+import DataTable from "../../../Components/common/DataTable";
+import Pagination from "../../../Components/common/Pagination";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import CreateLeadsDrawer from "../components/CreateLeadsDrawer";
+import MainLayout from "../../../layout/MainLayout";
+import CommonButton from "../../../Components/common/CommonButton";
 
 export default function Leadslist() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
   const [createdDate, setCreatedDate] = useState("");
+  const [search, setSearch] = useState("");
+  const [openCreate, setOpenCreate] = useState(false);
 
   const leads = [
     {
@@ -50,21 +48,21 @@ export default function Leadslist() {
     {
       name: "Leslie Alexander",
       email: "lesliealexander@gmail.com",
-      phone: "078 2824 3534",
+      phone: "078 2824 3334",
       date: "Apr 8, 2025 2:35 PM GMT+5:30",
       status: "New",
     },
     {
       name: "Jenny Wilson",
       email: "jennywilson@gmail.com",
-      phone: "079 6761 9681",
+      phone: "079 8761 9681",
       date: "Apr 8, 2025 2:35 PM GMT+5:30",
       status: "New",
     },
     {
       name: "Guy Hawkins",
       email: "guyhawkins@gmail.com",
-      phone: "077 5465 8785",
+      phone: "078 5432 8505",
       date: "Apr 8, 2025 2:35 PM GMT+5:30",
       status: "New",
     },
@@ -78,7 +76,7 @@ export default function Leadslist() {
     {
       name: "Cameron Williamson",
       email: "cameronwilliamson@gmail.com",
-      phone: "078 2824 3534",
+      phone: "078 2824 3334",
       date: "Apr 8, 2025 2:35 PM GMT+5:30",
       status: "In Progress",
     },
@@ -86,65 +84,64 @@ export default function Leadslist() {
 
   return (
     <MainLayout>
-      <Box sx={{
-        maxWidth: "1000",
-        margin: "0 auto",
-        marginTop: "10px",
-        padding: "20px",
-        width: "100%",
-        minHeight: "100vh",
-      }}
-    >
-
-        {/* HEADER */}
-        <Box sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 3,
-          
+      <Box
+        sx={{
+          maxWidth: "1000",
+          margin: "0 auto",
+          marginTop: "10px",
+          padding: "20px",
+          width: "100%",
+          minHeight: "100vh",
         }}
       >
-        {/* Left: Page Title */}
+        {/* HEADER */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
           <PageHeader title="Leads" />
 
           <Box sx={{ display: "flex", gap: 2 }}>
-          <CommonButton
-            variant="outlined"
-            sx={{
-              textTransform: "none",
-              borderRadius: 2,
-              px:3,
-              
-            }}
-          >
-            Import
-          </CommonButton>
-         
-          <CommonButton onClick={() => setOpenCreate(true)}>Create Lead</CommonButton>
+            <CommonButton variant="outlined">Import</CommonButton>
+
+            <CommonButton
+              variant="contained"
+              sx={{ backgroundColor: "#6C63FF" }}
+              onClick={() => setOpenCreate(true)}
+            >
+              Create Lead
+            </CommonButton>
           </Box>
-
-        
         </Box>
-  <Box sx={{ borderBottom: "1px solid #eee", mb: 2 }} />
 
-        {/* SEARCH + PAGINATION */}
-        <Box sx={{
-          display: "flex",
-          alignItems: "center",
+        <Box sx={{ borderBottom: "1px solid #e0e0e0", my: 2 }} />
+
+        {/* DRAWER */}
+        <CreateLeadsDrawer
+          open={openCreate}
+          onClose={() => setOpenCreate(false)}
+        />
+
+        {/* SEARCH */}
+        <Box sx={{ display: "flex", 
+          alignItems:"center",
           justifyContent: "space-between",
-          mb: 3,
-        }}
-      > 
+           mb: 3 }}>
           <InputField
-            label="Search Name, Email, Phone"
+            label="Search"
             placeholder="Search Phone, Name, Email"
             width={380}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
-
-          <Pagination page={page} totalPages={5} onPageChange={setPage} />
+          <Pagination page={page} totalPages={5} onPageChange={setPage} />          
         </Box>
-  <Box sx={{ borderBottom: "1px solid #eee", mb: 2 }} />
+
+<Box sx={{ borderBottom: "1px solid #e0e0e0", my: 2 }} />
 
         {/* FILTERS */}
         <FilterSection>
@@ -155,12 +152,20 @@ export default function Leadslist() {
             onChange={(e) => setStatus(e.target.value)}
           />
 
-          <InputField
+          <DatePicker
             label="Created Date"
-            placeholder="YYYY-MM-DD"
-            width={180}
-            value={createdDate}
-            onChange={(e) => setCreatedDate(e.target.value)}
+            value={createdDate ? dayjs(createdDate) : null}
+            onChange={(newValue) =>
+              setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
+            }
+            slotProps={{
+              textField: {
+                size: "small",
+                sx: {
+                  width: 180, // 👈 controls size
+                },
+              },
+            }}
           />
 
           <Box sx={{ flexGrow: 1 }} />
@@ -170,16 +175,16 @@ export default function Leadslist() {
         <DataTable
           columns={[
             <Checkbox size="small" />,
-            "Name",
-            "Email",
-            "Phone",
-            "Date",
-            "Status",
-            "Actions",
+            "NAME",
+            "EMAIL",
+            "PHONE NUMBER",
+            "CREATED DATE",
+            "LEAD STATUS",
+            "ACTIONS",
           ]}
         >
-          {leads.map((lead) => (
-            <TableRow key={lead.email}>
+          {leads.map((lead, index) => (
+            <TableRow key={index}>
               <TableCell>
                 <Checkbox size="small" />
               </TableCell>
@@ -188,11 +193,9 @@ export default function Leadslist() {
               <TableCell>{lead.email}</TableCell>
               <TableCell>{lead.phone}</TableCell>
               <TableCell>{lead.date}</TableCell>
-
               <TableCell>
                 <StatusChip status={lead.status} />
               </TableCell>
-
               <TableCell>
                 <IconButton color="primary">
                   <EditIcon />
@@ -204,11 +207,7 @@ export default function Leadslist() {
             </TableRow>
           ))}
         </DataTable>
-
       </Box>
     </MainLayout>
   );
 }
-
-
-
