@@ -10,7 +10,7 @@ export default function FilterSection({ children }) {
         py: 2.5,
         px: 2,
         bgcolor: "background.paper",
-        borderRadius: 2,
+        // borderRadius: 2,
         // mb: 3,
 
       }}

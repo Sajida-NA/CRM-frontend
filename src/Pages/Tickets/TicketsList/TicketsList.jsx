@@ -196,8 +196,7 @@ export default function TicketsList() {
               height: "8vh",
               marginTop: "4px",
               transform: "translateY(-5px)",
-              borderBottomLeftRadius: "12px",
-              borderBottomRightRadius: "12px",
+              
             }}
           >
             {/* ⭐ SEARCH + PAGINATION*/}

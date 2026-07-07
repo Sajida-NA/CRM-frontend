@@ -12,7 +12,9 @@ export default function DataTable({ columns, children }) {
     <TableContainer
       sx={{
         border: "1px solid #E5E7EB",
-        borderRadius: 2,
+       
+         borderBottomLeftRadius: "12px",
+        borderBottomRightRadius: "12px",
         overflow: "hidden",
       }}
     >
