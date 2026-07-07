@@ -4,7 +4,7 @@ import Login from "./Pages/Auth/Login/login";
 import Dashboard from "./Pages/Dashboard/dashboard";
 import EmailRecord from "./Pages/Leads/components/EmailRecord";
 import Leadslist from "./Pages/Leads/Leadslist";
-import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
+import CompanyProfile from "./Pages/Companies/CompanyProfile/CompanyProfile";
 import CreateTicket from "./Pages/Tickets/components/CreateTicket";
 import ForgotPassword from "./Pages/Auth/ForgotPassword/ForgotPassword";
 import TicketProfile from "./Pages/Ticket/TicketProfile/TicketProfile";
@@ -24,7 +24,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/emailrecord" element={<EmailRecord />} />
           <Route path="/CreateTicket" element={<CreateTicket />} />
-          <Route path="/company/:id" element={<CompanyDetails />} />
+          <Route path="/CompanyProfile" element={<CompanyProfile />} />
           <Route path="/ticket-profile" element={<TicketProfile />} />
           <Route path="/leadslist" element={<Leadslist />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
