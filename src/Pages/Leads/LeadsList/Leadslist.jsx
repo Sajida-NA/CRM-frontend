@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, IconButton, TableRow, TableCell, Button } from "@mui/material";
+import { Box, IconButton, TableRow, TableCell } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Checkbox from "@mui/material/Checkbox";
@@ -90,58 +90,86 @@ export default function Leadslist() {
           margin: "0 auto",
           marginTop: "10px",
           padding: "20px",
-          width: "100%",
-          minHeight: "100vh",
+          backgroundColor: "#f5f7fb",
+          borderRadius: "10px",
+          boxShadow: "3px",
         }}
       >
-        {/* HEADER */}
+        {/* outer box for leads header */}
         <Box
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 3,
+            p: 2,
+            height: "8vh",
+            boxShadow: "4px",
+            border: " 1px solid #ddd",
+            backgroundColor: "white",
+            marginBottom: "3px",
+            borderTopLeftRadius: "12px",
+            borderTopRightRadius: "12px",
           }}
         >
-          <PageHeader title="Leads" />
+          {/* HEADER */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 3,
+            }}
+          >
+            <PageHeader title="Leads" />
 
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <CommonButton variant="outlined">Import</CommonButton>
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <CommonButton variant="outlined">Import</CommonButton>
 
-            <CommonButton
-              variant="contained"
-              sx={{ backgroundColor: "#6C63FF" }}
-              onClick={() => setOpenCreate(true)}
-            >
-              Create Lead
-            </CommonButton>
+              <CommonButton
+                variant="contained"
+                sx={{ backgroundColor: "#6C63FF" }}
+                onClick={() => setOpenCreate(true)}
+              >
+                Create Lead
+              </CommonButton>
+            </Box>
+          </Box>
+
+          {/* DRAWER */}
+          <CreateLeadsDrawer
+            open={openCreate}
+            onClose={() => setOpenCreate(false)}
+          />
+        </Box>
+
+        {/* outer box for search & pagination */}
+        <Box
+          sx={{
+            p: 2,
+            boxShadow: "4px",
+            border: " 1px solid #ddd",
+            backgroundColor: "white",
+            height: "8vh",
+            marginTop: "4px",
+            transform: "translateY(-5px)",
+          }}
+        >
+          {/* ⭐ SEARCH + PAGINATION*/}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 3,
+            }}
+          >
+            <InputField
+              label="Search"
+              placeholder="Search Phone, Name, Email"
+              width={380}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Pagination page={page} totalPages={5} onPageChange={setPage} />
           </Box>
         </Box>
-
-        <Box sx={{ borderBottom: "1px solid #e0e0e0", my: 2 }} />
-
-        {/* DRAWER */}
-        <CreateLeadsDrawer
-          open={openCreate}
-          onClose={() => setOpenCreate(false)}
-        />
-
-        {/* SEARCH */}
-        <Box sx={{ display: "flex", 
-          alignItems:"center",
-          justifyContent: "space-between",
-           mb: 3 }}>
-          <InputField
-            label="Search"
-            placeholder="Search Phone, Name, Email"
-            width={380}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <Pagination page={page} totalPages={5} onPageChange={setPage} />          
-        </Box>
-
-<Box sx={{ borderBottom: "1px solid #e0e0e0", my: 2 }} />
 
         {/* FILTERS */}
         <FilterSection>
@@ -174,7 +202,7 @@ export default function Leadslist() {
         {/* TABLE */}
         <DataTable
           columns={[
-            <Checkbox size="small" />,
+            <Checkbox key="select-all" size="small" />,
             "NAME",
             "EMAIL",
             "PHONE NUMBER",
@@ -188,7 +216,6 @@ export default function Leadslist() {
               <TableCell>
                 <Checkbox size="small" />
               </TableCell>
-
               <TableCell>{lead.name}</TableCell>
               <TableCell>{lead.email}</TableCell>
               <TableCell>{lead.phone}</TableCell>
