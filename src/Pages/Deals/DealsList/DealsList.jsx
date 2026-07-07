@@ -93,14 +93,28 @@ function DealsList() {
     <MainLayout>
       <Box
         sx={{
-          maxWidth: "1000",
-          margin: "0 auto",
-          marginTop: "10px",
-          padding: "20px",
-          width: "100%",
-          minHeight: "100vh",
+           maxWidth: "1000",
+            margin: "0 auto",
+            marginTop: "10px",
+            padding: "20px",
+            backgroundColor: "#f5f7fb",
+            borderRadius: "10px",
+            boxShadow: "3px",
         }}
       >
+         {/* outer box for deal header */}
+                  <Box
+                    sx={{
+                      p: 2,
+                      height: "8vh",
+                      boxShadow: "4px",
+                      border: " 1px solid #ddd",
+                      backgroundColor: "white",
+                      marginBottom: "3px",
+                      borderTopLeftRadius: "12px",
+                      borderTopRightRadius: "12px",
+                    }}
+                  >
         {/* ⭐ HEADER */}
         <Box
           sx={{
@@ -113,7 +127,12 @@ function DealsList() {
           <PageHeader title="Deals" />
 
           <Box sx={{ display: "flex", gap: 2 }}>
-            <CommonButton variant="outlined" sx={{ textTransform: "none", px: 3 }}>
+            <CommonButton variant="outlined" 
+            sx=
+            {{ textTransform: "none", 
+            px: 3 
+            }}
+            >
               Import
             </CommonButton>
 
@@ -136,6 +155,21 @@ function DealsList() {
             onClose={() => setOpenDrawer(false)}
           />
         </Box>
+        </Box>
+
+        {/* outer box for search & pagination */}
+                  <Box
+                    sx={{
+                      p: 2,
+                      boxShadow: "4px",
+                      border: " 1px solid #ddd",
+                      backgroundColor: "white",
+                      height: "8vh",
+                      marginTop: "4px",
+                      transform: "translateY(-5px)",
+                      
+                    }}
+                  >
 
         {/* ⭐ SEARCH + PAGINATION */}
         <Box
@@ -150,9 +184,15 @@ function DealsList() {
             label="Search"
             placeholder="Search Deal Name, Owner, Stage"
             width={380}
+            sx={{
+                  backgroundColor: "#f5f7fb",
+                  borderRadius: "10",
+                  boxShadow: "1",
+                }}
           />
 
           <Pagination page={page} totalPages={5} onPageChange={setPage} />
+        </Box>
         </Box>
 
         {/* ⭐ FILTERS */}
