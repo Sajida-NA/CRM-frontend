@@ -26,7 +26,7 @@ export default function CommonSelect({
           sx={{
             fontSize: "14px",
             fontWeight: 600,
-            padding :"10px 14px",
+            lineHeight: "20px",
             color: "#344054",
             mb: "6px",
           }}
