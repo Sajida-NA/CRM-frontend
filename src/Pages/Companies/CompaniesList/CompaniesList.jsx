@@ -12,6 +12,8 @@ import Pagination from "../../../Components/common/Pagination";
 import MainLayout from "../../../layout/MainLayout";
 import CreateCompanyDrawer from "../components/CreateCompanyDrawer";
 import CommonButton from "../../../Components/common/CommonButton";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 
 function CompaniesList() {
   const [page, setPage] = useState(1);
@@ -211,14 +213,26 @@ function CompaniesList() {
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         />
+        
+         {/* Created Date Filter */}
+          <DatePicker
+            label="Created Date"
+            value={createdDate ? dayjs(createdDate) : null}
+            onChange={(newValue) =>
+              setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
+            }
+            slotProps={{
+              textField: { size: "small", width: 180, error: false },
+            }}
+          />
 
-        <InputField
+        {/* <InputField
           label="Created Date"
           placeholder="YYYY-MM-DD"
           width={180}
           value={createdDate}
           onChange={(e) => setCreatedDate(e.target.value)}
-        />
+        /> */}
 
         <Box sx={{ flexGrow: 1 }} />
       </FilterSection>
