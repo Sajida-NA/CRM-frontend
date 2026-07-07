@@ -8,6 +8,7 @@ import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
 import CreateTicket from "./Pages/Tickets/components/CreateTicket"; 
 import ForgotPassword from "./Pages/Auth/ForgotPassword/ForgotPassword";
 import CompaniesList from "./Pages/Companies/CompaniesList/CompaniesList";
+import ViewEmailRecords from "./Pages/Leads/ViewEmailRecords/ViewEmailRecords";
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
     <>
     <BrowserRouter>
       <Routes>
+        <Route path="/viewemailrecords" element={<ViewEmailRecords />} />
         <Route path="/emailrecord" element={<EmailRecord />} />  
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
