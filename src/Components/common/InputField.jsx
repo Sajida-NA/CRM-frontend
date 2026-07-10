@@ -10,6 +10,7 @@ export default function InputField({
     <TextField
       {...props}
       size={size}
+      variant="outlined"
       sx={{
         width,
         ...sx,

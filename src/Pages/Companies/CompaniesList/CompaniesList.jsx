@@ -1,23 +1,26 @@
 import { useState } from "react";
 import { Box, IconButton, TableRow, TableCell } from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import PageHeader from "../../../Components/common/PageHeader";
 import FilterSection from "../../../Components/common/FilterSection";
-import InputField from "../../../Components/common/InputField";
 import SelectField from "../../../Components/common/SelectField";
 import DataTable from "../../../Components/common/DataTable";
-import Pagination from "../../../Components/common/Pagination";
 import MainLayout from "../../../layout/MainLayout";
 import CreateCompanyDrawer from "../components/CreateCompanyDrawer";
+import SearchSection from "../../../Components/common/SearchSection";
 import CommonButton from "../../../Components/common/CommonButton";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import CommonDatePicker from "../../../Components/common/CommonDatePicker";
+import CommonCheckbox from "../../../Components/common/CommonCheckbox";
 
 function CompaniesList() {
   const [page, setPage] = useState(1);
-  const [status, setStatus] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [leadStatus, setLeadStatus] = useState("");
+  const [search, setSearch] = useState("");
   const [createdDate, setCreatedDate] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
 
@@ -105,178 +108,173 @@ function CompaniesList() {
   ];
 
   return (
-     <MainLayout>
-    <Box
-      sx={{
-        maxWidth: "1000",
-        margin: "0 auto",
-        marginTop: "10px",
-        padding: "20px",
-        width: "100%",
-        minHeight: "100vh",
-      }}
-    >
-      {/* ⭐ LEADS + IMPORT + CREATE LEAD  */}
-
+    <MainLayout>
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 3,
+          maxWidth: "1000",
+          margin: "0 auto",
+          marginTop: "5px",
+          padding: "5px",
+          bgcolor: "background.default",
+          borderRadius: "10px",
+          boxShadow: "3px",
         }}
       >
-        {/* Left: Page Title */}
-        <PageHeader title="Companies" />
+        {/* outer box for pageHeader*/}
+        <Box
+          sx={{
+            p: 2,
+            height: "12vh",
+            boxShadow: "4px",
+            border: "1px solid",
+            borderColor: "divider",
+            bgcolor: "background.paper",
+            borderTopLeftRadius: "12px",
+            borderTopRightRadius: "12px",
+          }}
+        >
+          {/*⭐ Page Title (Companies) + (Import and Create) buttons  */}
 
-        {/* Right: Import + Create Lead */}
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <CommonButton
-            variant="outlined"
-            sx={{
-              textTransform: "none",
-              borderRadius: 2,
-              px:3,
-              
-            }}
-          >
-            Import
-          </CommonButton>
-
-          <CommonButton
-            variant="contained"
-            sx={{
-              textTransform: "none",
-              borderRadius: 2,
-              backgroundColor: "#6C63FF",
-              px: 3,
-            }}
-            onClick={() => setOpenDrawer(true)}
-          >
-            Create Company
-          </CommonButton>
+          {/* Left: Page Title */}
+          <PageHeader
+            title="Companies"
+            actions={
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <CommonButton variant="outlined">Import</CommonButton>
+                <CommonButton onClick={() => setOpenDrawer(true)}>
+                  Create
+                </CommonButton>
+              </Box>
+            }
+          />
+          {/* DRAWER */}
+          <CreateCompanyDrawer
+            open={openDrawer}
+            onClose={() => setOpenDrawer(false)}
+          />
         </Box>
 
-        {/* Your companies table/list goes here */}
+        {/* outer box for search & pagination */}
+        <Box
+          sx={{
+            p: 2,
+            boxShadow: "4px",
+            border: " 1px solid",
+            borderColor: "divider",
+            bgcolor: "background.paper",
+            height: "12vh",
+            marginTop: "4px",
+            transform: "translateY(-5px)",
+          }}
+        >
+          {/* ⭐ SEARCH + PAGINATION*/}
+          <SearchSection
+            placeholder="Search Phone, Name, Email"
+            page={page}
+            totalPages={68}
+            onPageChange={setPage}
+            searchValue={search}
+            onSearchChange={(e) => setSearch(e.target.value)}
+          />
+        </Box>
 
-        <CreateCompanyDrawer
-          open={openDrawer}
-          onClose={() => setOpenDrawer(false)}
-        />
-      </Box>
+        {/* ⭐ FILTERS */}
+        <FilterSection>
+          <SelectField
+            placeholder="Industry Type"
+            options={[
+              "Legal Services",
+              "Healthcare",
+              "Real Estate",
+              "Education",
+            ]}
+            value={status}
+            onChange={(e) => setIndustry(e.target.value)}
+          />
 
-      {/* ⭐ SEARCH + PAGINATION*/}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 3,
-        }}
-      >
-        <InputField
-          label="Search"
-          placeholder="Search Phone, Name, Email"
-          width={380}
-        />
+          <SelectField
+            placeholder="City"
+            options={[
+              "Amsterdam",
+              "Cape Town",
+              "Dubai",
+              "Singapore",
+              "Toronto",
+            ]}
+            value={status}
+            onChange={(e) => setCity(e.target.value)}
+          />
 
-        <Pagination page={page} totalPages={5} onPageChange={setPage} />
-      </Box>
+          <SelectField
+            placeholder="Country/Region"
+            options={[
+              "Netherlands",
+              "Switzerland",
+              "South Africa",
+              "Singapore",
+              "USA",
+              "UAE",
+            ]}
+            value={status}
+            onChange={(e) => setCountry(e.target.value)}
+          />
 
-      {/* ⭐ FILTERS */}
-      <FilterSection>
+          <SelectField
+            placeholder="Lead Status"
+            options={["Open", "New", "In Progress"]}
+            value={status}
+            onChange={(e) => setLeadStatus(e.target.value)}
+          />
 
-        <SelectField
-          label="Industry Type"
-          options={["Legal Services","Healthcare","Real Estate","Education"]}
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        />
-
-        <SelectField
-          label="City"
-          options={["Amsterdam", "Cape Town", "Dubai" , "Singapore", "Toronto"]}
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        />
-
-        <SelectField
-          label="Country/Region"
-          options={["Netherlands","Switzerland" , "South Africa","Singapore","USA", "UAE"]}
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        />
-
-        <SelectField
-          label="Lead Status"
-          options={["Open", "New", "In Progress"]}
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-        />
-        
-         {/* Created Date Filter */}
-          <DatePicker
+          {/* Created Date Filter */}
+          <CommonDatePicker
             label="Created Date"
             value={createdDate ? dayjs(createdDate) : null}
             onChange={(newValue) =>
               setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
             }
-            slotProps={{
-              textField: { size: "small", width: 180, error: false },
-            }}
           />
+          <Box sx={{ flexGrow: 1 }} />
+        </FilterSection>
 
-        {/* <InputField
-          label="Created Date"
-          placeholder="YYYY-MM-DD"
-          width={180}
-          value={createdDate}
-          onChange={(e) => setCreatedDate(e.target.value)}
-        /> */}
-
-        <Box sx={{ flexGrow: 1 }} />
-      </FilterSection>
-
-      {/* ⭐ TABLE */}
-      <DataTable
-        columns={[
-           <Checkbox size="small" />,
-          "COMPANY NAME",
-          "COMPANY OWNER",
-          "PHONE NUMBER",
-          "INDUSTRY",
-          "CITY",
-          "COUNTRY/REGION",
-          "CREATED DATE",
-          "ACTIONS",
-        ]}
-      >
-        {companiesData.map((company) => (
-          <TableRow key={company.id}>
-            <TableCell>
-              <Checkbox size="small" />
-            </TableCell>
-
-            <TableCell>{company.companyName}</TableCell>
-            <TableCell>{company.companyOwner}</TableCell>
-            <TableCell>{company.phoneNumber}</TableCell>
-            <TableCell>{company.industry}</TableCell>
-            <TableCell>{company.city}</TableCell>
-            <TableCell>{company.country}</TableCell>
-            <TableCell>{company.createdDate}</TableCell>
-
-            <TableCell>
-              <IconButton color="primary">
-                <EditIcon />
-              </IconButton>
-              <IconButton color="error">
-                <DeleteIcon />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-        ))}
-      </DataTable>
-    </Box>
+        {/* ⭐ TABLE */}
+        <DataTable
+          columns={[
+            <CommonCheckbox size="medium" />,
+            "COMPANY NAME",
+            "COMPANY OWNER",
+            "PHONE NUMBER",
+            "INDUSTRY",
+            "CITY",
+            "COUNTRY/REGION",
+            "CREATED DATE",
+            "ACTIONS",
+          ]}
+        >
+          {companiesData.map((company) => (
+            <TableRow key={company.id}>
+              <TableCell>
+                <CommonCheckbox size="medium" />
+              </TableCell>
+              <TableCell>{company.companyName}</TableCell>
+              <TableCell>{company.companyOwner}</TableCell>
+              <TableCell>{company.phoneNumber}</TableCell>
+              <TableCell>{company.industry}</TableCell>
+              <TableCell>{company.city}</TableCell>
+              <TableCell>{company.country}</TableCell>
+              <TableCell>{company.createdDate}</TableCell>
+              <TableCell>
+                <IconButton color="primary">
+                  <EditIcon />
+                </IconButton>
+                <IconButton color="error">
+                  <DeleteIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+          ))}
+        </DataTable>
+      </Box>
     </MainLayout>
   );
 }
