@@ -115,7 +115,7 @@ export default function Leadslist() {
             actions={
               <Box sx={{ display: "flex", gap: 2 }}>
                 <CommonButton variant="outlined">Import</CommonButton>
-                <CommonButton onClick={() => setOpenDrawer(true)}>
+                <CommonButton onClick={() => setOpenCreate(true)}>
                   Create
                 </CommonButton>
               </Box>
