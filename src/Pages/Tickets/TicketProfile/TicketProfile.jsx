@@ -2,8 +2,9 @@ import { Box } from "@mui/material";
 import TicketInfo from "../../../Components/Profiles/TicketInfo";
 import TicketActivityPanel from "../../../Components/Profiles/TicketActivityPanel";
 import AITicketSummary from "../../../Components/Profiles/AITicketSummary";
-import ticketActivities from "../../../data/ticketActivityData";
-import ticketData from "../../../data/ticketData";
+
+import ticketActivities from "./data/ticketActivityData";
+import ticketData from "./data/ticketData";
 import MainLayout from "../../../layout/MainLayout";
 function TicketProfile() {
   return (

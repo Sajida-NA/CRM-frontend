@@ -1,8 +1,8 @@
 import {
-  Paper,
+  Box,
   Typography,
   Button,
-  Box,
+  Paper,
 } from "@mui/material";
 
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
@@ -10,12 +10,10 @@ import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 
 function AISummary() {
   return (
-    <Paper
-      elevation={2}
+    <Box
       sx={{
         p: 3,
-        borderRadius: 3,
-        minHeight: 600,
+        height: "100%",
       }}
     >
       {/* Title */}
@@ -77,7 +75,7 @@ function AISummary() {
         </Button>
       </Box>
 
-      {/* Empty State */}
+      {/* Upload Area */}
       <Paper
         elevation={0}
         sx={{
@@ -113,7 +111,7 @@ function AISummary() {
           company files here.
         </Typography>
       </Paper>
-    </Paper>
+    </Box>
   );
 }
 

@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Paper,
   Typography,
   Divider,
   Button,
@@ -15,29 +14,30 @@ import TaskOutlinedIcon from "@mui/icons-material/TaskOutlined";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
-
 function DetailRow({ label, value }) {
   return (
     <Box
-  sx={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    py: 1.5,
-    borderBottom: "1px solid #F3F4F6",
-  }}
->
-<Typography
-  variant="body2"
-  color="text.secondary"
-  fontWeight={500}
->        {label}
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        py: 1.5,
+        borderBottom: "1px solid #F3F4F6",
+      }}
+    >
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        fontWeight={500}
+      >
+        {label}
       </Typography>
 
-<Typography
-  variant="body2"
-  fontWeight={700}
->        {value}
+      <Typography
+        variant="body2"
+        fontWeight={700}
+      >
+        {value}
       </Typography>
     </Box>
   );
@@ -45,27 +45,27 @@ function DetailRow({ label, value }) {
 
 function CompanyInfo({ company }) {
   return (
-    <Paper
-      elevation={2}
+    <Box
       sx={{
         p: 3,
-        borderRadius: 3,
+        height: "100%",
       }}
     >
       {/* Company Header */}
       <Box display="flex" gap={2} alignItems="center">
-       <Avatar
-  sx={{
-    width: 70,
-    height: 70,
-    bgcolor: "#4F46E5",
-    fontSize: 28,
-    fontWeight: "bold",
-    border: "3px solid #E5E7EB",
-  }}
->
-  {company.name.charAt(0)}
-</Avatar>
+        <Avatar
+          sx={{
+            width: 70,
+            height: 70,
+            bgcolor: "#4F46E5",
+            fontSize: 28,
+            fontWeight: "bold",
+            border: "3px solid #E5E7EB",
+          }}
+        >
+          {company.name.charAt(0)}
+        </Avatar>
+
         <Box>
           <Typography variant="h6" fontWeight="bold">
             {company.name}
@@ -87,7 +87,7 @@ function CompanyInfo({ company }) {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
+          gridTemplateColumns: "repeat(2,1fr)",
           gap: 1.5,
           mb: 3,
         }}
@@ -97,14 +97,7 @@ function CompanyInfo({ company }) {
           size="small"
           variant="outlined"
           startIcon={<NoteAltOutlinedIcon />}
-          sx={{
-            borderRadius: 2,
-            textTransform: "none",
-            "&:hover": {
-              bgcolor: "#E3F2FD",
-              borderColor: "#1976d2",
-            },
-          }}
+          sx={{ borderRadius: 2, textTransform: "none" }}
         >
           Note
         </Button>
@@ -114,14 +107,7 @@ function CompanyInfo({ company }) {
           size="small"
           variant="outlined"
           startIcon={<EmailOutlinedIcon />}
-          sx={{
-            borderRadius: 2,
-            textTransform: "none",
-            "&:hover": {
-              bgcolor: "#E3F2FD",
-              borderColor: "#1976d2",
-            },
-          }}
+          sx={{ borderRadius: 2, textTransform: "none" }}
         >
           Email
         </Button>
@@ -131,14 +117,7 @@ function CompanyInfo({ company }) {
           size="small"
           variant="outlined"
           startIcon={<CallOutlinedIcon />}
-          sx={{
-            borderRadius: 2,
-            textTransform: "none",
-            "&:hover": {
-              bgcolor: "#E3F2FD",
-              borderColor: "#1976d2",
-            },
-          }}
+          sx={{ borderRadius: 2, textTransform: "none" }}
         >
           Call
         </Button>
@@ -148,14 +127,7 @@ function CompanyInfo({ company }) {
           size="small"
           variant="outlined"
           startIcon={<TaskOutlinedIcon />}
-          sx={{
-            borderRadius: 2,
-            textTransform: "none",
-            "&:hover": {
-              bgcolor: "#E3F2FD",
-              borderColor: "#1976d2",
-            },
-          }}
+          sx={{ borderRadius: 2, textTransform: "none" }}
         >
           Task
         </Button>
@@ -165,14 +137,7 @@ function CompanyInfo({ company }) {
           size="small"
           variant="outlined"
           startIcon={<EventOutlinedIcon />}
-          sx={{
-            borderRadius: 2,
-            textTransform: "none",
-            "&:hover": {
-              bgcolor: "#E3F2FD",
-              borderColor: "#1976d2",
-            },
-          }}
+          sx={{ borderRadius: 2, textTransform: "none" }}
         >
           Meeting
         </Button>
@@ -196,7 +161,7 @@ function CompanyInfo({ company }) {
         </IconButton>
       </Box>
 
-     <DetailRow label="Company Name" value={company.name} />
+      <DetailRow label="Company Name" value={company.name} />
       <DetailRow label="Domain" value={company.website} />
       <DetailRow label="Industry" value={company.industry} />
       <DetailRow label="Phone" value={company.phone} />
@@ -206,7 +171,7 @@ function CompanyInfo({ company }) {
       <DetailRow label="Employees" value={company.employees} />
       <DetailRow label="Revenue" value={company.revenue} />
       <DetailRow label="Created" value={company.created} />
-    </Paper>
+    </Box>
   );
 }
 

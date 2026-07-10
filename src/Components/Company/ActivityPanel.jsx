@@ -1,5 +1,4 @@
 import {
-  Paper,
   Typography,
   Tabs,
   Tab,
@@ -15,13 +14,13 @@ function ActivityPanel({ activities }) {
   const [value, setValue] = useState(0);
 
   return (
-    <Paper
-      sx={{
-        p: 3,
-        borderRadius: 3,
-        minHeight: 600,
-      }}
-    >
+    <Box
+  sx={{
+    p: 3,
+    height: "100%",
+    overflowY: "auto",
+  }}
+>
       {/* Title */}
       <Typography
         variant="h5"
@@ -33,25 +32,25 @@ function ActivityPanel({ activities }) {
 
       {/* Search Box */}
       <TextField
-  fullWidth
-  size="small"
-  placeholder="Search activities..."
-  variant="outlined"
-  InputProps={{
-    startAdornment: (
-      <InputAdornment position="start">
-        <SearchOutlinedIcon color="action" />
-      </InputAdornment>
-    ),
-  }}
-  sx={{
-    mb: 2,
-    "& .MuiOutlinedInput-root": {
-      borderRadius: 3,
-      bgcolor: "#FAFAFA",
-    },
-  }}
-/>
+        fullWidth
+        size="small"
+        placeholder="Search activities..."
+        variant="outlined"
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchOutlinedIcon color="action" />
+            </InputAdornment>
+          ),
+        }}
+        sx={{
+          mb: 2,
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 3,
+            bgcolor: "#FAFAFA",
+          },
+        }}
+      />
 
       {/* Tabs */}
       <Tabs
@@ -60,28 +59,28 @@ function ActivityPanel({ activities }) {
         variant="scrollable"
         scrollButtons="auto"
         sx={{
-  mb: 3,
-  minHeight: 45,
+          mb: 3,
+          minHeight: 45,
 
-  "& .MuiTab-root": {
-    textTransform: "none",
-    fontWeight: 500,
-    minHeight: 45,
-    borderRadius: "8px 8px 0 0",
-    px: 2,
-  },
+          "& .MuiTab-root": {
+            textTransform: "none",
+            fontWeight: 500,
+            minHeight: 45,
+            borderRadius: "8px 8px 0 0",
+            px: 2,
+          },
 
-  "& .Mui-selected": {
-    color: "#1976d2",
-    fontWeight: 700,
-  },
+          "& .Mui-selected": {
+            color: "#1976d2",
+            fontWeight: 700,
+          },
 
-  "& .MuiTabs-indicator": {
-    height: 3,
-    borderRadius: 3,
-    backgroundColor: "#1976d2",
-  },
-}}
+          "& .MuiTabs-indicator": {
+            height: 3,
+            borderRadius: 3,
+            backgroundColor: "#1976d2",
+          },
+        }}
       >
         <Tab label="Activity" />
         <Tab label="Notes" />
@@ -97,7 +96,6 @@ function ActivityPanel({ activities }) {
           variant="subtitle1"
           fontWeight="bold"
           sx={{
-            mt: 2,
             mb: 2,
             color: "#374151",
           }}
@@ -105,14 +103,14 @@ function ActivityPanel({ activities }) {
           Upcoming
         </Typography>
 
-       {activities.map((activity) => (
-  <ActivityCard
-    key={activity.id}
-    activity={activity}
-  />
-))}
+        {activities.map((activity) => (
+          <ActivityCard
+            key={activity.id}
+            activity={activity}
+          />
+        ))}
       </Box>
-    </Paper>
+    </Box>
   );
 }
 
