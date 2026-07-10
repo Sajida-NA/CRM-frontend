@@ -1,36 +1,42 @@
-import { TextField, MenuItem } from "@mui/material";
+
+import { FormControl, Select, MenuItem } from "@mui/material";
+
 export default function SelectField({
-  label,
+  width = "100%",
+  size = "small",
+  sx = {},
+  placeholder,
+  value,
+  onChange,
   options = [],
-  width = 200,
-  valueKey,
-  labelKey,
-  sx,
   ...props
 }) {
   return (
-    <TextField
-      select
-      label={label}
-      size="small"
+    <FormControl
+      fullWidth
+      size={size}
       sx={{
         width,
+        minWidth: 180,
+        flex: 0.25,
         ...sx,
       }}
-      {...props}
     >
-      <MenuItem value="">All</MenuItem>
-
-      {options.map((opt, i) => {
-        const value = valueKey ? opt[valueKey] : opt;
-        const text = labelKey ? opt[labelKey] : opt;
-
-        return (
-          <MenuItem key={i} value={value}>
-            {text}
+      <Select
+        displayEmpty
+        value={value}
+        onChange={onChange}
+        renderValue={(selected) =>
+          selected || <span style={{ color: "#727680" }}>{placeholder}</span>
+        }
+        {...props}
+      >
+        {options.map((option) => (
+          <MenuItem key={option} value={option}>
+            {option}
           </MenuItem>
-        );
-      })}
-    </TextField>
+        ))}
+      </Select>
+    </FormControl>
   );
 }
