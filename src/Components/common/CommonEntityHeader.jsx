@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -6,862 +6,330 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
+
 import MainLayout from "../../layout/MainLayout";
-import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
+
+// Icons
+import NoteAltIcon from "@mui/icons-material/NoteAlt";
+import EmailIcon from "@mui/icons-material/Email";
+import CallIcon from "@mui/icons-material/Call";
+import TaskIcon from "@mui/icons-material/Task";
+import EventIcon from "@mui/icons-material/Event";
 import SearchIcon from "@mui/icons-material/Search";
+import EditSquareIcon from "@mui/icons-material/EditSquare";
+
+import CommonActivityTabs from "./CommonActivityTab";
 
 export default function CommonEntityHeader() {
-  return (
-    <div>
-      
-        {/* MAIN OUTER BOX */}
 
+
+  // STATE: Controls which tab is active
+
+  const [activeTab, setActiveTab] = useState("Activity");
+
+  // ACTION ICON CLICK HANDLER
+ 
+  const handleActionClick = (type) => {
+    console.log("Action clicked:", type);
+
+    // Map left-side actions to tab names
+    const tabMap = {
+      Note: "Notes",
+      Email: "Emails",
+      Call: "Calls",
+      Task: "Tasks",
+      Meeting: "Meetings",
+    };
+
+   // Switch tab when clicking an action icon
+    if (tabMap[type]) {
+      setActiveTab(tabMap[type]);
+    }
+  };
+
+
+// LEFT PANEL ACTION BUTTONS
+
+  const actions = [
+    { label: "Note", icon: <NoteAltIcon /> },
+    { label: "Email", icon: <EmailIcon /> },
+    { label: "Call", icon: <CallIcon /> },
+    { label: "Task", icon: <TaskIcon /> },
+    { label: "Meeting", icon: <EventIcon /> },
+  ];
+
+
+// LEAD DETAILS LIST
+
+  const leadDetails = [
+    { label: "Email", value: "janecooper@gmail.com" },
+    { label: "First Name", value: "Jane" },
+    { label: "Last Name", value: "Cooper" },
+    { label: "Phone Number", value: "078 5432 8505" },
+    { label: "Lead Status", value: "New" },
+    { label: "Job Title", value: "Salesperson" },
+    { label: "Created Date", value: "04/08/2025 2:31 PM GMT+5:30" },
+  ];
+
+  return (
+    <MainLayout>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100vh",
+          display: "flex",
+          flexDirection: "row",
+          backgroundColor: "#fff",
+        }}
+      >
+      
+            {/* LEFT PANEL — Lead Profile + Actions + Details  */}
+      
+        <Box
+          sx={{
+            width: 320,
+            backgroundColor: "#fff",
+            borderTopLeftRadius: "17px",
+            borderBottomLeftRadius: "19px",
+            p: 2,
+          }}
+        >
+          <Typography sx={{ fontWeight: 700, mb: 2 }}>Leads</Typography>
+
+          {/* Lead Profile Section */}
+          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+            {/* Placeholder Profile Image */}
+            <Box
+              sx={{
+                width: 72,
+                height: 72,
+                backgroundColor: "#D9D9D9",
+                borderRadius: "12px",
+              }}
+            />
+
+            {/* Lead Name + Email */}
+            <Box>
+              <Typography sx={{ fontWeight: 600, fontSize: "20px" }}>
+                Jane Cooper
+              </Typography>
+
+              <Typography sx={{ fontSize: "14px", color: "#33475B" }}>
+                SalesPerson
+              </Typography>
+
+              {/* Email + Edit Icon */}
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Typography sx={{ fontSize: "14px", color: "#33475B" }}>
+                  janecooper@gmail.com
+                </Typography>
+
+                <EditSquareIcon
+                  sx={{
+                    fontSize: 14,
+                    color: "#5A45E5",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => console.log("Copy or Edit Email")}
+                />
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Quick Action Buttons (Note, Email, Call, etc.) */}
+          <Box
+            sx={{
+              backgroundColor: "#F7F7FA",
+              borderRadius: "8px",
+              p: 1,
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            {actions.map((item) => (
+              <Box
+                key={item.label}
+                sx={{ textAlign: "center", cursor: "pointer" }}
+                onClick={() => handleActionClick(item.label)}
+              >
+                {/* Icon Box */}
+                <Box
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    border: "1px solid #E0E3EB",
+                    borderRadius: "5px",
+                    background: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {React.cloneElement(item.icon, {
+                    sx: { fontSize: 18, color: "#5948DB" },
+                  })}
+                </Box>
+
+                <Typography sx={{ fontSize: "10px", mt: 0.5 }}>
+                  {item.label}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+
+          {/* About This Lead Header */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mt: 3,
+              mb: 1,
+            }}
+          >
+            <Typography
+              sx={{
+                fontWeight: 700,
+                fontSize: "14px",
+                color: "#33475B",
+              }}
+            >
+              About this lead
+            </Typography>
+
+            <EditSquareIcon
+              sx={{
+                fontSize: 14,
+                color: "#5A45E5",
+                cursor: "pointer",
+              }}
+              onClick={() => console.log("Edit lead clicked")}
+            />
+          </Box>
+
+          {/* Lead Details List */}
+          <Box>
+            {leadDetails.map((item) => (
+              <Box key={item.label} sx={{ mb: 2 }}>
+                <Typography sx={{ color: "#516F90", fontSize: "13px" }}>
+                  {item.label}
+                </Typography>
+
+                <Typography sx={{ fontSize: "15px", color: "#1E1E1E" }}>
+                  {item.value}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+
+    
+            {/* MIDDLE PANEL — Search + Tabs */}
+      
         <Box
           sx={{
             width: "100%",
-
-            height: 745,
-            gap: "1px",
-            display: "flex",
-            flexDirection: "row",
+            backgroundColor: "#fff",
+            p: 3,
           }}
         >
-          {/* LEFT BOX */}
-          <Box
-            sx={{
-              height: "107vh",
-              width: "40vh",
-              border: "6px",
-              borderRadius: "3px",
-              backgroundColor: "white",
-              borderTopLeftRadius: "17px",
-              borderBottomLeftRadius: "19px",
-            }}
-          >
-            {/* BOX FOR NAME AND ID IN LEADS */}
-            <Box
-              sx={{
-                height: "38vh",
-                width: "50vh",
-                border: "6px",
-                borderRadius: "3px",
-
-                backgroundColor: "white",
+          {/* Search + Convert Button */}
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <TextField
+              fullWidth
+              placeholder="Search activities"
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: "#bdb7b7" }} />
+                  </InputAdornment>
+                ),
               }}
-            >
-              <Typography sx={{ p: 2 }}>
-                {" "}
-                <b>Leads</b>
-              </Typography>
-
-              {/* BOX FOR BUTTON AND NAME */}
-
-              <Box
-                sx={{
-                  opacity: 1,
-                  backgroundColor: "white",
-                  mx: 2,
-                  width: 288,
-                  height: 77,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 2,
-                }}
-              >
-                {/* BOX FOR  SQUARE BUTTON  */}
-                <Box
-                  sx={{
-                    width: 72,
-                    height: 72,
-
-                    backgroundColor: "#D9D9D9",
-
-                    borderRadius: "12px",
-                  }}
-                ></Box>
-
-                {/* BOX FOR NAME */}
-                <Box>
-                  <Typography
-                    sx={{
-                      fontWeight: " 600",
-                      fontStyle: "semibold",
-                      fontSize: "20px",
-                      lineHeight: "30px",
-                      verticalAlign: "middle",
-                      color: "#33475B",
-                    }}
-                  >
-                    Jane Cooper
-                  </Typography>
-
-                  <Typography
-                    sx={{
-                      fontWeight: " 300",
-                      fontStyle: "light",
-                      fontSize: "14px",
-                      lineHeight: "24px",
-                      verticalAlign: "middle",
-                      color: "#33475B",
-                    }}
-                  >
-                    SalesPerson
-                  </Typography>
-
-                  <Typography
-                    sx={{
-                      fontWeight: " 400",
-                      fontStyle: "regular",
-                      fontSize: "14px",
-                      lineHeight: "24px",
-                      verticalAlign: "middle",
-                      color: "#33475B",
-                    }}
-                  >
-                    janecooper@gmail.com
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* ENTITY ACTION BOXES */}
-
-              <Box
-                sx={{
-                  width: 288,
-                  height: 71,
-                  justifyContent: "spacebetween",
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  height: "50px",
+                  backgroundColor: "#F9F9FB",
+                },
+                "& fieldset": {
+                  border: "1px solid #DDDFE9",
                   borderRadius: "8px",
-                  paddingTop: "10px",
-                  paddingRight: "8px",
-                  backgroundColor:' #F7F7FA',
-                  // backgroundColor: "pink",
+                },
+                
+              }}
+            />
 
-                  paddingBottom: "8px",
-                  paddingLeft: "8px",
-                  mx: 2,
-                  mt: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                {/* BOX FOR NOTE */}
-
-                <Box
-                  sx={{
-                    width: "55px",
-                    height: "60px",
-                    border: "1px solid black",
-                  }}
-                >
-                  <Button
-                    variant="outlined"
-                    startIcon={<NoteAltOutlinedIcon />}
-                    sx={{
-                      border: 3,
-                      borderRadius: 2,
-                      textTransform: "none",
-                      borderColor: " #F7F7FA",
-                    }}
-                  ></Button>
-
-                  <Typography
-                    sx={{
-                      color: " #33475B",
-
-                      fontWeight: 400,
-                      fontStyle: "Regular",
-                      fontSize: "15px",
-
-                      lineHeight: "18px",
-
-                      textAlign: "center",
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    Note
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
-
-            {/* BOX FOR  ABOUT LEAD  */}
-            <Box
+            <Button
               sx={{
-                width: "20vh",
-                height: "17px",
+                width: "150px",
+                bgcolor: "#5A45E5",
+                color: "#fff",
+                borderRadius: 2,
+                textTransform: "none",
+                fontWeight: 600,
+                "&:hover": { bgcolor: "#4C39D2" },
               }}
             >
-              <Typography
-                sx={{
-                  color: " #33475B",
-
-                  fontWeight: 700,
-                  fontStyle: "Bold",
-                  fontSize: "14px",
-                  mx: 2,
-                  lineHeight: "100%",
-
-                  textAlign: "center",
-                  verticalAlign: "middle",
-                }}
-              >
-                About this lead
-              </Typography>
-            </Box>
-
-            {/*BOX FOR CUSTOMER DETAIL */}
-
-            <Box
-              sx={{
-                width: "50vh",
-                height: "70vh",
-
-                mt: "3px",
-              }}
-            >
-              {/* EMAIL */}
-              <Box
-                sx={{
-                  width: 288,
-                  height: 50,
-                  mt: 3,
-                  mx: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #516F90",
-
-                      fontWeight: 400,
-                      fontStyle: "Regular",
-                      fontSize: "13px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    Email
-                  </Typography>
-                </Box>
-
-                {/* MAIL ID */}
-
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #1E1E1E",
-
-                      fontWeight: 400,
-                      fontStyle: "medium",
-                      fontSize: "15px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    janecooper@gmail.com
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* FIRST NAME*/}
-
-              <Box
-                sx={{
-                  width: 288,
-                  height: 50,
-
-                  mt: 2,
-                  mx: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #516F90",
-
-                      fontWeight: 400,
-                      fontStyle: "Regular",
-                      fontSize: "13px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    First Name
-                  </Typography>
-                </Box>
-
-                {/* NAME DETAIL */}
-
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #1E1E1E",
-
-                      fontWeight: 400,
-                      fontStyle: "medium",
-                      fontSize: "15px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    Jane
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* LAST NAME */}
-
-              <Box
-                sx={{
-                  width: 288,
-                  height: 50,
-
-                  mt: 2,
-                  mx: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #516F90",
-
-                      fontWeight: 400,
-                      fontStyle: "Regular",
-                      fontSize: "13px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    Last Name
-                  </Typography>
-                </Box>
-
-                {/* NAME DETAIL */}
-
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #1E1E1E",
-
-                      fontWeight: 400,
-                      fontStyle: "medium",
-                      fontSize: "15px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    Cooper
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* PHONE */}
-
-              <Box
-                sx={{
-                  width: 288,
-                  height: 50,
-
-                  mt: 2,
-                  mx: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #516F90",
-
-                      fontWeight: 400,
-                      fontStyle: "Regular",
-                      fontSize: "13px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    Phone Number
-                  </Typography>
-                </Box>
-
-                {/* NUMBER */}
-
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #1E1E1E",
-
-                      fontWeight: 400,
-                      fontStyle: "medium",
-                      fontSize: "15px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    078 5432 8505
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* LEAD STATUS */}
-
-              <Box
-                sx={{
-                  width: 288,
-                  height: 50,
-
-                  mt: 2,
-                  mx: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #516F90",
-
-                      fontWeight: 400,
-                      fontStyle: "Regular",
-                      fontSize: "13px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    Lead Status
-                  </Typography>
-                </Box>
-
-                {/*  */}
-
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #1E1E1E",
-
-                      fontWeight: 400,
-                      fontStyle: "medium",
-                      fontSize: "15px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    New
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* JOB TITLE */}
-
-              <Box
-                sx={{
-                  width: 288,
-                  height: 50,
-
-                  mt: 2,
-                  mx: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #516F90",
-
-                      fontWeight: 400,
-                      fontStyle: "Regular",
-                      fontSize: "13px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    Job Title
-                  </Typography>
-                </Box>
-
-                {/*  */}
-
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #1E1E1E",
-
-                      fontWeight: 400,
-                      fontStyle: "medium",
-                      fontSize: "15px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    Salesperson
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* DATE */}
-
-              <Box
-                sx={{
-                  width: 288,
-                  height: 50,
-
-                  mt: 2,
-                  mx: 2,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #516F90",
-
-                      fontWeight: 400,
-                      fontStyle: "Regular",
-                      fontSize: "13px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    Created Date
-                  </Typography>
-                </Box>
-
-                {/*  */}
-
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 25,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      color: " #1E1E1E",
-
-                      fontWeight: 400,
-                      fontStyle: "medium",
-                      fontSize: "15px",
-
-                      lineHeight: "24px",
-
-                      verticalAlign: "middle",
-                    }}
-                  >
-                    04/08/2025 2:31 PM GMT+5:30
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
+              Convert
+            </Button>
           </Box>
 
-          {/*MIDDLE PORTION*/}
-
-          <Box
-            sx={{
-              width: 730,
-              height: 770,
-              backgroundColor: "white",
-            }}
-          >
-            {/* OUTER BOX FOR SEARCH AND BUTTON */}
-            <Box
-              sx={{
-                width: "700px",
-                height: "45px",
-                justifyContent: "spacebetween",
-                paddingTop: "5px",
-                paddingRight: "16px",
-                paddingBottom: "5px",
-                paddingLeft: "16px",
-
-                display: "flex",
-                gap: 2,
-                mt: 2,
-              }}
-            >
-              {/* SEARCH BOX */}
-
-              <TextField
-                fullWidth
-                placeholder="Search activities"
-                variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: "#757575" }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    height: "50px",
-                    backgroundColor: "#F9F9FB",
-                  },
-                  "& fieldset": {
-                    border: "1px solid #DDDFE9",
-                    borderRadius: "8px",
-                  },
-                }}
-              />
-
-              <Button
-                sx={{
-                  width: "150px",
-                  bgcolor: "#5A45E5",
-                  color: "#fff",
-                  borderRadius: 2,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  "&:hover": {
-                    bgcolor: "#4C39D2",
-                  },
-                }}
-              >
-                Convert
-              </Button>
-            </Box>
-          </Box>
-
-          {/* RIGHT PORTION BOX*/}
-          <Box
-            sx={{
-              width: 328,
-              height: 744,
-              gap: "1px",
-
-              borderTopRightRadius: "12px",
-              backgroundColor: "white",
-            }}
-          >
-            {/* BOX FOR AI AND ATTACHMENTSS */}
-
-            <Box
-              sx={{
-                width: 288,
-                height: 280,
-                gap: "16px",
-              }}
-            >
-              {/* BOX FOR AI */}
-
-              <Box
-                sx={{
-                  width: 250,
-                  height: 140,
-                  gap: "8px",
-                  padding: "16px",
-                  borderRadius: "8px",
-                  borderWidth: "1px",
-                  border: "1px solid #5948DB",
-                  mt: 1,
-                  backgroundColor: " #F7F7FA",
-                }}
-              >
-                {/* BOX FOR LEAD SUMMARY */}
-                <Box
-                  sx={{
-                    width: 250,
-                    height: 24,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontWeight: 700,
-
-                      fontSize: "14px",
-
-                      color: " #5948DB",
-                    }}
-                  >
-                    {" "}
-                    AI Lead Summary
-                  </Typography>
-
-                  <Typography
-                    sx={{
-                      fontWeight: 500,
-
-                      fontSize: "14px",
-
-                      lineHeight: "24px",
-                      mt: 2,
-                    }}
-                  >
-                    There are no activities associated with this lead and
-                    further details are needed to provide a comprehensive
-                    summary.
-                  </Typography>
-                </Box>
-              </Box>
-
-              {/* BOX FOR ATTACHMENTS */}
-
-              <Box
-                sx={{
-                  width: 288,
-                  height: 73,
-
-                  mt: 2,
-                }}
-              >
-                {/* ATTACHMENTS HEADER */}
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 17,
-                    display: "flex",
-                    // justifyContent: 'spacebetween',
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 250,
-                      height: 17,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        mx: 2,
-
-                        fontWeight: 700,
-                        fontSize: "14px",
-                      }}
-                    >
-                      Attachments
-                    </Typography>
-                  </Box>
-
-                  <Box
-                    sx={{
-                      width: 50,
-                      height: 17,
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        mx: 1,
-                        fontWeight: 600,
-
-                        fontSize: "12px",
-                        color: "#5948DB",
-                      }}
-                    >
-                      + Add
-                    </Typography>
-                  </Box>
-                </Box>
-
-                {/* DETAILOF ATTACHMENTS*/}
-
-                <Box
-                  sx={{
-                    width: 288,
-                    height: 48,
-                    mt: 1,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontWeight: 400,
-
-                      fontSize: "13px",
-                      color: "#516F90",
-                    }}
-                  >
-                    See the files attached to your activities or uploaded to
-                    this record.
-                  </Typography>
-                </Box>
-              </Box>
-            </Box>
+          {/* Activity Tabs */}
+          <Box sx={{ mt: 2 }}>
+            <CommonActivityTabs
+              activeTab={activeTab}
+              onTabChange={(tab) => setActiveTab(tab)}
+            />
           </Box>
         </Box>
-    
-    </div>
+
+      
+            {/* RIGHT PANEL — AI Summary + Attachments */}
+        
+        <Box
+          sx={{
+            width: 330,
+            backgroundColor: "#fff",
+            borderTopRightRadius: "12px",
+            p: 2,
+          }}
+        >
+          {/* AI Summary Box */}
+          <Box
+            sx={{
+              border: "1px solid #5948DB",
+              backgroundColor: "#F7F7FA",
+              borderRadius: "8px",
+              p: 2,
+              mb: 3,
+            }}
+          >
+            <Typography sx={{ fontWeight: 700, color: "#5948DB" }}>
+              AI Lead Summary
+            </Typography>
+
+            <Typography sx={{ mt: 2 }}>
+              There are no activities associated with this lead and further
+              details are needed to provide a comprehensive summary.
+            </Typography>
+          </Box>
+
+          {/* Attachments Section */}
+          <Box>
+            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Typography sx={{ fontWeight: 700 }}>Attachments</Typography>
+              <Typography sx={{ fontWeight: 600, color: "#5948DB" }}>
+                + Add
+              </Typography>
+            </Box>
+
+            <Typography sx={{ mt: 1, color: "#516F90" }}>
+              See the files attached to your activities or uploaded to this
+              record.
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    </MainLayout>
   );
 }
