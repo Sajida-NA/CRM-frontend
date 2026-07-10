@@ -15,7 +15,8 @@ import DealsList from "../Pages/Deals/DealsList/DealsList";
 import ViewEmailRecord from "../Pages/Leads/ViewEmailRecords/ViewEmailRecords";
 import Meeting from "../Pages/Leads/components/Tabs/Meetings/Meeting";
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
-import 
+import Leadnote from '../Pages/Leads/components/Tabs/Note/Leadnote';
+
 
 
 function AppRoutes() {
@@ -51,7 +52,7 @@ function AppRoutes() {
 
 
 
-      <Route path="/notetab" element={<Notetab/>}/>
+      
 
       <Route path="/entity" element={<CommonEntityHeader/>}/>
        <Route path="/meeting" element={<Meeting/>}/>
