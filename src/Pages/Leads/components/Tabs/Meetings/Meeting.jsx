@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography,Button } from "@mui/material";
 import ScheduleMeeting from "./ScheduleMeeting";
-import CommonButton from "../../../../../Components/common/CommonButton";
+// import CommonButton from "../../../../../Components/common/CommonButton";
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonEntityHeader from "../../../../../Components/common/CommonEntityHeader";
+import CommonEditor from "../../../../../Components/common/CommonEditor";
 
 
 export default function Meeting() {
@@ -12,6 +13,7 @@ export default function Meeting() {
   return (
     <>
       <CommonEntityHeader />
+    
      
 
       <Box
@@ -38,12 +40,17 @@ export default function Meeting() {
             Meetings
           </Typography>
 
-          <CommonButton
-            variant="contained"
-            onClick={() => setOpenCreateMeeting(true)}
-          >
-            Create Meeting
-          </CommonButton>
+          <Button
+  variant="contained"
+  sx={{
+    position: "absalute",
+    top: "50px",
+    left:"3px"
+  }}
+  onClick={() => setOpenCreateMeeting(true)}
+>
+  Create Meeting
+</Button>
         </Box>
 
 

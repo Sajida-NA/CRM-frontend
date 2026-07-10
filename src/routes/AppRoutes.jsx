@@ -47,12 +47,7 @@ function AppRoutes() {
 
       {/* Deal Routes */}
       <Route path="/dealslist" element={<DealsList />} />
-
-     
-
-
-
-      
+   
 
       <Route path="/entity" element={<CommonEntityHeader/>}/>
        <Route path="/meeting" element={<Meeting/>}/>
