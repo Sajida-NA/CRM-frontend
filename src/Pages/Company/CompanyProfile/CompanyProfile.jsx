@@ -2,9 +2,9 @@ import company from "./data/companyData";
 import activities from "./data/activityData";
 import { Box } from "@mui/material";
 
-import CompanyInfo from "../components/CompanyInfo";
-import ActivityPanel from "../components/ActivityPanel";
-import AISummary from "../components/AISummary";
+import CompanyInfo from "../../../Components/Company/CompanyInfo";
+import ActivityPanel from "../../../Components/Company/ActivityPanel";
+import AISummary from "../../../Components/Company/AISummary";
 
 function CompanyDetails() {
   return (

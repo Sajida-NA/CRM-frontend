@@ -8,10 +8,11 @@ export default function FilterSection({ children }) {
         alignItems: "center",
         gap: 2.5,
         py: 2.5,
-        px: 0,
+        px: 2,
         bgcolor: "background.paper",
-        borderRadius: 2,
-        mb: 3,
+        // borderRadius: 2,
+        // mb: 3,
+
       }}
     >
       {children}
