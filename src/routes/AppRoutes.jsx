@@ -12,6 +12,11 @@ import CompaniesList from "../Pages/Companies/CompaniesList/CompaniesList";
 import Register from "../Pages/Auth/Register/Register";
 import TicketsList from "../Pages/Tickets/TicketsList/TicketsList";
 import DealsList from "../Pages/Deals/DealsList/DealsList";
+import ViewEmailRecord from "../Pages/Leads/ViewEmailRecords/ViewEmailRecords";
+import Meeting from "../Pages/Leads/components/Tabs/Meetings/Meeting";
+import CommonEntityHeader from "../Components/common/CommonEntityHeader";
+
+import Notetab from "../Pages/Leads/components/Tabs/Notetab";
 
 function AppRoutes() {
   return (
@@ -27,6 +32,7 @@ function AppRoutes() {
       {/* Lead Routes */}
       <Route path="/leadslist" element={<Leadslist />} />
       <Route path="/emailrecord" element={<EmailRecord />} />
+      <Route path="/viewemailrecord" element={<ViewEmailRecord/>}/>
 
       {/* Company Routes */}
       <Route path="/companieslist" element={<CompaniesList />} />
@@ -39,6 +45,15 @@ function AppRoutes() {
 
       {/* Deal Routes */}
       <Route path="/dealslist" element={<DealsList />} />
+
+     
+
+
+
+      <Route path="/notetab" element={<Notetab/>}/>
+
+      <Route path="/entity" element={<CommonEntityHeader/>}/>
+       <Route path="/meeting" element={<Meeting/>}/>
     </Routes>
   );
 }
