@@ -4,7 +4,13 @@
 // import Notetab from "./Pages/Leads/components/Tabs/Notetab";
 // import CommonEntityHeader from "./Components/common/CommonEntityHeader";
 
-// import AppRoutes from "./routes/AppRoutes";
+import EmailRecord from "./Pages/Leads/components/EmailTab/EmailRecord";
+import Leadslist from "./Pages/Leads/Leadslist";
+import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
+import CreateTicket from "./Pages/Tickets/components/CreateTicket"; 
+import ForgotPassword from "./Pages/Auth/ForgotPassword/ForgotPassword";
+import CompaniesList from "./Pages/Companies/CompaniesList/CompaniesList";
+import ViewEmailRecords from "./Pages/Leads/ViewEmailRecords/ViewEmailRecords";
 
 // // import theme from "./theme";
 // // import { ThemeProvider } from "@mui/material";
@@ -59,6 +65,5 @@ function App() {
   );
 }
 export default App;
-
 
 
