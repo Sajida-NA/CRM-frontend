@@ -14,6 +14,9 @@ import TicketsList from "../Pages/Tickets/TicketsList/TicketsList";
 import DealsList from "../Pages/Deals/DealsList/DealsList";
 import ViewEmailRecord from "../Pages/Leads/ViewEmailRecords/ViewEmailRecords";
 import Meeting from "../Pages/Leads/components/Tabs/Meetings/Meeting";
+import CommonEntityHeader from "../Components/common/CommonEntityHeader";
+
+import Notetab from "../Pages/Leads/components/Tabs/Notetab";
 
 function AppRoutes() {
   return (
@@ -43,7 +46,14 @@ function AppRoutes() {
       {/* Deal Routes */}
       <Route path="/dealslist" element={<DealsList />} />
 
-      <Route path="/meeting" element={<Meeting/>}/>
+     
+
+
+
+      <Route path="/notetab" element={<Notetab/>}/>
+
+      <Route path="/entity" element={<CommonEntityHeader/>}/>
+       <Route path="/meeting" element={<Meeting/>}/>
     </Routes>
   );
 }

@@ -2,40 +2,58 @@ import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import ScheduleMeeting from "./ScheduleMeeting";
 import CommonButton from "../../../../../Components/common/CommonButton";
+import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
+import CommonEntityHeader from "../../../../../Components/common/CommonEntityHeader";
+
 
 export default function Meeting() {
   const [openCreateMeeting, setOpenCreateMeeting] = useState(false);
 
   return (
-    <Box sx={{ p: 3 }}>
+    <>
+      <CommonEntityHeader />
+     
 
-      {/* Header */}
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
+          p: 3,
+          position: "absolute",
+          top: 80,
+          left: 330,
+          width: "calc(100% - 350px)",
         }}
       >
-        <Typography variant="h5" fontWeight={600}>
-          Meetings
-        </Typography>
-
-        <CommonButton
-          variant="contained"
-          onClick={() => setOpenCreateMeeting(true)}
+        {/* Header */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+            marginTop:"150px",
+            marginLeft:"100px"
+          }}
         >
-          Create Meeting
-        </CommonButton>
+          <Typography variant="h6" fontWeight={500}>
+            Meetings
+          </Typography>
+
+          <CommonButton
+            variant="contained"
+            onClick={() => setOpenCreateMeeting(true)}
+          >
+            Create Meeting
+          </CommonButton>
+        </Box>
+
+
+        {/* Drawer */}
+        <ScheduleMeeting
+          open={openCreateMeeting}
+          onClose={() => setOpenCreateMeeting(false)}
+        />
+
       </Box>
-
-      {/* Schedule Meeting Drawer */}
-      <ScheduleMeeting
-        open={openCreateMeeting}
-        onClose={() => setOpenCreateMeeting(false)}
-      />
-
-    </Box>
+    </>
   );
 }
