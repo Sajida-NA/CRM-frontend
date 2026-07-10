@@ -3,12 +3,14 @@ import { Box } from "@mui/material";
 import lead from "../data/leadData";
 import emails from "../data/emailData";
 
-import LeadInfo from "../components/LeadInfo";
-import EmailPanel from "../components/EmailPanel";
+import LeadInfo from "../components/EmailTab/LeadInfo";
+import EmailPanel from "../components/EmailTab/EmailPanel";
 import AISummary from "../../Companies/components/AISummary";
+import MainLayout from "../../../layout/MainLayout";
 
 function ViewEmailRecords() {
   return (
+    <MainLayout>
     <Box
       sx={{
         bgcolor: "#F5F7FB",
@@ -38,6 +40,7 @@ function ViewEmailRecords() {
         <AISummary />
       </Box>
     </Box>
+    </MainLayout>
   );
 }
 

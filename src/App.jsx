@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./Pages/Auth/Login/login"
 import Dashboard from "./Pages/Dashboard/dashboard";
 
-import EmailRecord from "./Pages/Leads/components/EmailRecord";
+import EmailRecord from "./Pages/Leads/components/EmailTab/EmailRecord";
 import Leadslist from "./Pages/Leads/Leadslist";
 import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
 import CreateTicket from "./Pages/Tickets/components/CreateTicket"; 
@@ -25,6 +25,7 @@ function App() {
         <Route path="/leadslist" element={<Leadslist/>}/>
         <Route path="/forgotpassword" element={<ForgotPassword/>}/>
         <Route path="/companieslist" element={<CompaniesList />} />
+        <Route path="/leadslist" element={<ViewEmailRecords />} />
         {/* <Route path="/register" element={<Register/>}/> */}
       </Routes>
     </BrowserRouter>

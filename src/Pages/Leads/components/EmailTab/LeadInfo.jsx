@@ -14,6 +14,7 @@ import CallOutlinedIcon from "@mui/icons-material/CallOutlined";
 import TaskOutlinedIcon from "@mui/icons-material/TaskOutlined";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { useNavigate } from "react-router-dom";
 
 function DetailRow({ label, value }) {
   return (
@@ -38,6 +39,8 @@ function DetailRow({ label, value }) {
 }
 
 function LeadInfo({ lead }) {
+  const navigate = useNavigate();
+
   return (
     <Paper
       elevation={2}
@@ -103,6 +106,10 @@ function LeadInfo({ lead }) {
           variant="outlined"
           startIcon={<EmailOutlinedIcon />}
           sx={{ borderRadius: 2, textTransform: "none" }}
+          onClick={() => {
+            console.log("Email button clicked");
+            navigate("/emailrecord");
+          }}
         >
           Email
         </Button>
