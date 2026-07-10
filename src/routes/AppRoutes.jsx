@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Login from "../Pages/Auth/Login/login";
 import Dashboard from "../Pages/Dashboard/dashboard";
-import EmailRecord from "../Pages/Leads/components/EmailRecord";
+import EmailRecord from "../Pages/Leads/components/EmailTab/EmailRecord";
 import Leadslist from "../Pages/Leads/LeadsList/Leadslist";
 import CompanyProfile from "../Pages/Companies/CompanyProfile/CompanyProfile";
 import CreateTicketDrawer from "../Pages/Tickets/components/CreateTicketDrawer";
