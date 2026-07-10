@@ -13,7 +13,7 @@ import SearchIcon from "@mui/icons-material/Search";
 export default function CommonEntityHeader() {
   return (
     <div>
-      <MainLayout>
+      
         {/* MAIN OUTER BOX */}
 
         <Box
@@ -861,7 +861,7 @@ export default function CommonEntityHeader() {
             </Box>
           </Box>
         </Box>
-      </MainLayout>
+    
     </div>
   );
 }
