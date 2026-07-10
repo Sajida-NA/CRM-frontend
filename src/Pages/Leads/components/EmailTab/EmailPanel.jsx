@@ -13,9 +13,12 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useState } from "react";
 
 import EmailCard from "./EmailCard";
+import { useNavigate } from "react-router-dom";
 
 function EmailPanel({ emails }) {
+  //Email tab active (index 2)
   const [value, setValue] = useState(2);
+  const navigate = useNavigate();
 
   return (
     <Paper
@@ -122,6 +125,7 @@ function EmailPanel({ emails }) {
             textTransform: "none",
             px: 3,
           }}
+          onClick={() => navigate("/emailrecord")}
         >
           Create Email
         </Button>
