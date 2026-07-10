@@ -51,7 +51,7 @@ export default function MiddlePanel({
             width: "150px",
             bgcolor: "#5A45E5",
             color: "#fff",
-            borderRadius: 2,
+            borderRadius: 1,
             textTransform: "none",
             fontWeight: 600,
             "&:hover": {

@@ -17,7 +17,7 @@ export default function LeftPanel({
   return (
     <Box
       sx={{
-        width: 250,
+        width: 300,
         backgroundColor: "#fff",
         borderTopLeftRadius: "17px",
         borderBottomLeftRadius: "19px",
@@ -32,7 +32,7 @@ export default function LeftPanel({
       <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
         <Box
           sx={{
-            width: 72,
+            width:72,
             height: 72,
             backgroundColor: "#D9D9D9",
             borderRadius: "12px",
