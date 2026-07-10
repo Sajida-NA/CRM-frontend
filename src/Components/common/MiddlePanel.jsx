@@ -7,12 +7,12 @@ import {
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
-import CommonActivityTabs from "./CommonActivityTab";
+// import CommonActivityTabs from "./CommonActivityTab";
 
-export default function MiddlePanel({
-  activeTab,
-  setActiveTab,
-}) {
+export default function MiddlePanel(
+//  { activeTab,
+//   setActiveTab,}
+) {
   return (
     <Box
       sx={{
@@ -64,12 +64,12 @@ export default function MiddlePanel({
       </Box>
 
       {/* Activity Tabs */}
-      <Box sx={{ mt: 2 }}>
+      {/* <Box sx={{ mt: 2 }}>
         <CommonActivityTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
-      </Box>
+      </Box> */}
     </Box>
   );
 }
