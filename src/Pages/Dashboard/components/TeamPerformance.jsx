@@ -101,7 +101,7 @@ const TeamPerformance = () => {
           mb: 2,
           p: 2,
           border: "1px solid #E5E7EB",
-          borderRadius: 2,
+          borderRadius: 1,
           display: "flex",
           fontWeight: "bold",
           bgcolor: "#F9FAFB",
@@ -122,7 +122,7 @@ const TeamPerformance = () => {
             mb: 2,
             p: 1.5,
             border: "1px solid rgba(229, 231, 235, 0.5)",
-            borderRadius: 2,
+            borderRadius: 1,
             display: "flex",
             alignItems: "center",
           }}

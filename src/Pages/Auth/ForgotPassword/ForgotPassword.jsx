@@ -1,13 +1,10 @@
 import { useState } from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Link,
-} from "@mui/material";
+import { Box, Typography, Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
+
+import AuthLayout from "../../../Components/common/AuthLayout";
+import InputField from "../../../Components/common/InputField";
+import CommonButton from "../../../Components/common/CommonButton";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -19,7 +16,8 @@ export default function ForgotPassword() {
 
     setLoading(true);
 
-    // TODO: API call (authService.forgotPassword)
+    // TODO: Call authService.forgotPassword()
+
     setTimeout(() => {
       setSubmitted(true);
       setLoading(false);
@@ -27,71 +25,83 @@ export default function ForgotPassword() {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#f5f5f9",
-        p: 2,
-      }}
+    <AuthLayout
+      title="Forgot Password"
+      footer={
+        <>
+          <Link
+            component={RouterLink}
+            to="/"
+            underline="none"
+            color="primary"
+            fontWeight={500}
+          >
+            Back to Login
+          </Link>
+        </>
+      }
     >
-      <Paper
-        elevation={3}
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{ m: 3 }}
+      >
+        Enter your email address and we'll send you a link to reset your
+        password.
+      </Typography>
+
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
         sx={{
-          width: 380,
-          p: 4,
-          borderRadius: 3,
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
         }}
       >
-        <Typography sx={{ fontSize: 24, fontWeight: 700, mb: 1 }}>
-          Forgot password
+        <Typography
+          variant="body2"
+          fontWeight={500}
+          sx={{ mb: 1 }}
+        >
+          Email
         </Typography>
 
-        <Typography sx={{ color: "#666", mb: 3 }}>
-          Enter your email and we’ll send you a link to reset your password.
-        </Typography>
+        <InputField
+          type="email"
+          placeholder="Enter your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          fullWidth
+          required
+        />
 
-        <form onSubmit={handleSubmit}>
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            size="small"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            sx={{ mb: 2 }}
-            required
-          />
-
-          {submitted && (
-            <Typography sx={{ color: "success.main", fontSize: 14, mb: 2 }}>
-              Check your email inbox for reset link.
-            </Typography>
-          )}
-
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            disabled={loading || submitted}
-            sx={{
-              borderRadius: 2,
-              textTransform: "none",
-              mb: 2,
-            }}
+        {submitted && (
+          <Typography
+            color="success.main"
+            variant="body2"
+            sx={{ mt: 2 }}
           >
-            {submitted ? "Link Sent" : loading ? "Sending..." : "Send reset link"}
-          </Button>
-        </form>
+            Reset link has been sent to your email.
+          </Typography>
+        )}
 
-        <Box sx={{ textAlign: "center", mt: 1 }}>
-          <Link component={RouterLink} to="/login" underline="hover" sx={{ fontSize: 14 }}>
-            Back to login
-          </Link>
-        </Box>
-      </Paper>
-    </Box>
+        <CommonButton
+          type="submit"
+          fullWidth
+          disabled={loading || submitted}
+          sx={{
+            mt: 4,
+            height: 46,
+          }}
+        >
+          {submitted
+            ? "Link Sent"
+            : loading
+            ? "Sending..."
+            : "Send Reset Link"}
+        </CommonButton>
+      </Box>
+    </AuthLayout>
   );
 }
