@@ -22,6 +22,7 @@ export default function LeftPanel({
         borderTopLeftRadius: "17px",
         borderBottomLeftRadius: "19px",
         p: 2,
+       
       }}
     >
       <Typography sx={{ fontWeight: 700, mb: 2 }}>

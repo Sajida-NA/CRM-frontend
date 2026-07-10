@@ -40,7 +40,7 @@ export default function CommonActivityTabs({ activeTab, onTabChange }) {
 
               // Active tab gets bold text + purple color
 
-              fontWeight: activeTab === tab ? 600 : 400,
+              fontWeight: activeTab === tab ? 600 : 500,
               color: activeTab === tab ? "#5A45E5" : "#516F90",
             }}
           >
