@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import MainLayout from "../../layout/MainLayout";
 import { Box } from "@mui/material";
 
@@ -14,10 +14,13 @@ import LeftPanel from "./LeftPanel";
 import MiddlePanel from "./MiddlePanel";
 import RightPanel from "./RightPanel";
 
-export default function CommonEntityHeader() {
-  // Active tab state
-  const [activeTab, setActiveTab] = useState("Activity");
+export default function CommonEntityHeader({
+  // activeTab,
+  // setActiveTab,
 
+  title,
+  leftPanelData = {},
+}) {
   // Handle quick action clicks
   const handleActionClick = (type) => {
     const tabMap = {
@@ -28,9 +31,9 @@ export default function CommonEntityHeader() {
       Meeting: "Meetings",
     };
 
-    if (tabMap[type]) {
-      setActiveTab(tabMap[type]);
-    }
+    // if (tabMap[type]) {
+    //   setActiveTab(tabMap[type]);
+    // }
   };
 
   // Quick action buttons
@@ -54,7 +57,7 @@ export default function CommonEntityHeader() {
   ];
 
   return (
-    <MainLayout>
+    <MainLayout title={title}>
       <Box
         sx={{
           width: "100%",
@@ -64,16 +67,26 @@ export default function CommonEntityHeader() {
         }}
       >
         {/* Left Panel */}
-        <LeftPanel
+        {/* <LeftPanel
           actions={actions}
           leadDetails={leadDetails}
           handleActionClick={handleActionClick}
+          title={title}
+        /> */}
+
+        <LeftPanel
+          actions={leftPanelData.actions || actions}
+          leadDetails={leftPanelData.leadDetails || leadDetails}
+          handleActionClick={
+            leftPanelData.handleActionClick || handleActionClick
+          }
+          title={title}
         />
 
         {/* Middle Panel */}
         <MiddlePanel
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
+        // activeTab={activeTab}
+        // setActiveTab={setActiveTab}
         />
 
         {/* Right Panel */}

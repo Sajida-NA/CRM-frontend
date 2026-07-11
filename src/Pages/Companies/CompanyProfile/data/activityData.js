@@ -12,7 +12,7 @@ const activities = [
     description: "Discussed new product with client.",
   },
   {
-    id: 3,
+    // id: 3,
     type: "Meeting",
     time: "Tomorrow",
     description: "Meeting scheduled for tomorrow.",

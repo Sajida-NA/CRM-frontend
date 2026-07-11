@@ -7,10 +7,9 @@ import CommonSelect from "../../../../../Components/common/CommonSelect";
 import CommonDatePicker from "../../../../../Components/common/CommonDatePicker";
 import CommonEditor from "../../../../../Components/common/CommonEditor";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-
+import dayjs from "dayjs";
 
 export default function ScheduleMeeting({ open, onClose }) {
-
   const [formData, setFormData] = useState({
     title: "",
     startDate: null,
@@ -22,7 +21,6 @@ export default function ScheduleMeeting({ open, onClose }) {
     note: "",
   });
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -31,7 +29,6 @@ export default function ScheduleMeeting({ open, onClose }) {
       [name]: value,
     }));
   };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -53,32 +50,21 @@ export default function ScheduleMeeting({ open, onClose }) {
     onClose();
   };
 
-
   return (
-    
-
     <Drawer anchor="right" open={open} onClose={onClose}>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{
-              width: 500,
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              bgcolor: "#fff",
-            }}
-          >
-
-     
-
-
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          width: 500,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          bgcolor: "#fff",
+        }}
+      >
         {/* Header */}
-        <DrawerHeader
-          title="Schedule Meeting"
-          onClose={onClose}
-        />
-
+        <DrawerHeader title="Schedule Meeting" onClose={onClose} />
 
         {/* Form Body */}
         <Box
@@ -91,8 +77,6 @@ export default function ScheduleMeeting({ open, onClose }) {
             overflowY: "auto",
           }}
         >
-
-
           {/* Title */}
           <CommonInput
             label="Title"
@@ -103,8 +87,6 @@ export default function ScheduleMeeting({ open, onClose }) {
             placeholder="Enter"
             fullWidth
           />
-
-
 
           {/* Start Date */}
           <CommonDatePicker
@@ -120,52 +102,47 @@ export default function ScheduleMeeting({ open, onClose }) {
             }
           />
 
-
-
           <Grid container spacing={2}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TimePicker
+                label="Start Time"
+                value={formData.startTime}
+                onChange={(newValue) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    startTime: newValue,
+                  }))
+                }
+                slotProps={{
+                  textField: {
+                    required: true,
+                    fullWidth: true,
+                    size: "small",
+                  },
+                }}
+              />
+            </Grid>
 
-  <Grid size={{ xs: 12, md: 6 }}>
-    <TimePicker
-      label="Start Time"
-      value={formData.startTime}
-      onChange={(newValue) =>
-        setFormData((prev) => ({
-          ...prev,
-          startTime: newValue,
-        }))
-      }
-      slotProps={{
-        textField: {
-          required: true,
-          fullWidth: true,
-          size: "small",
-        },
-      }}
-    />
-  </Grid>
-
-
-  <Grid size={{ xs: 12, md: 6 }}>
-    <TimePicker
-      label="End Time"
-      value={formData.endTime}
-      onChange={(newValue) =>
-        setFormData((prev) => ({
-          ...prev,
-          endTime: newValue,
-        }))
-      }
-      slotProps={{
-        textField: {
-          required: true,
-          fullWidth: true,
-          size: "small",
-        },
-      }}
-    />
-  </Grid>
-
-</Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TimePicker
+                label="End Time"
+                value={formData.endTime}
+                onChange={(newValue) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    endTime: newValue,
+                  }))
+                }
+                slotProps={{
+                  textField: {
+                    required: true,
+                    fullWidth: true,
+                    size: "small",
+                  },
+                }}
+              />
+            </Grid>
+          </Grid>
           {/* Attendees */}
           <CommonSelect
             label="Attendees"
@@ -174,14 +151,8 @@ export default function ScheduleMeeting({ open, onClose }) {
             value={formData.attendees}
             onChange={handleChange}
             placeholder="Choose"
-            options={[
-              "Jane Cooper",
-              "Maria Johnson",
-              "Robert Fox",
-            ]}
+            options={["Jane Cooper", "Maria Johnson", "Robert Fox"]}
           />
-
-
 
           {/* Location */}
           <CommonSelect
@@ -200,8 +171,6 @@ export default function ScheduleMeeting({ open, onClose }) {
             ]}
           />
 
-
-
           {/* Reminder */}
           <CommonSelect
             label="Reminder"
@@ -218,8 +187,6 @@ export default function ScheduleMeeting({ open, onClose }) {
             ]}
           />
 
-
-
           {/* Note */}
           <CommonEditor
             label="Note"
@@ -232,12 +199,7 @@ export default function ScheduleMeeting({ open, onClose }) {
               }))
             }
           />
-
-
         </Box>
-
-
-
 
         {/* Footer */}
         <Box
@@ -248,24 +210,13 @@ export default function ScheduleMeeting({ open, onClose }) {
             borderTop: "1px solid #E5E7EB",
           }}
         >
-
-          <CommonButton
-            variant="outlined"
-            fullWidth
-            onClick={onClose}
-          >
+          <CommonButton variant="outlined" fullWidth onClick={onClose}>
             Cancel
           </CommonButton>
 
-
-          <CommonButton
-            type="submit"
-            fullWidth
-          >
+          <CommonButton type="submit" fullWidth>
             Save
           </CommonButton>
-
-            
         </Box>
       </Box>
     </Drawer>
