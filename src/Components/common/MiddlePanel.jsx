@@ -1,17 +1,18 @@
 import React from "react";
-import {
-  Box,
-  TextField,
-  Button,
-  InputAdornment,
-} from "@mui/material";
+import { Box, TextField, Button, InputAdornment } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
 // import CommonActivityTabs from "./CommonActivityTab";
 
 export default function MiddlePanel(
-//  { activeTab,
-//   setActiveTab,}
+  searchValue = "",
+  onSearchChange = () => {},
+  onConvert = () => {},
+  activeTab = "Activity",
+  setActiveTab = () => {},
+
+  //  { activeTab,
+  //   setActiveTab,}
 ) {
   return (
     <Box

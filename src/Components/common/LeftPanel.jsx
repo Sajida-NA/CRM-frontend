@@ -13,6 +13,7 @@ export default function LeftPanel({
   actions,
   leadDetails,
   handleActionClick,
+  title,
 }) {
   return (
     <Box
@@ -22,18 +23,19 @@ export default function LeftPanel({
         borderTopLeftRadius: "17px",
         borderBottomLeftRadius: "19px",
         p: 2,
-       
       }}
     >
-      <Typography sx={{ fontWeight: 700, mb: 2 }}>
+      {/* <Typography sx={{ fontWeight: 700, mb: 2 }}>
         Leads
-      </Typography>
+      </Typography> */}
+
+      <Typography sx={{ fontWeight: 700, mb: 2 }}>{title}</Typography>
 
       {/* Lead Profile */}
       <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
         <Box
           sx={{
-            width:72,
+            width: 72,
             height: 72,
             backgroundColor: "#D9D9D9",
             borderRadius: "12px",

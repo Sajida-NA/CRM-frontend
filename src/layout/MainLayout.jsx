@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 import Header from "../Components/common/Header";
 import Sidebar from "../Components/common/Sidebar";
 
-function MainLayout({ children }) {
+function MainLayout({ children, title } ) {
   return (
     <>
       <Header />
