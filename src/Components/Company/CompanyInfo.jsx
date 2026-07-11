@@ -21,21 +21,21 @@ function DetailRow({ label, value }) {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        py: 1.5,
+        py: 1,
         borderBottom: "1px solid #F3F4F6",
       }}
     >
       <Typography
         variant="body2"
         color="text.secondary"
-        fontWeight={500}
+        fontWeight={400}
       >
         {label}
       </Typography>
 
       <Typography
         variant="body2"
-        fontWeight={700}
+        fontWeight={500}
       >
         {value}
       </Typography>
@@ -49,33 +49,47 @@ function CompanyInfo({ company }) {
       sx={{
         p: 3,
         height: "100%",
+        borderRight: "1px solid #E5E7EB",
       }}
     >
       {/* Company Header */}
-      <Box display="flex" gap={2} alignItems="center">
+      <Box
+        display="flex"
+        gap={2}
+        alignItems="center"
+      >
         <Avatar
           sx={{
-            width: 70,
-            height: 70,
+            width: 50,
+            height: 50,
             bgcolor: "#4F46E5",
-            fontSize: 28,
+            fontSize: 24,
             fontWeight: "bold",
-            border: "3px solid #E5E7EB",
           }}
         >
           {company.name.charAt(0)}
         </Avatar>
 
         <Box>
-          <Typography variant="h6" fontWeight="bold">
+          <Typography
+            variant="subtitle1"
+            fontWeight={700}
+          >
             {company.name}
           </Typography>
 
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="caption"
+            color="text.secondary"
+          >
             {company.industry}
           </Typography>
 
-          <Typography variant="body2" color="primary">
+          <Typography
+            variant="caption"
+            color="primary"
+            display="block"
+          >
             {company.website}
           </Typography>
         </Box>
@@ -97,7 +111,11 @@ function CompanyInfo({ company }) {
           size="small"
           variant="outlined"
           startIcon={<NoteAltOutlinedIcon />}
-          sx={{ borderRadius: 2, textTransform: "none" }}
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            height: 32,
+          }}
         >
           Note
         </Button>
@@ -107,7 +125,11 @@ function CompanyInfo({ company }) {
           size="small"
           variant="outlined"
           startIcon={<EmailOutlinedIcon />}
-          sx={{ borderRadius: 2, textTransform: "none" }}
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            height: 32,
+          }}
         >
           Email
         </Button>
@@ -117,7 +139,11 @@ function CompanyInfo({ company }) {
           size="small"
           variant="outlined"
           startIcon={<CallOutlinedIcon />}
-          sx={{ borderRadius: 2, textTransform: "none" }}
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            height: 32,
+          }}
         >
           Call
         </Button>
@@ -127,7 +153,11 @@ function CompanyInfo({ company }) {
           size="small"
           variant="outlined"
           startIcon={<TaskOutlinedIcon />}
-          sx={{ borderRadius: 2, textTransform: "none" }}
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            height: 32,
+          }}
         >
           Task
         </Button>
@@ -137,22 +167,29 @@ function CompanyInfo({ company }) {
           size="small"
           variant="outlined"
           startIcon={<EventOutlinedIcon />}
-          sx={{ borderRadius: 2, textTransform: "none" }}
+          sx={{
+            borderRadius: 2,
+            textTransform: "none",
+            height: 32,
+          }}
         >
           Meeting
         </Button>
       </Box>
 
-      <Divider sx={{ mb: 2 }} />
+      <Divider sx={{ mb: 1.5 }} />
 
       {/* About Company */}
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        mb={2}
+        mb={1}
       >
-        <Typography variant="h6" fontWeight="bold">
+        <Typography
+          variant="subtitle1"
+          fontWeight={700}
+        >
           About this Company
         </Typography>
 

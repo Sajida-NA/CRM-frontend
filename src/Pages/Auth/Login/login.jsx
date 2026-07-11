@@ -1,129 +1,119 @@
-import { useState } from "react";
+// import { useState } from "react";
 import {
-  Box,
-  Paper,
   Typography,
-  TextField,
-  Button,
+  Box,
   Link,
   IconButton,
-  InputAdornment
+  InputAdornment,
 } from "@mui/material";
+
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useState } from "react";
+import AuthLayout from "../../../Components/common/AuthLayout";
+import InputField from "../../../Components/common/InputField";
+import CommonButton from "../../../Components/common/CommonButton";
 
 export default function Login() {
+  const [showPassword, setShowPassword] = useState(false);
+
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-
   const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  const togglePassword = () => setShowPassword((prev) => !prev);
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: authService.login(form)
-    console.log("Login:", form);
+    console.log(form);
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#f5f5f9",
-        p: 2,
-      }}
+    <AuthLayout
+      title="Log in"
+      footer={
+        <>
+          Don't have an account?{" "}
+          <Link href="/register" underline="none">
+            Sign up
+          </Link>
+        </>
+      }
     >
-      <Paper
-        elevation={3}
-        sx={{
-          width: 380,
-          p: 4,
-          borderRadius: 3,
-        }}
-      >
-        <Typography sx={{ fontSize: 26, fontWeight: 700, mb: 1 }}>
-          Log in
+      <Box component="form" onSubmit={handleSubmit}>
+        <Typography fontWeight={500} mb={1}>
+          Email
         </Typography>
 
-        <Typography sx={{ color: "#666", mb: 3 }}>
-          Welcome back! Please enter your details.
-        </Typography>
+        <InputField
+          name="email"
+          placeholder="Enter your email"
+          value={form.email}
+          onChange={handleChange}
+          fullWidth
+          sx={{ mb: 3 }}
+        />
 
-        <form onSubmit={handleSubmit}>
-          {/* Email */}
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            fullWidth
-            size="small"
-            value={form.email}
-            onChange={handleChange}
-            sx={{ mb: 2 }}
-            required
-          />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+            mb: 1,
+          }}
+        >
+          <Typography variant="body2" fontWeight={500}>
+            Password
+          </Typography>
 
-          {/* Password */}
-          <TextField
-            label="Password"
-            name="password"
-            type={showPassword ? "text" : "password"}
-            fullWidth
-            size="small"
-            value={form.password}
-            onChange={handleChange}
-            sx={{ mb: 1 }}
-            required
-            InputProps={{
+          <Link
+            href="/forgot-password"
+            underline="none"
+            color="primary"
+            variant="body1"
+          >
+            Forgot password?
+          </Link>
+        </Box>
+
+        <InputField
+          name="password"
+          placeholder="Enter your password"
+          type={showPassword ? "text" : "password"}
+          value={form.password}
+          onChange={handleChange}
+          fullWidth
+          slotProps={{
+            input: {
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={togglePassword}>
+                  <IconButton
+                    edge="end"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                  >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),
-            }}
-          />
+            },
+          }}
+        />
 
-          {/* Forgot Password */}
-          <Box sx={{ textAlign: "right", mb: 3 }}>
-            <Link href="/forgot-password" underline="hover" sx={{ fontSize: 14 }}>
-              Forgot password?
-            </Link>
-          </Box>
-
-          {/* Login Button */}
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            sx={{
-              height: 45,
-              borderRadius: 2,
-              textTransform: "none",
-              fontWeight: 600,
-            }}
-          >
-            Log in
-          </Button>
-        </form>
-
-        {/* Signup Link */}
-        <Typography sx={{ textAlign: "center", mt: 3, fontSize: 14 }}>
-          Don’t have an account?{" "}
-          <Link href="/register" underline="hover" sx={{ fontWeight: 600 }}>
-            Sign up
-          </Link>
-        </Typography>
-      </Paper>
-    </Box>
+        <CommonButton
+          type="submit"
+          fullWidth
+          sx={{
+            mt: 4,
+          }}
+        >
+          Log in
+        </CommonButton>
+      </Box>
+    </AuthLayout>
   );
 }

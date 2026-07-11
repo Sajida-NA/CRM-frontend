@@ -1,20 +1,20 @@
 import { useState } from "react";
-import { Box, IconButton, TableRow, TableCell, Button } from "@mui/material";
+import { Box, IconButton, TableRow, TableCell } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Checkbox from "@mui/material/Checkbox";
 import PageHeader from "../../../Components/common/PageHeader";
 import FilterSection from "../../../Components/common/FilterSection";
 import InputField from "../../../Components/common/InputField";
 import SelectField from "../../../Components/common/SelectField";
 import StatusChip from "../../../Components/common/StatusChip";
 import DataTable from "../../../Components/common/DataTable";
-import Pagination from "../../../Components/common/Pagination";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import SearchSection from "../../../Components/common/SearchSection";
+import CommonCheckbox from "../../../Components/common/CommonCheckbox";
 import dayjs from "dayjs";
 import CreateLeadsDrawer from "../components/CreateLeadsDrawer";
 import MainLayout from "../../../layout/MainLayout";
 import CommonButton from "../../../Components/common/CommonButton";
+import CommonDatePicker from "../../../Components/common/CommonDatePicker";
 
 export default function Leadslist() {
   const [page, setPage] = useState(1);
@@ -88,93 +88,94 @@ export default function Leadslist() {
         sx={{
           maxWidth: "1000",
           margin: "0 auto",
-          marginTop: "10px",
-          padding: "20px",
-          width: "100%",
-          minHeight: "100vh",
+          marginTop: "5px",
+          padding: "5px",
+          backgroundColor: "background.default",
+          borderRadius: "10px",
+          boxShadow: "3px",
         }}
       >
-        {/* HEADER */}
+        {/* outer box for leads header */}
         <Box
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 3,
+            p: 2,
+            height: "12vh",
+            boxShadow: "4px",
+            border: " 1px solid",
+            borderColor: "divider",
+            bgcolor: "background.paper",
+            borderTopLeftRadius: "12px",
+            borderTopRightRadius: "12px",
           }}
         >
-          <PageHeader title="Leads" />
-
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <CommonButton variant="outlined">Import</CommonButton>
-
-            <CommonButton
-              variant="contained"
-              sx={{ backgroundColor: "#6C63FF" }}
-              onClick={() => setOpenCreate(true)}
-            >
-              Create Lead
-            </CommonButton>
-          </Box>
-        </Box>
-
-        <Box sx={{ borderBottom: "1px solid #e0e0e0", my: 2 }} />
-
-        {/* DRAWER */}
-        <CreateLeadsDrawer
-          open={openCreate}
-          onClose={() => setOpenCreate(false)}
-        />
-
-        {/* SEARCH */}
-        <Box sx={{ display: "flex", 
-          alignItems:"center",
-          justifyContent: "space-between",
-           mb: 3 }}>
-          <InputField
-            label="Search"
-            placeholder="Search Phone, Name, Email"
-            width={380}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+          {/* HEADER */}
+          
+          <PageHeader
+            title="Leads"
+            actions={
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <CommonButton variant="outlined">Import</CommonButton>
+                <CommonButton onClick={() => setOpenDrawer(true)}>
+                  Create
+                </CommonButton>
+              </Box>
+            }
           />
-          <Pagination page={page} totalPages={5} onPageChange={setPage} />          
+
+          {/* DRAWER */}
+          <CreateLeadsDrawer
+            open={openCreate}
+            onClose={() => setOpenCreate(false)}
+          />
         </Box>
 
-<Box sx={{ borderBottom: "1px solid #e0e0e0", my: 2 }} />
+        {/* outer box for search & pagination */}
+        <Box
+          sx={{
+            p: 2,
+            boxShadow: "4px",
+            border: " 1px solid",
+            borderColor: "divider",
+            bgcolor: "background.paper",
+            height: "12vh",
+            marginTop: "4px",
+            transform: "translateY(-5px)",
+          }}
+        >
+          {/* ⭐ SEARCH + PAGINATION*/}
+          <SearchSection
+            placeholder="Search Phone, Name, Email"
+            page={page}
+            totalPages={68}
+            onPageChange={setPage}
+            searchValue={search}
+            onSearchChange={(e) => setSearch(e.target.value)}
+          />
+        </Box>
 
         {/* FILTERS */}
         <FilterSection>
           <SelectField
-            label="Lead Status"
+            placeholder="Lead Status"
             options={["Open", "New", "In Progress"]}
             value={status}
             onChange={(e) => setStatus(e.target.value)}
           />
 
-          <DatePicker
+          <CommonDatePicker
             label="Created Date"
             value={createdDate ? dayjs(createdDate) : null}
             onChange={(newValue) =>
               setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
             }
-            slotProps={{
-              textField: {
-                size: "small",
-                sx: {
-                  width: 180, // 👈 controls size
-                },
-              },
-            }}
           />
-
           <Box sx={{ flexGrow: 1 }} />
         </FilterSection>
 
         {/* TABLE */}
         <DataTable
           columns={[
-            <Checkbox size="small" />,
+            <CommonCheckbox size="medium" />,
             "NAME",
             "EMAIL",
             "PHONE NUMBER",
@@ -186,9 +187,8 @@ export default function Leadslist() {
           {leads.map((lead, index) => (
             <TableRow key={index}>
               <TableCell>
-                <Checkbox size="small" />
+                <CommonCheckbox size="medium" />
               </TableCell>
-
               <TableCell>{lead.name}</TableCell>
               <TableCell>{lead.email}</TableCell>
               <TableCell>{lead.phone}</TableCell>
@@ -197,12 +197,8 @@ export default function Leadslist() {
                 <StatusChip status={lead.status} />
               </TableCell>
               <TableCell>
-                <IconButton color="primary">
-                  <EditIcon />
-                </IconButton>
-                <IconButton color="error">
-                  <DeleteIcon />
-                </IconButton>
+                <IconButton color="primary"><EditIcon /></IconButton>
+                <IconButton color="error"><DeleteIcon /></IconButton>
               </TableCell>
             </TableRow>
           ))}

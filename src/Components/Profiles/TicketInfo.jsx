@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  Paper,
   Typography,
   Box,
   Button,
@@ -26,14 +25,21 @@ function DetailRow({ label, value }) {
         justifyContent: "space-between",
         alignItems: "center",
         py: 1,
-        borderBottom: "1px solid #f0f0f0",
+        borderBottom: "1px solid #F3F4F6",
       }}
     >
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        fontWeight={400}
+      >
         {label}
       </Typography>
 
-      <Typography variant="body2" fontWeight={600}>
+      <Typography
+        variant="body2"
+        fontWeight={500}
+      >
         {value}
       </Typography>
     </Box>
@@ -44,42 +50,45 @@ function TicketInfo({ ticket }) {
   const [status, setStatus] = useState(ticket.status);
 
   return (
-    <Paper
-      elevation={2}
+    <Box
       sx={{
         p: 3,
-        borderRadius: 3,
+        height: "100%",
+        borderRight: "1px solid #E5E7EB",
       }}
     >
       {/* Back */}
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="caption"
+        color="text.secondary"
+      >
         ← Tickets
       </Typography>
 
       {/* Ticket Title */}
       <Typography
-        variant="h5"
-        fontWeight="bold"
-        sx={{ mt: 2 }}
+        variant="subtitle1"
+        fontWeight={700}
+        sx={{ mt: 1 }}
       >
         {ticket.title}
       </Typography>
 
-      {/* Status Dropdown */}
+      {/* Status */}
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
           gap: 1,
           mt: 2,
-          mb: 2,
+          mb: 3,
         }}
       >
         <Typography
           variant="body2"
           color="text.secondary"
         >
-          Status :
+          Status
         </Typography>
 
         <FormControl size="small">
@@ -87,10 +96,10 @@ function TicketInfo({ ticket }) {
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             sx={{
-              minWidth: 130,
-              height: 34,
+              minWidth: 120,
+              height: 32,
               borderRadius: 2,
-              fontSize: 14,
+              fontSize: 13,
             }}
           >
             <MenuItem value="New">New</MenuItem>
@@ -101,7 +110,9 @@ function TicketInfo({ ticket }) {
             <MenuItem value="Resolved">
               Resolved
             </MenuItem>
-            <MenuItem value="Closed">Closed</MenuItem>
+            <MenuItem value="Closed">
+              Closed
+            </MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -110,77 +121,95 @@ function TicketInfo({ ticket }) {
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
+          gridTemplateColumns: "repeat(2,1fr)",
           gap: 1.5,
           mb: 3,
         }}
       >
         <Button
+          fullWidth
+          size="small"
           variant="outlined"
           startIcon={<NoteAltOutlinedIcon />}
           sx={{
             borderRadius: 2,
             textTransform: "none",
+            height: 32,
           }}
         >
           Note
         </Button>
 
         <Button
+          fullWidth
+          size="small"
           variant="outlined"
           startIcon={<EmailOutlinedIcon />}
           sx={{
             borderRadius: 2,
             textTransform: "none",
+            height: 32,
           }}
         >
           Email
         </Button>
 
         <Button
+          fullWidth
+          size="small"
           variant="outlined"
           startIcon={<CallOutlinedIcon />}
           sx={{
             borderRadius: 2,
             textTransform: "none",
+            height: 32,
           }}
         >
           Call
         </Button>
 
         <Button
+          fullWidth
+          size="small"
           variant="outlined"
           startIcon={<TaskOutlinedIcon />}
           sx={{
             borderRadius: 2,
             textTransform: "none",
+            height: 32,
           }}
         >
           Task
         </Button>
 
         <Button
+          fullWidth
+          size="small"
           variant="outlined"
           startIcon={<EventOutlinedIcon />}
           sx={{
             borderRadius: 2,
             textTransform: "none",
+            height: 32,
           }}
         >
           Meeting
         </Button>
       </Box>
 
-      <Divider sx={{ mb: 2 }} />
+      <Divider sx={{ mb: 1.5 }} />
 
       {/* About Ticket */}
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        mb={2}
+        mb={1}
       >
-        <Typography variant="h6" fontWeight="bold">
+        <Typography
+          variant="subtitle1"
+          fontWeight={700}
+        >
           About this Ticket
         </Typography>
 
@@ -208,7 +237,7 @@ function TicketInfo({ ticket }) {
         label="Created Date"
         value={ticket.createdDate}
       />
-    </Paper>
+    </Box>
   );
 }
 

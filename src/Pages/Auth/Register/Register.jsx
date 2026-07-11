@@ -1,219 +1,221 @@
-import React, { useState } from "react";
-import Box from "@mui/system/Box";
-import Typography from "@mui/material/Typography";
-import { flex } from "@mui/system";
-import Grid from "@mui/system/Grid";
-import { InputLabel, TextField } from "@mui/material";
-import Button from "@mui/material/Button";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
+// import { useState } from "react";
+import { Typography, Grid, Link } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
+import { useState } from "react";
+import AuthLayout from "../../../Components/common/AuthLayout";
+import InputField from "../../../Components/common/InputField";
+import SelectField from "../../../Components/common/SelectField";
+import CommonButton from "../../../Components/common/CommonButton";
 
 export default function Register() {
-  const [industry, setIndustry] = useState();
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    companyName: "",
+    industry: "",
+    country: "",
+    role: "",
+  });
 
-  const [role, setRole] = useState();
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(form);
+  };
+
+  const industries = [
+    { label: "IT", value: "it" },
+    { label: "Healthcare", value: "healthcare" },
+    { label: "Education", value: "education" },
+  ];
+
+  const roles = [
+    { label: "Admin", value: "admin" },
+    { label: "Manager", value: "manager" },
+    { label: "Employee", value: "employee" },
+  ];
+
   return (
-    <div>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: 8,
-        }}
+    <AuthLayout
+      title="Register"
+      maxWidth={900}
+      footer={
+        <>
+          Already have an account?{" "}
+          <Link
+            component={RouterLink}
+            to="/"
+            underline="none"
+            fontWeight={600}
+          >
+            Login
+          </Link>
+        </>
+      }
+    >
+      <Grid
+        container spacing={3}
+        component="form"
+        onSubmit={handleSubmit}
       >
-        <Box
-          sx={{
-            width: 700,
-            border: "1px solid #ccc",
-            boxShadow: 10,
-            borderRadius: "16px",
-            p: 3,
-            marginBottom: 2,
-          }}
-        >
-          <Typography
-            sx={{
-              color: "#212121",
-              fontWeight: 600,
-              fontSize: "19px",
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5}}>
+            First Name
+          </Typography>
+          <InputField
+            name="firstName"
+            placeholder="Enter your first name"
+            value={form.firstName}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
 
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: 3,
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
+            Last Name
+          </Typography>
+          <InputField
+            name="lastName"
+            placeholder="Enter your last name"
+            value={form.lastName}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
+            Email
+          </Typography>
+          <InputField
+            name="email"
+            type="email"
+            placeholder="Enter your email"
+            value={form.email}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
+            Phone Number
+          </Typography>
+          <InputField
+            name="phone"
+            placeholder="Enter your phone number"
+            value={form.phone}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
+            Password
+          </Typography>
+          <InputField
+            name="password"
+            type="password"
+            placeholder="Enter your password"
+            value={form.password}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5 }}>
+            Confirm Password
+          </Typography>
+          <InputField
+            name="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5 }}>
+            Company Name
+          </Typography>
+          <InputField
+            name="companyName"
+            placeholder="Enter company name"
+            value={form.companyName}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5 }}>
+            Industry Type
+          </Typography>
+          <SelectField
+            name="industry"
+            value={form.industry}
+            onChange={handleChange}
+            options={["IT", "HealthCare", "Education"]}
+            placeholder="Choose "
+            fullWidth
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5 }}>
+            Country / Region
+          </Typography>
+          <InputField
+            name="country"
+            placeholder="Enter your country"
+            value={form.country}
+            onChange={handleChange}
+            fullWidth
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5 }}>
+            Role
+          </Typography>
+          <SelectField
+            name="role"
+            value={form.role}
+            onChange={handleChange}
+            options={["Admin","Manager","Employee"]}
+            placeholder="Choose"
+            fullWidth
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <CommonButton
+            type="submit"
+            fullWidth
+            sx={{
+              mt: 1,
+              height: 42,
             }}
           >
             Register
-          </Typography>
-
-          <Grid container rowSpacing={1} columnSpacing={2}>
-            <Grid size={6}>
-              <Typography>First Name</Typography>
-              <TextField
-                required
-                fullWidth
-                variant="outlined"
-                placeholder="Enter your first name"
-                size="small"
-                sx={{ marginBottom: 1 }}
-              ></TextField>
-            </Grid>
-
-            <Grid size={6}>
-              <Typography>Last Name</Typography>
-              <TextField
-                required
-                fullWidth
-                variant="outlined"
-                placeholder="Enter your last name"
-                size="small"
-                sx={{ marginBottom: 1 }}
-              ></TextField>
-            </Grid>
-
-            <Grid size={6}>
-              <Typography>Email</Typography>
-              <TextField
-                required
-                fullWidth
-                variant="outlined"
-                placeholder="Enter your email"
-                size="small"
-                type="email"
-                sx={{ marginBottom: 1 }}
-              ></TextField>
-            </Grid>
-
-            <Grid size={6}>
-              <Typography>Phone Number</Typography>
-              <TextField
-                required
-                fullWidth
-                variant="outlined"
-                placeholder="Enter your number"
-                size="small"
-                type="number"
-                sx={{ marginBottom: 1 }}
-              ></TextField>
-            </Grid>
-
-            <Grid size={6}>
-              <Typography>Password</Typography>
-              <TextField
-                required
-                fullWidth
-                variant="outlined"
-                placeholder="Enter your password"
-                size="small"
-                type="password"
-                sx={{ marginBottom: 1 }}
-              ></TextField>
-            </Grid>
-
-            <Grid size={6}>
-              <Typography>Confirm Password</Typography>
-              <TextField
-                required
-                fullWidth
-                variant="outlined"
-                placeholder="Enter your confirm password"
-                size="small"
-                type="password"
-                sx={{ marginBottom: 1 }}
-              ></TextField>
-            </Grid>
-
-            <Grid size={6}>
-              <Typography>Company Name</Typography>
-              <TextField
-                required
-                fullWidth
-                variant="outlined"
-                placeholder="Enter your company name"
-                size="small"
-                type="text"
-                sx={{ marginBottom: 1 }}
-              ></TextField>
-            </Grid>
-
-            <Grid size={6}>
-              <Typography>Industry Type</Typography>
-
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Choose</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={industry}
-                  onChange={(e) => setIndustry(e.target.value)}
-                  size="small"
-                  sx={{ marginBottom: 1 }}
-                >
-                  <MenuItem value={10}></MenuItem>
-                  <MenuItem value={20}></MenuItem>
-                  <MenuItem value={30}></MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid size={6}>
-              <Typography>Country or Region</Typography>
-              <TextField
-                required
-                fullWidth
-                variant="outlined"
-                placeholder="Enter your country or Region"
-                size="small"
-                type="text"
-                sx={{ marginBottom: 1 }}
-              ></TextField>
-            </Grid>
-
-            <Grid size={6}>
-              <Typography>Role</Typography>
-
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Choose</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  size="small"
-                  sx={{ marginBottom: 1 }}
-                >
-                  <MenuItem value={10}></MenuItem>
-                  <MenuItem value={20}></MenuItem>
-                  <MenuItem value={30}></MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid size={6}>
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{
-                  backgroundColor: "#52289e",
-                  borderRadius: 1,
-                  marginBottom: 1,
-                }}
-              >
-                Register
-              </Button>
-            </Grid>
-
-            {/* ---------------- */}
-          </Grid>
-        </Box>
-        <Typography sx={{ textAlign: "center", marginBottom: 1 }}>
-          Already have an account?{" "}
-          <a style={{ textDecoration: "none", color: "#52289e" }}>Login</a>
-        </Typography>
-      </Box>
-    </div>
+          </CommonButton>
+        </Grid>
+      </Grid>
+    </AuthLayout>
   );
 }

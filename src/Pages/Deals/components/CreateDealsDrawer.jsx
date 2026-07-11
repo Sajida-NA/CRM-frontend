@@ -1,23 +1,20 @@
 import React, { useState } from "react";
-import { Drawer, Box } from "@mui/material";
+import { Drawer, Box, Grid } from "@mui/material";
 import DrawerHeader from "../../../Components/common/DrawerHeader";
 import CommonInput from "../../../Components/common/CommonInput";
 import CommonButton from "../../../Components/common/CommonButton";
-import PhoneInputField from "../../../Components/common/PhoneInputField";
 import CommonSelect from "../../../Components/common/CommonSelect";
+import CommonDatePicker from "../../../Components/common/CommonDatePicker";
 
-export default function CreateLeadsDrawer({ open, onClose }) {
+export default function CreateDealsDrawer({ open, onClose }) {
   const [formData, setFormData] = useState({
-    email: "",
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    jobTitle: "",
-    contactOwner: "",
-    leadStatus: "",
-    products: "",
-    company: "",
-    city: "",
+    dealName: "",
+    dealStage: "",
+    associatedLead: "",
+    amount: "",
+    dealOwner: "",
+    closeDate: null,
+    priority: "",
   });
 
   const handleChange = (e) => {
@@ -44,7 +41,7 @@ export default function CreateLeadsDrawer({ open, onClose }) {
           bgcolor: "#fff",
         }}
       >
-        <DrawerHeader title="Create Lead" onClose={onClose} />
+        <DrawerHeader title="Create Deal" onClose={onClose} />
 
         {/* FORM */}
         <Box
@@ -57,115 +54,126 @@ export default function CreateLeadsDrawer({ open, onClose }) {
             overflowY: "auto",
           }}
         >
-          {/* Email */}
+          {/* Deal Name*/}
           <CommonInput
-            label="Email"
+            label="Deal Name"
             required
-            name="email"
-            value={formData.email}
+            name="dealName"
+            value={formData.dealName}
             onChange={handleChange}
             fullWidth
-            placeholder="🖂 Enter"
+            placeholder="Enter"
           />
 
-          {/* First Name */}
+          {/* Deal Stage*/}
+          <CommonSelect
+            label="Deal Stage"
+            required
+            placeholder="Choose"
+            options={[
+              "Appointment Scheduled",
+              "Contract Sent",
+              "Closed Won",
+              "Closed Lost",
+              "Decision Maker Bought In",
+              "Presentation Scheduled",
+              "Qualified to Buy",
+            ]}
+            name="dealStage"
+            value={formData.dealStage}
+            onChange={handleChange}
+          />
+
+          {/* Associated Lead */}
+          <CommonSelect
+            label="Associated Lead"
+            required
+            placeholder="Choose"
+            options={[
+              "Appointment Scheduled",
+              "Contract Sent",
+              "Closed Won",
+              "Closed Lost",
+              "Decision Maker Bought In",
+              "Presentation Scheduled",
+              "Qualified to Buy",
+            ]}
+            name="associatedLead"
+            value={formData.associatedLead}
+            onChange={handleChange}
+          />
+
+          {/* Amount */}
           <CommonInput
-            label="First Name"
-             required
-            name="firstName"
-            value={formData.firstName}
+            label="Amount"
+            required
+            name="amount"
+            value={formData.amount}
             onChange={handleChange}
             fullWidth
             placeholder="Enter"
           />
 
-          {/* Last Name */}
-          <CommonInput
-            label="Last Name"
-             required
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            fullWidth
-            placeholder="Enter"
-          />
-
-          {/* Phone */}
-          <PhoneInputField
-            label="Phone Number"
-             required
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            placeholder="Enter"
-          />
-
-          {/* Job Title */}
-          <CommonInput
-            label="Job Title"
-            name="jobTitle"
-            value={formData.jobTitle}
-            onChange={handleChange}
-            fullWidth
-            placeholder="Enter"
-          />
-
-          {/* Contact Owner */}
+          {/* Deal Owner */}
           <CommonSelect
-            label="Contact Owner"
-            name="contactOwner"
-            value={formData.contactOwner}
+            label="Deal Owner"
+            required
+            placeholder="Choose"
+            options={[
+              "Jane Cooper",
+              "Wade Warren",
+              "Brooklyn Simmons",
+              "Leslie Alexander",
+              "Jenny Wilson",
+              "Guy Hawkins",
+              "Robert Fox",
+              "Cameron Williamson",
+            ]}
+             name="dealOwner"
+            value={formData.dealOwner}
             onChange={handleChange}
-            options={["Admin", "Sales Rep", "Manager"]}
           />
 
-          {/* Lead Status */}
-          <CommonSelect
-            label="Lead Status"
-            name="leadStatus"
-            value={formData.leadStatus}
-            onChange={handleChange}
-            options={["New", "Open", "In Progress", "Closed"]}
-          />
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <CommonDatePicker
+                label="Close Date"
+                required
+               
+                value={formData.closeDate}
+                onChange={(newValue) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    closeDate: newValue,
+                  }))
+                }
+              />
+            </Grid>
 
-          {/* Products */}
-          <CommonSelect
-            label="Products"
-            name="products"
-            value={formData.products}
-            onChange={handleChange}
-             options={["CRM Software", "Marketing Tool", "Analytics Tool"]}
-           
-          />
-
-          {/* Company TYPE (label added + dropdown type) */}
-          <CommonSelect
-            label="Company Type"
-            name="company"
-            value={formData.company}
-            onChange={handleChange}
-            options={["Startup", "Enterprise", "Private", "Public"]}
-          />
-
-          {/* City TYPE (label added + dropdown type) */}
-          <CommonSelect
-            label="City"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            options={["Dubai", "Abu Dhabi", "Sharjah", "Ajman"]}
-          />
-
+            <Grid item xs={12} md={6}>
+              <CommonSelect
+                label="Priority"
+                required
+                placeholder="Choose"
+                name="priority"
+                value={formData.priority}
+                onChange={handleChange}
+                options={["High", "Medium", "Low"]}
+              />
+            </Grid>
+          </Grid>
         </Box>
 
         {/* FOOTER */}
-        <Box sx={{ display: "flex", gap: 2, p: 3, borderTop: "1px solid #E5E7EB" }}>
+        <Box
+          sx={{ display: "flex", gap: 3, p: 3, borderTop: "1px solid #E5E7EB" }}
+        >
           <CommonButton variant="outlined" fullWidth onClick={onClose}>
             Cancel
           </CommonButton>
 
           <CommonButton type="submit" fullWidth>
-            Save Lead
+            Save Deal
           </CommonButton>
         </Box>
       </Box>

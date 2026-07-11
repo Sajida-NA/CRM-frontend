@@ -4,20 +4,22 @@ import PageHeader from "../../../Components/common/PageHeader";
 import { Box, IconButton, TableRow, TableCell } from "@mui/material";
 import CommonButton from "../../../Components/common/CommonButton";
 import InputField from "../../../Components/common/InputField";
-import Pagination from "../../../Components/common/Pagination";
 import SelectField from "../../../Components/common/SelectField";
 import FilterSection from "../../../Components/common/FilterSection";
 import DataTable from "../../../Components/common/DataTable";
-import Checkbox from "@mui/material/Checkbox";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CreateTicketDrawer from "../components/CreateTicketDrawer";
+import SearchSection from "../../../Components/common/SearchSection";
+import CommonCheckbox from "../../../Components/common/CommonCheckbox";
+import CommonDatePicker from "../../../Components/common/CommonDatePicker";
 
 export default function TicketsList() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
   const [createdDate, setCreatedDate] = useState("");
+  const [search, setSearch] = useState("");
 
   const ticketsData = [
     {
@@ -116,52 +118,42 @@ export default function TicketsList() {
           sx={{
             maxWidth: "1000",
             margin: "0 auto",
-            marginTop: "10px",
-            padding: "20px",
-            // width: "100%",
+            marginTop: "5px",
+            padding: "5px",
+            backgroundColor: "background.default",
+            borderRadius: "10px",
+            boxShadow: "3px",
           }}
         >
-          {/* ⭐ TICKET + IMPORT + CREATE LEAD  */}
-
+          {/* outer box for ticket header */}
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              mb: 3,
+              p: 2,
+              height: "12vh",
+              boxShadow: "4px",
+              border: " 1px solid",
+              borderColor: "divider",
+              bgcolor: "background.paper",
+              borderTopLeftRadius: "12px",
+              borderTopRightRadius: "12px",
             }}
           >
+            {/* ⭐ TICKET + IMPORT + CREATE LEAD  */}
+
             {/* Left: Page Title */}
-            <PageHeader title="Tickets" />
+            <PageHeader
+              title="Tickets"
+              actions={
+                <Box sx={{ display: "flex", gap: 2 }}>
+                  <CommonButton variant="outlined">Import</CommonButton>
+                  <CommonButton onClick={() => setOpenDrawer(true)}>
+                    Create
+                  </CommonButton>
+                </Box>
+              }
+            />
 
-            {/* Right: Import + Create Lead */}
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <CommonButton
-                variant="outlined"
-                sx={{
-                  textTransform: "none",
-                  borderRadius: 2,
-                  px: 3,
-                }}
-              >
-                Import
-              </CommonButton>
-
-              <CommonButton
-                variant="contained"
-                sx={{
-                  textTransform: "none",
-                  borderRadius: 2,
-                  backgroundColor: "#6C63FF",
-                  px: 3,
-                }}
-                onClick={() => setOpenDrawer(true)}
-              >
-                Create Ticket
-              </CommonButton>
-            </Box>
-
-            {/* Your companies table/list goes here */}
+            {/* DRAWER */}
 
             <CreateTicketDrawer
               open={openDrawer}
@@ -169,28 +161,34 @@ export default function TicketsList() {
             />
           </Box>
 
-          {/* ⭐ SEARCH + PAGINATION*/}
+          {/* outer box for search & pagination */}
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              mb: 3,
+              p: 2,
+              boxShadow: "4px",
+              border: " 1px solid",
+              borderColor: "divider",
+              bgcolor: "background.paper",
+              height: "12vh",
+              marginTop: "4px",
+              transform: "translateY(-5px)",
             }}
           >
-            <InputField
-              label="Search"
+            {/* ⭐ SEARCH + PAGINATION*/}
+            <SearchSection
               placeholder="Search Phone, Name, Email"
-              width={380}
+              page={page}
+              totalPages={68}
+              onPageChange={setPage}
+              searchValue={search}
+              onSearchChange={(e) => setSearch(e.target.value)}
             />
-
-            <Pagination page={page} totalPages={5} onPageChange={setPage} />
           </Box>
 
           {/* ⭐ FILTERS */}
           <FilterSection>
             <SelectField
-              label="Ticket Owner"
+              placeholder="Ticket Owner"
               options={[
                 "Jane Cooper",
                 "Brooklyn Simmons",
@@ -203,21 +201,21 @@ export default function TicketsList() {
             />
 
             <SelectField
-              label="Ticket Status"
+              placeholder="Ticket Status"
               options={["Waiting on contact", "New", "Closed", "Waiting on us"]}
               value={status}
               onChange={(e) => setStatus(e.target.value)}
             />
 
             <SelectField
-              label="Source"
+              placeholder="Source"
               options={["Chat", "Email", "Phone "]}
               value={status}
               onChange={(e) => setStatus(e.target.value)}
             />
 
             <SelectField
-              label="Priority"
+              placeholder="Priority"
               options={["High", "Medium", "Low", "Critical"]}
               value={status}
               onChange={(e) => setStatus(e.target.value)}
@@ -237,7 +235,7 @@ export default function TicketsList() {
           {/* ⭐ TABLE */}
           <DataTable
             columns={[
-              <Checkbox size="small" />,
+              <CommonCheckbox size="medium" />,
               "TICKET NAME",
               "DEAL NAME",
               "TICKET STATUS",
@@ -251,9 +249,8 @@ export default function TicketsList() {
             {ticketsData.map((tickets) => (
               <TableRow key={tickets.id}>
                 <TableCell>
-                  <Checkbox size="small" />
+                  <CommonCheckbox size="medium" />
                 </TableCell>
-
                 <TableCell>{tickets.ticketName}</TableCell>
                 <TableCell>{tickets.dealName}</TableCell>
                 <TableCell>{tickets.ticketStatus}</TableCell>
@@ -261,14 +258,9 @@ export default function TicketsList() {
                 <TableCell>{tickets.source}</TableCell>
                 <TableCell>{tickets.ticketOwner}</TableCell>
                 <TableCell>{tickets.createdDate}</TableCell>
-
                 <TableCell>
-                  <IconButton color="primary">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton color="error">
-                    <DeleteIcon />
-                  </IconButton>
+                  <IconButton color="primary"><EditIcon /></IconButton>
+                  <IconButton color="error"><DeleteIcon /></IconButton>
                 </TableCell>
               </TableRow>
             ))}

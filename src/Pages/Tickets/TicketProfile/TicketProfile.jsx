@@ -1,40 +1,54 @@
-import { Box } from "@mui/material";
+import { Box, Paper } from "@mui/material";
+
 import TicketInfo from "../../../Components/Profiles/TicketInfo";
 import TicketActivityPanel from "../../../Components/Profiles/TicketActivityPanel";
 import AITicketSummary from "../../../Components/Profiles/AITicketSummary";
 
 import ticketActivities from "./data/ticketActivityData";
 import ticketData from "./data/ticketData";
+
 import MainLayout from "../../../layout/MainLayout";
+
 function TicketProfile() {
   return (
     <MainLayout>
-     
-    <Box
-      sx={{
-        p: 3,
-        bgcolor: "#f5f7fb",
-        minHeight: "100vh",
-      }}
-    >
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            lg: "330px 1fr 280px",
-          },
-          gap: 3,
-          alignItems: "start",
+          p: 2,
+          bgcolor: "#F5F7FB",
+          minHeight: "100vh",
         }}
       >
-       <TicketInfo ticket={ticketData} />
+        <Paper
+          elevation={0}
+          sx={{
+            borderRadius: 3,
+            overflow: "hidden",
+            border: "1px solid #E5E7EB",
+            height: "calc(100vh - 48px)",
+          }}
+        >
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                lg: "260px 1fr 260px",
+              },
+              gap: 0,
+              alignItems: "stretch",
+            }}
+          >
+            <TicketInfo ticket={ticketData} />
 
-<TicketActivityPanel activities={ticketActivities} />
+            <TicketActivityPanel
+              activities={ticketActivities}
+            />
 
-<AITicketSummary />
+            <AITicketSummary />
+          </Box>
+        </Paper>
       </Box>
-    </Box>
     </MainLayout>
   );
 }

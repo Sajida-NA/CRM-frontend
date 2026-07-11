@@ -15,6 +15,7 @@ function MainLayout({ children }) {
           sx={{
             flex: 1,
             p: 3,
+          backgroundColor:"#f5f7fb",
           }}
         >
           {children}

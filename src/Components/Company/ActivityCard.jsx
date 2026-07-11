@@ -1,47 +1,39 @@
-import { Paper, Box, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumberOutlined";
 import CallOutlinedIcon from "@mui/icons-material/CallOutlined";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 
 function ActivityCard({ activity }) {
-    let icon = null;
+  let icon = null;
 
-if (activity.type === "Ticket Activity") {
-  icon = (
-    <ConfirmationNumberOutlinedIcon
-      fontSize="small"
-      color="primary"
-    />
-  );
-} else if (activity.type === "Call") {
-  icon = (
-    <CallOutlinedIcon
-      fontSize="small"
-      color="success"
-    />
-  );
-} else if (activity.type === "Meeting") {
-  icon = (
-    <EventOutlinedIcon
-      fontSize="small"
-      color="warning"
-    />
-  );
-}
+  if (activity.type === "Ticket Activity") {
+    icon = (
+      <ConfirmationNumberOutlinedIcon
+        fontSize="small"
+        color="primary"
+      />
+    );
+  } else if (activity.type === "Call") {
+    icon = (
+      <CallOutlinedIcon
+        fontSize="small"
+        color="success"
+      />
+    );
+  } else if (activity.type === "Meeting") {
+    icon = (
+      <EventOutlinedIcon
+        fontSize="small"
+        color="warning"
+      />
+    );
+  }
+
   return (
-    <Paper
-      elevation={0}
+    <Box
       sx={{
-        p: 2,
-        mt: 2,
-        borderRadius: 2,
-        border: "1px solid #E5E7EB",
-        bgcolor: "#FFFFFF",
-        transition: "0.2s",
-        "&:hover": {
-          boxShadow: 3,
-          borderColor: "#1976d2",
-        },
+        py: 1.5,
+        borderBottom: "1px solid #E5E7EB",
       }}
     >
       <Box
@@ -50,31 +42,41 @@ if (activity.type === "Ticket Activity") {
         alignItems="center"
       >
         <Box
-  display="flex"
-  alignItems="center"
-  gap={1}
->
-  {icon}
+          display="flex"
+          alignItems="center"
+          gap={0.75}
+        >
+          {icon}
 
-  <Typography fontWeight="bold">
-    {activity.type}
-  </Typography>
-</Box>
+          <Typography
+            variant="body2"
+            fontWeight={600}
+          >
+            {activity.type}
+          </Typography>
+        </Box>
+
         <Typography
           variant="caption"
           color="text.secondary"
+          sx={{ fontSize: 11 }}
         >
           {activity.time}
         </Typography>
       </Box>
 
       <Typography
+        variant="body2"
         color="text.secondary"
-        sx={{ mt: 1 }}
+        sx={{
+          mt: 0.75,
+          ml: 4,
+          lineHeight: 1.5,
+        }}
       >
         {activity.description}
       </Typography>
-    </Paper>
+    </Box>
   );
 }
 
