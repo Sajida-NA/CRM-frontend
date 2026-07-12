@@ -17,7 +17,7 @@ import LeadMeeting from "../Pages/Leads/components/Tabs/Meetings/LeadMeeting";
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
 import Leadnote from '../Pages/Leads/components/Tabs/Note/Leadnote';
 import DealMeeting from "../Pages/Deals/components/Tabs/Meeting/DealMeeting";
-
+import Leadcalls from "../Pages/Leads/components/Tabs/Calls/Leadcalls";
 
 function AppRoutes() {
   return (
@@ -36,6 +36,7 @@ function AppRoutes() {
       <Route path="/viewemailrecord" element={<ViewEmailRecord/>}/>
       <Route path="/leadmeeting" element={<LeadMeeting/>}/>
       <Route path="/leadnote" element={<Leadnote/>}/>
+      <Route path="/leadcalls" element={<Leadcalls/>}/>
 
       {/* Company Routes */}
       <Route path="/companieslist" element={<CompaniesList />} />
