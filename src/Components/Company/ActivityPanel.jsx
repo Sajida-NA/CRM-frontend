@@ -1,9 +1,8 @@
 import {
-  Paper,
+  Box,
   Typography,
   Tabs,
   Tab,
-  Box,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
@@ -15,43 +14,45 @@ function ActivityPanel({ activities }) {
   const [value, setValue] = useState(0);
 
   return (
-    <Paper
+    <Box
       sx={{
         p: 3,
-        borderRadius: 3,
-        minHeight: 600,
+        height: "100%",
+        borderRight: "1px solid #E5E7EB",
+        overflowY: "auto",
       }}
     >
       {/* Title */}
       <Typography
-        variant="h5"
-        fontWeight="bold"
-        mb={2}
+        variant="subtitle1"
+        fontWeight={700}
+        sx={{ mb: 2 }}
       >
         Activity
       </Typography>
 
-      {/* Search Box */}
+      {/* Search */}
       <TextField
-  fullWidth
-  size="small"
-  placeholder="Search activities..."
-  variant="outlined"
-  InputProps={{
-    startAdornment: (
-      <InputAdornment position="start">
-        <SearchOutlinedIcon color="action" />
-      </InputAdornment>
-    ),
-  }}
-  sx={{
-    mb: 2,
-    "& .MuiOutlinedInput-root": {
-      borderRadius: 3,
-      bgcolor: "#FAFAFA",
-    },
-  }}
-/>
+        fullWidth
+        size="small"
+        placeholder="Search activities..."
+        variant="outlined"
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <SearchOutlinedIcon fontSize="small" color="action" />
+            </InputAdornment>
+          ),
+        }}
+        sx={{
+          mb: 2,
+          "& .MuiOutlinedInput-root": {
+            height: 38,
+            borderRadius: 2,
+            bgcolor: "#FAFAFA",
+          },
+        }}
+      />
 
       {/* Tabs */}
       <Tabs
@@ -60,28 +61,25 @@ function ActivityPanel({ activities }) {
         variant="scrollable"
         scrollButtons="auto"
         sx={{
-  mb: 3,
-  minHeight: 45,
+          mb: 2,
 
-  "& .MuiTab-root": {
-    textTransform: "none",
-    fontWeight: 500,
-    minHeight: 45,
-    borderRadius: "8px 8px 0 0",
-    px: 2,
-  },
+          "& .MuiTab-root": {
+            textTransform: "none",
+            fontSize: 13,
+            fontWeight: 500,
+            minHeight: 40,
+            px: 2,
+          },
 
-  "& .Mui-selected": {
-    color: "#1976d2",
-    fontWeight: 700,
-  },
+          "& .Mui-selected": {
+            fontWeight: 700,
+          },
 
-  "& .MuiTabs-indicator": {
-    height: 3,
-    borderRadius: 3,
-    backgroundColor: "#1976d2",
-  },
-}}
+          "& .MuiTabs-indicator": {
+            height: 3,
+            borderRadius: 3,
+          },
+        }}
       >
         <Tab label="Activity" />
         <Tab label="Notes" />
@@ -91,28 +89,28 @@ function ActivityPanel({ activities }) {
         <Tab label="Meetings" />
       </Tabs>
 
-      {/* Activities */}
-      <Box mt={3}>
-        <Typography
-          variant="subtitle1"
-          fontWeight="bold"
-          sx={{
-            mt: 2,
-            mb: 2,
-            color: "#374151",
-          }}
-        >
-          Upcoming
-        </Typography>
+      {/* Upcoming */}
+      <Typography
+        variant="body2"
+        fontWeight={700}
+        sx={{
+          color: "#374151",
+          mb: 1,
+        }}
+      >
+        Upcoming
+      </Typography>
 
-       {activities.map((activity) => (
-  <ActivityCard
-    key={activity.id}
-    activity={activity}
-  />
-))}
+      {/* Activity List */}
+      <Box>
+        {activities.map((activity) => (
+          <ActivityCard
+            key={activity.id}
+            activity={activity}
+          />
+        ))}
       </Box>
-    </Paper>
+    </Box>
   );
 }
 

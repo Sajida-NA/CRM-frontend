@@ -1,9 +1,8 @@
 import {
-  Paper,
+  Box,
   Typography,
   Tabs,
   Tab,
-  Box,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
@@ -15,21 +14,24 @@ function TicketActivityPanel({ activities = [] }) {
   const [value, setValue] = useState(0);
 
   return (
-    <Paper
+    <Box
       sx={{
         p: 3,
-        borderRadius: 3,
-        minHeight: 600,
+        height: "100%",
+        borderRight: "1px solid #E5E7EB",
+        overflowY: "auto",
       }}
     >
+      {/* Title */}
       <Typography
-        variant="h5"
-        fontWeight="bold"
-        mb={2}
+        variant="subtitle1"
+        fontWeight={700}
+        sx={{ mb: 2 }}
       >
         Activity
       </Typography>
 
+      {/* Search */}
       <TextField
         fullWidth
         size="small"
@@ -38,28 +40,47 @@ function TicketActivityPanel({ activities = [] }) {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchOutlinedIcon color="action" />
+              <SearchOutlinedIcon
+                fontSize="small"
+                color="action"
+              />
             </InputAdornment>
           ),
         }}
         sx={{
           mb: 2,
           "& .MuiOutlinedInput-root": {
-            borderRadius: 3,
+            height: 38,
+            borderRadius: 2,
             bgcolor: "#FAFAFA",
           },
         }}
       />
 
+      {/* Tabs */}
       <Tabs
         value={value}
         onChange={(e, newValue) => setValue(newValue)}
         variant="scrollable"
         scrollButtons="auto"
         sx={{
-          mb: 3,
+          mb: 2,
+
           "& .MuiTab-root": {
             textTransform: "none",
+            fontSize: 13,
+            fontWeight: 500,
+            minHeight: 40,
+            px: 2,
+          },
+
+          "& .Mui-selected": {
+            fontWeight: 700,
+          },
+
+          "& .MuiTabs-indicator": {
+            height: 3,
+            borderRadius: 3,
           },
         }}
       >
@@ -71,15 +92,20 @@ function TicketActivityPanel({ activities = [] }) {
         <Tab label="Meetings" />
       </Tabs>
 
-      <Box mt={3}>
-        <Typography
-          variant="subtitle1"
-          fontWeight="bold"
-          mb={2}
-        >
-          Upcoming
-        </Typography>
+      {/* Upcoming */}
+      <Typography
+        variant="body2"
+        fontWeight={700}
+        sx={{
+          color: "#374151",
+          mb: 1,
+        }}
+      >
+        Upcoming
+      </Typography>
 
+      {/* Activity List */}
+      <Box>
         {activities.map((activity) => (
           <TicketActivityCard
             key={activity.id}
@@ -87,7 +113,7 @@ function TicketActivityPanel({ activities = [] }) {
           />
         ))}
       </Box>
-    </Paper>
+    </Box>
   );
 }
 
