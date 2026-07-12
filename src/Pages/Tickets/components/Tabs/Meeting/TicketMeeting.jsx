@@ -11,7 +11,7 @@ import CommonActivityTabs from "../../../../../Components/common/CommonActivityT
 
 import ScheduleMeeting from "../../../../Leads/components/Tabs/Meetings/ScheduleMeeting";
 
-export default function DealMeeting() {
+export default function TicketMeeting() {
   const [activeTab, setActiveTab] = useState("Meetings");
 
   const [openCreateMeeting, setOpenCreateMeeting] = useState(false);
@@ -68,7 +68,7 @@ export default function DealMeeting() {
           <CommonActivityTabs
             activeTab={activeTab}
             onTabChange={setActiveTab}
-            title="Deals"
+            title="Ticket"
           />
         </Box>
 
