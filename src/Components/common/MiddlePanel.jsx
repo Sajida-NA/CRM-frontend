@@ -2,6 +2,7 @@ import React from "react";
 import { Box, TextField, Button, InputAdornment } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
+
 // import CommonActivityTabs from "./CommonActivityTab";
 
 export default function MiddlePanel(
@@ -10,9 +11,6 @@ export default function MiddlePanel(
   onConvert = () => {},
   activeTab = "Activity",
   setActiveTab = () => {},
-
-  //  { activeTab,
-  //   setActiveTab,}
 ) {
   return (
     <Box
@@ -22,8 +20,12 @@ export default function MiddlePanel(
         p: 3,
       }}
     >
-      {/* Search + Convert Button */}
-      <Box sx={{ display: "flex", gap: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          gap: 2,
+        }}
+      >
         <TextField
           fullWidth
           placeholder="Search activities"
@@ -31,7 +33,11 @@ export default function MiddlePanel(
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: "#bdb7b7" }} />
+                <SearchIcon
+                  sx={{
+                    color: "#bdb7b7",
+                  }}
+                />
               </InputAdornment>
             ),
           }}
@@ -48,6 +54,7 @@ export default function MiddlePanel(
         />
 
         <Button
+          onClick={onConvert}
           sx={{
             width: "150px",
             bgcolor: "#5A45E5",
@@ -64,13 +71,14 @@ export default function MiddlePanel(
         </Button>
       </Box>
 
-      {/* Activity Tabs */}
-      {/* <Box sx={{ mt: 2 }}>
+      {/*
+      <Box sx={{ mt: 2 }}>
         <CommonActivityTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
-      </Box> */}
+      </Box>
+      */}
     </Box>
   );
 }
