@@ -80,7 +80,7 @@ export default function Leadnote() {
           <Typography
             variant="h6"
             sx={{
-              fontWeight: "500",
+              fontWeight: "700",
             }}
           >
             June 2025
