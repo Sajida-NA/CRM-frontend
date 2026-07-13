@@ -1,7 +1,19 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 
-export default function RightPanel() {
+// AI Summary Icon
+import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
+
+export default function RightPanel({
+  // Dynamic AI Summary Title
+  // Can be customized from the parent component
+  summaryTitle = "AI Lead Summary",
+
+  // Dynamic AI Summary Content
+  // Default message is displayed if no summary is provided
+  summaryText =
+    "There are no activities associated with this lead and further details are needed to provide a comprehensive summary.",
+}) {
   return (
     <Box
       sx={{
@@ -11,7 +23,7 @@ export default function RightPanel() {
         p: 2,
       }}
     >
-      {/* AI Summary */}
+      {/* ================= AI Summary Section ================= */}
       <Box
         sx={{
           border: "1px solid #5948DB",
@@ -21,16 +33,27 @@ export default function RightPanel() {
           mb: 3,
         }}
       >
+        {/* AI Summary Title */}
         <Typography
           sx={{
             fontWeight: 700,
             color: "#5948DB",
             mb: 1,
+            display: "flex",
+            alignItems: "center",
           }}
         >
-          AI Lead Summary
+          <AutoAwesomeOutlinedIcon
+            color="primary"
+            sx={{
+              mr: 1,
+            }}
+          />
+
+          {summaryTitle}
         </Typography>
 
+        {/* AI Summary Description */}
         <Typography
           sx={{
             fontSize: "14px",
@@ -38,13 +61,13 @@ export default function RightPanel() {
             lineHeight: 1.6,
           }}
         >
-          There are no activities associated with this lead and further
-          details are needed to provide a comprehensive summary.
+          {summaryText}
         </Typography>
       </Box>
 
-      {/* Attachments */}
+      {/* ================= Attachments Section ================= */}
       <Box>
+        {/* Section Header */}
         <Box
           sx={{
             display: "flex",
@@ -53,10 +76,15 @@ export default function RightPanel() {
             mb: 1,
           }}
         >
-          <Typography sx={{ fontWeight: 700 }}>
+          <Typography
+            sx={{
+              fontWeight: 700,
+            }}
+          >
             Attachments
           </Typography>
 
+          {/* Add Attachment Action */}
           <Typography
             sx={{
               fontWeight: 600,
@@ -68,6 +96,7 @@ export default function RightPanel() {
           </Typography>
         </Box>
 
+        {/* Attachments Description */}
         <Typography
           sx={{
             fontSize: "14px",
@@ -75,8 +104,7 @@ export default function RightPanel() {
             lineHeight: 1.6,
           }}
         >
-          See the files attached to your activities or uploaded to this
-          record.
+          See the files attached to your activities or uploaded to this record.
         </Typography>
       </Box>
     </Box>

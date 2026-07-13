@@ -48,4 +48,4 @@ function CompanyDetails() {
   );
 }
 
-export default CompanyDetails;
+// export default CompanyDetails;
