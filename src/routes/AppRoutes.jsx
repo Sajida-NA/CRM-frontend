@@ -19,13 +19,12 @@ import LeadMeeting from "../Pages/Leads/components/Tabs/Meetings/LeadMeeting";
 // Company Pages
 import CompaniesList from "../Pages/Companies/CompaniesList/CompaniesList";
 import CompanyMeeting from "../Pages/Companies/components/Tabs/Meeting/CompanyMeeting";
-import CompanyProfile from "../Pages/Company/CompanyProfile/companyprofile1";
-
+import CompanyProfile from "../Pages/Companies/CompanyProfile/CompanyProfile";
 // Ticket Pages
 import TicketsList from "../Pages/Tickets/TicketsList/TicketsList";
 import CreateTicketDrawer from "../Pages/Tickets/components/CreateTicketDrawer";
 import TicketMeeting from "../Pages/Tickets/components/Tabs/Meeting/TicketMeeting";
-import TicketProfile1 from "../Pages/Tickets/TicketProfile/TicketProfile1";
+import TicketProfile from "../Pages/Tickets/TicketProfile/TicketProfile";
 import TicketNote from "../Pages/Tickets/components/Tabs/Note/TicketNote";
 
 
@@ -60,13 +59,16 @@ function AppRoutes() {
       {/* Company Routes */}
       <Route path="/companieslist" element={<CompaniesList />} />
       <Route path="/companymeeting" element={<CompanyMeeting />} />
-      <Route path="/CompanyProfile1" element={<CompanyProfile />} />
+      <Route path="/companies/profile" element={<CompanyProfile />}/>
+  
+
+
 
       {/* Ticket Routes */}
       <Route path="/ticketslist" element={<TicketsList />} />
       <Route path="/create-ticket" element={<CreateTicketDrawer />} />
       <Route path="/ticketmeeting" element={<TicketMeeting />} />
-      <Route path="/ticketprofile" element={<TicketProfile1 />} />
+      <Route path="/tickets/profile" element={<TicketProfile />}/>
       <Route path="/ticketnote" element={<TicketNote/>}/>
 
       {/* Deal Routes */}
