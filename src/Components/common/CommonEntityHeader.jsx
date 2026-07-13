@@ -2,26 +2,26 @@ import React from "react";
 import MainLayout from "../../layout/MainLayout";
 import { Box } from "@mui/material";
 
-// Icons
+// Quick action icons
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import EmailIcon from "@mui/icons-material/Email";
 import CallIcon from "@mui/icons-material/Call";
 import TaskIcon from "@mui/icons-material/Task";
 import EventIcon from "@mui/icons-material/Event";
 
-// Components
+// Common panel components
 import LeftPanel from "./LeftPanel";
 import MiddlePanel from "./MiddlePanel";
 import RightPanel from "./RightPanel";
 
 export default function CommonEntityHeader({
-  // activeTab,
-  // setActiveTab,
-
+  // Page title
   title,
+
+  // Dynamic data for the left panel
   leftPanelData = {},
 }) {
-  // Handle quick action clicks
+  // Handles quick action button clicks
   const handleActionClick = (type) => {
     const tabMap = {
       Note: "Notes",
@@ -31,32 +31,69 @@ export default function CommonEntityHeader({
       Meeting: "Meetings",
     };
 
-    // if (tabMap[type]) {
-    //   setActiveTab(tabMap[type]);
-    // }
+    // Future implementation
+    // const selectedTab = tabMap[type];
+    // setActiveTab(selectedTab);
   };
 
-  // Quick action buttons
+  // Default quick action buttons
   const actions = [
-    { label: "Note", icon: <NoteAltIcon /> },
-    { label: "Email", icon: <EmailIcon /> },
-    { label: "Call", icon: <CallIcon /> },
-    { label: "Task", icon: <TaskIcon /> },
-    { label: "Meeting", icon: <EventIcon /> },
+    {
+      label: "Note",
+      icon: <NoteAltIcon />,
+    },
+    {
+      label: "Email",
+      icon: <EmailIcon />,
+    },
+    {
+      label: "Call",
+      icon: <CallIcon />,
+    },
+    {
+      label: "Task",
+      icon: <TaskIcon />,
+    },
+    {
+      label: "Meeting",
+      icon: <EventIcon />,
+    },
   ];
 
-  // Lead details
+  // Default profile details
   const leadDetails = [
-    { label: "Email", value: "janecooper@gmail.com" },
-    { label: "First Name", value: "Jane" },
-    { label: "Last Name", value: "Cooper" },
-    { label: "Phone Number", value: "078 5432 8505" },
-    { label: "Lead Status", value: "New" },
-    { label: "Job Title", value: "Salesperson" },
-    { label: "Created Date", value: "04/08/2025 2:31 PM GMT+5:30" },
+    {
+      label: "Email",
+      value: "janecooper@gmail.com",
+    },
+    {
+      label: "First Name",
+      value: "Jane",
+    },
+    {
+      label: "Last Name",
+      value: "Cooper",
+    },
+    {
+      label: "Phone Number",
+      value: "078 5432 8505",
+    },
+    {
+      label: "Lead Status",
+      value: "New",
+    },
+    {
+      label: "Job Title",
+      value: "Salesperson",
+    },
+    {
+      label: "Created Date",
+      value: "04/08/2025 2:31 PM GMT+5:30",
+    },
   ];
 
   return (
+    // Main layout
     <MainLayout title={title}>
       <Box
         sx={{
@@ -66,31 +103,29 @@ export default function CommonEntityHeader({
           backgroundColor: "#fff",
         }}
       >
-        {/* Left Panel */}
-        {/* <LeftPanel
-          actions={actions}
-          leadDetails={leadDetails}
-          handleActionClick={handleActionClick}
-          title={title}
-        /> */}
-
+        {/* Left panel */}
         <LeftPanel
+          title={title}
           actions={leftPanelData.actions || actions}
           leadDetails={leftPanelData.leadDetails || leadDetails}
           handleActionClick={
             leftPanelData.handleActionClick || handleActionClick
           }
-          title={title}
+          profile={leftPanelData.profile}
+          sectionTitle={leftPanelData.sectionTitle}
         />
 
-        {/* Middle Panel */}
+        {/* Middle panel */}
         <MiddlePanel
-        // activeTab={activeTab}
-        // setActiveTab={setActiveTab}
+          // activeTab={activeTab}
+          // setActiveTab={setActiveTab}
         />
 
-        {/* Right Panel */}
-        <RightPanel />
+        {/* Right panel */}
+        <RightPanel
+          summaryTitle={leftPanelData.summaryTitle}
+          summaryText={leftPanelData.summaryText}
+        />
       </Box>
     </MainLayout>
   );
