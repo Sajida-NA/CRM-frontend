@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 
+// Material UI Icons
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import EmailIcon from "@mui/icons-material/Email";
 import CallIcon from "@mui/icons-material/Call";
@@ -9,11 +10,22 @@ import EventIcon from "@mui/icons-material/Event";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 
 export default function LeftPanel({
+  // Page title (Lead, Company, Deal, Ticket)
   title,
+
+  // Quick action buttons
   actions,
+
+  // Details displayed in the About section
   leadDetails,
+
+  // Handles quick action button click
   handleActionClick,
+
+  // Dynamic profile information
   profile = {},
+
+  // About section heading
   sectionTitle = "About this lead",
 }) {
   return (
@@ -26,6 +38,7 @@ export default function LeftPanel({
         p: 2,
       }}
     >
+      {/* ================= Page Title ================= */}
       <Typography
         sx={{
           fontWeight: 700,
@@ -35,6 +48,7 @@ export default function LeftPanel({
         {title}
       </Typography>
 
+      {/* ================= Profile Section ================= */}
       <Box
         sx={{
           display: "flex",
@@ -42,6 +56,7 @@ export default function LeftPanel({
           mb: 2,
         }}
       >
+        {/* Profile Image Placeholder */}
         <Box
           sx={{
             width: 72,
@@ -51,7 +66,9 @@ export default function LeftPanel({
           }}
         />
 
+        {/* Profile Information */}
         <Box>
+          {/* Name */}
           <Typography
             sx={{
               fontWeight: 600,
@@ -61,6 +78,7 @@ export default function LeftPanel({
             {profile.name || "Jane Cooper"}
           </Typography>
 
+          {/* Subtitle / Job Title */}
           <Typography
             sx={{
               fontSize: "14px",
@@ -70,6 +88,7 @@ export default function LeftPanel({
             {profile.subTitle || "SalesPerson"}
           </Typography>
 
+          {/* Email with Edit Icon */}
           <Box
             sx={{
               display: "flex",
@@ -97,6 +116,7 @@ export default function LeftPanel({
         </Box>
       </Box>
 
+      {/* ================= Quick Action Buttons ================= */}
       <Box
         sx={{
           backgroundColor: "#F7F7FA",
@@ -115,6 +135,7 @@ export default function LeftPanel({
             }}
             onClick={() => handleActionClick(item.label)}
           >
+            {/* Action Icon */}
             <Box
               sx={{
                 width: 32,
@@ -135,6 +156,7 @@ export default function LeftPanel({
               })}
             </Box>
 
+            {/* Action Label */}
             <Typography
               sx={{
                 fontSize: "10px",
@@ -147,6 +169,7 @@ export default function LeftPanel({
         ))}
       </Box>
 
+      {/* ================= About Section Header ================= */}
       <Box
         sx={{
           display: "flex",
@@ -165,6 +188,7 @@ export default function LeftPanel({
           {sectionTitle}
         </Typography>
 
+        {/* Edit About Section */}
         <EditSquareIcon
           sx={{
             fontSize: 14,
@@ -174,6 +198,7 @@ export default function LeftPanel({
         />
       </Box>
 
+      {/* ================= Details Section ================= */}
       {leadDetails.map((item) => (
         <Box
           key={item.label}
@@ -181,6 +206,7 @@ export default function LeftPanel({
             mb: 2,
           }}
         >
+          {/* Detail Label */}
           <Typography
             sx={{
               color: "#516F90",
@@ -190,6 +216,7 @@ export default function LeftPanel({
             {item.label}
           </Typography>
 
+          {/* Detail Value */}
           <Typography
             sx={{
               fontSize: "15px",

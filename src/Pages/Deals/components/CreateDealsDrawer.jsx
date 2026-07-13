@@ -5,6 +5,7 @@ import CommonInput from "../../../Components/common/CommonInput";
 import CommonButton from "../../../Components/common/CommonButton";
 import CommonSelect from "../../../Components/common/CommonSelect";
 import CommonDatePicker from "../../../Components/common/CommonDatePicker";
+import FormDatePicker from "../../../Components/common/FormDatePicker";
 
 export default function CreateDealsDrawer({ open, onClose }) {
   const [formData, setFormData] = useState({
@@ -136,10 +137,9 @@ export default function CreateDealsDrawer({ open, onClose }) {
 
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
-              <CommonDatePicker
+              <FormDatePicker
                 label="Close Date"
                 required
-               
                 value={formData.closeDate}
                 onChange={(newValue) =>
                   setFormData((prev) => ({

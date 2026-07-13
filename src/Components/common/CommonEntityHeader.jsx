@@ -2,20 +2,26 @@ import React from "react";
 import MainLayout from "../../layout/MainLayout";
 import { Box } from "@mui/material";
 
+// Quick action icons
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import EmailIcon from "@mui/icons-material/Email";
 import CallIcon from "@mui/icons-material/Call";
 import TaskIcon from "@mui/icons-material/Task";
 import EventIcon from "@mui/icons-material/Event";
 
+// Common panel components
 import LeftPanel from "./LeftPanel";
 import MiddlePanel from "./MiddlePanel";
 import RightPanel from "./RightPanel";
 
 export default function CommonEntityHeader({
+  // Page title
   title,
+
+  // Dynamic data for the left panel
   leftPanelData = {},
 }) {
+  // Handles quick action button clicks
   const handleActionClick = (type) => {
     const tabMap = {
       Note: "Notes",
@@ -30,6 +36,7 @@ export default function CommonEntityHeader({
     // setActiveTab(selectedTab);
   };
 
+  // Default quick action buttons
   const actions = [
     {
       label: "Note",
@@ -53,6 +60,7 @@ export default function CommonEntityHeader({
     },
   ];
 
+  // Default profile details
   const leadDetails = [
     {
       label: "Email",
@@ -85,6 +93,7 @@ export default function CommonEntityHeader({
   ];
 
   return (
+    // Main layout
     <MainLayout title={title}>
       <Box
         sx={{
@@ -94,6 +103,7 @@ export default function CommonEntityHeader({
           backgroundColor: "#fff",
         }}
       >
+        {/* Left panel */}
         <LeftPanel
           title={title}
           actions={leftPanelData.actions || actions}
@@ -105,11 +115,13 @@ export default function CommonEntityHeader({
           sectionTitle={leftPanelData.sectionTitle}
         />
 
+        {/* Middle panel */}
         <MiddlePanel
           // activeTab={activeTab}
           // setActiveTab={setActiveTab}
         />
 
+        {/* Right panel */}
         <RightPanel
           summaryTitle={leftPanelData.summaryTitle}
           summaryText={leftPanelData.summaryText}
