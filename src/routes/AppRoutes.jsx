@@ -26,6 +26,8 @@ import TicketsList from "../Pages/Tickets/TicketsList/TicketsList";
 import CreateTicketDrawer from "../Pages/Tickets/components/CreateTicketDrawer";
 import TicketMeeting from "../Pages/Tickets/components/Tabs/Meeting/TicketMeeting";
 import TicketProfile1 from "../Pages/Tickets/TicketProfile/TicketProfile1";
+import TicketNote from "../Pages/Tickets/components/Tabs/Note/TicketNote";
+
 
 // Deal Pages
 import DealsList from "../Pages/Deals/DealsList/DealsList";
@@ -34,6 +36,7 @@ import DealProfile from "../Pages/Deals/DealProfile/DealProfile";
 
 // Common Component
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
+import TicketLeftPanel from "../Pages/Tickets/components/TicketLeftPanel";
 
 function AppRoutes() {
   return (
@@ -64,6 +67,7 @@ function AppRoutes() {
       <Route path="/create-ticket" element={<CreateTicketDrawer />} />
       <Route path="/ticketmeeting" element={<TicketMeeting />} />
       <Route path="/ticketprofile" element={<TicketProfile1 />} />
+      <Route path="/ticketnote" element={<TicketNote/>}/>
 
       {/* Deal Routes */}
       <Route path="/dealslist" element={<DealsList />} />
@@ -76,6 +80,8 @@ function AppRoutes() {
       {/* Old Routes (Kept for Reference) */}
       {/* <Route path="/ticket-profile" element={<TicketProfile />} /> */}
       {/* <Route path="/company-profile" element={<CompanyProfile />} /> */}
+
+      <Route path="/ticketleftpanel"element={<TicketLeftPanel/>}/>
     </Routes>
   );
 }
