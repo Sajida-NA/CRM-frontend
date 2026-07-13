@@ -13,6 +13,5 @@ function App() {
     </LocalizationProvider>
   );
 }
+
 export default App;
-
-

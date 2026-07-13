@@ -1,21 +1,14 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 
-// AI summary icon
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
 
 export default function RightPanel({
-  // Dynamic AI summary title
-  // Can be changed from parent component
   summaryTitle = "AI Lead Summary",
-
-  // Dynamic AI summary content
-  // Default text will be displayed if no data is passed
-  summaryText = "There are no activities associated with this lead and further details are needed to provide a comprehensive summary.",
+  summaryText =
+    "There are no activities associated with this lead and further details are needed to provide a comprehensive summary.",
 }) {
   return (
-    // Right side panel container
-    // Displays AI summary and attachments section
     <Box
       sx={{
         width: 230,
@@ -24,11 +17,6 @@ export default function RightPanel({
         p: 2,
       }}
     >
-      {/* 
-        AI Summary Card
-        - Shows AI generated summary information
-        - Title and text are received as props
-      */}
       <Box
         sx={{
           border: "1px solid #5948DB",
@@ -38,7 +26,6 @@ export default function RightPanel({
           mb: 3,
         }}
       >
-        {/* AI Summary Heading */}
         <Typography
           sx={{
             fontWeight: 700,
@@ -48,7 +35,6 @@ export default function RightPanel({
             alignItems: "center",
           }}
         >
-          {/* AI sparkle icon */}
           <AutoAwesomeOutlinedIcon
             color="primary"
             sx={{
@@ -56,11 +42,9 @@ export default function RightPanel({
             }}
           />
 
-          {/* Dynamic summary title */}
           {summaryTitle}
         </Typography>
 
-        {/* AI Summary Description */}
         <Typography
           sx={{
             fontSize: "14px",
@@ -72,13 +56,7 @@ export default function RightPanel({
         </Typography>
       </Box>
 
-      {/* 
-        Attachments Section
-        - Displays files attached to activities
-        - Allows adding new attachments
-      */}
       <Box>
-        {/* Attachment Header */}
         <Box
           sx={{
             display: "flex",
@@ -87,7 +65,6 @@ export default function RightPanel({
             mb: 1,
           }}
         >
-          {/* Section title */}
           <Typography
             sx={{
               fontWeight: 700,
@@ -96,7 +73,6 @@ export default function RightPanel({
             Attachments
           </Typography>
 
-          {/* Add attachment action */}
           <Typography
             sx={{
               fontWeight: 600,
@@ -108,7 +84,6 @@ export default function RightPanel({
           </Typography>
         </Box>
 
-        {/* Attachment information text */}
         <Typography
           sx={{
             fontSize: "14px",
