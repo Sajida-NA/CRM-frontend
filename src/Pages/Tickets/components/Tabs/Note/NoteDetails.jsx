@@ -1,19 +1,20 @@
-import React, { useState } from "react";
-import CommonEntityHeader from "../../../../../Components/common/CommonEntityHeader";
-import { Box, Typography } from "@mui/material";
-import CommonButton from "../../../../../Components/common/CommonButton";
-import Createnote from "./Createnote";
-import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
+ import React, { useState } from 'react'
+ import { Box,Typography } from '@mui/material'
+ import CommonActivityTabs from '../../../../../Components/common/CommonActivityTab'
+ import Createnote from '../../../../Leads/components/Tabs/Note/Createnote';
+ import CommonButton from '../../../../../Components/common/CommonButton';
 
-export default function Leadnote() {
-  const [activeTab, setActiveTab] = useState("Notes");
-  const [openCreateNote, setOpenCreateNote] = useState(false);
+ 
+ export default function NoteDetails() {
 
-  return (
-    <div>
-      <CommonEntityHeader />
+     const [activeTab, setActiveTab] = useState("Notes");
+      const [openCreateNote, setOpenCreateNote] = useState(false);
+     
+    
+   return (
+     <div>
 
-      <Box
+        <Box
         sx={{
           p: 3,
           position: "absolute",
@@ -134,6 +135,14 @@ export default function Leadnote() {
           </Box>
         </Box>
       </Box>
-    </div>
-  );
-}
+  
+
+
+       
+     </div>
+   )
+ }
+ 
+ 
+ 
+ 
