@@ -9,20 +9,39 @@ import {
   InputBase,
   Divider,
 } from "@mui/material";
-
+import { useTheme } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 
 const Header = () => {
+  const theme = useTheme();
+ 
+   const iconButtonStyle = {
+    width: 42,
+    height: 42,
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: 1,
+    bgcolor: "background.paper",
+    color: "text.secondary",
+    transition: "all .3s",
+
+    "&:hover": {
+      bgcolor: "primary.main",
+      color: "#fff",
+      borderColor: "primary.main",
+    },
+  };
+
   return (
     <AppBar
       position="static"
       elevation={0}
       sx={{
-        bgcolor: "#fff",
-        color: "#000",
-        borderBottom: "1px solid #E5E7EB",
+        bgcolor:"background.paper",
+        color:  "text.primary",
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        
       }}
     >
       <Toolbar
@@ -60,14 +79,18 @@ const Header = () => {
               width: 320,
               height: 46,
               px: 2,
-              border: "1px solid #E5E7EB",
-              borderRadius: "12px",
-              bgcolor: "#fff",
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: 1,
+              boxShadow: "none",
+
+              "&:hover": {
+                borderColor: "primary.light",
+              },
             }}
           >
             <SearchIcon
               sx={{
-                color: "#9CA3AF",
+                color:  "text.secondary",
                 fontSize: 20,
               }}
             />
@@ -78,7 +101,7 @@ const Header = () => {
               sx={{
                 mx: 1.5,
                 my: 1.2,
-                borderColor: "#E5E7EB",
+                borderColor: "divider",
               }}
             />
 
@@ -86,11 +109,11 @@ const Header = () => {
               placeholder="Search"
               sx={{
                 flex: 1,
-                fontSize: 15,
-                color: "#374151",
+                typography:"body1",
+                color: "text.primary",
 
                 "& input::placeholder": {
-                  color: "#9CA3AF",
+                  color: " theme.palette.text.secondary",
                   opacity: 1,
                 },
               }}
@@ -99,62 +122,31 @@ const Header = () => {
 
           {/* Chat */}
           <IconButton
-            sx={{
-              width: 42,
-              height: 42,
-              border: "1px solid #E5E7EB",
-              borderRadius: "12px",
-              bgcolor: "#fff",
-              color: "#6B7280",
-
-              "&:hover": {
-                bgcolor: "#F8F9FC",
-              },
-            }}
+           sx={iconButtonStyle}
           >
             <ChatOutlinedIcon />
           </IconButton>
 
           {/* Notification */}
           <IconButton
-            sx={{
-              width: 42,
-              height: 42,
-              border: "1px solid #E5E7EB",
-              borderRadius: "12px",
-              bgcolor: "#fff",
-              color: "#6B7280",
-
-              "&:hover": {
-                bgcolor: "#F8F9FC",
-              },
-            }}
+           sx={iconButtonStyle}
           >
             <NotificationsNoneIcon />
           </IconButton>
 
-          {/* Profile */}
-          <Box
+           {/* Profile */}
+          <Avatar
             sx={{
-              width: 42,
-              height: 42,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              bgcolor: "#fff",
-
+              width: 36,
+              height: 36,
+              bgcolor: "primary.main",
+              color: "#fff",
+              fontWeight: 600,
+              fontSize: 14,
             }}
           >
-            <Avatar
-              sx={{
-                width: 30,
-                height: 30,
-                fontSize: 14,
-              }}
-            >
-              A
-            </Avatar>
-          </Box>
+            A
+          </Avatar>
         </Box>
       </Toolbar>
     </AppBar>
