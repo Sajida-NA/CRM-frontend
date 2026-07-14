@@ -37,6 +37,7 @@ import DealProfile from "../Pages/Deals/DealProfile/DealProfile";
 // Common Component
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
 import TicketLeftPanel from "../Pages/Tickets/components/TicketLeftPanel";
+import LeadsLeftPanel from "../Pages/Leads/components/LeadsLeftPanel";
 
 function AppRoutes() {
   return (
@@ -82,6 +83,7 @@ function AppRoutes() {
       {/* <Route path="/company-profile" element={<CompanyProfile />} /> */}
 
       <Route path="/ticketleftpanel"element={<TicketLeftPanel/>}/>
+       <Route path="/leadsleftpanel"element={<LeadsLeftPanel/>}/>
     </Routes>
   );
 }
