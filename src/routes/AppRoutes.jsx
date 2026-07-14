@@ -19,7 +19,7 @@ import LeadMeeting from "../Pages/Leads/components/Tabs/Meetings/LeadMeeting";
 // Company Pages
 import CompaniesList from "../Pages/Companies/CompaniesList/CompaniesList";
 import CompanyMeeting from "../Pages/Companies/components/Tabs/Meeting/CompanyMeeting";
-import CompanyProfile from "../Pages/Company/CompanyProfile/companyprofile1";
+import CompanyProfile from "../Pages/Companies/CompanyProfile/companyprofile1";
 
 // Ticket Pages
 import TicketsList from "../Pages/Tickets/TicketsList/TicketsList";

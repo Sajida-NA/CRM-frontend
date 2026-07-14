@@ -8,7 +8,7 @@ import CommonActivityTabs from "../../../../../Components/common/CommonActivityT
 import ScheduleMeeting from "./ScheduleMeeting";
 import colors from "../../../../../theme/colors";
 
-export default function Meeting() {
+export default function LeadMeeting() {
   const [activeTab, setActiveTab] = useState("Meetings");
   const [openCreateMeeting, setOpenCreateMeeting] = useState(false);
   const [openCards, setOpenCards] = useState({
@@ -24,7 +24,7 @@ export default function Meeting() {
       organizer: "Maria",
       duration: "1 Hour",
       attendees: "2 People",
-      description: "Let’s discuss our new product line.",
+      description: "Let's discuss our new product line.",
     },
   ];
 
@@ -206,3 +206,5 @@ export default function Meeting() {
     </>
   );
 }
+
+
