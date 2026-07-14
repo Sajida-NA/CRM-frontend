@@ -1,11 +1,19 @@
 const ticketProfileData = {
   profile: {
     name: "Payment Failure Issue",
-    subtitle: "Status : New",
+    subtitle: "Status: New",
     email: "",
-    avatar: "",
-    editable: true,
+    avatar: false,
+    
   },
+
+  quickActions: [
+    "Note",
+    "Email",
+    "Call",
+    "Task",
+    "Meeting",
+  ],
 
   about: {
     title: "About this Ticket",
@@ -29,6 +37,23 @@ const ticketProfileData = {
     ],
   },
 
+  activities: [
+    {
+      id: 1,
+      type: "Ticket",
+      title: "Ticket activity",
+      date: "June 24, 2025 at 5:30 PM",
+      description: "Maria Johnson moved ticket to New.",
+    },
+    {
+      id: 2,
+      type: "Ticket",
+      title: "Ticket activity",
+      date: "June 24, 2025 at 5:30 PM",
+      description: "This ticket was created by Maria Johnson.",
+    },
+  ],
+
   aiSummary: {
     title: "AI Ticket Summary",
     description:
@@ -36,16 +61,6 @@ const ticketProfileData = {
   },
 
   attachments: [],
-
-  activities: [],
-
-  quickActions: [
-    "Note",
-    "Email",
-    "Call",
-    "Task",
-    "Meeting",
-  ],
 };
 
 export default ticketProfileData;

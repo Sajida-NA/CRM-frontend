@@ -3,9 +3,16 @@ const companyProfileData = {
     name: "TrustSphere",
     subtitle: "Real Estate",
     email: "trustsphere.com",
-    avatar: "",
-    editable: true,
+    avatar: "T",
   },
+
+  quickActions: [
+    "Note",
+    "Email",
+    "Call",
+    "Task",
+    "Meeting",
+  ],
 
   about: {
     title: "About this Company",
@@ -53,23 +60,52 @@ const companyProfileData = {
     ],
   },
 
+  activities: [
+    {
+      id: 1,
+      type: "Ticket",
+      title: "Ticket activity",
+      date: "June 24, 2025 at 5:30 PM",
+      description: "Maria Johnson created Ticket #1.",
+    },
+    {
+      id: 2,
+      type: "Call",
+      title: "Call from Maria Johnson",
+      date: "June 24, 2025 at 5:30 PM",
+      description:
+        "Brought Maria through our latest product line. She is interested and is going to get back to me.",
+    },
+    {
+      id: 3,
+      type: "Meeting",
+      title: "Meeting with Maria Johnson and Jane Cooper",
+      date: "June 24, 2025 at 5:30 PM",
+      description: "Let's discuss our new product line.",
+    },
+    {
+      id: 4,
+      type: "Email",
+      title: "Email tracking",
+      date: "June 24, 2025 at 5:30 PM",
+      description: 'Jane Cooper opened "Hello There".',
+    },
+    {
+      id: 5,
+      type: "Note",
+      title: "Note by Maria Johnson",
+      date: "June 24, 2025 at 5:30 PM",
+      description: "Shared additional notes regarding customer requirements."
+    },
+  ],
+
   aiSummary: {
     title: "AI Company Summary",
     description:
-      "There are no activities associated with this lead and further details are needed to provide a comprehensive summary.",
+"There are no activities associated with this company and further details are needed to provide a comprehensive summary.",
   },
 
   attachments: [],
-
-  activities: [],
-
-  quickActions: [
-    "Note",
-    "Email",
-    "Call",
-    "Task",
-    "Meeting",
-  ],
 };
 
 export default companyProfileData;

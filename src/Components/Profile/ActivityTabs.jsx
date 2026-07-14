@@ -14,51 +14,46 @@ export default function ActivityTabs({
   value,
   onChange,
 }) {
-  const handleChange = (event, newValue) => {
-    onChange(newValue);
-  };
-
   return (
     <Tabs
       value={value}
-      onChange={handleChange}
+      onChange={(_, newValue) => onChange(newValue)}
       variant="scrollable"
-      scrollButtons="auto"
-      allowScrollButtonsMobile
+      scrollButtons={false}
       sx={{
-        mt: 2,
-        minHeight: 48,
+        minHeight: 44,
+        borderBottom: "1px solid #EAECF0",
 
         "& .MuiTabs-flexContainer": {
-          gap: 1,
-        },
-
-        "& .MuiTab-root": {
-          minHeight: 48,
-          minWidth: "auto",
-          textTransform: "none",
-          fontWeight: 500,
-          fontSize: "14px",
-          color: "#727680",
-          px: 2,
-        },
-
-        "& .Mui-selected": {
-          color: "#6C63FF",
-          fontWeight: 600,
+          gap: 1.5,
         },
 
         "& .MuiTabs-indicator": {
-          backgroundColor: "#6C63FF",
+          backgroundColor: "#5A45E5",
           height: 3,
-          borderRadius: "2px",
+          borderRadius: "3px 3px 0 0",
         },
       }}
     >
       {tabs.map((tab) => (
         <Tab
           key={tab}
+          disableRipple
           label={tab}
+          sx={{
+            textTransform: "none",
+            minHeight: 44,
+            minWidth: "auto",
+            px: 0.5,
+            fontSize: 14,
+            fontWeight: 500,
+            color: "#667085",
+
+            "&.Mui-selected": {
+              color: "#5A45E5",
+              fontWeight: 600,
+            },
+          }}
         />
       ))}
     </Tabs>

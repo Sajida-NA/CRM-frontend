@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import {
   Box,
-  Button,
-  Paper,
   TextField,
   Typography,
   InputAdornment,
@@ -21,23 +19,15 @@ export default function ProfileMiddlePanel({
   const [search, setSearch] = useState("");
 
   return (
-    <Paper
-      elevation={0}
+    <Box
       sx={{
-        p: 3,
-        borderRadius: 3,
-        minHeight: "100%",
+        p: 2,
+        backgroundColor: "transparent",
       }}
     >
-      {/* Search + Convert */}
-      <Box
-        sx={{
-          display: "flex",
-          gap: 2,
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
+      {/* Search */}
+
+      <Box sx={{ mb: 2 }}>
         <TextField
           fullWidth
           placeholder="Search activities"
@@ -46,48 +36,47 @@ export default function ProfileMiddlePanel({
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon color="disabled" />
+                <SearchIcon sx={{ color: "#98A2B3" }} />
               </InputAdornment>
             ),
           }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              height: 44,
+              borderRadius: "10px",
+              bgcolor: "#fff",
+            },
+          }}
         />
-
-        {entityType === "company" && (
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{
-              minWidth: 140,
-            }}
-          >
-            Convert
-          </Button>
-        )}
       </Box>
 
-      {/* Activity Tabs */}
+      {/* Tabs */}
+
       <ActivityTabs
         value={activeTab}
         onChange={setActiveTab}
       />
 
-      {/* Upcoming Section */}
-      <Box sx={{ mt: 4 }}>
+      {/* Upcoming */}
+
+      <Box sx={{ mt: 3 }}>
         <Typography
           sx={{
             fontWeight: 700,
-            fontSize: 16,
-            mb: 2,
+            fontSize: 14,
+            color: "#101828",
+            mb: 1.5,
           }}
         >
           Upcoming
         </Typography>
 
-        <Paper
-          variant="outlined"
+        <Box
           sx={{
-            p: 2,
+            border: "1px solid #EAECF0",
             borderRadius: 2,
+            bgcolor: "#fff",
+            p: 1.5,
             mb: 3,
           }}
         >
@@ -95,35 +84,46 @@ export default function ProfileMiddlePanel({
             sx={{
               fontWeight: 600,
               fontSize: 14,
+              color: "#101828",
             }}
           >
             Task assigned to Maria Johnson
           </Typography>
 
           <Typography
-            color="text.secondary"
             sx={{
               mt: 0.5,
-              fontSize: 14,
+              fontSize: 13,
+              color: "#667085",
             }}
           >
             Prepare quote for Jane Cooper
           </Typography>
-        </Paper>
+        </Box>
       </Box>
 
       {/* Timeline */}
+
       <Typography
         sx={{
+          mt: 2,
+          mb: 1.5,
           fontWeight: 700,
-          mb: 2,
-          fontSize: 16,
+          fontSize: 14,
+          color: "#101828",
         }}
       >
         June 2025
       </Typography>
 
-      <Box>        {activities.length > 0 ? (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 1,
+        }}
+      >
+        {activities.length > 0 ? (
           activities.map((activity, index) => (
             <ActivityCard
               key={activity.id || index}
@@ -175,6 +175,6 @@ export default function ProfileMiddlePanel({
           </>
         )}
       </Box>
-    </Paper>
+    </Box>
   );
 }

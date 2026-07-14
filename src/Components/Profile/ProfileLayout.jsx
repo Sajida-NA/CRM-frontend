@@ -16,8 +16,8 @@ export default function ProfileLayout({
       <Box
         sx={{
           display: "flex",
-          gap: 3,
-          p: 3,
+          gap: 2,
+          p: 2,
           width: "100%",
           alignItems: "flex-start",
         }}
@@ -25,7 +25,7 @@ export default function ProfileLayout({
         {/* Left Panel */}
         <Box
           sx={{
-            width: 320,
+            width: 300,
             flexShrink: 0,
           }}
         >
@@ -53,7 +53,7 @@ export default function ProfileLayout({
         {/* Right Panel */}
         <Box
           sx={{
-            width: 320,
+            width: 300,
             flexShrink: 0,
           }}
         >

@@ -20,6 +20,7 @@ export default function CommonEntityHeader({
 
   // Dynamic data for the left panel
   leftPanelData = {},
+   
 }) {
   // Handles quick action button clicks
   const handleActionClick = (type) => {

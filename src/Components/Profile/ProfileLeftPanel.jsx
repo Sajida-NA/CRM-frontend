@@ -3,7 +3,6 @@ import {
   Avatar,
   Box,
   IconButton,
-  Paper,
   Stack,
   Typography,
 } from "@mui/material";
@@ -16,178 +15,174 @@ import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 
 const iconMap = {
-  Note: <NoteAltOutlinedIcon fontSize="small" />,
-  Email: <EmailOutlinedIcon fontSize="small" />,
-  Call: <CallOutlinedIcon fontSize="small" />,
-  Task: <TaskAltOutlinedIcon fontSize="small" />,
-  Meeting: <EventOutlinedIcon fontSize="small" />,
+  Note: <NoteAltOutlinedIcon sx={{ fontSize: 20 }} />,
+  Email: <EmailOutlinedIcon sx={{ fontSize: 20 }} />,
+  Call: <CallOutlinedIcon sx={{ fontSize: 20 }} />,
+  Task: <TaskAltOutlinedIcon sx={{ fontSize: 20 }} />,
+  Meeting: <EventOutlinedIcon sx={{ fontSize: 20 }} />,
 };
 
 export default function ProfileLeftPanel({
-  title,
   profile,
   about,
   quickActions = [],
   onActionClick,
 }) {
   return (
-    <Paper
-      elevation={0}
+    <Box
       sx={{
-        p: 3,
-        height: "100%",
-        borderRadius: 3,
+        width: "100%",
+        px: 2,
+        py: 2,
       }}
     >
-      {/* Page Title */}
-      <Typography
-        variant="h6"
-        sx={{
-          fontWeight: 700,
-          mb: 3,
-        }}
-      >
-        {title}
-      </Typography>
-
       {/* Profile */}
+
       <Stack
-        direction="row"
-        spacing={2}
-        alignItems="flex-start"
-      >
-        <Avatar
-          src={profile?.avatar}
-          sx={{
-            width: 72,
-            height: 72,
-            bgcolor: "#E8ECF3",
-            color: "#5B5FC7",
-            fontWeight: 700,
-            fontSize: 24,
-          }}
-        >
-          {!profile?.avatar &&
-            profile?.name?.charAt(0)}
-        </Avatar>
+  direction="row"
+  spacing={profile?.avatar === false ? 0 : 2}
+  alignItems="flex-start"
+>
+        {profile?.avatar !== false && (
+  <Avatar
+  src={profile?.avatarImage}
+  sx={{
+    width: 56,
+    height: 56,
+    borderRadius: 2,
+    bgcolor: profile?.avatarImage ? "transparent" : "#EEF2FF",
+    color: "#5A45E5",
+    fontWeight: 700,
+    fontSize: 24,
+  }}
+>
+  {!profile?.avatarImage && profile?.avatar}
+</Avatar>
+)}
 
         <Box flex={1}>
           <Typography
-            variant="h6"
             sx={{
+              fontSize: 16,
               fontWeight: 700,
-              mb: .5,
+              color: "#101828",
             }}
           >
             {profile?.name}
           </Typography>
 
           <Typography
-            variant="body2"
-            color="text.secondary"
+            sx={{
+              mt: 0.4,
+              fontSize: 12,
+              color: "#667085",
+            }}
           >
             {profile?.subtitle}
           </Typography>
 
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            sx={{ mt: .5 }}
-          >
-            <Typography
-              variant="body2"
-              color="text.secondary"
+          {profile?.email && (
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              sx={{ mt: 0.5 }}
             >
-              {profile?.email}
-            </Typography>
+              <Typography
+                sx={{
+                  fontSize: 12,
+                  color: "#667085",
+                }}
+              >
+                {profile.email}
+              </Typography>
 
-            <IconButton
-              size="small"
-              sx={{
-                color: "primary.main",
-                p: .3,
-              }}
-            >
-              <EditSquareIcon
-                sx={{ fontSize: 16 }}
-              />
-            </IconButton>
-          </Stack>
+              <IconButton
+                size="small"
+                sx={{
+                  p: 0,
+                  color: "#5A45E5",
+                }}
+              >
+                <EditSquareIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </Stack>
+          )}
         </Box>
       </Stack>
 
       {/* Quick Actions */}
-      <Paper
-        elevation={0}
+
+      <Stack
+        direction="row"
+        justifyContent="space-between"
         sx={{
           mt: 3,
-          p: 1.5,
-          bgcolor: "#F7F8FC",
-          borderRadius: 2,
+          mb: 3,
         }}
       >
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-        >
-          {quickActions.map((action) => (
+        {quickActions.map((action) => (
+          <Box
+            key={action}
+            onClick={() => onActionClick?.(action)}
+            sx={{
+              cursor: "pointer",
+              textAlign: "center",
+            }}
+          >
             <Box
-              key={action}
-              onClick={() =>
-                onActionClick?.(action)
-              }
               sx={{
-                cursor: "pointer",
-                textAlign: "center",
+                width: 40,
+                height: 40,
+                mx: "auto",
+                border: "1px solid #E4E7EC",
+                borderRadius: 2,
+                bgcolor: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#5A45E5",
+                transition: "all .2s ease",
+
+                "&:hover": {
+                  bgcolor: "#5A45E5",
+                  color: "#fff",
+                  transform: "translateY(-2px)",
+                },
               }}
             >
-              <Box
-                sx={{
-                  width: 36,
-                  height: 36,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 2,
-                  bgcolor: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "primary.main",
-                  mx: "auto",
-                }}
-              >
-                {iconMap[action]}
-              </Box>
-
-              <Typography
-                variant="caption"
-                sx={{
-                  mt: .7,
-                  display: "block",
-                  fontWeight: 500,
-                }}
-              >
-                {action}
-              </Typography>
+              {iconMap[action]}
             </Box>
-          ))}
-        </Stack>
-      </Paper>
-            {/* About Section */}
+
+            <Typography
+              sx={{
+                mt: 0.8,
+                fontSize: 11,
+                fontWeight: 500,
+                color: "#475467",
+              }}
+            >
+              {action}
+            </Typography>
+          </Box>
+        ))}
+      </Stack>
+
+      {/* About */}
+
       <Stack
         direction="row"
         justifyContent="space-between"
         alignItems="center"
         sx={{
-          mt: 4,
           mb: 2,
         }}
       >
         <Typography
           sx={{
+            fontSize: 14,
             fontWeight: 700,
-            fontSize: 15,
+            color: "#101828",
           }}
         >
           {about?.title}
@@ -196,27 +191,24 @@ export default function ProfileLeftPanel({
         <IconButton
           size="small"
           sx={{
-            color: "primary.main",
-            p: 0.4,
+            p: 0,
+            color: "#5A45E5",
           }}
         >
-          <EditSquareIcon
-            sx={{
-              fontSize: 18,
-            }}
-          />
+          <EditSquareIcon sx={{ fontSize: 16 }} />
         </IconButton>
       </Stack>
 
       {/* Details */}
-      <Stack spacing={2}>
+
+      <Stack spacing={1.6}>
         {about?.details?.map((item) => (
           <Box key={item.label}>
             <Typography
               sx={{
-                fontSize: 12,
-                color: "text.secondary",
-                mb: 0.4,
+                fontSize: 11,
+                color: "#667085",
+                mb: 0.3,
                 fontWeight: 500,
               }}
             >
@@ -225,9 +217,10 @@ export default function ProfileLeftPanel({
 
             <Typography
               sx={{
-                fontSize: 14,
-                color: "text.primary",
+                fontSize: 13,
+                color: "#101828",
                 fontWeight: 500,
+                lineHeight: 1.5,
                 wordBreak: "break-word",
               }}
             >
@@ -236,6 +229,6 @@ export default function ProfileLeftPanel({
           </Box>
         ))}
       </Stack>
-    </Paper>
+    </Box>
   );
 }

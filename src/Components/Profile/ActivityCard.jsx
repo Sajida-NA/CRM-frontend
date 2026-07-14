@@ -2,8 +2,6 @@ import React from "react";
 import {
   Avatar,
   Box,
-  Paper,
-  Stack,
   Typography,
 } from "@mui/material";
 
@@ -15,12 +13,12 @@ import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
 import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumberOutlined";
 
 const iconMap = {
-  Call: <CallOutlinedIcon fontSize="small" />,
-  Email: <EmailOutlinedIcon fontSize="small" />,
-  Note: <NoteAltOutlinedIcon fontSize="small" />,
-  Meeting: <EventOutlinedIcon fontSize="small" />,
-  Task: <TaskAltOutlinedIcon fontSize="small" />,
-  Ticket: <ConfirmationNumberOutlinedIcon fontSize="small" />,
+  Call: <CallOutlinedIcon sx={{ fontSize: 18 }} />,
+  Email: <EmailOutlinedIcon sx={{ fontSize: 18 }} />,
+  Note: <NoteAltOutlinedIcon sx={{ fontSize: 18 }} />,
+  Meeting: <EventOutlinedIcon sx={{ fontSize: 18 }} />,
+  Task: <TaskAltOutlinedIcon sx={{ fontSize: 18 }} />,
+  Ticket: <ConfirmationNumberOutlinedIcon sx={{ fontSize: 18 }} />,
 };
 
 export default function ActivityCard({
@@ -31,82 +29,82 @@ export default function ActivityCard({
   createdBy,
 }) {
   return (
-    <Paper
-      elevation={0}
+    <Box
       sx={{
-        p: 2,
-        borderRadius: 2,
-        border: "1px solid",
-        borderColor: "divider",
-        mb: 2,
+        display: "flex",
+        gap: 1.5,
+        py: 1.5,
+        borderBottom: "1px solid #F2F4F7",
+
+        "&:last-child": {
+          borderBottom: "none",
+        },
       }}
     >
-      <Stack
-        direction="row"
-        spacing={2}
-        alignItems="flex-start"
+      {/* Activity Icon */}
+
+      <Avatar
+        sx={{
+          width: 40,
+          height: 40,
+          bgcolor: "#F4F3FF",
+          color: "#5A45E5",
+          flexShrink: 0,
+        }}
       >
-        {/* Activity Icon */}
-        <Avatar
+        {iconMap[type] || (
+          <NoteAltOutlinedIcon sx={{ fontSize: 18 }} />
+        )}
+      </Avatar>
+
+      {/* Content */}
+
+      <Box sx={{ flex: 1 }}>
+        <Typography
           sx={{
-            width: 40,
-            height: 40,
-            bgcolor: "#F5F3FF",
-            color: "primary.main",
+            fontSize: 13,
+            fontWeight: 600,
+            color: "#101828",
           }}
         >
-          {iconMap[type]}
-        </Avatar>
+          {title}
+        </Typography>
 
-        <Box flex={1}>
-          {/* Title */}
+        {createdBy && (
           <Typography
             sx={{
-              fontSize: 15,
-              fontWeight: 600,
+              mt: 0.3,
+              fontSize: 12,
+              color: "#667085",
             }}
           >
-            {title}
+            {createdBy}
           </Typography>
+        )}
 
-          {/* Created By */}
-          {createdBy && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ mt: 0.3 }}
-            >
-              {createdBy}
-            </Typography>
-          )}
+        <Typography
+          sx={{
+            mt: 0.3,
+            fontSize: 11,
+            color: "#667085",
+          }}
+        >
+          {date}
+        </Typography>
 
-          {/* Date */}
+        {description && (
           <Typography
-            variant="caption"
-            color="text.secondary"
             sx={{
-              display: "block",
-              mt: 0.5,
+              mt: 0.8,
+              fontSize: 12,
+              lineHeight: 1.6,
+              color: "#475467",
             }}
           >
-            {date}
+            {description}
           </Typography>
-
-          {/* Description */}
-          {description && (
-            <Typography
-              variant="body2"
-              sx={{
-                mt: 1.5,
-                color: "text.primary",
-                lineHeight: 1.7,
-              }}
-            >
-              {description}
-            </Typography>
-          )}
-        </Box>
-      </Stack>
-    </Paper>
+        )}
+      </Box>
+    </Box>
   );
 }
