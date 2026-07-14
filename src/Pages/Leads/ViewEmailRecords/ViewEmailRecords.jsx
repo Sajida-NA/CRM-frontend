@@ -4,7 +4,7 @@ import lead from "../data/leadData";
 import emails from "../data/emailData";
 
 import LeadInfo from "../components/EmailTab/LeadInfo";
-import EmailPanel from "../components/EmailTab/EmailPanel";
+import EmailPanel from "../components/Tabs/Email/EmailPanel";
 import AISummary from "../../Companies/components/AISummary";
 import MainLayout from "../../../layout/MainLayout";
 

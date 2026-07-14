@@ -11,14 +11,13 @@ import {
 
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { useState } from "react";
-
-import EmailCard from "./EmailCard";
 import { useNavigate } from "react-router-dom";
 
+import EmailCard from "./EmailCard";
+
 function EmailPanel({ emails }) {
-  //Email tab active (index 2)
-  const [value, setValue] = useState(2);
   const navigate = useNavigate();
+  const [value, setValue] = useState(2);
 
   return (
     <Paper
