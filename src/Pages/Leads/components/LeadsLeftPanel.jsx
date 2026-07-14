@@ -1,68 +1,69 @@
-// import React from 'react'
-// import CommonEntityHeader from '../../../Components/common/CommonEntityHeader'
+import React from 'react'
+import CommonEntityHeader from '../../../Components/common/CommonEntityHeader'
 
-// export default function LeadsLeftPanel() {
+export default function LeadsLeftPanel() {
 
-//     const leadDetails = [
-//     {
-//       label: "Email",
-//       value: "janecooper@gmail.com",
-//     },
-//     {
-//       label: "First Name",
-//       value: "Jane",
-//     },
-//     {
-//       label: "Last Name",
-//       value: "Cooper",
-//     },
-//     {
-//       label: "Phone Number",
-//       value: "078 5432 8505",
-//     },
-//     {
-//       label: "Lead Status",
-//       value: "New",
-//     },
-//     {
-//       label: "Job Title",
-//       value: "Salesperson",
-//     },
-//     {
-//       label: "Created Date",
-//       value: "04/08/2025 2:31 PM GMT+5:30",
-//     },
-//   ];
+    const leadDetails = [
+    {
+      label: "Email",
+      value: "janecooper@gmail.com",
+    },
+    {
+      label: "First Name",
+      value: "Jane",
+    },
+    {
+      label: "Last Name",
+      value: "Cooper",
+    },
+    {
+      label: "Phone Number",
+      value: "078 5432 8505",
+    },
+    {
+      label: "Lead Status",
+      value: "New",
+    },
+    {
+      label: "Job Title",
+      value: "Salesperson",
+    },
+    {
+      label: "Created Date",
+      value: "04/08/2025 2:31 PM GMT+5:30",
+    },
+  ];
 
-//  const leftPanelData = {
+ const leftPanelData = {
 
-//     // actions,
+    // actions,
 
-//     profile:{
-//       name:"Payment Failure Issue",
-//       subTitle:"Status : New",
-//       email:"",
-//     },
+    profile:{
+      name:"Jane Cooper",
+      subTitle:"Salesperson",
+      email:"",
+    },
 
-//     sectionTitle:"About this Ticket",
+    sectionTitle:"About this lead",
 
-//     leadDetails:ticketDetails,
+    leadDetails:leadDetails,
 
-//     summaryTitle:"AI Ticket Summary",
+    summaryTitle:"AI Ticket Summary",
 
-//     summaryText:
-//     'The ticket titled "Payment Failure Issue" currently has no associated conversation, call, or note transcripts.',
-//   };
+    summaryText:
+    
+    'There are no activities associated with this lead and further details are needed to provide a comprehensive summary.',
+  };
 
 
-//   return (
-//     <div>
+  return (
+    <div>
 
-//          <CommonEntityHeader
-//                   title="Tickets"
-//                   leftPanelData={leftPanelData}
-//                 />   
+         <CommonEntityHeader
+                  title="Leads"
+                  leftPanelData={leftPanelData}
+                />   
       
-//     </div>
-//   )
-// }
+    </div>
+  )
+}
