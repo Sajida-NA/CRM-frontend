@@ -19,7 +19,7 @@ import LeadMeeting from "../Pages/Leads/components/Tabs/Meetings/LeadMeeting";
 // Company Pages
 import CompaniesList from "../Pages/Companies/CompaniesList/CompaniesList";
 import CompanyMeeting from "../Pages/Companies/components/Tabs/Meeting/CompanyMeeting";
-import CompanyProfile from "../Pages/Companies/CompanyProfile/companyprofile1";
+import CompanyProfile from "../Pages/Companies/CompanyProfile/CompanyProfile";
 import CompanyNote from "../Pages/Companies/components/Tabs/Note/CompanyNote";
 import CompanyCalls from "../Pages/Companies/components/Tabs/Calls/CompanyCalls";
 
@@ -29,7 +29,7 @@ import CompanyCalls from "../Pages/Companies/components/Tabs/Calls/CompanyCalls"
 import TicketsList from "../Pages/Tickets/TicketsList/TicketsList";
 import CreateTicketDrawer from "../Pages/Tickets/components/CreateTicketDrawer";
 import TicketMeeting from "../Pages/Tickets/components/Tabs/Meeting/TicketMeeting";
-import TicketProfile1 from "../Pages/Tickets/TicketProfile/TicketProfile1";
+import TicketProfile from "../Pages/Tickets/TicketProfile/TicketProfile";
 import TicketNote from "../Pages/Tickets/components/Tabs/Note/TicketNote";
 import TicketCalls from "../Pages/Tickets/components/Tabs/Calls/TicketCalls";
 
@@ -71,15 +71,14 @@ function AppRoutes() {
       {/* Company Routes */}
       <Route path="/companieslist" element={<CompaniesList />} />
       <Route path="/companymeeting" element={<CompanyMeeting />} />
-      <Route path="/CompanyProfile1" element={<CompanyProfile />} />
-      <Route path="/companycalls" element={<CompanyCalls/>} />
+      <Route path="/companyprofile" element={<CompanyProfile/>} />
       <Route path="/companynote" element={<CompanyNote/>}/>
 
       {/* Ticket Routes */}
       <Route path="/ticketslist" element={<TicketsList />} />
       <Route path="/create-ticket" element={<CreateTicketDrawer />} />
       <Route path="/ticketmeeting" element={<TicketMeeting />} />
-      <Route path="/ticketprofile" element={<TicketProfile1 />} />
+      <Route path="/ticketprofile" element={<TicketProfile />}/>
       <Route path="/ticketnote" element={<TicketNote/>}/>
       <Route path="/ticketcalls" element={<TicketCalls/>}/>
 
