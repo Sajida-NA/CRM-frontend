@@ -132,9 +132,11 @@ export default function CommonEntityHeader({
       <Box
         sx={{
           width: "100%",
-          height: "100vh",
+          // height: "100vh",
           display: "flex",
+          alignItems:"stretch",
           backgroundColor: "#fff",
+          borderRadius :2
         }}
       >
         {/* Left panel */}

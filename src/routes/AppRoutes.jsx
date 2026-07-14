@@ -21,6 +21,8 @@ import CompaniesList from "../Pages/Companies/CompaniesList/CompaniesList";
 import CompanyMeeting from "../Pages/Companies/components/Tabs/Meeting/CompanyMeeting";
 import CompanyProfile from "../Pages/Companies/CompanyProfile/CompanyProfile";
 import CompanyNote from "../Pages/Companies/components/Tabs/Note/CompanyNote";
+import CompanyCalls from "../Pages/Companies/components/Tabs/Calls/CompanyCalls";
+
 
 
 // Ticket Pages
@@ -29,6 +31,7 @@ import CreateTicketDrawer from "../Pages/Tickets/components/CreateTicketDrawer";
 import TicketMeeting from "../Pages/Tickets/components/Tabs/Meeting/TicketMeeting";
 import TicketProfile from "../Pages/Tickets/TicketProfile/TicketProfile";
 import TicketNote from "../Pages/Tickets/components/Tabs/Note/TicketNote";
+import TicketCalls from "../Pages/Tickets/components/Tabs/Calls/TicketCalls";
 
 
 // Deal Pages
@@ -36,12 +39,14 @@ import DealsList from "../Pages/Deals/DealsList/DealsList";
 import DealMeeting from "../Pages/Deals/components/Tabs/Meeting/DealMeeting";
 import DealProfile from "../Pages/Deals/DealProfile/DealProfile";
 import DealNote from "../Pages/Deals/components/Tabs/Note/DealNote";
+import DealCalls from "../Pages/Deals/components/Tabs/Calls/DealCalls";
 
 
 // Common Component
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
 import TicketLeftPanel from "../Pages/Tickets/components/TicketLeftPanel";
 import LeadsLeftPanel from "../Pages/Leads/components/LeadsLeftPanel";
+
 
 
 function AppRoutes() {
@@ -75,11 +80,13 @@ function AppRoutes() {
       <Route path="/ticketmeeting" element={<TicketMeeting />} />
       <Route path="/ticketprofile" element={<TicketProfile />}/>
       <Route path="/ticketnote" element={<TicketNote/>}/>
+      <Route path="/ticketcalls" element={<TicketCalls/>}/>
 
       {/* Deal Routes */}
       <Route path="/dealslist" element={<DealsList />} />
       <Route path="/dealmeeting" element={<DealMeeting />} />
       <Route path="/dealprofile" element={<DealProfile />} />
+      <Route path="/dealcalls" element={<DealCalls/>} />
       <Route path="/dealnote" element={<DealNote/>}/>
 
       {/* Common Entity Header Route */}
