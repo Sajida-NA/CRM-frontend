@@ -42,7 +42,7 @@ export default function TicketLeftPanel() {
     summaryTitle:"AI Ticket Summary",
 
     summaryText:
-    'The ticket titled "Payment Failure Issue" currently has no associated conversation, call, or note transcripts.',
+    'The ticket titled "Payment Failure Issue" currently has no associated conversation, call, or note transcripts.There are no additional details or properties available for this ticket at this time '
   };
 
   return (
