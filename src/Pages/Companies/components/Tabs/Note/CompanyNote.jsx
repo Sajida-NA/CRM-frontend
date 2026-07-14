@@ -1,12 +1,12 @@
 import React from 'react'
-import LeadsLeftPanel from '../../LeadsLeftPanel'
+import CompanyLeftPanel from '../../CompanyLeftPanel'
 import NoteDetails from '../../../../Tickets/components/Tabs/Note/NoteDetails'
 
-export default function Leadnote() {
+export default function CompanyNote() {
   return (
     <div>
-      <LeadsLeftPanel/>
-      <NoteDetails/>
+        <CompanyLeftPanel/>
+        <NoteDetails/>
       
     </div>
   )
