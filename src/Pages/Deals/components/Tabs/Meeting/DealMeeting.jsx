@@ -216,7 +216,7 @@
 // }
 import React from "react";
 import DealLeftPanel from "../../DealLeftPanel";
-import Details from "../../../../Tickets/components/Tabs/Meeting/Details";
+import Details from "../../../../Tickets/components/Tabs/Meeting/MeetingDetails";
 
 export default function DealMeeting() {
   return (
