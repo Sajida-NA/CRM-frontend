@@ -6,6 +6,7 @@ import CommonButton from "../../../../../Components/common/CommonButton";
 import CreateLogCall from "./CreateLogCall";
 import CallCard from "./CallCard";
 import calls from "./callData";
+import LeadsLeftPanel from "../../LeadsLeftPanel";
 
 export default function Leadcalls() {
   const [activeTab, setActiveTab] = useState("Calls");
@@ -13,7 +14,7 @@ export default function Leadcalls() {
 
   return (
     <div>
-        <CommonEntityHeader />
+        <LeadsLeftPanel />
 
         <Box
           sx={{
