@@ -38,6 +38,9 @@ import DealProfile from "../Pages/Deals/DealProfile/DealProfile";
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
 import TicketLeftPanel from "../Pages/Tickets/components/TicketLeftPanel";
 import LeadsLeftPanel from "../Pages/Leads/components/LeadsLeftPanel";
+import TicketCalls from "../Pages/Tickets/components/Tabs/Calls/TicketCalls";
+import DealCalls from "../Pages/Deals/components/Tabs/Calls/DealCalls"
+import CompanyCalls from "../Pages/Companies/components/Tabs/Calls/CompanyCalls"
 
 function AppRoutes() {
   return (
@@ -62,6 +65,7 @@ function AppRoutes() {
       <Route path="/companieslist" element={<CompaniesList />} />
       <Route path="/companymeeting" element={<CompanyMeeting />} />
       <Route path="/CompanyProfile1" element={<CompanyProfile />} />
+      <Route path="/companycalls" element={<CompanyCalls/>} />
 
       {/* Ticket Routes */}
       <Route path="/ticketslist" element={<TicketsList />} />
@@ -69,11 +73,13 @@ function AppRoutes() {
       <Route path="/ticketmeeting" element={<TicketMeeting />} />
       <Route path="/ticketprofile" element={<TicketProfile1 />} />
       <Route path="/ticketnote" element={<TicketNote/>}/>
+      <Route path="/ticketcalls" element={<TicketCalls/>}/>
 
       {/* Deal Routes */}
       <Route path="/dealslist" element={<DealsList />} />
       <Route path="/dealmeeting" element={<DealMeeting />} />
       <Route path="/dealprofile" element={<DealProfile />} />
+      <Route path="/dealcalls" element={<DealCalls/>} />
 
       {/* Common Entity Header Route */}
       <Route path="/entity" element={<CommonEntityHeader />} />
