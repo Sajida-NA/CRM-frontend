@@ -6,8 +6,7 @@ export default function Leadnote() {
   return (
     <div>
       <LeadsLeftPanel/>
-      <NoteDetails/>
-      
+      <NoteDetails/>     
     </div>
   )
 }
