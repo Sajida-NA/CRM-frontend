@@ -1,46 +1,27 @@
 import { Box } from "@mui/material";
 
-import lead from "../data/leadData";
 import emails from "../data/emailData";
 
-import LeadInfo from "../components/EmailTab/LeadInfo";
-import EmailPanel from "../components/EmailTab/EmailPanel";
-import AISummary from "../../Companies/components/AISummary";
-import MainLayout from "../../../layout/MainLayout";
+import LeadsLeftPanel from "../components/LeadsLeftPanel";
+import EmailPanel from "../components/Tabs/Email/EmailPanel";
 
 function ViewEmailRecords() {
   return (
-    <MainLayout>
-    <Box
-      sx={{
-        bgcolor: "#F5F7FB",
-        minHeight: "100vh",
-        p: 3,
-      }}
-    >
+    <div>
+      <LeadsLeftPanel />
+
       <Box
         sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            md: "320px 1fr",
-            lg: "300px 1fr 320px",
-          },
-          gap: 3,
-          alignItems: "flex-start",
+          p: 3,
+          position: "absolute",
+          top: 80,
+          left: 430,
+          width: "calc(100% - 680px)",
         }}
       >
-        {/* Left Panel */}
-        <LeadInfo lead={lead} />
-
-        {/* Center Panel */}
         <EmailPanel emails={emails} />
-
-        {/* Right Panel */}
-        <AISummary />
       </Box>
-    </Box>
-    </MainLayout>
+    </div>
   );
 }
 

@@ -10,7 +10,7 @@ import Dashboard from "../Pages/Dashboard/dashboard";
 
 // Lead Pages
 import Leadslist from "../Pages/Leads/LeadsList/Leadslist";
-import EmailRecord from "../Pages/Leads/components/EmailTab/EmailRecord";
+import EmailRecord from "../Pages/Leads/components/Tabs/Email/EmailRecord";
 import ViewEmailRecord from "../Pages/Leads/ViewEmailRecords/ViewEmailRecords";
 import Leadnote from "../Pages/Leads/components/Tabs/Note/Leadnote";
 import Leadcalls from "../Pages/Leads/components/Tabs/Calls/Leadcalls";
@@ -27,13 +27,12 @@ import CompanyNote from "../Pages/Companies/components/Tabs/Note/CompanyNote";
 import CompanyCalls from "../Pages/Companies/components/Tabs/Calls/CompanyCalls";
 
 
-
 // Ticket Pages
 import TicketsList from "../Pages/Tickets/TicketsList/TicketsList";
 import CreateTicketDrawer from "../Pages/Tickets/components/CreateTicketDrawer";
 import TicketMeeting from "../Pages/Tickets/components/Tabs/Meeting/TicketMeeting";
-import TicketProfile from "../Pages/Tickets/TicketProfile/TicketProfile";
 import TicketNote from "../Pages/Tickets/components/Tabs/Note/TicketNote";
+import TicketProfile from "../Pages/Tickets/TicketProfile/TicketProfile";
 import TicketCalls from "../Pages/Tickets/components/Tabs/Calls/TicketCalls";
 
 
@@ -49,13 +48,14 @@ import DealCalls from "../Pages/Deals/components/Tabs/Calls/DealCalls";
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
 import TicketLeftPanel from "../Pages/Tickets/components/TicketLeftPanel";
 import LeadsLeftPanel from "../Pages/Leads/components/LeadsLeftPanel";
-
-
+import DealLeftPanel from "../Pages/Deals/components/DealLeftPanel";
+import CompanyLeftPanel from "../Pages/Companies/components/CompanyLeftPanel";
 
 
 function AppRoutes() {
   return (
     <Routes>
+
       {/* Authentication Routes */}
       <Route path="/" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -76,13 +76,15 @@ function AppRoutes() {
       {/* Company Routes */}
       <Route path="/companieslist" element={<CompaniesList />} />
       <Route path="/companymeeting" element={<CompanyMeeting />} />
+      <Route path="/CompanyProfile1" element={<CompanyProfile />} />
       <Route path="/companyprofile" element={<CompanyProfile/>} />
       <Route path="/companynote" element={<CompanyNote/>}/>
 
       {/* Ticket Routes */}
       <Route path="/ticketslist" element={<TicketsList />} />
-      <Route path="/create-ticket" element={<CreateTicketDrawer />} />
+      {/* <Route path="/create-ticket" element={<CreateTicketDrawer />} /> */}
       <Route path="/ticketmeeting" element={<TicketMeeting />} />
+      <Route path="/ticketnote" element={<TicketNote/>}/>
       <Route path="/ticketprofile" element={<TicketProfile />}/>
       <Route path="/ticketnote" element={<TicketNote/>}/>
       <Route path="/ticketcalls" element={<TicketCalls/>}/>
@@ -97,13 +99,17 @@ function AppRoutes() {
       {/* Common Entity Header Route */}
       <Route path="/entity" element={<CommonEntityHeader />} />
 
-      {/* Old Routes (Kept for Reference) */}
-      {/* <Route path="/ticket-profile" element={<TicketProfile />} /> */}
-      {/* <Route path="/company-profile" element={<CompanyProfile />} /> */}
 
+      {/* Entity Left Panel Routes */}
+
+      {/* Lead Left Panel */}
+      <Route path="/leadsleftpanel"element={<LeadsLeftPanel/>}/>
+      {/* Deal Left Panel */}
+      <Route path="/dealleftpanel" element={<DealLeftPanel/>}/>
+      {/* Company Left Panel */}
+      <Route path="/companyleftpanel" element={<CompanyLeftPanel/>}/>
+      {/* Ticket Left Panel */}
       <Route path="/ticketleftpanel"element={<TicketLeftPanel/>}/>
-       <Route path="/leadsleftpanel"element={<LeadsLeftPanel/>}/>
-      
     </Routes>
   );
 }
