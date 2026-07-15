@@ -18,6 +18,16 @@ export default function ProfileMiddlePanel({
   const [activeTab, setActiveTab] = useState(0);
   const [search, setSearch] = useState("");
 
+  // Filter activities based on search
+  const filteredActivities = activities.filter((activity) => {
+    const searchText = search.toLowerCase();
+
+    return (
+      activity.title?.toLowerCase().includes(searchText) ||
+      activity.description?.toLowerCase().includes(searchText)
+    );
+  });
+
   return (
     <Box
       sx={{
@@ -36,7 +46,11 @@ export default function ProfileMiddlePanel({
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: "#98A2B3" }} />
+                <SearchIcon
+                  sx={{
+                    color: "#98A2B3",
+                  }}
+                />
               </InputAdornment>
             ),
           }}
@@ -50,7 +64,7 @@ export default function ProfileMiddlePanel({
         />
       </Box>
 
-      {/* Tabs */}
+      {/* Activity Tabs */}
 
       <ActivityTabs
         value={activeTab}
@@ -71,108 +85,104 @@ export default function ProfileMiddlePanel({
           Upcoming
         </Typography>
 
-        <Box
-          sx={{
-            border: "1px solid #EAECF0",
-            borderRadius: 2,
-            bgcolor: "#fff",
-            p: 1.5,
-            mb: 3,
-          }}
-        >
-          <Typography
+        {/* =========================
+            TICKET PROFILE
+        ========================== */}
+
+        {entityType === "ticket" && (
+          <Box
             sx={{
-              fontWeight: 600,
-              fontSize: 14,
-              color: "#101828",
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+              width: "100%",
             }}
           >
-            Task assigned to Maria Johnson
-          </Typography>
-
-          <Typography
-            sx={{
-              mt: 0.5,
-              fontSize: 13,
-              color: "#667085",
-            }}
-          >
-            Prepare quote for Jane Cooper
-          </Typography>
-        </Box>
-      </Box>
-
-      {/* Timeline */}
-
-      <Typography
-        sx={{
-          mt: 2,
-          mb: 1.5,
-          fontWeight: 700,
-          fontSize: 14,
-          color: "#101828",
-        }}
-      >
-        June 2025
-      </Typography>
-
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 1,
-        }}
-      >
-        {activities.length > 0 ? (
-          activities.map((activity, index) => (
-            <ActivityCard
-              key={activity.id || index}
-              type={activity.type}
-              title={activity.title}
-              date={activity.date}
-              description={activity.description}
-              createdBy={activity.createdBy}
-            />
-          ))
-        ) : (
-          <>
-            <ActivityCard
-              type="Call"
-              title="Call from Maria Johnson"
-              date="June 24, 2025 at 5:30 PM"
-              description="Brought Maria through our latest product line. She’s interested and is going to get back to me."
-            />
-
-            <ActivityCard
-              type="Meeting"
-              title="Meeting with Maria Johnson and Jane Cooper"
-              date="June 24, 2025 at 5:30 PM"
-              description="Let's discuss our new product line."
-            />
-
-            <ActivityCard
-              type="Email"
-              title="Email Tracking"
-              date="June 24, 2025 at 5:30 PM"
-              description="Jane Cooper opened 'Hello There'."
-            />
-
-            <ActivityCard
-              type="Note"
-              title="Note by Maria Johnson"
-              date="June 24, 2025 at 5:30 PM"
-              description="Sample Note"
-            />
-
-            {entityType === "company" && (
+            {filteredActivities.map((activity, index) => (
               <ActivityCard
-                type="Ticket"
-                title="Ticket Activity"
-                date="June 24, 2025 at 5:30 PM"
-                description="Maria Johnson created Ticket #1."
+                key={activity.id || index}
+                type={activity.type}
+                title={activity.title}
+                date={activity.date}
+                description={activity.description}
+                createdBy={activity.createdBy}
+                entityType={entityType}
+              />
+            ))}
+          </Box>
+        )}
+
+        {/* =========================
+            COMPANY PROFILE
+        ========================== */}
+
+        {entityType === "company" && (
+          <>
+            {/* First Activity as Upcoming */}
+
+            {filteredActivities.length > 0 && (
+              <ActivityCard
+                type={filteredActivities[0].type}
+                title={filteredActivities[0].title}
+                date={filteredActivities[0].date}
+                description={filteredActivities[0].description}
+                createdBy={filteredActivities[0].createdBy}
               />
             )}
+
+            {/* Company Timeline */}
+
+            {filteredActivities.length > 1 && (
+              <>
+                <Typography
+                  sx={{
+                    mt: 3,
+                    mb: 1.5,
+                    fontWeight: 700,
+                    fontSize: 14,
+                    color: "#101828",
+                  }}
+                >
+                  June 2025
+                </Typography>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1,
+                  }}
+                >
+                  {filteredActivities
+                    .slice(1)
+                    .map((activity, index) => (
+                      <ActivityCard
+                        key={activity.id || index}
+                        type={activity.type}
+                        title={activity.title}
+                        date={activity.date}
+                        description={activity.description}
+                        createdBy={activity.createdBy}
+                      />
+                    ))}
+                </Box>
+              </>
+            )}
           </>
+        )}
+
+        {/* No Activities */}
+
+        {filteredActivities.length === 0 && (
+          <Typography
+            sx={{
+              fontSize: 13,
+              color: "#667085",
+              mt: 2,
+            }}
+          >
+            No activities found
+          </Typography>
         )}
       </Box>
     </Box>
