@@ -46,6 +46,9 @@ import DealCalls from "../Pages/Deals/components/Tabs/Calls/DealCalls";
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
 import TicketLeftPanel from "../Pages/Tickets/components/TicketLeftPanel";
 import LeadsLeftPanel from "../Pages/Leads/components/LeadsLeftPanel";
+import CreateTaskDrawer from "../Pages/Leads/components/Tabs/Task/CreateTaskDrawer";
+
+
 import DealLeftPanel from "../Pages/Deals/components/DealLeftPanel";
 import CompanyLeftPanel from "../Pages/Companies/components/CompanyLeftPanel";
 
@@ -76,6 +79,8 @@ function AppRoutes() {
       <Route path="/CompanyProfile1" element={<CompanyProfile />} />
       <Route path="/companyprofile" element={<CompanyProfile/>} />
       <Route path="/companynote" element={<CompanyNote/>}/>
+      <Route path="/companycalls" element={<CompanyCalls />} />
+
 
       {/* Ticket Routes */}
       <Route path="/ticketslist" element={<TicketsList />} />
@@ -107,6 +112,10 @@ function AppRoutes() {
       <Route path="/companyleftpanel" element={<CompanyLeftPanel/>}/>
       {/* Ticket Left Panel */}
       <Route path="/ticketleftpanel"element={<TicketLeftPanel/>}/>
+      
+
+      <Route path="/createtaskdrawer"element={<CreateTaskDrawer/>}/>
+
     </Routes>
   );
 }
