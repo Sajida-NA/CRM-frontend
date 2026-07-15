@@ -11,26 +11,39 @@ export default function DataTable({ columns, children }) {
   return (
     <TableContainer
       sx={{
-        border: "1px solid #E5E7EB",
-        borderRadius: 2,
+        border: "1px solid",
+        borderColor: "divider",
+        bgcolor: "background.paper",
+        borderBottomLeftRadius: "12px",
+        borderBottomRightRadius: "12px",
         overflow: "hidden",
       }}
     >
-      <Table>
+      <Table
+        sx={{
+          "& .MuiTableHead-root .MuiTableCell-root": {
+            fontSize: "15px",
+            fontWeight: 500,
+          },
+          "& .MuiTableBody-root .MuiTableCell-root": {
+            fontSize: "14px",
+            fontWeight: 400,
+          },
+        }}
+      >
         <TableHead>
           <TableRow>
             {columns.map((col, index) => (
               <TableCell
                 key={index}
                 sx={{
-                  fontWeight: 600,
-                  fontSize: 14,
-                  color: "text.primary",
-                  bgcolor: "grey.100",
+                  fontWeight: 500,
+                  fontSize: 15,
+                  color: "#F8FAFC",
+                  bgcolor: "primary.main",
                   borderBottom: "1px solid",
                   borderColor: "divider",
-                  py: 1.75,
-                  px: 2,
+                  p: 2,
                 }}
               >
                 {col}

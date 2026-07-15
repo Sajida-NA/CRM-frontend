@@ -1,37 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./Pages/Auth/Login/login"
-import Dashboard from "./Pages/Dashboard/dashboard";
+import { BrowserRouter } from "react-router-dom";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-import EmailRecord from "./Pages/Leads/components/EmailTab/EmailRecord";
-import Leadslist from "./Pages/Leads/Leadslist";
-import CompanyDetails from "./Pages/Companies/CompanyDetails/CompanyDetails";
-import CreateTicket from "./Pages/Tickets/components/CreateTicket"; 
-import ForgotPassword from "./Pages/Auth/ForgotPassword/ForgotPassword";
-import CompaniesList from "./Pages/Companies/CompaniesList/CompaniesList";
-import ViewEmailRecords from "./Pages/Leads/ViewEmailRecords/ViewEmailRecords";
-
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
   return (
-    <>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/viewemailrecords" element={<ViewEmailRecords />} />
-        <Route path="/emailrecord" element={<EmailRecord />} />  
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/CreateTicket" element={<CreateTicket/>}/>
-        <Route path="/company/:id" element={<CompanyDetails />} />
-        <Route path="/leadslist" element={<Leadslist/>}/>
-        <Route path="/forgotpassword" element={<ForgotPassword/>}/>
-        <Route path="/companieslist" element={<CompaniesList />} />
-        <Route path="/leadslist" element={<ViewEmailRecords />} />
-        {/* <Route path="/register" element={<Register/>}/> */}
-      </Routes>
-    </BrowserRouter>
-    </>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </LocalizationProvider>
   );
-
 }
 
 export default App;

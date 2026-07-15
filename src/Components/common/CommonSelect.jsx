@@ -1,11 +1,6 @@
-import {
-  Box,
-  FormControl,
-  MenuItem,
-  Select,
-  Typography,
-} from "@mui/material";
+import { Box, FormControl, MenuItem, Select, Typography , InputAdornment } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+
 
 export default function CommonSelect({
   label,
@@ -17,6 +12,7 @@ export default function CommonSelect({
   name,
   width = "100%",
   sx = {},
+  endAdornment,
 }) {
   return (
     <Box sx={{ width }}>
@@ -26,7 +22,7 @@ export default function CommonSelect({
           sx={{
             fontSize: "14px",
             fontWeight: 600,
-            padding :"10px 14px",
+            lineHeight: "20px",
             color: "#344054",
             mb: "6px",
           }}
@@ -52,7 +48,7 @@ export default function CommonSelect({
           value={value}
           name={name}
           onChange={onChange}
-          IconComponent={KeyboardArrowDownIcon}
+          IconComponent={endAdornment ? () => null : KeyboardArrowDownIcon}
           renderValue={(selected) => {
             if (!selected) {
               return (
@@ -68,6 +64,11 @@ export default function CommonSelect({
             }
             return selected;
           }}
+          endAdornment={
+            endAdornment && (
+              <InputAdornment position="end">{endAdornment}</InputAdornment>
+            )
+          }
           sx={{
             height: "44px",
             borderRadius: "10px",
@@ -90,9 +91,9 @@ export default function CommonSelect({
               padding: "10px 14px",
               display: "flex",
               alignItems: "center",
-              
+
               fontSize: "16px",
-              
+
               color: "#344054",
             },
 
