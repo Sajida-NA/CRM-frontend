@@ -48,7 +48,7 @@ export default function LeadsLeftPanel() {
 
     leadDetails:leadDetails,
 
-    summaryTitle:"AI Ticket Summary",
+    summaryTitle:"AI Lead Summary",
 
     summaryText:
     

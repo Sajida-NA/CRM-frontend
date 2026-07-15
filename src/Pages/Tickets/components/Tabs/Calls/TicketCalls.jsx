@@ -1,21 +1,18 @@
 import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
-import CommonEntityHeader from "../../../../../Components/common/CommonEntityHeader";
+import TicketLeftPanel from "../../TicketLeftPanel";
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
-import CreateLogCall from "./CreateLogCall";
-import CallCard from "./CallCard";
-import calls from "./callData";
-import LeadsLeftPanel from "../../LeadsLeftPanel";
+import calls from "../../../../Leads/components/Tabs/Calls/callData";
+import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
+import CreateLogCall from "../../../../Leads/components/Tabs/Calls/CreateLogCall";
 
-export default function Leadcalls() {
+export default function TicketCalls() {
   const [activeTab, setActiveTab] = useState("Calls");
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
-
   return (
     <div>
-      <LeadsLeftPanel />
-
+      <TicketLeftPanel />
       <Box
         sx={{
           p: 3,

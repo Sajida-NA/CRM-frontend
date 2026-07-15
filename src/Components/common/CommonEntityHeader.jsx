@@ -20,6 +20,7 @@ export default function CommonEntityHeader({
 
   // Dynamic data for the left panel
   leftPanelData = {},
+   
 }) {
   // Handles quick action button clicks
   const handleActionClick = (type) => {
@@ -131,9 +132,11 @@ export default function CommonEntityHeader({
       <Box
         sx={{
           width: "100%",
-          height: "100vh",
+          // height: "100vh",
           display: "flex",
+          alignItems:"stretch",
           backgroundColor: "#fff",
+          borderRadius :2
         }}
       >
         {/* Left panel */}
