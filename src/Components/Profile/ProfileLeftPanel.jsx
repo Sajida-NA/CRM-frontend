@@ -32,40 +32,47 @@ export default function ProfileLeftPanel({
     <Box
       sx={{
         width: "100%",
-        px: 2,
-        py: 2,
+        px: 1,
+        py: 1,
       }}
     >
       {/* Profile */}
 
       <Stack
-  direction="row"
-  spacing={profile?.avatar === false ? 0 : 2}
-  alignItems="flex-start"
->
-        {profile?.avatar !== false && (
-  <Avatar
-  src={profile?.avatarImage}
-  sx={{
-    width: 56,
-    height: 56,
-    borderRadius: 2,
-    bgcolor: profile?.avatarImage ? "transparent" : "#EEF2FF",
-    color: "#5A45E5",
-    fontWeight: 700,
-    fontSize: 24,
-  }}
->
-  {!profile?.avatarImage && profile?.avatar}
-</Avatar>
-)}
+        direction="row"
+        spacing={profile?.avatar === false ? 0 : 2}
+        alignItems="flex-start"
+      >
+        {/* Company Avatar / Logo */}
 
-        <Box flex={1}>
+        {profile?.avatar !== false && (
+          <Avatar
+            src={profile?.avatarImage}
+            sx={{
+              width: 56,
+              height: 56,
+              borderRadius: 2,
+              bgcolor: profile?.avatarImage
+                ? "transparent"
+                : "#EEF2FF",
+              color: "#5A45E5",
+              fontWeight: 700,
+              fontSize: 24,
+            }}
+          >
+            {!profile?.avatarImage && profile?.avatar}
+          </Avatar>
+        )}
+
+        {/* Profile Information */}
+
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography
             sx={{
               fontSize: 16,
               fontWeight: 700,
               color: "#101828",
+              lineHeight: 1.4,
             }}
           >
             {profile?.name}
@@ -84,9 +91,11 @@ export default function ProfileLeftPanel({
           {profile?.email && (
             <Stack
               direction="row"
-              spacing={2}
+              spacing={0.5}
               alignItems="center"
-              sx={{ mt: 0.5 }}
+              sx={{
+                mt: 0.5,
+              }}
             >
               <Typography
                 sx={{
@@ -100,11 +109,19 @@ export default function ProfileLeftPanel({
               <IconButton
                 size="small"
                 sx={{
-                  p: 0,
+                  p: 0.3,
                   color: "#5A45E5",
+
+                  "&:hover": {
+                    bgcolor: "#F5F3FF",
+                  },
                 }}
               >
-                <EditSquareIcon sx={{ fontSize: 16 }} />
+                <EditSquareIcon
+                  sx={{
+                    fontSize: 15,
+                  }}
+                />
               </IconButton>
             </Stack>
           )}
@@ -130,33 +147,41 @@ export default function ProfileLeftPanel({
               textAlign: "center",
             }}
           >
+            {/* Square Action Icon */}
+
             <Box
               sx={{
                 width: 40,
                 height: 40,
                 mx: "auto",
-                border: "1px solid #E4E7EC",
-                borderRadius: 2,
-                bgcolor: "#fff",
+
+                border: "1px solid #D0D5DD",
+                borderRadius: "8px",
+
+                bgcolor: "#FFFFFF",
+                color: "#5A45E5",
+
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#5A45E5",
-                transition: "all .2s ease",
+
+                transition:
+                  "background-color 0.2s ease, border-color 0.2s ease",
 
                 "&:hover": {
-                  bgcolor: "#5A45E5",
-                  color: "#fff",
-                  transform: "translateY(-2px)",
+                  bgcolor: "#F5F3FF",
+                  borderColor: "#5A45E5",
                 },
               }}
             >
               {iconMap[action]}
             </Box>
 
+            {/* Action Name */}
+
             <Typography
               sx={{
-                mt: 0.8,
+                mt: 0.7,
                 fontSize: 11,
                 fontWeight: 500,
                 color: "#475467",
@@ -168,7 +193,7 @@ export default function ProfileLeftPanel({
         ))}
       </Stack>
 
-      {/* About */}
+      {/* About Section */}
 
       <Stack
         direction="row"
@@ -191,15 +216,23 @@ export default function ProfileLeftPanel({
         <IconButton
           size="small"
           sx={{
-            p: 0,
+            p: 0.3,
             color: "#5A45E5",
+
+            "&:hover": {
+              bgcolor: "#F5F3FF",
+            },
           }}
         >
-          <EditSquareIcon sx={{ fontSize: 16 }} />
+          <EditSquareIcon
+            sx={{
+              fontSize: 16,
+            }}
+          />
         </IconButton>
       </Stack>
 
-      {/* Details */}
+      {/* About Details */}
 
       <Stack spacing={1.6}>
         {about?.details?.map((item) => (

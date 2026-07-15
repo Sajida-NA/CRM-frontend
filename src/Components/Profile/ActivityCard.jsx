@@ -27,7 +27,85 @@ export default function ActivityCard({
   date,
   description,
   createdBy,
+  entityType,
 }) {
+  // Ticket Profile Card
+  if (entityType === "ticket") {
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          border: "1px solid #EAECF0",
+          borderRadius: "10px",
+          bgcolor: "#fff",
+          px: 2,
+          py: 1.5,
+          boxSizing: "border-box",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            width: "100%",
+          }}
+        >
+          {/* Left Content */}
+
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              pr: 2,
+            }}
+          >
+            {title && (
+              <Typography
+                sx={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "#344054",
+                  mb: 0.5,
+                }}
+              >
+                {title}
+              </Typography>
+            )}
+
+            {description && (
+              <Typography
+                sx={{
+                  fontSize: 12,
+                  color: "#475467",
+                  lineHeight: 1.5,
+                }}
+              >
+                {description}
+              </Typography>
+            )}
+          </Box>
+
+          {/* Right Side - Date and Time */}
+
+          <Typography
+            sx={{
+              fontSize: 11,
+              color: "#667085",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+              textAlign: "right",
+              ml: "auto",
+            }}
+          >
+            {date}
+          </Typography>
+        </Box>
+      </Box>
+    );
+  }
+
+  // Company Profile Activity Card
   return (
     <Box
       sx={{

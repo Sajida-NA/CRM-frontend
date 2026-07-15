@@ -13,13 +13,17 @@ export default function ProfileLayout({
 }) {
   return (
     <MainLayout title={title}>
+      {/* Single White Profile Container */}
       <Box
         sx={{
+          width: "100%",
+          bgcolor: "#fff",
+          borderRadius: 2,
+          p: 2,
           display: "flex",
           gap: 2,
-          p: 2,
-          width: "100%",
           alignItems: "flex-start",
+          boxSizing: "border-box",
         }}
       >
         {/* Left Panel */}
