@@ -15,6 +15,9 @@ import ViewEmailRecord from "../Pages/Leads/ViewEmailRecords/ViewEmailRecords";
 import Leadnote from "../Pages/Leads/components/Tabs/Note/Leadnote";
 import Leadcalls from "../Pages/Leads/components/Tabs/Calls/Leadcalls";
 import LeadMeeting from "../Pages/Leads/components/Tabs/Meetings/LeadMeeting";
+import LeadTask from "../Pages/Leads/components/Tabs/Task/LeadTask";
+
+
 
 // Company Pages
 import CompaniesList from "../Pages/Companies/CompaniesList/CompaniesList";
@@ -49,6 +52,7 @@ import LeadsLeftPanel from "../Pages/Leads/components/LeadsLeftPanel";
 
 
 
+
 function AppRoutes() {
   return (
     <Routes>
@@ -67,6 +71,7 @@ function AppRoutes() {
       <Route path="/leadnote" element={<Leadnote />} />
       <Route path="/leadcalls" element={<Leadcalls />} />
       <Route path="/leadmeeting" element={<LeadMeeting />} />
+      <Route path="/leadtask" element={<LeadTask/>}/>
 
       {/* Company Routes */}
       <Route path="/companieslist" element={<CompaniesList />} />
@@ -98,6 +103,7 @@ function AppRoutes() {
 
       <Route path="/ticketleftpanel"element={<TicketLeftPanel/>}/>
        <Route path="/leadsleftpanel"element={<LeadsLeftPanel/>}/>
+      
     </Routes>
   );
 }

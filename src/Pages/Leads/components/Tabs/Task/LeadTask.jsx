@@ -1,0 +1,80 @@
+import React, { useState } from "react";
+import LeadsLeftPanel from "../../LeadsLeftPanel";
+import { Box, Typography } from "@mui/material";
+import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
+import CommonButton from "../../../../../Components/common/CommonButton";
+import TaskCard from "./TaskCard";
+import tasks from "./TaskData";
+
+export default function LeadTask() {
+  const [activeTab, setActiveTab] = useState("Tasks");
+  //   const [openCreateTask, setOpenCreateTask] = useState(false);
+
+  return (
+    <div>
+      <LeadsLeftPanel />
+
+      <Box
+        sx={{
+          p: 3,
+          position: "absolute",
+          top: 80,
+          left: 430,
+          width: "calc(100% - 680px)",
+          // border:'4px solid black'
+        }}
+      >
+        {/* ACTIVITY TABS */}
+
+        <Box
+          sx={{
+            mt: 10,
+            mx: -2,
+          }}
+        >
+          <CommonActivityTabs
+            activeTab={activeTab}
+            // onTabChange={setActiveTab}
+            onTabChange={() => {}}
+          />
+        </Box>
+
+        {/* Header */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 1,
+            marginTop: "35px",
+            marginLeft: "1px",
+            // border:'1px solid black',
+          }}
+        >
+          <Typography variant="h6" fontWeight={100}>
+            Tasks
+          </Typography>
+
+          <CommonButton
+            variant="contained"
+            onClick={() => setOpenCreateNote(true)}
+          >
+            Create Task
+          </CommonButton>
+        </Box>
+
+        {/* Drawer */}
+        {/* <Createnote
+              open={openCreateTask}
+              onClose={() => setOpenCreateTask(false)}
+            /> */}
+
+        {/* Task detail */}
+
+        {tasks.map((task) => (
+          <TaskCard key={task.id} task={task} />
+        ))}
+      </Box>
+    </div>
+  );
+}
