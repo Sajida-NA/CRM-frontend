@@ -24,7 +24,6 @@ import CompanyNote from "../Pages/Companies/components/Tabs/Note/CompanyNote";
 import CompanyCalls from "../Pages/Companies/components/Tabs/Calls/CompanyCalls";
 
 
-
 // Ticket Pages
 import TicketsList from "../Pages/Tickets/TicketsList/TicketsList";
 import CreateTicketDrawer from "../Pages/Tickets/components/CreateTicketDrawer";
@@ -46,12 +45,13 @@ import DealCalls from "../Pages/Deals/components/Tabs/Calls/DealCalls";
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
 import TicketLeftPanel from "../Pages/Tickets/components/TicketLeftPanel";
 import LeadsLeftPanel from "../Pages/Leads/components/LeadsLeftPanel";
-
-
+import DealLeftPanel from "../Pages/Deals/components/DealLeftPanel";
+import CompanyLeftPanel from "../Pages/Companies/components/CompanyLeftPanel";
 
 function AppRoutes() {
   return (
     <Routes>
+
       {/* Authentication Routes */}
       <Route path="/" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -77,7 +77,7 @@ function AppRoutes() {
 
       {/* Ticket Routes */}
       <Route path="/ticketslist" element={<TicketsList />} />
-      <Route path="/create-ticket" element={<CreateTicketDrawer />} />
+      {/* <Route path="/create-ticket" element={<CreateTicketDrawer />} /> */}
       <Route path="/ticketmeeting" element={<TicketMeeting />} />
       <Route path="/ticketnote" element={<TicketNote/>}/>
       <Route path="/ticketprofile" element={<TicketProfile />}/>
@@ -94,12 +94,17 @@ function AppRoutes() {
       {/* Common Entity Header Route */}
       <Route path="/entity" element={<CommonEntityHeader />} />
 
-      {/* Old Routes (Kept for Reference) */}
-      {/* <Route path="/ticket-profile" element={<TicketProfile />} /> */}
-      {/* <Route path="/company-profile" element={<CompanyProfile />} /> */}
 
+      {/* Entity Left Panel Routes */}
+
+      {/* Lead Left Panel */}
+      <Route path="/leadsleftpanel"element={<LeadsLeftPanel/>}/>
+      {/* Deal Left Panel */}
+      <Route path="/dealleftpanel" element={<DealLeftPanel/>}/>
+      {/* Company Left Panel */}
+      <Route path="/companyleftpanel" element={<CompanyLeftPanel/>}/>
+      {/* Ticket Left Panel */}
       <Route path="/ticketleftpanel"element={<TicketLeftPanel/>}/>
-       <Route path="/leadsleftpanel"element={<LeadsLeftPanel/>}/>
     </Routes>
   );
 }
