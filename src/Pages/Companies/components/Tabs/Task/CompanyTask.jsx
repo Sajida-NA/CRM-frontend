@@ -1,13 +1,13 @@
 import React from 'react'
-import DealLeftPanel from '../../DealLeftPanel'
+import CompanyLeftPanel from '../../CompanyLeftPanel'
 import TaskDetails from '../../../../Leads/components/Tabs/Task/TaskDetails'
 
-export default function DealTask() {
+export default function CompanyTask() {
   return (
     <div>
-        <DealLeftPanel/>
-        <TaskDetails/>
-      
+      <CompanyLeftPanel/>
+      <TaskDetails/>
+
     </div>
   )
 }
