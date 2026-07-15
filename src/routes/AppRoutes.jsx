@@ -10,7 +10,7 @@ import Dashboard from "../Pages/Dashboard/dashboard";
 
 // Lead Pages
 import Leadslist from "../Pages/Leads/LeadsList/Leadslist";
-import EmailRecord from "../Pages/Leads/components/EmailTab/EmailRecord";
+import EmailRecord from "../Pages/Leads/components/Tabs/Email/EmailRecord";
 import ViewEmailRecord from "../Pages/Leads/ViewEmailRecords/ViewEmailRecords";
 import Leadnote from "../Pages/Leads/components/Tabs/Note/Leadnote";
 import Leadcalls from "../Pages/Leads/components/Tabs/Calls/Leadcalls";
@@ -29,8 +29,8 @@ import CompanyCalls from "../Pages/Companies/components/Tabs/Calls/CompanyCalls"
 import TicketsList from "../Pages/Tickets/TicketsList/TicketsList";
 import CreateTicketDrawer from "../Pages/Tickets/components/CreateTicketDrawer";
 import TicketMeeting from "../Pages/Tickets/components/Tabs/Meeting/TicketMeeting";
-import TicketProfile from "../Pages/Tickets/TicketProfile/TicketProfile";
 import TicketNote from "../Pages/Tickets/components/Tabs/Note/TicketNote";
+import TicketProfile from "../Pages/Tickets/TicketProfile/TicketProfile";
 import TicketCalls from "../Pages/Tickets/components/Tabs/Calls/TicketCalls";
 
 
@@ -71,6 +71,7 @@ function AppRoutes() {
       {/* Company Routes */}
       <Route path="/companieslist" element={<CompaniesList />} />
       <Route path="/companymeeting" element={<CompanyMeeting />} />
+      <Route path="/CompanyProfile1" element={<CompanyProfile />} />
       <Route path="/companyprofile" element={<CompanyProfile/>} />
       <Route path="/companynote" element={<CompanyNote/>}/>
 
@@ -78,6 +79,7 @@ function AppRoutes() {
       <Route path="/ticketslist" element={<TicketsList />} />
       <Route path="/create-ticket" element={<CreateTicketDrawer />} />
       <Route path="/ticketmeeting" element={<TicketMeeting />} />
+      <Route path="/ticketnote" element={<TicketNote/>}/>
       <Route path="/ticketprofile" element={<TicketProfile />}/>
       <Route path="/ticketnote" element={<TicketNote/>}/>
       <Route path="/ticketcalls" element={<TicketCalls/>}/>
