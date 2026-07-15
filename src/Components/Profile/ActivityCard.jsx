@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Avatar,
   Box,
@@ -11,6 +11,7 @@ import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
 import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
 import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumberOutlined";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 const iconMap = {
   Call: <CallOutlinedIcon sx={{ fontSize: 18 }} />,
@@ -29,7 +30,12 @@ export default function ActivityCard({
   createdBy,
   entityType,
 }) {
-  // Ticket Profile Card
+  const [open, setOpen] = useState(true);
+
+  // =========================
+  // TICKET PROFILE CARD
+  // =========================
+
   if (entityType === "ticket") {
     return (
       <Box
@@ -86,7 +92,7 @@ export default function ActivityCard({
             )}
           </Box>
 
-          {/* Right Side - Date and Time */}
+          {/* Date Right Side */}
 
           <Typography
             sx={{
@@ -105,7 +111,123 @@ export default function ActivityCard({
     );
   }
 
-  // Company Profile Activity Card
+  // =========================
+  // LEAD PROFILE CARD
+  // =========================
+
+  if (entityType === "lead") {
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          border: "1px solid #EAECF0",
+          borderRadius: "8px",
+          bgcolor: "#fff",
+          px: 2,
+          py: 1.5,
+          boxSizing: "border-box",
+        }}
+      >
+        {/* Top Row */}
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100%",
+            gap: 2,
+          }}
+        >
+          {/* Arrow + Title */}
+
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 0.5,
+              minWidth: 0,
+            }}
+          >
+            <KeyboardArrowDownIcon
+              onClick={() => setOpen(!open)}
+              sx={{
+                fontSize: 18,
+                color: "#5A45E5",
+                cursor: "pointer",
+                flexShrink: 0,
+                transform: open
+                  ? "rotate(0deg)"
+                  : "rotate(-90deg)",
+                transition: "transform 0.2s ease",
+              }}
+            />
+
+            <Typography
+              sx={{
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#344054",
+              }}
+            >
+              {title}
+            </Typography>
+          </Box>
+
+          {/* Date Right Side */}
+
+          <Typography
+            sx={{
+              fontSize: 11,
+              color: "#667085",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+              textAlign: "right",
+              ml: "auto",
+            }}
+          >
+            {date}
+          </Typography>
+        </Box>
+
+        {/* Expandable Created By */}
+
+        {open && createdBy && (
+          <Typography
+            sx={{
+              mt: 0.5,
+              ml: 2.8,
+              fontSize: 12,
+              color: "#667085",
+            }}
+          >
+            {createdBy}
+          </Typography>
+        )}
+
+        {/* Expandable Description */}
+
+        {open && description && (
+          <Typography
+            sx={{
+              mt: 0.6,
+              ml: 2.8,
+              fontSize: 12,
+              lineHeight: 1.6,
+              color: "#516F90",
+            }}
+          >
+            {description}
+          </Typography>
+        )}
+      </Box>
+    );
+  }
+
+  // =========================
+  // COMPANY PROFILE CARD
+  // =========================
+
   return (
     <Box
       sx={{
@@ -131,7 +253,11 @@ export default function ActivityCard({
         }}
       >
         {iconMap[type] || (
-          <NoteAltOutlinedIcon sx={{ fontSize: 18 }} />
+          <NoteAltOutlinedIcon
+            sx={{
+              fontSize: 18,
+            }}
+          />
         )}
       </Avatar>
 

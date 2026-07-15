@@ -15,6 +15,7 @@ import ViewEmailRecord from "../Pages/Leads/ViewEmailRecords/ViewEmailRecords";
 import Leadnote from "../Pages/Leads/components/Tabs/Note/Leadnote";
 import Leadcalls from "../Pages/Leads/components/Tabs/Calls/Leadcalls";
 import LeadMeeting from "../Pages/Leads/components/Tabs/Meetings/LeadMeeting";
+import LeadProfile from "../Pages/Leads/LeadProfile/LeadProfile";
 
 // Company Pages
 import CompaniesList from "../Pages/Companies/CompaniesList/CompaniesList";
@@ -67,6 +68,7 @@ function AppRoutes() {
       <Route path="/leadnote" element={<Leadnote />} />
       <Route path="/leadcalls" element={<Leadcalls />} />
       <Route path="/leadmeeting" element={<LeadMeeting />} />
+      <Route path="/leadprofile" element={<LeadProfile />} />
 
       {/* Company Routes */}
       <Route path="/companieslist" element={<CompaniesList />} />

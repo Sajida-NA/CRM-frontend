@@ -49,9 +49,10 @@ export default function ProfileLayout({
           }}
         >
           <ProfileMiddlePanel
-            activities={profileData.activities}
-            entityType={entityType}
-          />
+  activities={profileData.activities}
+  upcoming={profileData.upcoming || []}
+  entityType={entityType}
+/>
         </Box>
 
         {/* Right Panel */}
