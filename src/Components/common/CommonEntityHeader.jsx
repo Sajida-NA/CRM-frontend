@@ -30,10 +30,6 @@ export default function CommonEntityHeader({
       Task: "Tasks",
       Meeting: "Meetings",
     };
-
-    // Future implementation
-    // const selectedTab = tabMap[type];
-    // setActiveTab(selectedTab);
   };
 
   // Default quick action buttons
@@ -59,37 +55,6 @@ export default function CommonEntityHeader({
       icon: <EventIcon />,
     },
   ];
-
-  // // Default profile details
-  // const leadDetails = [
-  //   {
-  //     label: "Email",
-  //     value: "janecooper@gmail.com",
-  //   },
-  //   {
-  //     label: "First Name",
-  //     value: "Jane",
-  //   },
-  //   {
-  //     label: "Last Name",
-  //     value: "Cooper",
-  //   },
-  //   {
-  //     label: "Phone Number",
-  //     value: "078 5432 8505",
-  //   },
-  //   {
-  //     label: "Lead Status",
-  //     value: "New",
-  //   },
-  //   {
-  //     label: "Job Title",
-  //     value: "Salesperson",
-  //   },
-  //   {
-  //     label: "Created Date",
-  //     value: "04/08/2025 2:31 PM GMT+5:30",
-  //   },
 
   const leadDetails = [
     {
@@ -128,7 +93,6 @@ export default function CommonEntityHeader({
       <Box
         sx={{
           width: "100%",
-          // height: "100vh",
           display: "flex",
           alignItems: "stretch",
           backgroundColor: "#fff",
@@ -148,10 +112,7 @@ export default function CommonEntityHeader({
         />
 
         {/* Middle panel */}
-        <MiddlePanel
-        // activeTab={activeTab}
-        // setActiveTab={setActiveTab}
-        />
+        <MiddlePanel/>
 
         {/* Right panel */}
         <RightPanel
