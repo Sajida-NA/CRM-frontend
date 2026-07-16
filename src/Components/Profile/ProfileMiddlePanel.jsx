@@ -59,9 +59,9 @@ export default function ProfileMiddlePanel({
         backgroundColor: "transparent",
       }}
     >
-      {/* 
+      {/* =========================
           SEARCH + CONVERT
-       */}
+      ========================== */}
 
       <Box
         sx={{
@@ -121,20 +121,18 @@ export default function ProfileMiddlePanel({
         )}
       </Box>
 
-      {/* 
+      {/* =========================
           ACTIVITY TABS
-       */}
+      ========================== */}
 
       <ActivityTabs value={activeTab} onChange={setActiveTab} />
 
-      {/* 
+      {/* =========================
           LEAD PROFILE
-       */}
+      ========================== */}
 
       {entityType === "lead" && (
-        <Box sx={{ mt: 3 }}>
-          {/* Upcoming Title */}
-
+        <Box sx={{ mt: "34px" }}>
           <Typography
             sx={{
               fontWeight: 700,
@@ -250,7 +248,7 @@ export default function ProfileMiddlePanel({
                     </Box>
                   </Box>
 
-                  {/* Expandable Task Description */}
+                  {/* Expandable Description */}
 
                   {isOpen && (
                     <Box
@@ -284,7 +282,7 @@ export default function ProfileMiddlePanel({
             })}
           </Box>
 
-          {/* June 2025 */}
+          {/* June Timeline */}
 
           <Typography
             sx={{
@@ -297,8 +295,6 @@ export default function ProfileMiddlePanel({
           >
             June 2025
           </Typography>
-
-          {/* All Lead Activities */}
 
           <Box
             sx={{
@@ -322,12 +318,12 @@ export default function ProfileMiddlePanel({
         </Box>
       )}
 
-      {/* 
+      {/*
           TICKET PROFILE
-       */}
+      */}
 
       {entityType === "ticket" && (
-        <Box sx={{ mt: 3 }}>
+        <Box sx={{ mt: "34px" }}>
           <Typography
             sx={{
               fontWeight: 700,
@@ -367,7 +363,7 @@ export default function ProfileMiddlePanel({
        */}
 
       {entityType === "company" && (
-        <Box sx={{ mt: 3 }}>
+        <Box sx={{ mt: "34px" }}>
           <Typography
             sx={{
               fontWeight: 700,
@@ -432,7 +428,7 @@ export default function ProfileMiddlePanel({
 
       {/* 
           NO RESULTS
-      */}
+       */}
 
       {filteredActivities.length === 0 && filteredUpcoming.length === 0 && (
         <Typography
