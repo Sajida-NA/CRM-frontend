@@ -1,9 +1,6 @@
 import React from "react";
 import { Box, TextField, Button, InputAdornment } from "@mui/material";
-
 import SearchIcon from "@mui/icons-material/Search";
-
-// import CommonActivityTabs from "./CommonActivityTab";
 
 export default function MiddlePanel(
   searchValue = "",
@@ -69,7 +66,6 @@ export default function MiddlePanel(
         >
           Convert
         </Button>
-
       </Box>
     </Box>
   );

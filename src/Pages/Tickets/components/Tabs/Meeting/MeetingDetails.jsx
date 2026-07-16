@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Stack,
-} from "@mui/material";
+import { Box, Typography, Card, CardContent, Stack } from "@mui/material";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -112,11 +106,7 @@ export default function MeetingDetails() {
                   sx={{ cursor: "pointer", flex: 1 }}
                   onClick={() => toggleCard(index)}
                 >
-                  {openCards[index] ? (
-                    <ExpandLessIcon />
-                  ) : (
-                    <ExpandMoreIcon />
-                  )}
+                  {openCards[index] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
 
                   <Typography fontWeight={600} fontSize="15px">
                     {meeting.title}

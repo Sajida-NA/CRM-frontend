@@ -1,19 +1,9 @@
 import React from "react";
 import { Tabs, Tab } from "@mui/material";
 
-const tabs = [
-  "Activity",
-  "Notes",
-  "Emails",
-  "Calls",
-  "Tasks",
-  "Meetings",
-];
+const tabs = ["Activity", "Notes", "Emails", "Calls", "Tasks", "Meetings"];
 
-export default function ActivityTabs({
-  value,
-  onChange,
-}) {
+export default function ActivityTabs({ value, onChange }) {
   return (
     <Tabs
       value={value}

@@ -1,6 +1,5 @@
 import { Box, Typography } from "@mui/material";
 
-
 export default function PageHeader({ title, actions }) {
   return (
     <Box
@@ -13,7 +12,7 @@ export default function PageHeader({ title, actions }) {
         mb: 3,
       }}
     >
-      <Typography variant="h6" sx={{ color:"text.primary" }}>
+      <Typography variant="h6" sx={{ color: "text.primary" }}>
         {title}
       </Typography>
 

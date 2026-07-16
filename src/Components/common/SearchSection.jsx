@@ -13,15 +13,14 @@ export default function SearchSection({
   searchValue,
   onSearchChange,
 }) {
-   
   return (
     <Box
       sx={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        mt:1
-         }}
+        mt: 1,
+      }}
     >
       <InputField
         placeholder={placeholder}

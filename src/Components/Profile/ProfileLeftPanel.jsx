@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Avatar,
-  Box,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Avatar, Box, IconButton, Stack, Typography } from "@mui/material";
 
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
@@ -52,9 +46,7 @@ export default function ProfileLeftPanel({
               width: 56,
               height: 56,
               borderRadius: 2,
-              bgcolor: profile?.avatarImage
-                ? "transparent"
-                : "#EEF2FF",
+              bgcolor: profile?.avatarImage ? "transparent" : "#EEF2FF",
               color: "#5A45E5",
               fontWeight: 700,
               fontSize: 24,
@@ -154,7 +146,7 @@ export default function ProfileLeftPanel({
                 width: 30,
                 height: 30,
                 mx: "auto",
-                margin:"12px",
+                margin: "12px",
 
                 border: "1px solid #D0D5DD",
                 borderRadius: "8px",
