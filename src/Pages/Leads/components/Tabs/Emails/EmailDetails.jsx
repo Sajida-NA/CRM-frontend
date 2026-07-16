@@ -12,7 +12,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
-import EmailRecord from "./EmailCard";
+import EmailCard from "./EmailCard";
 import emailData from "./emailData";
 
 export default function EmailDetails() {
@@ -247,7 +247,7 @@ export default function EmailDetails() {
           },
         }}
       >
-        <EmailRecord
+        <EmailCard
           onClose={() => setOpenEmail(false)}
         />
       </Dialog>
