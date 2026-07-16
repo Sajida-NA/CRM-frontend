@@ -323,9 +323,9 @@ export default function ProfileMiddlePanel({
         </Box>
       )}
 
-      {/* =========================
+      {/*
           TICKET PROFILE
-      ========================== */}
+      */}
 
       {entityType === "ticket" && (
         <Box sx={{ mt: "34px" }}>
@@ -363,9 +363,9 @@ export default function ProfileMiddlePanel({
         </Box>
       )}
 
-      {/* =========================
+      {/* 
           COMPANY PROFILE
-      ========================== */}
+       */}
 
       {entityType === "company" && (
         <Box sx={{ mt: "34px" }}>
@@ -433,9 +433,9 @@ export default function ProfileMiddlePanel({
         </Box>
       )}
 
-      {/* =========================
+      {/* 
           NO RESULTS
-      ========================== */}
+       */}
 
       {filteredActivities.length === 0 &&
         filteredUpcoming.length === 0 && (
