@@ -32,9 +32,9 @@ export default function ActivityCard({
 }) {
   const [open, setOpen] = useState(true);
 
-  // =========================
+  
   // TICKET PROFILE CARD
-  // =========================
+  
 
   if (entityType === "ticket") {
     return (
@@ -111,9 +111,9 @@ export default function ActivityCard({
     );
   }
 
-  // =========================
+
   // LEAD PROFILE CARD
-  // =========================
+ 
 
   if (entityType === "lead") {
     return (
@@ -224,9 +224,9 @@ export default function ActivityCard({
     );
   }
 
-  // =========================
+  
   // COMPANY PROFILE CARD
-  // =========================
+  
 
   return (
     <Box
