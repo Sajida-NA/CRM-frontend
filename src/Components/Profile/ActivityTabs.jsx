@@ -25,7 +25,7 @@ export default function ActivityTabs({
         borderBottom: "1px solid #EAECF0",
 
         "& .MuiTabs-flexContainer": {
-          gap: 1.5,
+          gap: 4,
         },
 
         "& .MuiTabs-indicator": {
@@ -44,7 +44,7 @@ export default function ActivityTabs({
             textTransform: "none",
             minHeight: 44,
             minWidth: "auto",
-            px: 0.5,
+            px: 2,
             fontSize: 14,
             fontWeight: 500,
             color: "#667085",
