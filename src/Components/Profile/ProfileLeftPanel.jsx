@@ -13,6 +13,7 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import CallOutlinedIcon from "@mui/icons-material/CallOutlined";
 import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
 import EventOutlinedIcon from "@mui/icons-material/EventOutlined";
+import PersonIcon from "@mui/icons-material/Person";
 
 const iconMap = {
   Note: <NoteAltOutlinedIcon sx={{ fontSize: 20 }} />,
@@ -36,37 +37,44 @@ export default function ProfileLeftPanel({
         py: 1,
       }}
     >
-      {/* Profile */}
+      {/* 
+          PROFILE SECTION
+       */}
 
       <Stack
         direction="row"
         spacing={profile?.avatar === false ? 0 : 2}
         alignItems="flex-start"
       >
-        {/* Company Avatar / Logo */}
+        {/* Profile Avatar / Company Logo */}
 
         {profile?.avatar !== false && (
-          <Avatar
-            src={profile?.avatarImage}
-            sx={{
-              width: 56,
-              height: 56,
-              borderRadius: 2,
-              bgcolor: profile?.avatarImage
-                ? "transparent"
-                : "#EEF2FF",
-              color: "#5A45E5",
-              fontWeight: 700,
-              fontSize: 24,
-            }}
-          >
-            {!profile?.avatarImage && profile?.avatar}
-          </Avatar>
+         <Avatar
+  src={profile?.avatarImage}
+  sx={{
+    width: 56,
+    height: 56,
+    borderRadius: "10px",
+    bgcolor: "#EEF2FF",
+    color: "#5A45E5",
+  }}
+>
+  {!profile?.avatarImage && (
+    <PersonIcon sx={{ fontSize: 30 }} />
+  )}
+</Avatar>
         )}
 
         {/* Profile Information */}
 
-        <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Box
+          sx={{
+            flex: 1,
+            minWidth: 0,
+          }}
+        >
+          {/* Name */}
+
           <Typography
             sx={{
               fontSize: 16,
@@ -78,6 +86,8 @@ export default function ProfileLeftPanel({
             {profile?.name}
           </Typography>
 
+          {/* Subtitle */}
+
           <Typography
             sx={{
               mt: 0.4,
@@ -87,6 +97,8 @@ export default function ProfileLeftPanel({
           >
             {profile?.subtitle}
           </Typography>
+
+          {/* Email */}
 
           {profile?.email && (
             <Stack
@@ -128,7 +140,9 @@ export default function ProfileLeftPanel({
         </Box>
       </Stack>
 
-      {/* Quick Actions */}
+      {/* 
+          QUICK ACTIONS
+       */}
 
       <Stack
         direction="row"
@@ -193,7 +207,9 @@ export default function ProfileLeftPanel({
         ))}
       </Stack>
 
-      {/* About Section */}
+      {/* 
+          ABOUT SECTION
+       */}
 
       <Stack
         direction="row"
@@ -232,11 +248,15 @@ export default function ProfileLeftPanel({
         </IconButton>
       </Stack>
 
-      {/* About Details */}
+      {/* 
+          ABOUT DETAILS
+       */}
 
       <Stack spacing={1.6}>
         {about?.details?.map((item) => (
           <Box key={item.label}>
+            {/* Detail Label */}
+
             <Typography
               sx={{
                 fontSize: 11,
@@ -247,6 +267,8 @@ export default function ProfileLeftPanel({
             >
               {item.label}
             </Typography>
+
+            {/* Detail Value */}
 
             <Typography
               sx={{
