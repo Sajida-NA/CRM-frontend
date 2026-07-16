@@ -1,20 +1,16 @@
- import React, { useState } from 'react'
- import { Box,Typography } from '@mui/material'
- import CommonActivityTabs from '../../../../../Components/common/CommonActivityTab'
- import Createnote from '../../../../Leads/components/Tabs/Note/Createnote';
- import CommonButton from '../../../../../Components/common/CommonButton';
+import React, { useState } from "react";
+import { Box, Typography } from "@mui/material";
+import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
+import Createnote from "../../../../Leads/components/Tabs/Note/Createnote";
+import CommonButton from "../../../../../Components/common/CommonButton";
 
- 
- export default function NoteDetails() {
+export default function NoteDetails() {
+  const [activeTab, setActiveTab] = useState("Notes");
+  const [openCreateNote, setOpenCreateNote] = useState(false);
 
-     const [activeTab, setActiveTab] = useState("Notes");
-      const [openCreateNote, setOpenCreateNote] = useState(false);
-     
-    
-   return (
-     <div>
-
-        <Box
+  return (
+    <div>
+      <Box
         sx={{
           p: 3,
           position: "absolute",
@@ -130,19 +126,9 @@
             >
               Sample Note
             </Box>
-
-           
           </Box>
         </Box>
       </Box>
-  
-
-
-       
-     </div>
-   )
- }
- 
- 
- 
- 
+    </div>
+  );
+}

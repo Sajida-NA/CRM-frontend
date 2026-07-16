@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  Avatar,
-  Box,
-  Typography,
-} from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
 
 import CallOutlinedIcon from "@mui/icons-material/CallOutlined";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
@@ -32,9 +28,7 @@ export default function ActivityCard({
 }) {
   const [open, setOpen] = useState(true);
 
-  
   // TICKET PROFILE CARD
-  
 
   if (entityType === "ticket") {
     return (
@@ -111,9 +105,7 @@ export default function ActivityCard({
     );
   }
 
-
   // LEAD PROFILE CARD
- 
 
   if (entityType === "lead") {
     return (
@@ -156,9 +148,7 @@ export default function ActivityCard({
                 color: "#5A45E5",
                 cursor: "pointer",
                 flexShrink: 0,
-                transform: open
-                  ? "rotate(0deg)"
-                  : "rotate(-90deg)",
+                transform: open ? "rotate(0deg)" : "rotate(-90deg)",
                 transition: "transform 0.2s ease",
               }}
             />
@@ -224,9 +214,7 @@ export default function ActivityCard({
     );
   }
 
-  
   // COMPANY PROFILE CARD
-  
 
   return (
     <Box

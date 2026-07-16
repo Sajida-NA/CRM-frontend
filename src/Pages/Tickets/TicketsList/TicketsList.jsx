@@ -259,8 +259,12 @@ export default function TicketsList() {
                 <TableCell>{tickets.ticketOwner}</TableCell>
                 <TableCell>{tickets.createdDate}</TableCell>
                 <TableCell>
-                  <IconButton color="primary"><EditIcon /></IconButton>
-                  <IconButton color="error"><DeleteIcon /></IconButton>
+                  <IconButton color="primary">
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton color="error">
+                    <DeleteIcon />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}

@@ -3,11 +3,7 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { useTheme } from "@mui/material/styles";
 
-export default function Pagination({
-  page = 1,
-  totalPages = 1,
-  onPageChange,
-}) {
+export default function Pagination({ page = 1, totalPages = 1, onPageChange }) {
   const theme = useTheme();
 
   const getPages = () => {
@@ -22,26 +18,11 @@ export default function Pagination({
 
     // End
     if (page >= totalPages - 2) {
-      return [
-        1,
-        2,
-        "...",
-        totalPages - 2,
-        totalPages - 1,
-        totalPages,
-      ];
+      return [1, 2, "...", totalPages - 2, totalPages - 1, totalPages];
     }
 
     // Middle
-    return [
-      1,
-      "...",
-      page - 1,
-      page,
-      page + 1,
-      "...",
-      totalPages,
-    ];
+    return [1, "...", page - 1, page, page + 1, "...", totalPages];
   };
 
   return (
@@ -102,14 +83,9 @@ export default function Pagination({
               fontWeight: 600,
 
               bgcolor:
-                page === item
-                  ? theme.palette.primary.main
-                  : "transparent",
+                page === item ? theme.palette.primary.main : "transparent",
 
-              color:
-                page === item
-                  ? "#fff"
-                  : theme.palette.text.primary,
+              color: page === item ? "#fff" : theme.palette.text.primary,
 
               transition: ".2s",
 
@@ -123,23 +99,18 @@ export default function Pagination({
           >
             {item}
           </Box>
-        )
+        ),
       )}
 
       {/* Next */}
 
       <Box
-        onClick={() =>
-          page < totalPages && onPageChange(page + 1)
-        }
+        onClick={() => page < totalPages && onPageChange(page + 1)}
         sx={{
           display: "flex",
           alignItems: "center",
           gap: 0.5,
-          cursor:
-            page === totalPages
-              ? "default"
-              : "pointer",
+          cursor: page === totalPages ? "default" : "pointer",
           color:
             page === totalPages
               ? theme.palette.text.disabled

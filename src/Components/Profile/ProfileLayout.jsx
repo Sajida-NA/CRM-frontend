@@ -6,11 +6,7 @@ import ProfileLeftPanel from "./ProfileLeftPanel";
 import ProfileMiddlePanel from "./ProfileMiddlePanel";
 import ProfileRightPanel from "./ProfileRightPanel";
 
-export default function ProfileLayout({
-  title,
-  profileData,
-  entityType,
-}) {
+export default function ProfileLayout({ title, profileData, entityType }) {
   return (
     <MainLayout title={title}>
       {/* Single White Profile Container */}
@@ -49,10 +45,10 @@ export default function ProfileLayout({
           }}
         >
           <ProfileMiddlePanel
-  activities={profileData.activities}
-  upcoming={profileData.upcoming || []}
-  entityType={entityType}
-/>
+            activities={profileData.activities}
+            upcoming={profileData.upcoming || []}
+            entityType={entityType}
+          />
         </Box>
 
         {/* Right Panel */}

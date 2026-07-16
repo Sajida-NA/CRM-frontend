@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Typography,
-} from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 export default function ProfileRightPanel({
   aiSummary = {},
@@ -10,13 +7,13 @@ export default function ProfileRightPanel({
 }) {
   return (
     <Box
-  sx={{
-    display: "flex",
-    flexDirection: "column",
-    gap: 2,
-    p: 2,
-  }}
->
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        p: 2,
+      }}
+    >
       {/* AI Summary */}
 
       <Box

@@ -16,8 +16,6 @@ export default function ForgotPassword() {
 
     setLoading(true);
 
-    // TODO: Call authService.forgotPassword()
-
     setTimeout(() => {
       setSubmitted(true);
       setLoading(false);
@@ -41,11 +39,7 @@ export default function ForgotPassword() {
         </>
       }
     >
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ m: 3 }}
-      >
+      <Typography variant="body2" color="text.secondary" sx={{ m: 3 }}>
         Enter your email address and we'll send you a link to reset your
         password.
       </Typography>
@@ -59,11 +53,7 @@ export default function ForgotPassword() {
           width: "100%",
         }}
       >
-        <Typography
-          variant="body2"
-          fontWeight={500}
-          sx={{ mb: 1 }}
-        >
+        <Typography variant="body2" fontWeight={500} sx={{ mb: 1 }}>
           Email
         </Typography>
 
@@ -77,11 +67,7 @@ export default function ForgotPassword() {
         />
 
         {submitted && (
-          <Typography
-            color="success.main"
-            variant="body2"
-            sx={{ mt: 2 }}
-          >
+          <Typography color="success.main" variant="body2" sx={{ mt: 2 }}>
             Reset link has been sent to your email.
           </Typography>
         )}
@@ -95,11 +81,7 @@ export default function ForgotPassword() {
             height: 46,
           }}
         >
-          {submitted
-            ? "Link Sent"
-            : loading
-            ? "Sending..."
-            : "Send Reset Link"}
+          {submitted ? "Link Sent" : loading ? "Sending..." : "Send Reset Link"}
         </CommonButton>
       </Box>
     </AuthLayout>
