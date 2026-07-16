@@ -1,49 +1,41 @@
-// const emails = [
-//   {
-//     id: 1,
-//     subject: "Logged Email - Hello There",
-//     sender: "Maria Johnson",
-//     date: "June 24, 2025 at 5:30 PM",
-//     body: "",
-//   },
+const emailData = [
+  {
+    id: 1,
+    subject: "Logged Email - Hello There",
+    sender: "Maria Johnson",
+    receiver: "Jane Cooper",
+    date: "June 24, 2025",
+    time: "5:30 PM",
+    body: `Hey Jane Cooper,
 
-//   {
-//     id: 2,
-//     subject: "Logged Email - Hello There",
-//     sender: "Maria Johnson",
-//     date: "June 24, 2025 at 5:30 PM",
-//     body: `To Jane Cooper
+Thank you for showing interest in CRM!
 
-// Hey Jane Cooper,
+We noticed you recently filled out our demo request form on the website and wanted to reach out personally.
 
-// Thank you for showing interest in CRM!
+Our solution helps businesses streamline sales workflows, track lead progress, and boost conversion rates by up to 40%.
 
-// We noticed you recently filled out our demo request form on the website and wanted to reach out personally.
+I'd love to schedule a quick call to understand your needs better and show how we can help. Are you available for a 15-minute chat this week?
 
-// Our solution helps businesses streamline sales workflows, track lead progress, and boost conversion rates by up to 40%.
+You can book a time that works for you.
 
-// I'd love to schedule a quick call to understand your needs better and show how we can help. Are you available for a 15-minute chat this week?
+If you have any specific questions or requirements, feel free to reply to this email directly.
 
-// You can book a time that works for you.
+Looking forward to connecting!
 
-// If you have any specific questions or requirements, feel free to reply to this email directly.
+Warm regards,
 
-// Looking forward to connecting!
+Rajat Sharma
 
-// Warm regards,
+Senior Sales Executive
 
-// Rajat Sharma
+CRM Pvt. Ltd.
 
-// Senior Sales Executive
++91-9876543210
 
-// CRM Pvt. Ltd.
+rajat@salestrackcrm.com
 
-// +91-9876543210
+salestrackcrm.com`,
+  },
+];
 
-// rajat@salestrackcrm.com
-
-// salestrackcrm.com`,
-//   },
-// ];
-
-// export default emails;
+export default emailData;

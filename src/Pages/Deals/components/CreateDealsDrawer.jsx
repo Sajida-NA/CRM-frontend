@@ -130,7 +130,7 @@ export default function CreateDealsDrawer({ open, onClose }) {
               "Robert Fox",
               "Cameron Williamson",
             ]}
-             name="dealOwner"
+            name="dealOwner"
             value={formData.dealOwner}
             onChange={handleChange}
           />

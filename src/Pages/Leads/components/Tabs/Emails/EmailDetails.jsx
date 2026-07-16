@@ -12,7 +12,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
-import EmailRecord from "./EmailRecord";
+import EmailRecord from "./EmailCard";
 import emailData from "./emailData";
 
 export default function EmailDetails() {
