@@ -52,8 +52,7 @@ export default function AuthLayout({
           <Typography
             align="center"
             sx={{
-              mt: 3,
-              //   fontSize: 15,
+              mt: 3
             }}
           >
             {footer}

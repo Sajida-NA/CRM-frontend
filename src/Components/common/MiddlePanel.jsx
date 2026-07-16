@@ -69,16 +69,8 @@ export default function MiddlePanel(
         >
           Convert
         </Button>
-      </Box>
 
-      {/*
-      <Box sx={{ mt: 2 }}>
-        <CommonActivityTabs
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
       </Box>
-      */}
     </Box>
   );
 }
