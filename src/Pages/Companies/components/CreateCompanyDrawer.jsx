@@ -97,7 +97,7 @@ export default function CreateCompanyDrawer({ open, onClose }) {
           />
 
           <Grid container spacing={2}>
-            <Grid size={{xs:12, md:6}}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <CommonSelect
                 label="Industry"
                 required
@@ -114,7 +114,7 @@ export default function CreateCompanyDrawer({ open, onClose }) {
               />
             </Grid>
 
-            <Grid size={{xs:12,md:6}}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <CommonSelect
                 label="Type"
                 required

@@ -20,7 +20,6 @@ export default function CommonEntityHeader({
 
   // Dynamic data for the left panel
   leftPanelData = {},
-   
 }) {
   // Handles quick action button clicks
   const handleActionClick = (type) => {
@@ -92,10 +91,7 @@ export default function CommonEntityHeader({
   //     value: "04/08/2025 2:31 PM GMT+5:30",
   //   },
 
-
-
-
-    const leadDetails = [
+  const leadDetails = [
     {
       label: "Email",
       value: "janecooper@gmail.com",
@@ -134,9 +130,9 @@ export default function CommonEntityHeader({
           width: "100%",
           // height: "100vh",
           display: "flex",
-          alignItems:"stretch",
+          alignItems: "stretch",
           backgroundColor: "#fff",
-          borderRadius :2
+          borderRadius: 2,
         }}
       >
         {/* Left panel */}
@@ -153,8 +149,8 @@ export default function CommonEntityHeader({
 
         {/* Middle panel */}
         <MiddlePanel
-          // activeTab={activeTab}
-          // setActiveTab={setActiveTab}
+        // activeTab={activeTab}
+        // setActiveTab={setActiveTab}
         />
 
         {/* Right panel */}

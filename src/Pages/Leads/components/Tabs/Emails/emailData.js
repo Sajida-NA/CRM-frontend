@@ -1,20 +1,12 @@
-const emails = [
+const emailData = [
   {
     id: 1,
     subject: "Logged Email - Hello There",
     sender: "Maria Johnson",
-    date: "June 24, 2025 at 5:30 PM",
-    body: "",
-  },
-
-  {
-    id: 2,
-    subject: "Logged Email - Hello There",
-    sender: "Maria Johnson",
-    date: "June 24, 2025 at 5:30 PM",
-    body: `To Jane Cooper
-
-Hey Jane Cooper,
+    receiver: "Jane Cooper",
+    date: "June 24, 2025",
+    time: "5:30 PM",
+    body: `Hey Jane Cooper,
 
 Thank you for showing interest in CRM!
 
@@ -46,4 +38,4 @@ salestrackcrm.com`,
   },
 ];
 
-export default emails;
+export default emailData;
