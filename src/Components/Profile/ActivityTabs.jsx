@@ -1,19 +1,9 @@
 import React from "react";
 import { Tabs, Tab } from "@mui/material";
 
-const tabs = [
-  "Activity",
-  "Notes",
-  "Emails",
-  "Calls",
-  "Tasks",
-  "Meetings",
-];
+const tabs = ["Activity", "Notes", "Emails", "Calls", "Tasks", "Meetings"];
 
-export default function ActivityTabs({
-  value,
-  onChange,
-}) {
+export default function ActivityTabs({ value, onChange }) {
   return (
     <Tabs
       value={value}
@@ -25,7 +15,7 @@ export default function ActivityTabs({
         borderBottom: "1px solid #EAECF0",
 
         "& .MuiTabs-flexContainer": {
-          gap: 1.5,
+          gap: 4,
         },
 
         "& .MuiTabs-indicator": {
@@ -44,7 +34,7 @@ export default function ActivityTabs({
             textTransform: "none",
             minHeight: 44,
             minWidth: "auto",
-            px: 0.5,
+            px: 2,
             fontSize: 14,
             fontWeight: 500,
             color: "#667085",

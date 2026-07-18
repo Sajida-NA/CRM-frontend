@@ -4,16 +4,9 @@ const ticketProfileData = {
     subtitle: "Status: New",
     email: "",
     avatar: false,
-    
   },
 
-  quickActions: [
-    "Note",
-    "Email",
-    "Call",
-    "Task",
-    "Meeting",
-  ],
+  quickActions: ["Note", "Email", "Call", "Task", "Meeting"],
 
   about: {
     title: "About this Ticket",
@@ -38,21 +31,21 @@ const ticketProfileData = {
   },
 
   activities: [
-  {
-    id: 1,
-    type: "Ticket",
-    title: "Ticket activity",
-    date: "June 24, 2025 at 5:30 PM",
-    description: "Maria Johnson moved ticket to new",
-  },
-  {
-    id: 2,
-    type: "Ticket",
-    title: "",
-    date: "June 24, 2025 at 5:30 PM",
-    description: "This ticket was created by Maria Johnson",
-  },
-],
+    {
+      id: 1,
+      type: "Ticket",
+      title: "Ticket activity",
+      date: "June 24, 2025 at 5:30 PM",
+      description: "Maria Johnson moved ticket to new",
+    },
+    {
+      id: 2,
+      type: "Ticket",
+      title: "",
+      date: "June 24, 2025 at 5:30 PM",
+      description: "This ticket was created by Maria Johnson",
+    },
+  ],
 
   aiSummary: {
     title: "AI Ticket Summary",

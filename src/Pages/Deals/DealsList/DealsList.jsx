@@ -126,11 +126,13 @@ function DealsList() {
             actions={
               <Box sx={{ display: "flex", gap: 2 }}>
                 <CommonButton variant="outlined">Import</CommonButton>
-                <CommonButton onClick={() => setOpenDrawer(true)}>Create</CommonButton>
+                <CommonButton onClick={() => setOpenDrawer(true)}>
+                  Create
+                </CommonButton>
               </Box>
             }
           />
-           {/* Drawer */}
+          {/* Drawer */}
           <CreateDealsDrawer
             open={openDrawer}
             onClose={() => setOpenDrawer(false)}
@@ -227,8 +229,12 @@ function DealsList() {
               <TableCell>{deal.owner}</TableCell>
               <TableCell>{deal.amount}</TableCell>
               <TableCell>
-                <IconButton color="primary"><EditIcon /></IconButton>
-                <IconButton color="error"><DeleteIcon /></IconButton>
+                <IconButton color="primary">
+                  <EditIcon />
+                </IconButton>
+                <IconButton color="error">
+                  <DeleteIcon />
+                </IconButton>
               </TableCell>
             </TableRow>
           ))}

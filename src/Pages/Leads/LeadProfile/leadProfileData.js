@@ -3,6 +3,7 @@ const leadProfileData = {
     name: "Jane Cooper",
     subtitle: "Salesperson",
     email: "janecooper@gmail.com",
+      avatar: " ",
   },
 
   quickActions: [

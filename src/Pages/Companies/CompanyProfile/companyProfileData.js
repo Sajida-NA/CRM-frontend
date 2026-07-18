@@ -6,13 +6,7 @@ const companyProfileData = {
     avatar: "T",
   },
 
-  quickActions: [
-    "Note",
-    "Email",
-    "Call",
-    "Task",
-    "Meeting",
-  ],
+  quickActions: ["Note", "Email", "Call", "Task", "Meeting"],
 
   about: {
     title: "About this Company",
@@ -95,14 +89,14 @@ const companyProfileData = {
       type: "Note",
       title: "Note by Maria Johnson",
       date: "June 24, 2025 at 5:30 PM",
-      description: "Shared additional notes regarding customer requirements."
+      description: "Shared additional notes regarding customer requirements.",
     },
   ],
 
   aiSummary: {
     title: "AI Company Summary",
     description:
-"There are no activities associated with this company and further details are needed to provide a comprehensive summary.",
+      "There are no activities associated with this company and further details are needed to provide a comprehensive summary.",
   },
 
   attachments: [],
