@@ -46,6 +46,7 @@ const Sidebar = () => {
         flexDirection: "column",
         alignItems: "center",
         pt: 3,
+        px:2
       }}
     >
       {menuItems.map((item) => (

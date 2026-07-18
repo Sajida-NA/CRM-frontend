@@ -1,7 +1,7 @@
 import React from 'react'
 import CommonEntityHeader from '../../../Components/common/CommonEntityHeader'
 
-export default function LeadsLeftPanel() {
+export default function LeadsLeftPanel({children}) {
 
     const leadDetails = [
     {
@@ -62,7 +62,7 @@ export default function LeadsLeftPanel() {
          <CommonEntityHeader
                   title="Leads"
                   leftPanelData={leftPanelData}
-                />   
+          >  {children}</CommonEntityHeader>
       
     </div>
   )

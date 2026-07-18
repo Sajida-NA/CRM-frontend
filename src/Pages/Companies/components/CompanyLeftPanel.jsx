@@ -2,7 +2,7 @@ import React from "react";
 
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 
-export default function CompanyLeftPanel() {
+export default function CompanyLeftPanel({children}) {
 
   const companyDetails = [
      {
@@ -77,7 +77,8 @@ export default function CompanyLeftPanel() {
       title="Companies"
       leftPanelData={leftPanelData}
       showMiddlePanel={false}
-      showRightPanel={false}
-    />
+      showRightPanel={false}>
+        {children}
+    </CommonEntityHeader>
   );
 }

@@ -5,19 +5,21 @@ import SearchIcon from "@mui/icons-material/Search";
 
 // import CommonActivityTabs from "./CommonActivityTab";
 
-export default function MiddlePanel(
+export default function MiddlePanel({
   searchValue = "",
   onSearchChange = () => {},
   onConvert = () => {},
   activeTab = "Activity",
   setActiveTab = () => {},
-) {
+  children,
+}) {
   return (
     <Box
       sx={{
         flex: 1,
+        overflow: "auto",
         backgroundColor: "#fff",
-        p: 3,
+        p: 2,
       }}
     >
       <Box
@@ -69,8 +71,8 @@ export default function MiddlePanel(
         >
           Convert
         </Button>
-
       </Box>
+      <Box>{children}</Box>
     </Box>
   );
 }

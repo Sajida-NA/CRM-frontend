@@ -5,9 +5,7 @@ import TaskDetails from '../../../../Leads/components/Tabs/Task/TaskDetails'
 export default function DealTask() {
   return (
     <div>
-        <DealLeftPanel/>
-        <TaskDetails/>
-      
+        <DealLeftPanel><TaskDetails/></DealLeftPanel>
     </div>
   )
 }

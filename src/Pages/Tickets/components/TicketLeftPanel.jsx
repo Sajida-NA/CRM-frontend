@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import CommonEntityHeader from '../../../Components/common/CommonEntityHeader'
 
 
-export default function TicketLeftPanel() {
+export default function TicketLeftPanel({children}) {
 
     
      const ticketDetails = [
@@ -52,7 +52,7 @@ export default function TicketLeftPanel() {
         <CommonEntityHeader
           title="Tickets"
           leftPanelData={leftPanelData}
-        />   
+        >{children}</CommonEntityHeader>  
       
     </div>
   )

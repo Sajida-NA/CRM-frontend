@@ -1,27 +1,13 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Stack,
-} from "@mui/material";
-
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-
+import {Box,Typography} from "@mui/material";
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
 import ScheduleMeeting from "../../../../Leads/components/Tabs/Meetings/ScheduleMeeting";
+import MeetingCard from "./MeetingCard";
 
 export default function MeetingDetails() {
   const [activeTab, setActiveTab] = useState("Meetings");
   const [openCreateMeeting, setOpenCreateMeeting] = useState(false);
-
-  const [openCards, setOpenCards] = useState({
-    0: false,
-    1: true,
-  });
 
   const meetings = [
     {
@@ -35,25 +21,15 @@ export default function MeetingDetails() {
     },
   ];
 
-  const toggleCard = (index) => {
-    setOpenCards((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
-
   return (
     <Box
       sx={{
         p: 3,
-        position: "absolute",
-        top: 80,
-        left: 430,
-        width: "calc(100% - 680px)",
+        mx:-2
       }}
     >
       {/* Activity Tabs */}
-      <Box sx={{ mt: 10, mx: -2 }}>
+      <Box>
         <CommonActivityTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -67,11 +43,11 @@ export default function MeetingDetails() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mt: 5,
+          mt: 3,
           mb: 1,
         }}
       >
-        <Typography variant="h6">Meetings</Typography>
+        <Typography variant="h6">Meeting</Typography>
 
         <CommonButton
           variant="contained"
@@ -86,105 +62,9 @@ export default function MeetingDetails() {
         open={openCreateMeeting}
         onClose={() => setOpenCreateMeeting(false)}
       />
+      
+      <MeetingCard/>
 
-      {/* Meeting Cards */}
-      <Box sx={{ width: 800, mt: 2 }}>
-        {[...meetings, ...meetings].map((meeting, index) => (
-          <Card
-            key={index}
-            sx={{
-              width: 630,
-              borderRadius: 2,
-              boxShadow: "0px 1px 4px rgba(0,0,0,0.08)",
-              mt: 2,
-            }}
-          >
-            <CardContent sx={{ p: "16px 20px" }}>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="flex-start"
-              >
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  sx={{ cursor: "pointer", flex: 1 }}
-                  onClick={() => toggleCard(index)}
-                >
-                  {openCards[index] ? (
-                    <ExpandLessIcon />
-                  ) : (
-                    <ExpandMoreIcon />
-                  )}
-
-                  <Typography fontWeight={600} fontSize="15px">
-                    {meeting.title}
-                  </Typography>
-                </Stack>
-
-                <Typography fontSize="13px" color="#6B7280">
-                  {meeting.date} at {meeting.time}
-                </Typography>
-              </Stack>
-
-              {openCards[index] ? (
-                <Box mt={2}>
-                  <Typography color="#6B7280" fontSize="14px" mb={2}>
-                    Organized by {meeting.organizer}
-                  </Typography>
-
-                  <Box
-                    sx={{
-                      background: "#F4F8FC",
-                      borderRadius: "10px",
-                      p: 2,
-                      display: "flex",
-                      gap: 4,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <Box>
-                      <Typography fontSize="12px" color="#7B8794">
-                        Date & Time
-                      </Typography>
-                      <Typography fontWeight={600}>
-                        {meeting.date} at {meeting.time}
-                      </Typography>
-                    </Box>
-
-                    <Box>
-                      <Typography fontSize="12px" color="#7B8794">
-                        Duration
-                      </Typography>
-                      <Typography fontWeight={600}>
-                        {meeting.duration}
-                      </Typography>
-                    </Box>
-
-                    <Box>
-                      <Typography fontSize="12px" color="#7B8794">
-                        Attendees
-                      </Typography>
-                      <Typography fontWeight={600}>
-                        {meeting.attendees}
-                      </Typography>
-                    </Box>
-                  </Box>
-
-                  <Typography mt={2} color="#4B5563" fontSize="14px">
-                    {meeting.description}
-                  </Typography>
-                </Box>
-              ) : (
-                <Typography mt={1} color="#6B7280" fontSize="13px">
-                  {meeting.description}
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
     </Box>
   );
 }

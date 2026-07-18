@@ -6,9 +6,7 @@ import NoteDetails from './NoteDetails'
 export default function TicketNote() {
   return (
     <div>
-        <TicketLeftPanel/>
-        <NoteDetails/>
-      
-    </div>
+        <TicketLeftPanel><NoteDetails/></TicketLeftPanel>
+     </div>
   )
 }

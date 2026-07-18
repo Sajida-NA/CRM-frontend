@@ -6,8 +6,7 @@ import MeetingDetails from "./MeetingDetails";
 export default function TicketMeeting() {
   return (
     <div>
-      <TicketLeftPanel/>
-      <MeetingDetails />
-    </div>
+      <TicketLeftPanel><MeetingDetails /></TicketLeftPanel>
+     </div>
   );
 }

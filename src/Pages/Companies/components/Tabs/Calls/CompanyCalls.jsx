@@ -7,29 +7,21 @@ import calls from "../../../../Leads/components/Tabs/Calls/callData";
 import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
 import CreateLogCall from "../../../../Leads/components/Tabs/Calls/CreateLogCall";
 
-export default function TicketCalls() {
+export default function CompanyCalls() {
   const [activeTab, setActiveTab] = useState("Calls");
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
   return (
     <div>
-      <CompanyLeftPanel />
+      <CompanyLeftPanel>
       <Box
         sx={{
           p: 3,
-          position: "absolute",
-          top: 80,
-          left: 430,
-          width: "calc(100% - 680px)",
+          mx:-2
         }}
       >
         {/* ACTIVITY TABS */}
 
-        <Box
-          sx={{
-            mt: 10,
-            mx: -2,
-          }}
-        >
+        <Box>
           <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} />
         </Box>
 
@@ -67,6 +59,7 @@ export default function TicketCalls() {
           <CallCard key={call.id} call={call} />
         ))}
       </Box>
+      </CompanyLeftPanel>
     </div>
   );
 }

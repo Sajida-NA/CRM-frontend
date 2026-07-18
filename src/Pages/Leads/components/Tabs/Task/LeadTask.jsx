@@ -5,8 +5,7 @@ import LeadsLeftPanel from '../../LeadsLeftPanel'
 export default function LeadTask() {
   return (
     <div>
-        <LeadsLeftPanel />
-      <TaskDetails/>
+      <LeadsLeftPanel> <TaskDetails/></LeadsLeftPanel>
     </div>
   )
 }

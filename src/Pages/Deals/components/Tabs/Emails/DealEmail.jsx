@@ -5,8 +5,8 @@ import EmailDetails from "../../../../Leads/components/Tabs/Emails/EmailDetails"
 export default function DealEmail() {
   return (
     <>
-      <DealLeftPanel />
-      <EmailDetails />
+      <DealLeftPanel> <EmailDetails /></DealLeftPanel>
+     
     </>
   );
 }

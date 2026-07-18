@@ -5,8 +5,7 @@ import NoteDetails from '../../../../Tickets/components/Tabs/Note/NoteDetails'
 export default function Leadnote() {
   return (
     <div>
-      <LeadsLeftPanel/>
-      <NoteDetails/>     
+      <LeadsLeftPanel> <NoteDetails/></LeadsLeftPanel>
     </div>
   )
 }
