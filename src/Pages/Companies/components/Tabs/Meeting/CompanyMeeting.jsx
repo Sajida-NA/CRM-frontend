@@ -6,8 +6,7 @@ import MeetingDetails from "../../../../Tickets/components/Tabs/Meeting/MeetingD
 export default function CompanyMeeting() {
   return (
     <>
-      <CompanyLeftPanel />
-      <MeetingDetails />
+      <CompanyLeftPanel> <MeetingDetails /></CompanyLeftPanel>
     </>
   );
 }

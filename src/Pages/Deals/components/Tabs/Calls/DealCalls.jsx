@@ -12,24 +12,16 @@ export default function DealCalls() {
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
   return (
     <div>
-      <DealLeftPanel />
+      <DealLeftPanel>
       <Box
         sx={{
           p: 3,
-          position: "absolute",
-          top: 80,
-          left: 430,
-          width: "calc(100% - 680px)",
+          mx:-2
         }}
       >
         {/* ACTIVITY TABS */}
 
-        <Box
-          sx={{
-            mt: 10,
-            mx: -2,
-          }}
-        >
+        <Box>
           <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} />
         </Box>
 
@@ -40,7 +32,7 @@ export default function DealCalls() {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mt: 5,
+            mt: 3,
             mb: 1,
           }}
         >
@@ -67,6 +59,7 @@ export default function DealCalls() {
           <CallCard key={call.id} call={call} />
         ))}
       </Box>
+      </DealLeftPanel>
     </div>
   );
 }

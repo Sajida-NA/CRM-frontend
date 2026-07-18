@@ -5,8 +5,7 @@ import CompanyLeftPanel from "../../CompanyLeftPanel";
 export default function CompanyEmail() {
   return (
     <>
-      <CompanyLeftPanel />
-      <EmailDetails />
+      <CompanyLeftPanel> <EmailDetails /></CompanyLeftPanel>
     </>
   );
 }

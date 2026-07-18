@@ -5,8 +5,7 @@ import TaskDetails from "../../../../Leads/components/Tabs/Task/TaskDetails";
 export default function CompanyTask() {
   return (
     <div>
-      <CompanyLeftPanel />
-      <TaskDetails />
-    </div>
-  );
+      <CompanyLeftPanel>  <TaskDetails/></CompanyLeftPanel>
+     </div>
+  )
 }

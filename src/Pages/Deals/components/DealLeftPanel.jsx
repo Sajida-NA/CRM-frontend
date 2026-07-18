@@ -1,9 +1,7 @@
-
-
 import React from "react";
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 
-export default function DealLeftPanel() {
+export default function DealLeftPanel({children}) {
   const dealDetails = [
     {
       label: "Deal Owner",
@@ -43,7 +41,8 @@ export default function DealLeftPanel() {
   return (
     <CommonEntityHeader
       title="Deals"
-      leftPanelData={leftPanelData}
-    />
+      leftPanelData={leftPanelData}>
+        {children}
+    </CommonEntityHeader>
   );
 }

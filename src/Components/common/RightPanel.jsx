@@ -14,7 +14,7 @@ export default function RightPanel({
   return (
     <Box
       sx={{
-        width: 230,
+        width: 300,
         backgroundColor: "#fff",
         borderTopRightRadius: "12px",
         p: 2,

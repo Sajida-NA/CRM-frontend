@@ -5,8 +5,8 @@ import MeetingDetails from "../../../../Tickets/components/Tabs/Meeting/MeetingD
 export default function DealMeeting() {
   return (
     <>
-      <DealLeftPanel />
-      <MeetingDetails />
+      <DealLeftPanel><MeetingDetails /></DealLeftPanel>
+      
     </>
   );
 }

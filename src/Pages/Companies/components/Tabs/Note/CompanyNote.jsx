@@ -5,8 +5,7 @@ import NoteDetails from "../../../../Tickets/components/Tabs/Note/NoteDetails";
 export default function CompanyNote() {
   return (
     <div>
-      <CompanyLeftPanel />
-      <NoteDetails />
+      <CompanyLeftPanel><NoteDetails /></CompanyLeftPanel>
     </div>
   );
 }

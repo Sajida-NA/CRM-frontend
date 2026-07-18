@@ -20,6 +20,9 @@ export default function CommonEntityHeader({
 
   // Dynamic data for the left panel
   leftPanelData = {},
+
+   children,
+
 }) {
   // Handles quick action button clicks
   const handleActionClick = (type) => {
@@ -93,10 +96,12 @@ export default function CommonEntityHeader({
       <Box
         sx={{
           width: "100%",
+          minHeight: "calc(100vh - 64px)",
           display: "flex",
           alignItems: "stretch",
           backgroundColor: "#fff",
           borderRadius: 2,
+          overflow: "hidden",
         }}
       >
         {/* Left panel */}
@@ -112,8 +117,7 @@ export default function CommonEntityHeader({
         />
 
         {/* Middle panel */}
-        <MiddlePanel/>
-
+        <MiddlePanel> {children}</MiddlePanel>
         {/* Right panel */}
         <RightPanel
           summaryTitle={leftPanelData.summaryTitle}
