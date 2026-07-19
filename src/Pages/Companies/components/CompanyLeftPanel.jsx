@@ -2,12 +2,8 @@ import React from "react";
 
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 
-<<<<<<< HEAD
 export default function CompanyLeftPanel({children}) {
 
-=======
-export default function CompanyLeftPanel() {
->>>>>>> 543b2241ef27c4d7f6dfe3c057b64c3bd8695efb
   const companyDetails = [
     {
       label: "Company Domain Name",
