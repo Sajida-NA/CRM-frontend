@@ -7,13 +7,9 @@ import CreateLogCall from "./CreateLogCall";
 import CallCard from "./CallCard";
 import calls from "./callData";
 import LeadsLeftPanel from "../../LeadsLeftPanel";
-import { leadTabs } from "../LeadTabs";
-
-
 
 export default function Leadcalls() {
-   const [activeTab, setActiveTab] = useState();
-  // const [activeTab, setActiveTab] = useState("Calls");
+  const [activeTab, setActiveTab] = useState("Calls");
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
 
   return (
@@ -28,18 +24,8 @@ export default function Leadcalls() {
       >
         {/* ACTIVITY TABS */}
 
-        <Box
-          sx={{
-            mt: 10,
-            mx: -2,
-          }}
-        >
-          {/* <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} /> */}
-
-            <CommonActivityTabs
-    tabs={leadTabs}
-    activeTab="Calls"
-/>
+        <Box>
+          <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} />
         </Box>
 
         {/* Header */}

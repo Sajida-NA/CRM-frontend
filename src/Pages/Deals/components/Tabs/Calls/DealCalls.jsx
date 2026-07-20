@@ -6,11 +6,9 @@ import CommonButton from "../../../../../Components/common/CommonButton";
 import calls from "../../../../Leads/components/Tabs/Calls/callData";
 import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
 import CreateLogCall from "../../../../Leads/components/Tabs/Calls/CreateLogCall";
-import { dealTabs } from "../DealTabs";
 
-export default function DealCalls(tabs) {
-   const [activeTab, setActiveTab] = useState();
-  // const [activeTab, setActiveTab] = useState("Calls");
+export default function DealCalls() {
+  const [activeTab, setActiveTab] = useState("Calls");
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
   return (
     <div>
@@ -23,21 +21,8 @@ export default function DealCalls(tabs) {
       >
         {/* ACTIVITY TABS */}
 
-        <Box
-          sx={{
-            mt: 10,
-            mx: -2,
-          }}
-        >
-          {/* <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} /> */}
-
-             <CommonActivityTabs
-          tabs={dealTabs}
-          activeTab="Calls"
-        />
-
-
-
+        <Box>
+          <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} />
         </Box>
 
         {/* Header */}
