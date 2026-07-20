@@ -59,9 +59,6 @@ export default function CommonEntityHeader({
     },
   ];
 
-  // Default profile details
-  
-
   const leadDetails = [
     {
       label: "Email",

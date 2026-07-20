@@ -7,12 +7,8 @@ import TaskCard from "./TaskCard";
 import tasks from "./TaskData";
 import CreateTaskDrawer from './CreateTaskDrawer'
 
-
-
-
-export default function TaskDetails({tabs}) {
-  const [activeTab, setActiveTab] = useState();
-  // const [activeTab, setActiveTab] = useState("Tasks");
+export default function TaskDetails() {
+  const [activeTab, setActiveTab] = useState("Tasks");
     const [openCreateTask, setOpenCreateTask] = useState(false);
 
   return (
@@ -36,18 +32,11 @@ export default function TaskDetails({tabs}) {
           //   mx: -2,
           // }}
         >
-          {/* <CommonActivityTabs
+          <CommonActivityTabs
             activeTab={activeTab}
             // onTabChange={setActiveTab}
             onTabChange={() => {}}
-          /> */}
-
-          <CommonActivityTabs
-    tabs={tabs}
-    activeTab="Tasks"
-/>
-
-
+          />
         </Box>
 
         {/* Header */}
