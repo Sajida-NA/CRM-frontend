@@ -21,11 +21,7 @@
         <Box
         sx={{
           p: 3,
-          position: "absolute",
-          top: 80,
-          left: 430,
-          width: "calc(100% - 680px)",
-          // border:'4px solid black'
+          mx: -2,
         }}
       >
         {/* ACTIVITY TABS */}
@@ -53,15 +49,11 @@
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            mt: 3,
             mb: 1,
-            marginTop: "35px",
-            marginLeft: "1px",
-            // border:'1px solid black',
           }}
         >
-          <Typography variant="h6" fontWeight={100}>
-            Notes
-          </Typography>
+          <Typography variant="h6">Notes</Typography>
 
           <CommonButton
             variant="contained"
@@ -77,80 +69,81 @@
           onClose={() => setOpenCreateNote(false)}
         />
 
-        {/* Note detail */}
+        <Typography variant="h6">June 2025</Typography>
 
         <Box
           sx={{
-            width: 800,
-            height: 105,
-            // border:'1px solid black'
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 1,
+            mt: 1,
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: "700",
-            }}
-          >
-            June 2025
-          </Typography>
-
           <Box
+            onClick={() => setOpen(!open)}
             sx={{
-              width: 800,
-              height: 72,
-
-              borderRadius: 1,
-              boxShadow: 1,
-              border: "3px",
-              borderColor: " #868686",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              px: 1,
+              py: 2,
+              cursor: "pointer",
             }}
           >
-            <Box
+            {/* Left Side */}
+            <Stack direction="row" spacing={1} alignItems="flex-start">
+              <IconButton size="small" sx={{ p: 0 }}>
+                {open ? (
+                  <KeyboardArrowDownIcon color="primary" fontSize="small"/>
+                ) : (
+                  <KeyboardArrowRightIcon color="primary" fontSize="small"/>
+                )}
+              </IconButton>
+
+              <Box>
+                <Typography
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: 14,
+                  }}
+                >
+                  Note
+                  <Typography
+                    component="span"
+                    sx={{
+                      ml: 0.5,
+                      color:"text.secondary",
+                      fontWeight: 400,
+                    }}
+                  >
+                    by Maria Johnson
+                  </Typography>
+                </Typography>
+
+                <Typography
+                  sx={{
+                    mt: 0.5,
+                    color: "text.secondary",
+                  }}
+                >
+                  Sample Note
+                </Typography>
+              </Box>
+            </Stack>
+
+            {/* Right Side */}
+            <Typography
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                // mb: 3,
-                marginTop: "4px",
-                marginLeft: "1px",
-                paddingLeft: 1,
+                color: "text.secondary",
+                whiteSpace: "nowrap",
+                fontSize: 14,
               }}
             >
-              <Typography sx={{ mt: 2, color: "#33475B" }}>
-                <b>Note</b> <span> by Maria Johnson </span>{" "}
-              </Typography>
-              <Typography sx={{ mt: 2, mx: 1, color: "#33475B" }}>
-                June 24, 2025 at 5:30PM
-              </Typography>
-            </Box>
-
-            <Box
-              sx={{
-                width: 800,
-                height: 24,
-
-                paddingLeft: 1,
-
-                marginTop: 1,
-                color: "#33475B",
-              }}
-            >
-              Sample Note
-            </Box>
-
-           
+              June 24, 2025 at 5:30PM
+            </Typography>
           </Box>
         </Box>
       </Box>
-  
-
-
-       
-     </div>
-   )
- }
- 
- 
- 
- 
+    </div>
+  );
+}

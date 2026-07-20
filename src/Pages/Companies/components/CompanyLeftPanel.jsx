@@ -2,10 +2,10 @@ import React from "react";
 
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 
-export default function CompanyLeftPanel() {
+export default function CompanyLeftPanel({children}) {
 
   const companyDetails = [
-     {
+    {
       label: "Company Domain Name",
       value: "trustsphere.com",
     },
@@ -47,37 +47,30 @@ export default function CompanyLeftPanel() {
     },
   ];
 
-
   const leftPanelData = {
-
-     profile: {
+    profile: {
       name: "TrustSphere",
       subTitle: "Real Estate",
       email: "trustsphere.com",
     },
 
-
     sectionTitle: "About this Company",
-
 
     leadDetails: companyDetails,
 
-
     summaryTitle: "AI Company Summary",
-
 
     summaryText:
       'The company "TechNova Solutions" currently has no associated conversation, call, or note transcripts.',
-
   };
-
 
   return (
     <CommonEntityHeader
       title="Companies"
       leftPanelData={leftPanelData}
       showMiddlePanel={false}
-      showRightPanel={false}
-    />
+      showRightPanel={false}>
+        {children}
+    </CommonEntityHeader>
   );
 }

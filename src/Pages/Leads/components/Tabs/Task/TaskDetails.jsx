@@ -17,25 +17,24 @@ export default function TaskDetails({tabs}) {
 
   return (
     <div>
-    
-
       <Box
         sx={{
           p: 3,
-          position: "absolute",
-          top: 80,
-          left: 430,
-          width: "calc(100% - 680px)",
+          mx:-2,
+          // position: "absolute",
+          // top: 80,
+          // left: 430,
+          // width: "calc(100% - 680px)",
           // border:'4px solid black'
         }}
       >
         {/* ACTIVITY TABS */}
 
         <Box
-          sx={{
-            mt: 10,
-            mx: -2,
-          }}
+          // sx={{
+          //   mt: 10,
+          //   mx: -2,
+          // }}
         >
           {/* <CommonActivityTabs
             activeTab={activeTab}

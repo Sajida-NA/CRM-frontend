@@ -20,6 +20,9 @@ export default function CommonEntityHeader({
 
   // Dynamic data for the left panel
   leftPanelData = {},
+
+   children,
+
 }) {
   // Handles quick action button clicks
   const handleActionClick = (type) => {
@@ -30,10 +33,6 @@ export default function CommonEntityHeader({
       Task: "Tasks",
       Meeting: "Meetings",
     };
-
-    // Future implementation
-    // const selectedTab = tabMap[type];
-    // setActiveTab(selectedTab);
   };
 
   // Default quick action buttons
@@ -100,11 +99,12 @@ export default function CommonEntityHeader({
       <Box
         sx={{
           width: "100%",
-          // height: "100vh",
+          minHeight: "calc(100vh - 64px)",
           display: "flex",
           alignItems: "stretch",
           backgroundColor: "#fff",
           borderRadius: 2,
+          overflow: "hidden",
         }}
       >
         {/* Left panel */}
@@ -120,11 +120,7 @@ export default function CommonEntityHeader({
         />
 
         {/* Middle panel */}
-        <MiddlePanel
-        // activeTab={activeTab}
-        // setActiveTab={setActiveTab}
-        />
-
+        <MiddlePanel> {children}</MiddlePanel>
         {/* Right panel */}
         <RightPanel
           summaryTitle={leftPanelData.summaryTitle}

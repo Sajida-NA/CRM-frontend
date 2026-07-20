@@ -60,9 +60,9 @@ export default function ProfileMiddlePanel({
         backgroundColor: "transparent",
       }}
     >
-      {/* 
+      {/* =========================
           SEARCH + CONVERT
-       */}
+      ========================== */}
 
       <Box
         sx={{
@@ -122,9 +122,9 @@ export default function ProfileMiddlePanel({
         )}
       </Box>
 
-      {/* 
+      {/* =========================
           ACTIVITY TABS
-       */}
+      ========================== */}
 
       {/* <ActivityTabs
         value={activeTab}
@@ -133,14 +133,12 @@ export default function ProfileMiddlePanel({
 
       <ActivityTabs tabs={tabs} />
 
-      {/* 
+      {/* =========================
           LEAD PROFILE
-       */}
+      ========================== */}
 
       {entityType === "lead" && (
-        <Box sx={{ mt: 3 }}>
-          {/* Upcoming Title */}
-
+        <Box sx={{ mt: "34px" }}>
           <Typography
             sx={{
               fontWeight: 700,
@@ -202,9 +200,7 @@ export default function ProfileMiddlePanel({
                           color: "#5A45E5",
                           cursor: "pointer",
                           flexShrink: 0,
-                          transform: isOpen
-                            ? "rotate(0deg)"
-                            : "rotate(-90deg)",
+                          transform: isOpen ? "rotate(0deg)" : "rotate(-90deg)",
                           transition: "transform 0.2s ease",
                         }}
                       />
@@ -258,7 +254,7 @@ export default function ProfileMiddlePanel({
                     </Box>
                   </Box>
 
-                  {/* Expandable Task Description */}
+                  {/* Expandable Description */}
 
                   {isOpen && (
                     <Box
@@ -292,7 +288,7 @@ export default function ProfileMiddlePanel({
             })}
           </Box>
 
-          {/* June 2025 */}
+          {/* June Timeline */}
 
           <Typography
             sx={{
@@ -305,8 +301,6 @@ export default function ProfileMiddlePanel({
           >
             June 2025
           </Typography>
-
-          {/* All Lead Activities */}
 
           <Box
             sx={{
@@ -330,12 +324,12 @@ export default function ProfileMiddlePanel({
         </Box>
       )}
 
-      {/* 
+      {/*
           TICKET PROFILE
-       */}
+      */}
 
       {entityType === "ticket" && (
-        <Box sx={{ mt: 3 }}>
+        <Box sx={{ mt: "34px" }}>
           <Typography
             sx={{
               fontWeight: 700,
@@ -375,7 +369,7 @@ export default function ProfileMiddlePanel({
        */}
 
       {entityType === "company" && (
-        <Box sx={{ mt: 3 }}>
+        <Box sx={{ mt: "34px" }}>
           <Typography
             sx={{
               fontWeight: 700,
@@ -422,18 +416,16 @@ export default function ProfileMiddlePanel({
                   gap: 1,
                 }}
               >
-                {filteredActivities
-                  .slice(1)
-                  .map((activity, index) => (
-                    <ActivityCard
-                      key={activity.id || index}
-                      type={activity.type}
-                      title={activity.title}
-                      date={activity.date}
-                      description={activity.description}
-                      createdBy={activity.createdBy}
-                    />
-                  ))}
+                {filteredActivities.slice(1).map((activity, index) => (
+                  <ActivityCard
+                    key={activity.id || index}
+                    type={activity.type}
+                    title={activity.title}
+                    date={activity.date}
+                    description={activity.description}
+                    createdBy={activity.createdBy}
+                  />
+                ))}
               </Box>
             </>
           )}
@@ -442,20 +434,19 @@ export default function ProfileMiddlePanel({
 
       {/* 
           NO RESULTS
-      */}
+       */}
 
-      {filteredActivities.length === 0 &&
-        filteredUpcoming.length === 0 && (
-          <Typography
-            sx={{
-              fontSize: 13,
-              color: "#667085",
-              mt: 2,
-            }}
-          >
-            No activities found
-          </Typography>
-        )}
+      {filteredActivities.length === 0 && filteredUpcoming.length === 0 && (
+        <Typography
+          sx={{
+            fontSize: 13,
+            color: "#667085",
+            mt: 2,
+          }}
+        >
+          No activities found
+        </Typography>
+      )}
     </Box>
   );
 }

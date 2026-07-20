@@ -3,7 +3,7 @@ import {
   DialogTitle,
   DialogContent,
   IconButton,
-  Box
+  Box,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -12,7 +12,7 @@ export default function ModalWrapper({
   onClose,
   title,
   children,
-  maxWidth = "sm"
+  maxWidth = "sm",
 }) {
   return (
     <Dialog

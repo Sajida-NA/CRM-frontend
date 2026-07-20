@@ -1,7 +1,7 @@
-import React from 'react'
-import CommonEntityHeader from '../../../Components/common/CommonEntityHeader'
+import React from "react";
+import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 
-export default function LeadsLeftPanel() {
+export default function LeadsLeftPanel({children}) {
 
     const leadDetails = [
     {
@@ -34,27 +34,24 @@ export default function LeadsLeftPanel() {
     },
   ];
 
- const leftPanelData = {
-
+  const leftPanelData = {
     // actions,
 
-    profile:{
-      name:"Jane Cooper",
-      subTitle:"Salesperson",
-      email:"",
+    profile: {
+      name: "Jane Cooper",
+      subTitle: "Salesperson",
+      email: "",
     },
 
-    sectionTitle:"About this lead",
+    sectionTitle: "About this lead",
 
-    leadDetails:leadDetails,
+    leadDetails: leadDetails,
 
-    summaryTitle:"AI Lead Summary",
+    summaryTitle: "AI Lead Summary",
 
     summaryText:
-    
-    'There are no activities associated with this lead and further details are needed to provide a comprehensive summary.',
+      "There are no activities associated with this lead and further details are needed to provide a comprehensive summary.",
   };
-
 
   return (
     <div>
@@ -62,8 +59,8 @@ export default function LeadsLeftPanel() {
          <CommonEntityHeader
                   title="Leads"
                   leftPanelData={leftPanelData}
-                />   
+          >  {children}</CommonEntityHeader>
       
     </div>
-  )
+  );
 }

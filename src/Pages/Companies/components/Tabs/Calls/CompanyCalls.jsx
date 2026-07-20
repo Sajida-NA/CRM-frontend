@@ -14,14 +14,11 @@ export default function CompanyCalls({tabs}) {
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
   return (
     <div>
-      <CompanyLeftPanel />
+      <CompanyLeftPanel>
       <Box
         sx={{
           p: 3,
-          position: "absolute",
-          top: 80,
-          left: 430,
-          width: "calc(100% - 680px)",
+          mx:-2
         }}
       >
         {/* ACTIVITY TABS */}
@@ -74,6 +71,7 @@ export default function CompanyCalls({tabs}) {
           <CallCard key={call.id} call={call} />
         ))}
       </Box>
+      </CompanyLeftPanel>
     </div>
   );
 }

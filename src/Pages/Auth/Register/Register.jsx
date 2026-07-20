@@ -1,4 +1,3 @@
-// import { useState } from "react";
 import { Typography, Grid, Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
@@ -52,24 +51,15 @@ export default function Register() {
       footer={
         <>
           Already have an account?{" "}
-          <Link
-            component={RouterLink}
-            to="/"
-            underline="none"
-            fontWeight={600}
-          >
+          <Link component={RouterLink} to="/" underline="none" fontWeight={600}>
             Login
           </Link>
         </>
       }
     >
-      <Grid
-        container spacing={3}
-        component="form"
-        onSubmit={handleSubmit}
-      >
+      <Grid container spacing={3} component="form" onSubmit={handleSubmit}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5}}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
             First Name
           </Typography>
           <InputField
@@ -136,7 +126,7 @@ export default function Register() {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
             Confirm Password
           </Typography>
           <InputField
@@ -150,7 +140,7 @@ export default function Register() {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
             Company Name
           </Typography>
           <InputField
@@ -163,7 +153,7 @@ export default function Register() {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
             Industry Type
           </Typography>
           <SelectField
@@ -177,7 +167,7 @@ export default function Register() {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
             Country / Region
           </Typography>
           <InputField
@@ -190,14 +180,14 @@ export default function Register() {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Typography variant="body2" fontWeight={500} sx={{ mb:0.5 }}>
+          <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
             Role
           </Typography>
           <SelectField
             name="role"
             value={form.role}
             onChange={handleChange}
-            options={["Admin","Manager","Employee"]}
+            options={["Admin", "Manager", "Employee"]}
             placeholder="Choose"
             fullWidth
           />

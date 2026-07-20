@@ -6,18 +6,15 @@ import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
 
 export default function RightPanel({
   // Dynamic AI Summary Title
-  // Can be customized from the parent component
   summaryTitle = "AI Lead Summary",
 
-  // Dynamic AI Summary Content
   // Default message is displayed if no summary is provided
-  summaryText =
-    "There are no activities associated with this lead and further details are needed to provide a comprehensive summary.",
+  summaryText = "There are no activities associated with this lead and further details are needed to provide a comprehensive summary.",
 }) {
   return (
     <Box
       sx={{
-        width: 230,
+        width: 300,
         backgroundColor: "#fff",
         borderTopRightRadius: "12px",
         p: 2,
