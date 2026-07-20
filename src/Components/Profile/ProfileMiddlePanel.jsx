@@ -19,6 +19,7 @@ export default function ProfileMiddlePanel({
   activities = [],
   upcoming = [],
   entityType,
+  tabs,
 }) {
   const [activeTab, setActiveTab] = useState(0);
   const [search, setSearch] = useState("");
@@ -125,7 +126,12 @@ export default function ProfileMiddlePanel({
           ACTIVITY TABS
       ========================== */}
 
-      <ActivityTabs value={activeTab} onChange={setActiveTab} />
+      {/* <ActivityTabs
+        value={activeTab}
+        onChange={setActiveTab}
+      /> */}
+
+      <ActivityTabs tabs={tabs} />
 
       {/* =========================
           LEAD PROFILE

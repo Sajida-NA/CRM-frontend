@@ -2,29 +2,54 @@ import React, { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import EmailCard from "./EmailCard";
 import CommonButton from "../../../../../Components/common/CommonButton";
-import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
-import NewEmailDialog from "./NewEmailDialog";
+import EmailRecord from "./EmailCard";
+import emailData from "./emailData";
+// import { leadTabs } from "../LeadTabs";
 
-export default function EmailDetails() {
-  const [activeTab, setActiveTab] = useState("Emails");
-  const [openCreateEmail, setOpenCreateEmail] = useState(false);
+
+
+
+
+export default function EmailDetails({tabs}) {
+   const [activeTab, setActiveTab] = useState();
+  // const [activeTab, setActiveTab] = useState("Emails");
+  const [openEmail, setOpenEmail] = useState(false);
+
+  const [openCards, setOpenCards] = useState({
+    0: true,
+  });
+
+  const toggleCard = (index) => {
+    setOpenCards((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
 
   return (
     <Box
       sx={{
         p: 3,
         fontFamily: "Roboto, sans-serif",
-        mx:-2
+       
       }}
     >
       {/* Activity Tabs */}
-      <Box >
-        <CommonActivityTabs
+      <Box sx={{ mt: 10, mx: -2 }}>
+        {/* <CommonActivityTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          title="Leads"
-        />
+          title="Ticket"
+        /> */}
+
+         <CommonActivityTabs
+    tabs={tabs}
+    activeTab="Emails"
+/>
       </Box>
+
+     
+
 
       {/* Header */}
 

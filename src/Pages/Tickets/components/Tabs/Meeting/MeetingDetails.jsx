@@ -5,8 +5,13 @@ import CommonButton from "../../../../../Components/common/CommonButton";
 import ScheduleMeeting from "../../../../Leads/components/Tabs/Meetings/ScheduleMeeting";
 import MeetingCard from "./MeetingCard";
 
-export default function MeetingDetails() {
-  const [activeTab, setActiveTab] = useState("Meetings");
+
+
+
+
+export default function MeetingDetails({tabs}) {
+    const [activeTab, setActiveTab] = useState();
+  // const [activeTab, setActiveTab] = useState("Meetings");
   const [openCreateMeeting, setOpenCreateMeeting] = useState(false);
 
   const meetings = [
@@ -29,12 +34,17 @@ export default function MeetingDetails() {
       }}
     >
       {/* Activity Tabs */}
-      <Box>
-        <CommonActivityTabs
+      <Box sx={{ mt: 10, mx: -2 }}>
+        {/* <CommonActivityTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
           title="Ticket"
-        />
+        /> */}
+
+        <CommonActivityTabs
+    tabs={tabs}
+    activeTab="Meetings"
+/>
       </Box>
 
       {/* Header */}

@@ -1,11 +1,15 @@
-import React from "react";
-import TicketLeftPanel from "../../TicketLeftPanel";
-import NoteDetails from "./NoteDetails";
+import React from 'react'
+import TicketLeftPanel from '../../TicketLeftPanel'
+import NoteDetails from './NoteDetails'
+import { ticketTabs } from '../TicketTabs'
+
 
 export default function TicketNote() {
   return (
     <div>
-        <TicketLeftPanel><NoteDetails/></TicketLeftPanel>
-     </div>
+        <TicketLeftPanel/>
+        <NoteDetails tabs={ticketTabs}/>
+      
+    </div>
   )
 }

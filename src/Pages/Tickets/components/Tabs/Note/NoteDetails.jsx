@@ -1,27 +1,46 @@
-import React, { useState } from "react";
-import { Box, Typography, Stack, IconButton, Collapse } from "@mui/material";
-import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
-import Createnote from "../../../../Leads/components/Tabs/Note/Createnote";
-import CommonButton from "../../../../../Components/common/CommonButton";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+ import React, { useState } from 'react'
+ import { Box,Typography } from '@mui/material'
+ import CommonActivityTabs from '../../../../../Components/common/CommonActivityTab'
+ import Createnote from '../../../../Leads/components/Tabs/Note/Createnote';
+ import CommonButton from '../../../../../Components/common/CommonButton';
+ 
 
-export default function NoteDetails() {
-  const [activeTab, setActiveTab] = useState("Notes");
-  const [openCreateNote, setOpenCreateNote] = useState(false);
-  const [open, setOpen] = useState(false);
 
-  return (
-    <div>
-      <Box
+
+ 
+ export default function NoteDetails({tabs}) {
+   const [activeTab, setActiveTab] = useState();
+
+    //  const [activeTab, setActiveTab] = useState("Notes");
+      const [openCreateNote, setOpenCreateNote] = useState(false);
+     
+    
+   return (
+     <div>
+
+        <Box
         sx={{
           p: 3,
           mx: -2,
         }}
       >
         {/* ACTIVITY TABS */}
-        <Box>
-          <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} />
+
+        <Box
+          sx={{
+            mt: 10,
+            mx: -2,
+          }}
+        >
+          {/* <CommonActivityTabs
+            activeTab={activeTab}
+            // onTabChange={setActiveTab}
+            onTabChange={() => {}}
+          /> */}
+          <CommonActivityTabs
+    tabs={tabs}
+    activeTab="Notes"
+/>
         </Box>
 
         {/* Header */}
