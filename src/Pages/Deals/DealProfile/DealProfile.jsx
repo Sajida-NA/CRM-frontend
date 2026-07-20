@@ -16,9 +16,11 @@ import EmailIcon from "@mui/icons-material/Email";
 import CallIcon from "@mui/icons-material/Call";
 import TaskIcon from "@mui/icons-material/Task";
 import EventIcon from "@mui/icons-material/Event";
+import { dealTabs } from "../components/Tabs/DealTabs";
 
 export default function DealProfile() {
-  const [activeTab, setActiveTab] = useState("Activity");
+  // const [activeTab, setActiveTab] = useState("Activity");
+   const [activeTab, setActiveTab] = useState()
 
   const actions = [
     {
@@ -120,10 +122,15 @@ export default function DealProfile() {
             mx: -2,
           }}
         >
-          <CommonActivityTabs
+          {/* <CommonActivityTabs
             activeTab={activeTab}
             onTabChange={setActiveTab}
-          />
+          /> */}
+
+          <CommonActivityTabs
+                                tabs={dealTabs}
+                                activeTab="Activity"
+                              />
         </Box>
 
         {/* Upcoming */}

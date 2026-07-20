@@ -14,9 +14,15 @@ import CommonActivityTabs from "../../../../../Components/common/CommonActivityT
 import CommonButton from "../../../../../Components/common/CommonButton";
 import EmailRecord from "./EmailCard";
 import emailData from "./emailData";
+// import { leadTabs } from "../LeadTabs";
 
-export default function EmailDetails() {
-  const [activeTab, setActiveTab] = useState("Emails");
+
+
+
+
+export default function EmailDetails({tabs}) {
+   const [activeTab, setActiveTab] = useState();
+  // const [activeTab, setActiveTab] = useState("Emails");
   const [openEmail, setOpenEmail] = useState(false);
 
   const [openCards, setOpenCards] = useState({
@@ -39,16 +45,24 @@ export default function EmailDetails() {
         left: 430,
         width: "calc(100% - 680px)",
         fontFamily: "Roboto, sans-serif",
+       
       }}
     >
       {/* Activity Tabs */}
       <Box sx={{ mt: 10, mx: -2 }}>
-        <CommonActivityTabs
+        {/* <CommonActivityTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
           title="Ticket"
-        />
+        /> */}
+
+         <CommonActivityTabs
+    tabs={tabs}
+    activeTab="Emails"
+/>
       </Box>
+
+     
 
 
       {/* Header */}

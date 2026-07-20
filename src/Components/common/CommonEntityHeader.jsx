@@ -60,36 +60,8 @@ export default function CommonEntityHeader({
     },
   ];
 
-  // // Default profile details
-  // const leadDetails = [
-  //   {
-  //     label: "Email",
-  //     value: "janecooper@gmail.com",
-  //   },
-  //   {
-  //     label: "First Name",
-  //     value: "Jane",
-  //   },
-  //   {
-  //     label: "Last Name",
-  //     value: "Cooper",
-  //   },
-  //   {
-  //     label: "Phone Number",
-  //     value: "078 5432 8505",
-  //   },
-  //   {
-  //     label: "Lead Status",
-  //     value: "New",
-  //   },
-  //   {
-  //     label: "Job Title",
-  //     value: "Salesperson",
-  //   },
-  //   {
-  //     label: "Created Date",
-  //     value: "04/08/2025 2:31 PM GMT+5:30",
-  //   },
+  // Default profile details
+  
 
   const leadDetails = [
     {

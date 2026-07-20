@@ -3,11 +3,15 @@
  import CommonActivityTabs from '../../../../../Components/common/CommonActivityTab'
  import Createnote from '../../../../Leads/components/Tabs/Note/Createnote';
  import CommonButton from '../../../../../Components/common/CommonButton';
+ 
+
+
 
  
- export default function NoteDetails() {
+ export default function NoteDetails({tabs}) {
+   const [activeTab, setActiveTab] = useState();
 
-     const [activeTab, setActiveTab] = useState("Notes");
+    //  const [activeTab, setActiveTab] = useState("Notes");
       const [openCreateNote, setOpenCreateNote] = useState(false);
      
     
@@ -32,11 +36,15 @@
             mx: -2,
           }}
         >
-          <CommonActivityTabs
+          {/* <CommonActivityTabs
             activeTab={activeTab}
             // onTabChange={setActiveTab}
             onTabChange={() => {}}
-          />
+          /> */}
+          <CommonActivityTabs
+    tabs={tabs}
+    activeTab="Notes"
+/>
         </Box>
 
         {/* Header */}
