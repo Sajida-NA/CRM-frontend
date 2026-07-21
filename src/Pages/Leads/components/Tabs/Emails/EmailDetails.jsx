@@ -5,7 +5,7 @@ import CommonButton from "../../../../../Components/common/CommonButton";
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import NewEmailDialog from "./NewEmailDialog";
 
-export default function EmailDetails() {
+export default function EmailDetails({tabs}) {
   const [activeTab, setActiveTab] = useState("Emails");
   const [openCreateEmail, setOpenCreateEmail] = useState(false);
 
@@ -20,6 +20,7 @@ export default function EmailDetails() {
       {/* Activity Tabs */}
       <Box >
         <CommonActivityTabs
+           tabs={tabs}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           title="Leads"
