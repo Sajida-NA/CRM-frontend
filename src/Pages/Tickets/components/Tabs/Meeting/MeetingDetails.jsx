@@ -5,7 +5,7 @@ import CommonButton from "../../../../../Components/common/CommonButton";
 import ScheduleMeeting from "../../../../Leads/components/Tabs/Meetings/ScheduleMeeting";
 import MeetingCard from "./MeetingCard";
 
-export default function MeetingDetails() {
+export default function MeetingDetails({tabs}) {
   const [activeTab, setActiveTab] = useState("Meetings");
   const [openCreateMeeting, setOpenCreateMeeting] = useState(false);
 
@@ -31,6 +31,7 @@ export default function MeetingDetails() {
       {/* Activity Tabs */}
       <Box>
         <CommonActivityTabs
+        tabs={tabs}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           title="Ticket"

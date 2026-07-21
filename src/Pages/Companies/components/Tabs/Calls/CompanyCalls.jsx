@@ -6,10 +6,13 @@ import CommonButton from "../../../../../Components/common/CommonButton";
 import calls from "../../../../Leads/components/Tabs/Calls/callData";
 import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
 import CreateLogCall from "../../../../Leads/components/Tabs/Calls/CreateLogCall";
+import { companyTabs } from "../CompanyTabs";
+
 
 export default function CompanyCalls() {
-  const [activeTab, setActiveTab] = useState("Calls");
-  const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
+  // const [activeTab, setActiveTab] = useState("Calls");
+      const [activeTab, setActiveTab] = useState();
+      const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
   return (
     <div>
       <CompanyLeftPanel>
@@ -22,7 +25,14 @@ export default function CompanyCalls() {
         {/* ACTIVITY TABS */}
 
         <Box>
-          <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} />
+          {/* <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} /> */}
+
+            <CommonActivityTabs
+            tabs={companyTabs}
+            activeTab="Calls"
+          />
+
+
         </Box>
 
         {/* Header */}

@@ -33,7 +33,7 @@ export default function TaskCard({ task }) {
     >
       <Box
         sx={{
-          width: 750,
+          width: 650,
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-start",
