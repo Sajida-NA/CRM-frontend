@@ -162,21 +162,21 @@ import Dashboard from "../Pages/Dashboard/dashboard";
    Lead Pages
 =========================== */
 import Leadslist from "../Pages/Leads/LeadsList/Leadslist";
+import LeadActivities from "../Pages/Leads/components/Tabs/Activities/LeadActivities";
 import Leadnote from "../Pages/Leads/components/Tabs/Note/Leadnote";
 import Leadcalls from "../Pages/Leads/components/Tabs/Calls/Leadcalls";
 import LeadMeeting from "../Pages/Leads/components/Tabs/Meetings/LeadMeeting";
-import LeadProfile from "../Pages/Leads/LeadProfile/LeadProfile";
 import LeadTask from "../Pages/Leads/components/Tabs/Task/LeadTask";
 import LeadEmail from "../Pages/Leads/components/Tabs/Emails/LeadEmail";
 import EmailCard from "../Pages/Leads/components/Tabs/Emails/EmailCard";
 import LeadsLeftPanel from "../Pages/Leads/components/LeadsLeftPanel";
 import CreateTaskDrawer from "../Pages/Leads/components/Tabs/Task/CreateTaskDrawer";
 
+
 /* ===========================
    Company Pages
 =========================== */
 import CompaniesList from "../Pages/Companies/CompaniesList/CompaniesList";
-import CompanyProfile from "../Pages/Companies/CompanyProfile/CompanyProfile";
 import CompanyMeeting from "../Pages/Companies/components/Tabs/Meeting/CompanyMeeting";
 import CompanyNote from "../Pages/Companies/components/Tabs/Note/CompanyNote";
 import CompanyCalls from "../Pages/Companies/components/Tabs/Calls/CompanyCalls";
@@ -189,7 +189,6 @@ import CompanyLeftPanel from "../Pages/Companies/components/CompanyLeftPanel";
 =========================== */
 import TicketsList from "../Pages/Tickets/TicketsList/TicketsList";
 import CreateTicketDrawer from "../Pages/Tickets/components/CreateTicketDrawer";
-import TicketProfile from "../Pages/Tickets/TicketProfile/TicketProfile";
 import TicketMeeting from "../Pages/Tickets/components/Tabs/Meeting/TicketMeeting";
 import TicketNote from "../Pages/Tickets/components/Tabs/Note/TicketNote";
 import TicketCalls from "../Pages/Tickets/components/Tabs/Calls/TicketCalls";
@@ -201,7 +200,6 @@ import TicketLeftPanel from "../Pages/Tickets/components/TicketLeftPanel";
    Deal Pages
 =========================== */
 import DealsList from "../Pages/Deals/DealsList/DealsList";
-import DealProfile from "../Pages/Deals/DealProfile/DealProfile";
 import DealMeeting from "../Pages/Deals/components/Tabs/Meeting/DealMeeting";
 import DealNote from "../Pages/Deals/components/Tabs/Note/DealNote";
 import DealCalls from "../Pages/Deals/components/Tabs/Calls/DealCalls";
@@ -228,7 +226,7 @@ function AppRoutes() {
 
       {/* ================= Lead Routes ================= */}
       <Route path="/leadslist" element={<Leadslist />} />
-      <Route path="/leadprofile" element={<LeadProfile />} />
+      <Route path="/leadactivities" element={<LeadActivities/>}/>
       <Route path="/leadnote" element={<Leadnote />} />
       <Route path="/leadcalls" element={<Leadcalls />} />
       <Route path="/leadmeeting" element={<LeadMeeting />} />
@@ -237,10 +235,11 @@ function AppRoutes() {
       <Route path="/emailcard" element={<EmailCard />} />
       <Route path="/leadsleftpanel" element={<LeadsLeftPanel />} />
       <Route path="/createtaskdrawer" element={<CreateTaskDrawer />} />
+      
 
       {/* ================= Company Routes ================= */}
       <Route path="/companieslist" element={<CompaniesList />} />
-      <Route path="/companyprofile" element={<CompanyProfile />} />
+      {/* <Route path="/companyprofile" element={<CompanyProfile />} /> */}
       <Route path="/companymeeting" element={<CompanyMeeting />} />
       <Route path="/companynote" element={<CompanyNote />} />
       <Route path="/companycalls" element={<CompanyCalls />} />
@@ -250,7 +249,7 @@ function AppRoutes() {
 
       {/* ================= Ticket Routes ================= */}
       <Route path="/ticketslist" element={<TicketsList />} />
-      <Route path="/ticketprofile" element={<TicketProfile />} />
+      {/* <Route path="/ticketprofile" element={<TicketProfile />} /> */}
       <Route path="/ticketmeeting" element={<TicketMeeting />} />
       <Route path="/ticketnote" element={<TicketNote />} />
       <Route path="/ticketcalls" element={<TicketCalls />} />
@@ -260,7 +259,7 @@ function AppRoutes() {
 
       {/* ================= Deal Routes ================= */}
       <Route path="/dealslist" element={<DealsList />} />
-      <Route path="/dealprofile" element={<DealProfile />} />
+      {/* <Route path="/dealprofile" element={<DealProfile />} /> */}
       <Route path="/dealmeeting" element={<DealMeeting />} />
       <Route path="/dealnote" element={<DealNote />} />
       <Route path="/dealcalls" element={<DealCalls />} />
@@ -270,6 +269,7 @@ function AppRoutes() {
 
       {/* ================= Common Routes ================= */}
       <Route path="/entity" element={<CommonEntityHeader />} />
+      
 
     </Routes>
   );
