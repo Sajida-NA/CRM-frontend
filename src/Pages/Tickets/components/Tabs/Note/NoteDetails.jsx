@@ -6,7 +6,7 @@ import CommonButton from "../../../../../Components/common/CommonButton";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-export default function NoteDetails() {
+export default function NoteDetails({tabs}) {
   const [activeTab, setActiveTab] = useState("Notes");
   const [openCreateNote, setOpenCreateNote] = useState(false);
   const [open, setOpen] = useState(false);
@@ -21,7 +21,13 @@ export default function NoteDetails() {
       >
         {/* ACTIVITY TABS */}
         <Box>
-          <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} />
+          {/* <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} /> */}
+
+          <CommonActivityTabs
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
         </Box>
 
         {/* Header */}
