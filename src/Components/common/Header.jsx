@@ -1,3 +1,5 @@
+
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -8,23 +10,49 @@ import {
   Paper,
   InputBase,
   Divider,
+  Menu,
+  Button,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import ChatOutlinedIcon from "@mui/icons-material/ChatOutlined";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import { Popover } from "@mui/material";
+import CommonButton from "./CommonButton";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const theme = useTheme();
- 
-   const iconButtonStyle = {
+  const navigate = useNavigate();
+
+  // Avatar Menu State
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleAvatarClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    handleClose();
+    console.log("Logout Clicked");
+    navigate("/");
+    // Add your logout logic here
+  };
+
+  const open = Boolean(anchorEl);
+
+  const iconButtonStyle = {
     width: 42,
     height: 42,
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: 1,
     bgcolor: "background.paper",
     color: "text.secondary",
-    transition: "all .3s",
+    transition: "0.3s",
 
     "&:hover": {
       bgcolor: "primary.main",
@@ -34,122 +62,159 @@ const Header = () => {
   };
 
   return (
-    <AppBar
-      position="static"
-      elevation={0}
-      sx={{
-        bgcolor:"background.paper",
-        color:  "text.primary",
-        borderBottom: `1px solid ${theme.palette.divider}`,
-        
-      }}
-    >
-      <Toolbar
+    <>
+      <AppBar
+        position="static"
+        elevation={0}
         sx={{
-          height: 70,
-          display: "flex",
-          justifyContent: "space-between",
-          px: 3,
+          bgcolor: "background.paper",
+          color: "text.primary",
+          borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >
-        {/* Logo */}
-        <Typography
-          variant="h5"
+        <Toolbar
           sx={{
-            fontWeight: 700,
-          }}
-        >
-          CRM
-        </Typography>
-
-        {/* Right Section */}
-        <Box
-          sx={{
+            height: 70,
             display: "flex",
-            alignItems: "center",
-            gap: 2,
+            justifyContent: "space-between",
+            px: 3,
           }}
         >
-          {/* Search Bar */}
-          <Paper
-            elevation={0}
+          {/* Logo */}
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 700,
+            }}
+          >
+            CRM
+          </Typography>
+
+          {/* Right Section */}
+          <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              width: 320,
-              height: 46,
-              px: 2,
-              border: `1px solid ${theme.palette.divider}`,
-              borderRadius: 1,
-              boxShadow: "none",
-
-              "&:hover": {
-                borderColor: "primary.light",
-              },
+              gap: 2,
             }}
           >
-            <SearchIcon
+            {/* Search Bar */}
+            <Paper
+              elevation={0}
               sx={{
-                color:  "text.secondary",
-                fontSize: 20,
+                display: "flex",
+                alignItems: "center",
+                width: 320,
+                height: 46,
+                px: 2,
+                border: `1px solid ${theme.palette.divider}`,
+                borderRadius: 1,
               }}
-            />
+            >
+              <SearchIcon color="action" />
 
-            <Divider
-              orientation="vertical"
-              flexItem
+              <Divider
+                orientation="vertical"
+                flexItem
+                sx={{
+                  mx: 1.5,
+                  my: 1.2,
+                }}
+              />
+
+              <InputBase
+                placeholder="Search"
+                sx={{
+                  flex: 1,
+                }}
+              />
+            </Paper>
+
+            {/* Chat */}
+            <IconButton sx={iconButtonStyle}>
+              <ChatOutlinedIcon />
+            </IconButton>
+
+            {/* Notification */}
+            <IconButton sx={iconButtonStyle}>
+              <NotificationsNoneIcon />
+            </IconButton>
+
+            {/* Avatar */}
+            <Avatar
+              onClick={handleAvatarClick}
               sx={{
-                mx: 1.5,
-                my: 1.2,
-                borderColor: "divider",
-              }}
-            />
-
-            <InputBase
-              placeholder="Search"
-              sx={{
-                flex: 1,
-                typography:"body1",
-                color: "text.primary",
-
-                "& input::placeholder": {
-                  color: " theme.palette.text.secondary",
-                  opacity: 1,
+                width: 38,
+                height: 38,
+                bgcolor: "primary.main",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: 600,
+                "&:hover": {
+                  opacity: 0.9,
                 },
               }}
-            />
-          </Paper>
+            >
+              A
+            </Avatar>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
-          {/* Chat */}
-          <IconButton
-           sx={iconButtonStyle}
-          >
-            <ChatOutlinedIcon />
-          </IconButton>
-
-          {/* Notification */}
-          <IconButton
-           sx={iconButtonStyle}
-          >
-            <NotificationsNoneIcon />
-          </IconButton>
-
-           {/* Profile */}
-          <Avatar
+      {/* Profile Popup */}
+      <Popover
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+      >
+        <Box
+          sx={{
+            width: 250, // Increase width
+            minHeight: 140, // Increase height
+            // mt: 1.5,
+            p: 2.5, // More padding
+            borderRadius: 1,
+            boxShadow: "0px 8px 24px rgba(0,0,0,0.15)",
+          }}
+        >
+          <Typography
             sx={{
-              width: 36,
-              height: 36,
-              bgcolor: "primary.main",
-              color: "#fff",
-              fontWeight: 600,
-              fontSize: 14,
+              fontWeight: 700,
+              fontSize: 18,
             }}
           >
-            A
-          </Avatar>
+            Aron Paul
+          </Typography>
+
+          <Typography
+            sx={{
+              color: "text.secondary",
+              fontSize: 14,
+              mb: 2,
+            }}
+          >
+            aronpaul@kiebot.com
+          </Typography>
+
+          <CommonButton
+            fullWidth
+            onClick={handleLogout}
+            sx={{
+              textTransform: "none",
+              borderRadius: 1,
+              py: 1,
+              fontWeight: 500,
+            }}
+          >
+            Log Out
+          </CommonButton>
         </Box>
-      </Toolbar>
-    </AppBar>
+      </Popover>
+    </>
   );
 };
 

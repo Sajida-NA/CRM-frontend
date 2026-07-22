@@ -249,7 +249,7 @@ function AppRoutes() {
       <Route path="/companytask" element={<CompanyTask />} />
       <Route path="/companyemail" element={<CompanyEmail />} />
       <Route path="/companyleftpanel" element={<CompanyLeftPanel />} />
-
+      
       {/* ================= Ticket Routes ================= */}
       <Route path="/ticketslist" element={<TicketsList />} />
       <Route path="/ticketactivities" element={<TicketActivities />} />
