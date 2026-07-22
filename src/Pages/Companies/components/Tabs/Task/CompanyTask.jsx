@@ -6,7 +6,9 @@ import { companyTabs } from "../CompanyTabs";
 export default function CompanyTask() {
   return (
     <div>
-      <CompanyLeftPanel>  <TaskDetails tabs={companyTabs}/></CompanyLeftPanel>
-     </div>
-  )
+      <CompanyLeftPanel>
+        <TaskDetails tabs={companyTabs} />
+      </CompanyLeftPanel>
+    </div>
+  );
 }

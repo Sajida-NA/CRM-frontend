@@ -23,6 +23,8 @@ export default function CommonEntityHeader({
 
    children,
 
+   action
+
 }) {
   // Handles quick action button clicks
   const handleActionClick = (type) => {
@@ -117,7 +119,7 @@ export default function CommonEntityHeader({
         />
 
         {/* Middle panel */}
-        <MiddlePanel> {children}</MiddlePanel>
+        <MiddlePanel action={action}> {children}</MiddlePanel>
         {/* Right panel */}
         <RightPanel
           summaryTitle={leftPanelData.summaryTitle}

@@ -81,9 +81,9 @@ export default function NoteDetails({tabs}) {
             <Stack direction="row" spacing={1} alignItems="flex-start">
               <IconButton size="small" sx={{ p: 0 }}>
                 {open ? (
-                  <KeyboardArrowDownIcon color="primary" fontSize="small"/>
-                ) : (
                   <KeyboardArrowRightIcon color="primary" fontSize="small"/>
+                ) : (
+                  <KeyboardArrowDownIcon color="primary" fontSize="small"/>
                 )}
               </IconButton>
 

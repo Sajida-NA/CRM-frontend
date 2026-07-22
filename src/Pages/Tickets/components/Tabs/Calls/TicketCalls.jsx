@@ -10,63 +10,59 @@ import { ticketTabs } from "../TicketTabs";
 
 export default function TicketCalls() {
   const [activeTab, setActiveTab] = useState();
-  // const [activeTab, setActiveTab] = useState("Calls");
+
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
   return (
     <div>
       <TicketLeftPanel>
-      <Box
-        sx={{
-          p: 3,
-          mx:-2
-        }}
-      >
-        {/* ACTIVITY TABS */}
-
-        <Box>
-          {/* <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} /> */}
-
-            <CommonActivityTabs
-  tabs={ticketTabs}
-  activeTab="Calls"
-/>
-
-        </Box>
-
-        {/* Header */}
-
         <Box
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mt: 3,
-            mb: 1,
+            p: 3,
+            mx: -2,
           }}
         >
-          <Typography variant="h6">Calls</Typography>
+          {/* ACTIVITY TABS */}
 
-          <CommonButton
-            variant="contained"
-            onClick={() => setOpenCreateLogCall(true)}
+          <Box>
+            {/* <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} /> */}
+
+            <CommonActivityTabs tabs={ticketTabs} activeTab="Calls" />
+          </Box>
+
+          {/* Header */}
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mt: 3,
+              mb: 1,
+            }}
           >
-            Make a Phone Call
-          </CommonButton>
+            <Typography variant="h6">Calls</Typography>
+
+            <CommonButton
+              variant="contained"
+              onClick={() => setOpenCreateLogCall(true)}
+            >
+              Make a Phone Call
+            </CommonButton>
+          </Box>
+
+          {/* Drawer */}
+
+          <CreateLogCall
+            open={openCreateLogCall}
+            onClose={() => setOpenCreateLogCall(false)}
+          />
+
+          <Typography variant="h6">June 2025</Typography>
+
+          {calls.map((call) => (
+            <CallCard key={call.id} call={call} />
+          ))}
         </Box>
-
-        {/* Drawer */}
-
-        <CreateLogCall
-          open={openCreateLogCall}
-          onClose={() => setOpenCreateLogCall(false)}
-        />
-
-        <Typography variant="h6">June 2025</Typography>
-
-        {calls.map((call) => (
-          <CallCard key={call.id} call={call} />
-        ))}
-      </Box>
       </TicketLeftPanel>
     </div>
   );

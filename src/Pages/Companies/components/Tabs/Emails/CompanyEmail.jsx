@@ -7,8 +7,8 @@ export default function CompanyEmail() {
   return (
     <>
       <CompanyLeftPanel>
-         <EmailDetails  tabs={companyTabs}/>
-         </CompanyLeftPanel>
+        <EmailDetails tabs={companyTabs} />
+      </CompanyLeftPanel>
     </>
   );
 }

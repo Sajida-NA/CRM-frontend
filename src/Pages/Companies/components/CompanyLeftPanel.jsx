@@ -3,7 +3,6 @@ import React from "react";
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 
 export default function CompanyLeftPanel({children}) {
-
   const companyDetails = [
     {
       label: "Company Domain Name",
@@ -65,12 +64,8 @@ export default function CompanyLeftPanel({children}) {
   };
 
   return (
-    <CommonEntityHeader
-      title="Companies"
-      leftPanelData={leftPanelData}
-      showMiddlePanel={false}
-      showRightPanel={false}>
-        {children}
+    <CommonEntityHeader title="Companies" leftPanelData={leftPanelData}>
+      {children}
     </CommonEntityHeader>
   );
 }
