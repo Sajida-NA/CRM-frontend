@@ -7,8 +7,8 @@ export default function CompanyNote() {
   return (
     <div>
       <CompanyLeftPanel>
-        <NoteDetails  tabs={companyTabs}/>
-        </CompanyLeftPanel>
+        <NoteDetails tabs={companyTabs} />
+      </CompanyLeftPanel>
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { ticketTabs } from '../TicketTabs'
 export default function TicketTask() {
   return (
     <div>
-      <TicketLeftPanel>   <TaskDetails tabs={ticketTabs}/></TicketLeftPanel>
+      <TicketLeftPanel><TaskDetails tabs={ticketTabs}/></TicketLeftPanel>
     </div>
   )
 }

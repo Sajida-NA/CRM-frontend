@@ -1,7 +1,8 @@
 import React from "react";
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
+import CommonButton from "../../../Components/common/CommonButton";
 
-export default function DealLeftPanel({children}) {
+export default function DealLeftPanel({ children }) {
   const dealDetails = [
     {
       label: "Deal Owner",
@@ -39,10 +40,8 @@ export default function DealLeftPanel({children}) {
   };
 
   return (
-    <CommonEntityHeader
-      title="Deals"
-      leftPanelData={leftPanelData}>
-        {children}
+    <CommonEntityHeader title="Deals" leftPanelData={leftPanelData}>
+      {children}
     </CommonEntityHeader>
   );
 }

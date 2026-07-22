@@ -1,5 +1,5 @@
 export const dealTabs = [
-  { label: "Activity", path: "/dealprofile" },
+  { label: "Activity", path: "/dealactivities" },
   { label: "Notes", path: "/dealnote" },
   { label: "Emails", path: "/dealemail" },
   { label: "Calls", path: "/dealcalls" },
