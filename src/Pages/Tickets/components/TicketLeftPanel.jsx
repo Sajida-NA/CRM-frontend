@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 
-export default function TicketLeftPanel({children}) {
 
-    
-     const ticketDetails = [
+export default function TicketLeftPanel({children}) {
+  const ticketDetails = [
     {
       label: "Ticket Description",
       value: "Description goes here",
@@ -44,13 +43,9 @@ export default function TicketLeftPanel({children}) {
 
   return (
     <div>
-    
-
-        <CommonEntityHeader
-          title="Tickets"
-          leftPanelData={leftPanelData}
-        >{children}</CommonEntityHeader>  
-      
+      <CommonEntityHeader title="Tickets" leftPanelData={leftPanelData}>
+        {children}
+      </CommonEntityHeader>
     </div>
   );
 }

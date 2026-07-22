@@ -11,6 +11,7 @@ export default function MiddlePanel({
   activeTab = "Activity",
   setActiveTab = () => {},
   children,
+  action,
 }) {
   return (
     <Box
@@ -43,6 +44,7 @@ export default function MiddlePanel({
             ),
           }}
           sx={{
+            flex: 1,
             "& .MuiOutlinedInput-root": {
               height: "50px",
               backgroundColor: "#F9F9FB",
@@ -54,7 +56,7 @@ export default function MiddlePanel({
           }}
         />
 
-        <Button
+        {/* <Button
           onClick={onConvert}
           sx={{
             width: "150px",
@@ -69,7 +71,13 @@ export default function MiddlePanel({
           }}
         >
           Convert
-        </Button>
+        </Button> */}
+
+        {action}
+
+        {/* {action && <Box sx={{ flexShrink: 0 }}>{action}</Box>} */}
+
+        {/* <Box sx={{ width: 160, flexShrink: 0 }}>{action}</Box> */}
       </Box>
       <Box>{children}</Box>
     </Box>

@@ -1,5 +1,5 @@
 export const companyTabs = [
-  { label: "Activity", path: "/companyprofile" },
+  { label: "Activity", path: "/companyactivities" },
   { label: "Notes", path: "/companynote" },
   { label: "Emails", path: "/companyemail" },
   { label: "Calls", path: "/companycalls" },
