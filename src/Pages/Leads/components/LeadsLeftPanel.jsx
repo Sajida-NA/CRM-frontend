@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 import CommonButton from "../../../Components/common/CommonButton";
+import CreateLogCall from "./Tabs/Calls/CreateLogCall";
 
 export default function LeadsLeftPanel({ children }) {
+
+  const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
+
+
   const leadDetails = [
     {
       label: "Email",
@@ -34,9 +39,8 @@ export default function LeadsLeftPanel({ children }) {
     },
   ];
 
-  const leftPanelData = {
-    // actions,
 
+  const leftPanelData = {
     profile: {
       name: "Jane Cooper",
       subTitle: "Salesperson",
@@ -45,7 +49,7 @@ export default function LeadsLeftPanel({ children }) {
 
     sectionTitle: "About this lead",
 
-    leadDetails: leadDetails,
+    leadDetails,
 
     summaryTitle: "AI Lead Summary",
 
@@ -53,16 +57,27 @@ export default function LeadsLeftPanel({ children }) {
       "There are no activities associated with this lead and further details are needed to provide a comprehensive summary.",
   };
 
+
   return (
-    <div>
+    <>
       <CommonEntityHeader
         title="Leads"
         leftPanelData={leftPanelData}
         action={<CommonButton>Convert</CommonButton>}
+
+        // Call button click from left panel
+        onCallClick={() => setOpenCreateLogCall(true)}
       >
-        {" "}
         {children}
       </CommonEntityHeader>
-    </div>
+
+
+      {/* Log Call Drawer */}
+      <CreateLogCall
+        open={openCreateLogCall}
+        onClose={() => setOpenCreateLogCall(false)}
+      />
+
+    </>
   );
 }

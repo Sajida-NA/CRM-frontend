@@ -1,8 +1,10 @@
-import React from "react";
-
+import React, { useState } from "react";
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
+import CreateLogCall from "../../Leads/components/Tabs/Calls/CreateLogCall";
 
-export default function CompanyLeftPanel({children}) {
+export default function CompanyLeftPanel({ children }) {
+  const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
+
   const companyDetails = [
     {
       label: "Company Domain Name",
@@ -64,8 +66,19 @@ export default function CompanyLeftPanel({children}) {
   };
 
   return (
-    <CommonEntityHeader title="Companies" leftPanelData={leftPanelData}>
-      {children}
-    </CommonEntityHeader>
+    <>
+      <CommonEntityHeader
+        title="Companies"
+        leftPanelData={leftPanelData}
+        onCallClick={() => setOpenCreateLogCall(true)}
+      >
+        {children}
+      </CommonEntityHeader>
+
+      <CreateLogCall
+        open={openCreateLogCall}
+        onClose={() => setOpenCreateLogCall(false)}
+      />
+    </>
   );
 }
