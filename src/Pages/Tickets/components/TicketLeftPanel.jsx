@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
+import CreateLogCall from "../../Leads/components/Tabs/Calls/CreateLogCall";
 
+export default function TicketLeftPanel({ children }) {
+  const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
 
-export default function TicketLeftPanel({children}) {
   const ticketDetails = [
     {
       label: "Ticket Description",
@@ -23,8 +25,6 @@ export default function TicketLeftPanel({children}) {
   ];
 
   const leftPanelData = {
-    // actions,
-
     profile: {
       name: "Payment Failure Issue",
       subTitle: "Status : New",
@@ -38,14 +38,23 @@ export default function TicketLeftPanel({children}) {
     summaryTitle: "AI Ticket Summary",
 
     summaryText:
-      'The ticket titled "Payment Failure Issue" currently has no associated conversation, call, or note transcripts.There are no additional details or properties available for this ticket at this time ',
+      'The ticket titled "Payment Failure Issue" currently has no associated conversation, call, or note transcripts. There are no additional details or properties available for this ticket at this time.',
   };
 
   return (
-    <div>
-      <CommonEntityHeader title="Tickets" leftPanelData={leftPanelData}>
+    <>
+      <CommonEntityHeader
+        title="Tickets"
+        leftPanelData={leftPanelData}
+        onCallClick={() => setOpenCreateLogCall(true)}
+      >
         {children}
       </CommonEntityHeader>
-    </div>
+
+      <CreateLogCall
+        open={openCreateLogCall}
+        onClose={() => setOpenCreateLogCall(false)}
+      />
+    </>
   );
 }

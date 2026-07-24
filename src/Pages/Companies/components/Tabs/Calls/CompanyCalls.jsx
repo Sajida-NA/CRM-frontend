@@ -50,18 +50,11 @@ export default function CompanyCalls() {
 
           <CommonButton
             variant="contained"
-            onClick={() => setOpenCreateLogCall(true)}
+            // onClick={() => setOpenCreateLogCall(true)}
           >
             Make a Phone Call
           </CommonButton>
         </Box>
-
-        {/* Drawer */}
-
-        <CreateLogCall
-          open={openCreateLogCall}
-          onClose={() => setOpenCreateLogCall(false)}
-        />
 
         <Typography variant="h6">June 2025</Typography>
 

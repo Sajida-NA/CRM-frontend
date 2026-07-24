@@ -15,29 +15,32 @@ import MiddlePanel from "./MiddlePanel";
 import RightPanel from "./RightPanel";
 
 export default function CommonEntityHeader({
-  // Page title
   title,
-
-  // Dynamic data for the left panel
   leftPanelData = {},
-
-   children,
-
-   action
-
+  children,
+  action,
+  onCallClick,
 }) {
+
   // Handles quick action button clicks
   const handleActionClick = (type) => {
+
+    if (type === "Call") {
+      onCallClick?.();
+      return;
+    }
+
     const tabMap = {
       Note: "Notes",
       Email: "Emails",
-      Call: "Calls",
       Task: "Tasks",
       Meeting: "Meetings",
     };
+
+    console.log(tabMap[type]);
   };
 
-  // Default quick action buttons
+
   const actions = [
     {
       label: "Note",
@@ -60,6 +63,7 @@ export default function CommonEntityHeader({
       icon: <EventIcon />,
     },
   ];
+
 
   const leadDetails = [
     {
@@ -92,9 +96,10 @@ export default function CommonEntityHeader({
     },
   ];
 
+
   return (
-    // Main layout
     <MainLayout title={title}>
+
       <Box
         sx={{
           width: "100%",
@@ -106,7 +111,8 @@ export default function CommonEntityHeader({
           overflow: "hidden",
         }}
       >
-        {/* Left panel */}
+
+        {/* Left Panel */}
         <LeftPanel
           title={title}
           actions={leftPanelData.actions || actions}
@@ -118,14 +124,21 @@ export default function CommonEntityHeader({
           sectionTitle={leftPanelData.sectionTitle}
         />
 
-        {/* Middle panel */}
-        <MiddlePanel action={action}> {children}</MiddlePanel>
-        {/* Right panel */}
+
+        {/* Middle Panel */}
+        <MiddlePanel action={action}>
+          {children}
+        </MiddlePanel>
+
+
+        {/* Right Panel */}
         <RightPanel
           summaryTitle={leftPanelData.summaryTitle}
           summaryText={leftPanelData.summaryText}
         />
+
       </Box>
+
     </MainLayout>
   );
 }
