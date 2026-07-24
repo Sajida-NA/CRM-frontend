@@ -116,6 +116,8 @@ export default function CommonEntityHeader({
           }
           profile={leftPanelData.profile}
           sectionTitle={leftPanelData.sectionTitle}
+          showProfileEdit={leftPanelData.showProfileEdit} 
+            showProfileImage={leftPanelData.showProfileImage}
         />
 
         {/* Middle panel */}

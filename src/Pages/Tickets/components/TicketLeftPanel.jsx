@@ -3,6 +3,7 @@ import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 
 
 export default function TicketLeftPanel({children}) {
+   const [status, setStatus] = useState("New");
   const ticketDetails = [
     {
       label: "Ticket Description",
@@ -25,11 +26,19 @@ export default function TicketLeftPanel({children}) {
   const leftPanelData = {
     // actions,
 
-    profile: {
+
+
+profile: {
       name: "Payment Failure Issue",
-      subTitle: "Status : New",
+      status,
+      setStatus,
       email: "",
     },
+
+     showProfileEdit: false, 
+
+      showProfileImage: false,
+     
 
     sectionTitle: "About this Ticket",
 

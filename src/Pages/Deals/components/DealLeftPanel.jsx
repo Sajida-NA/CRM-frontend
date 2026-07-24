@@ -1,8 +1,9 @@
-import React from "react";
+import React,  { useState } from "react";
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 import CommonButton from "../../../Components/common/CommonButton";
 
 export default function DealLeftPanel({ children }) {
+   const [stage, setStage] = useState("Appointment Scheduled");
   const dealDetails = [
     {
       label: "Deal Owner",
@@ -26,8 +27,13 @@ export default function DealLeftPanel({ children }) {
     profile: {
       name: "Website Revamp - Atlas Corp",
       subTitle: "Amount : $12,500",
-      email: "Stage : Appointment Scheduled",
+      stage,
+      setStage,
+      email: "",
     },
+     showProfileEdit: false, 
+
+      showProfileImage: false,
 
     sectionTitle: "About this Deal",
 

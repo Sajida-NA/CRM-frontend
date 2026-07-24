@@ -43,6 +43,10 @@ export default function LeadsLeftPanel({ children }) {
       email: "",
     },
 
+     showProfileEdit: true, 
+
+      showProfileImage: true,
+
     sectionTitle: "About this lead",
 
     leadDetails: leadDetails,
