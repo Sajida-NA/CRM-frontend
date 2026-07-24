@@ -5,6 +5,8 @@ import CreateLogCall from "../../Leads/components/Tabs/Calls/CreateLogCall";
 export default function TicketLeftPanel({ children }) {
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
 
+
+   const [status, setStatus] = useState("New");
   const ticketDetails = [
     {
       label: "Ticket Description",
@@ -25,11 +27,19 @@ export default function TicketLeftPanel({ children }) {
   ];
 
   const leftPanelData = {
+    // actions,
+
     profile: {
       name: "Payment Failure Issue",
-      subTitle: "Status : New",
+      status,
+      setStatus,
       email: "",
     },
+
+     showProfileEdit: false, 
+
+      showProfileImage: false,
+     
 
     sectionTitle: "About this Ticket",
 

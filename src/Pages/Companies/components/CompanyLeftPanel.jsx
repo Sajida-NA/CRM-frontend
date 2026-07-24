@@ -55,6 +55,10 @@ export default function CompanyLeftPanel({ children }) {
       email: "trustsphere.com",
     },
 
+     showProfileEdit: true, 
+
+    showProfileImage: true,
+
     sectionTitle: "About this Company",
 
     leadDetails: companyDetails,

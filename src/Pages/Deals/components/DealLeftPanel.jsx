@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React,  { useState } from "react";
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 import CreateLogCall from "../../Leads/components/Tabs/Calls/CreateLogCall";
 
 export default function DealLeftPanel({ children }) {
+   const [stage, setStage] = useState("Appointment Scheduled");
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
 
   const dealDetails = [
@@ -28,7 +29,9 @@ export default function DealLeftPanel({ children }) {
     profile: {
       name: "Website Revamp - Atlas Corp",
       subTitle: "Amount : $12,500",
-      email: "Stage : Appointment Scheduled",
+      stage,
+      setStage,
+      email: "",
     },
     sectionTitle: "About this Deal",
     leadDetails: dealDetails,
