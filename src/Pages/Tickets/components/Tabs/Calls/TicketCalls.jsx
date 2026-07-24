@@ -44,7 +44,7 @@ export default function TicketCalls() {
 
             <CommonButton
               variant="contained"
-              onClick={() => setOpenCreateLogCall(true)}
+              // onClick={() => setOpenCreateLogCall(true)}
             >
               Make a Phone Call
             </CommonButton>

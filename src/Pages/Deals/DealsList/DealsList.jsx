@@ -28,6 +28,7 @@ function DealsList() {
     {
       id: 1,
       name: "Website Revamp – Atlas Corp",
+      leadname:"Presentation Scheduled",
       stage: "Presentation Scheduled",
       closeDate: "Apr 8, 2025",
       owner: "Jane Cooper",
@@ -36,6 +37,7 @@ function DealsList() {
     {
       id: 2,
       name: "Mobile App for FitBuddy",
+      leadname:"Qualified to Buy",
       stage: "Qualified to Buy",
       closeDate: "Apr 8, 2025",
       owner: "Wade Warren",
@@ -44,6 +46,7 @@ function DealsList() {
     {
       id: 3,
       name: "HR Software License – ZenoHR",
+      leadname:"Contract Sent",
       stage: "Contract Sent",
       closeDate: "Apr 8, 2025",
       owner: "Brooklyn Simmons",
@@ -52,6 +55,7 @@ function DealsList() {
     {
       id: 4,
       name: "CRM Onboarding – NexTech",
+      leadname:"Closed Won",
       stage: "Closed Won",
       closeDate: "Apr 8, 2025",
       owner: "Leslie Alexander",
@@ -60,6 +64,7 @@ function DealsList() {
     {
       id: 5,
       name: "Marketing Suite – QuickAdz",
+      leadname:"Appointment Scheduled",
       stage: "Appointment Scheduled",
       closeDate: "Apr 8, 2025",
       owner: "Jenny Wilson",
@@ -68,6 +73,7 @@ function DealsList() {
     {
       id: 6,
       name: "Inventory Tool – GreenMart",
+      leadname:"Decision Maker Bought In",
       stage: "Decision Maker Bought In",
       closeDate: "Apr 8, 2025",
       owner: "Guy Hawkins",
@@ -76,6 +82,7 @@ function DealsList() {
     {
       id: 7,
       name: "ERP Integration – BlueChip",
+      leadname:"Qualified to Buy",
       stage: "Qualified to Buy",
       closeDate: "Apr 8, 2025",
       owner: "Robert Fox",
@@ -84,6 +91,7 @@ function DealsList() {
     {
       id: 8,
       name: "Loyalty Program – FoodieFox",
+      leadname:"Closed Lost",
       stage: "Closed Lost",
       closeDate: "Apr 8, 2025",
       owner: "Cameron Williamson",
@@ -211,6 +219,7 @@ function DealsList() {
           columns={[
             <CommonCheckbox size="medium" />,
             "DEAL NAME",
+            "LEAD NAME",
             "DEAL STAGE",
             "CLOSE DATE",
             "DEAL OWNER",
@@ -224,6 +233,7 @@ function DealsList() {
                 <CommonCheckbox size="medium" />
               </TableCell>
               <TableCell>{deal.name}</TableCell>
+              <TableCell>{deal.leadname}</TableCell>
               <TableCell>{deal.stage}</TableCell>
               <TableCell>{deal.closeDate}</TableCell>
               <TableCell>{deal.owner}</TableCell>

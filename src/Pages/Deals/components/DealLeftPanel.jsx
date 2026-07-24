@@ -1,9 +1,11 @@
 import React,  { useState } from "react";
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
-import CommonButton from "../../../Components/common/CommonButton";
+import CreateLogCall from "../../Leads/components/Tabs/Calls/CreateLogCall";
 
 export default function DealLeftPanel({ children }) {
    const [stage, setStage] = useState("Appointment Scheduled");
+  const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
+
   const dealDetails = [
     {
       label: "Deal Owner",
@@ -31,23 +33,27 @@ export default function DealLeftPanel({ children }) {
       setStage,
       email: "",
     },
-     showProfileEdit: false, 
-
-      showProfileImage: false,
-
     sectionTitle: "About this Deal",
-
     leadDetails: dealDetails,
-
     summaryTitle: "AI Deal Summary",
-
     summaryText:
       'The deal "Enterprise Software Deal" is currently in the Negotiation stage with an expected value of $25,000. No recent meeting, call, or note transcripts are available.',
   };
 
   return (
-    <CommonEntityHeader title="Deals" leftPanelData={leftPanelData}>
-      {children}
-    </CommonEntityHeader>
+    <>
+      <CommonEntityHeader
+        title="Deals"
+        leftPanelData={leftPanelData}
+        onCallClick={() => setOpenCreateLogCall(true)}
+      >
+        {children}
+      </CommonEntityHeader>
+
+      <CreateLogCall
+        open={openCreateLogCall}
+        onClose={() => setOpenCreateLogCall(false)}
+      />
+    </>
   );
 }
