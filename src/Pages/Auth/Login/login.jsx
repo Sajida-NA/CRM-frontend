@@ -12,6 +12,8 @@ import AuthLayout from "../../../Components/common/AuthLayout";
 import InputField from "../../../Components/common/InputField";
 import CommonButton from "../../../Components/common/CommonButton";
 
+import api from "../../../services/api";
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -26,9 +28,26 @@ export default function Login() {
       [e.target.name]: e.target.value,
     });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
+
+    try {
+      const response = await api.post("/accounts/login/", {
+        email: form.email,
+        password: form.password,
+      });
+
+      console.log("Login successful:", response.data);
+
+      localStorage.setItem("access", response.data.access);
+      localStorage.setItem("refresh", response.data.refresh);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+    } catch (error) {
+      console.error(
+        "Login failed:",
+        JSON.stringify(error.response?.data, null, 2),
+      );
+    }
   };
 
   return (

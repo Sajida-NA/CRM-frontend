@@ -5,6 +5,7 @@ import AuthLayout from "../../../Components/common/AuthLayout";
 import InputField from "../../../Components/common/InputField";
 import SelectField from "../../../Components/common/SelectField";
 import CommonButton from "../../../Components/common/CommonButton";
+import api from "../../../services/api"
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -27,22 +28,33 @@ export default function Register() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
+
+    try {
+      const response = await api.post("/accounts/register/",
+        {
+          first_name: form.firstName,
+          last_name: form.lastName,
+          email: form.email,
+          phone_number: form.phone,
+          password: form.password,
+          confirm_password: form.confirmPassword,
+          company_name: form.companyName,
+          industry_type: form.industry,
+          country: form.country,
+          role: form.role,
+        },
+      );
+
+      console.log("Registration successful:", response.data);
+    } catch (error) {
+      console.error("Registration failed:", JSON.stringify(error.response?.data, null, 2));
+    }
   };
 
-  const industries = [
-    { label: "IT", value: "it" },
-    { label: "Healthcare", value: "healthcare" },
-    { label: "Education", value: "education" },
-  ];
-
-  const roles = [
-    { label: "Admin", value: "admin" },
-    { label: "Manager", value: "manager" },
-    { label: "Employee", value: "employee" },
-  ];
+ 
+  
 
   return (
     <AuthLayout
@@ -160,7 +172,15 @@ export default function Register() {
             name="industry"
             value={form.industry}
             onChange={handleChange}
-            options={["IT", "HealthCare", "Education"]}
+            options={[
+              "IT",
+              "Finance",
+              "Healthcare",
+              "Education",
+              "Manufacturing",
+              "Retail",
+              "Other",
+            ]}
             placeholder="Choose "
             fullWidth
           />
@@ -187,7 +207,7 @@ export default function Register() {
             name="role"
             value={form.role}
             onChange={handleChange}
-            options={["Admin", "Manager", "Employee"]}
+            options={["Admin", "User","Contact Owner"]}
             placeholder="Choose"
             fullWidth
           />
