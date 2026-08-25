@@ -17,6 +17,7 @@
     "@mui/x-date-pickers": "^9.9.0",
     "@tiptap/react": "^3.27.3",
     "@tiptap/starter-kit": "^3.27.3",
+    "axios": "^1.19.0",
     "d3-shape": "^3.2.0",
     "dayjs": "^1.11.21",
     "quill": "^2.0.3",
