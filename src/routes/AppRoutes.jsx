@@ -68,7 +68,7 @@ import DealLeftPanel from "../Pages/Deals/components/DealLeftPanel";
    Common Components
 =========================== */
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
-
+import ResetPassword from "../Pages/Auth/ResetPassword/ResetPassword";
 function AppRoutes() {
   return (
     <Routes>
@@ -126,7 +126,8 @@ function AppRoutes() {
 
       {/* ================= Common Routes ================= */}
       <Route path="/entity" element={<CommonEntityHeader />} />
-      
+      <Route path="/reset-password/:uid/:token" element={<ResetPassword />}
+  />
 
     </Routes>
   );
