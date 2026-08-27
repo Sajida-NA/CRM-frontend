@@ -134,6 +134,8 @@ import AuthLayout from "../../../Components/common/AuthLayout";
 import InputField from "../../../Components/common/InputField";
 import CommonButton from "../../../Components/common/CommonButton";
 
+import api from "../../../services/api";
+
 export default function Login() {
   const navigate = useNavigate();
 

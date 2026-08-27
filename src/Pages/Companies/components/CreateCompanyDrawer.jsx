@@ -18,6 +18,7 @@ export default function CreateCompanyDrawer({ open, onClose }) {
     noOfEmployees: "",
     annualRevenue: "",
     phoneNumber: "",
+    email:"",
   });
 
   const handleChange = (e) => {

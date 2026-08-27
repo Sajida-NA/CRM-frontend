@@ -140,11 +140,11 @@ export default function CreateLeadsDrawer({ open, onClose }) {
 
           {/* Company TYPE (label added + dropdown type) */}
           <CommonSelect
-            label="Company Type"
+            label="Company"
             name="company"
             value={formData.company}
             onChange={handleChange}
-            options={["Startup", "Enterprise", "Private", "Public"]}
+            options={["ABC Technologis", "XYZ Solutions", "Tech World"]}
           />
 
           {/* City TYPE (label added + dropdown type) */}
