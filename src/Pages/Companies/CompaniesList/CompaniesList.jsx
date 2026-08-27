@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Box, IconButton, TableRow, TableCell } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -14,6 +14,8 @@ import dayjs from "dayjs";
 import CommonDatePicker from "../../../Components/common/CommonDatePicker";
 import CommonCheckbox from "../../../Components/common/CommonCheckbox";
 
+import api from "../../../services/api";
+
 function CompaniesList() {
   const [page, setPage] = useState(1);
   const [industry, setIndustry] = useState("");
@@ -23,89 +25,54 @@ function CompaniesList() {
   const [search, setSearch] = useState("");
   const [createdDate, setCreatedDate] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
+const [companiesData, setCompaniesData] = useState([]);
+const [loading, setLoading] = useState(true);
+const [selectedCompany, setSelectedCompany] = useState(null);
+const fetchCompanies = async () => {
+  try {
+    setLoading(true);
 
-  const companiesData = [
-    {
-      id: 1,
-      companyName: "ClientEdge",
-      companyOwner: "Jane Cooper",
-      phoneNumber: "078 5432 8505",
-      industry: "Legal Services",
-      city: "Toronto",
-      country: "Canada",
-      createdDate: "Apr 8, 2025 2:35 PM GMT+5:30",
-    },
-    {
-      id: 2,
-      companyName: "Relatia",
-      companyOwner: "Wade Warren",
-      phoneNumber: "077 5465 8785",
-      industry: "Healthcare",
-      city: "Amsterdam",
-      country: "Netherlands",
-      createdDate: "Apr 8, 2025 2:35 PM GMT+5:30",
-    },
-    {
-      id: 3,
-      companyName: "TrustSphere",
-      companyOwner: "Brooklyn Simmons",
-      phoneNumber: "070 4531 9507",
-      industry: "Real Estate",
-      city: "Bangalore",
-      country: "India",
-      createdDate: "Apr 8, 2025 2:35 PM GMT+5:30",
-    },
-    {
-      id: 4,
-      companyName: "SalesTrail",
-      companyOwner: "Leslie Alexander",
-      phoneNumber: "078 2824 3334",
-      industry: "Financial Advisory",
-      city: "Zurich",
-      country: "Switzerland",
-      createdDate: "Apr 8, 2025 2:35 PM GMT+5:30",
-    },
-    {
-      id: 5,
-      companyName: "PipelineIQ",
-      companyOwner: "Jenny Wilson",
-      phoneNumber: "079 8761 9681",
-      industry: "Retail & E-commerce",
-      city: "Austin",
-      country: "USA",
-      createdDate: "Apr 8, 2025 2:35 PM GMT+5:30",
-    },
-    {
-      id: 6,
-      companyName: "Syncfolio",
-      companyOwner: "Guy Hawkins",
-      phoneNumber: "078 5432 8505",
-      industry: "Logistics & Supply Chain",
-      city: "Dubai",
-      country: "UAE",
-      createdDate: "Apr 8, 2025 2:35 PM GMT+5:30",
-    },
-    {
-      id: 7,
-      companyName: "CustoLogic",
-      companyOwner: "Robert Fox",
-      phoneNumber: "077 5465 8785",
-      industry: "Marketing Agencies",
-      city: "Singapore",
-      country: "Singapore",
-      createdDate: "Apr 8, 2025 2:35 PM GMT+5:30",
-    },
-    {
-      id: 8,
-      companyName: "EngageWare",
-      companyOwner: "Cameron Williamson",
-      phoneNumber: "078 2824 3334",
-      industry: "Education Technology",
-      city: "Cape Town",
-      country: "South Africa",
-      createdDate: "Apr 8, 2025 2:35 PM GMT+5:30",
-    },
-  ];
+    const response = await api.get("/companies/");
+
+    console.log("Companies:", response.data);
+
+    setCompaniesData(response.data);
+  } catch (error) {
+    console.error("Error fetching companies:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+//EDIT COMPANY
+const handleEdit = (company) => {
+   console.log("Editing company:", company);
+  setSelectedCompany(company);
+  setOpenDrawer(true);
+};
+
+// DELETE COMPANY
+
+const handleDelete = async (id) => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this company?"
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    await api.delete(`/companies/${id}/`);
+    await fetchCompanies();
+  } catch (error) {
+    console.error("Error deleting company:", error);
+  }
+};
+
+useEffect(() => {
+  fetchCompanies();
+}, []);
+  
 
   return (
     <MainLayout>
@@ -148,10 +115,19 @@ function CompaniesList() {
             }
           />
           {/* DRAWER */}
-          <CreateCompanyDrawer
+          {/* <CreateCompanyDrawer
             open={openDrawer}
             onClose={() => setOpenDrawer(false)}
-          />
+          /> */}
+         <CreateCompanyDrawer
+  open={openDrawer}
+  onClose={() => {
+    setOpenDrawer(false);
+    setSelectedCompany(null);
+  }}
+  onCompanyCreated={fetchCompanies}
+  company={selectedCompany}
+/>
         </Box>
 
         {/* outer box for search & pagination */}
@@ -188,7 +164,7 @@ function CompaniesList() {
               "Real Estate",
               "Education",
             ]}
-            value={status}
+            value={industry}
             onChange={(e) => setIndustry(e.target.value)}
           />
 
@@ -201,7 +177,7 @@ function CompaniesList() {
               "Singapore",
               "Toronto",
             ]}
-            value={status}
+            value={city}
             onChange={(e) => setCity(e.target.value)}
           />
 
@@ -215,14 +191,14 @@ function CompaniesList() {
               "USA",
               "UAE",
             ]}
-            value={status}
+            value={country}
             onChange={(e) => setCountry(e.target.value)}
           />
 
           <SelectField
             placeholder="Lead Status"
             options={["Open", "New", "In Progress"]}
-            value={status}
+            value={leadStatus}
             onChange={(e) => setLeadStatus(e.target.value)}
           />
 
@@ -256,18 +232,33 @@ function CompaniesList() {
               <TableCell>
                 <CommonCheckbox size="medium" />
               </TableCell>
-              <TableCell>{company.companyName}</TableCell>
+              {/* <TableCell>{company.companyName}</TableCell>
               <TableCell>{company.companyOwner}</TableCell>
               <TableCell>{company.phoneNumber}</TableCell>
               <TableCell>{company.industry}</TableCell>
               <TableCell>{company.city}</TableCell>
               <TableCell>{company.country}</TableCell>
-              <TableCell>{company.createdDate}</TableCell>
+              <TableCell>{company.createdDate}</TableCell> */}
+              <TableCell>{company.company_name}</TableCell>
+<TableCell>{company.company_owner}</TableCell>
+<TableCell>{company.phone_number}</TableCell>
+<TableCell>{company.industry}</TableCell>
+<TableCell>{company.city}</TableCell>
+<TableCell>{company.country_region}</TableCell>
+<TableCell>
+  {company.created_date
+    ? dayjs(company.created_date).format("MMM D, YYYY h:mm A")
+    : ""}
+</TableCell>
               <TableCell>
-                <IconButton color="primary">
+                <IconButton 
+                  color="primary"
+                   onClick={() => handleEdit(company)}>
                   <EditIcon />
                 </IconButton>
-                <IconButton color="error">
+                <IconButton 
+                 color="error"
+                   onClick={() => handleDelete(company.id)}>
                   <DeleteIcon />
                 </IconButton>
               </TableCell>
