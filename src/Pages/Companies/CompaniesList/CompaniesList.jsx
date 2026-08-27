@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, IconButton, TableRow, TableCell } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -25,54 +25,104 @@ function CompaniesList() {
   const [search, setSearch] = useState("");
   const [createdDate, setCreatedDate] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
-const [companiesData, setCompaniesData] = useState([]);
-const [loading, setLoading] = useState(true);
-const [selectedCompany, setSelectedCompany] = useState(null);
+  const [companiesData, setCompaniesData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+
+  //filter section ---values same as list
+  const industryOptions = [
+    ...new Set(
+      companiesData.map((company) => company.industry).filter(Boolean),
+    ),
+  ];
+
+  const cityOptions = [
+    ...new Set(companiesData.map((company) => company.city).filter(Boolean)),
+  ];
+
+  const countryOptions = [
+    ...new Set(
+      companiesData.map((company) => company.country_region).filter(Boolean),
+    ),
+  ];
+
+
+ 
+
+// by filtering , filtered data will only display
+
 const fetchCompanies = async () => {
   try {
     setLoading(true);
 
-    const response = await api.get("/companies/");
+    const params = {};
 
-    console.log("Companies:", response.data);
+    if (industry) {
+      params.industry = industry;
+    }
+
+    if (city) {
+      params.city = city;
+    }
+
+    if (country) {
+      params.country_region = country;
+    }
+
+    if (search) {
+      params.search = search;
+    }
+
+    if (createdDate) {
+      params.created_date = createdDate;
+    }
+
+    const response = await api.get("/companies/", {
+      params: params,
+    });
+
+    console.log("Filtered Companies:", response.data);
 
     setCompaniesData(response.data);
+
   } catch (error) {
     console.error("Error fetching companies:", error);
   } finally {
     setLoading(false);
   }
 };
-//EDIT COMPANY
-const handleEdit = (company) => {
-   console.log("Editing company:", company);
-  setSelectedCompany(company);
-  setOpenDrawer(true);
-};
 
-// DELETE COMPANY
+  //EDIT COMPANY
+  const handleEdit = (company) => {
+    console.log("Editing company:", company);
+    setSelectedCompany(company);
+    setOpenDrawer(true);
+  };
 
-const handleDelete = async (id) => {
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this company?"
-  );
+  // DELETE COMPANY
 
-  if (!confirmed) {
-    return;
-  }
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this company?",
+    );
 
-  try {
-    await api.delete(`/companies/${id}/`);
-    await fetchCompanies();
-  } catch (error) {
-    console.error("Error deleting company:", error);
-  }
-};
+    if (!confirmed) {
+      return;
+    }
 
-useEffect(() => {
+    try {
+      await api.delete(`/companies/${id}/`);
+      await fetchCompanies();
+    } catch (error) {
+      console.error("Error deleting company:", error);
+    }
+  };
+
+//CALLING FETCH COMPANIES WHILE SEARCHING OR FILTERING
+
+ useEffect(() => {
   fetchCompanies();
-}, []);
-  
+}, [industry, city, country, search, createdDate]);
 
   return (
     <MainLayout>
@@ -115,19 +165,16 @@ useEffect(() => {
             }
           />
           {/* DRAWER */}
-          {/* <CreateCompanyDrawer
+        
+          <CreateCompanyDrawer
             open={openDrawer}
-            onClose={() => setOpenDrawer(false)}
-          /> */}
-         <CreateCompanyDrawer
-  open={openDrawer}
-  onClose={() => {
-    setOpenDrawer(false);
-    setSelectedCompany(null);
-  }}
-  onCompanyCreated={fetchCompanies}
-  company={selectedCompany}
-/>
+            onClose={() => {
+              setOpenDrawer(false);
+              setSelectedCompany(null);
+            }}
+            onCompanyCreated={fetchCompanies}
+            company={selectedCompany}
+          />
         </Box>
 
         {/* outer box for search & pagination */}
@@ -158,39 +205,21 @@ useEffect(() => {
         <FilterSection>
           <SelectField
             placeholder="Industry Type"
-            options={[
-              "Legal Services",
-              "Healthcare",
-              "Real Estate",
-              "Education",
-            ]}
+            options={industryOptions}
             value={industry}
             onChange={(e) => setIndustry(e.target.value)}
           />
 
           <SelectField
             placeholder="City"
-            options={[
-              "Amsterdam",
-              "Cape Town",
-              "Dubai",
-              "Singapore",
-              "Toronto",
-            ]}
+            options={cityOptions}
             value={city}
             onChange={(e) => setCity(e.target.value)}
           />
 
           <SelectField
             placeholder="Country/Region"
-            options={[
-              "Netherlands",
-              "Switzerland",
-              "South Africa",
-              "Singapore",
-              "USA",
-              "UAE",
-            ]}
+            options={countryOptions}
             value={country}
             onChange={(e) => setCountry(e.target.value)}
           />
@@ -240,25 +269,24 @@ useEffect(() => {
               <TableCell>{company.country}</TableCell>
               <TableCell>{company.createdDate}</TableCell> */}
               <TableCell>{company.company_name}</TableCell>
-<TableCell>{company.company_owner}</TableCell>
-<TableCell>{company.phone_number}</TableCell>
-<TableCell>{company.industry}</TableCell>
-<TableCell>{company.city}</TableCell>
-<TableCell>{company.country_region}</TableCell>
-<TableCell>
-  {company.created_date
-    ? dayjs(company.created_date).format("MMM D, YYYY h:mm A")
-    : ""}
-</TableCell>
+              <TableCell>{company.company_owner}</TableCell>
+              <TableCell>{company.phone_number}</TableCell>
+              <TableCell>{company.industry}</TableCell>
+              <TableCell>{company.city}</TableCell>
+              <TableCell>{company.country_region}</TableCell>
               <TableCell>
-                <IconButton 
-                  color="primary"
-                   onClick={() => handleEdit(company)}>
+                {company.created_date
+                  ? dayjs(company.created_date).format("MMM D, YYYY h:mm A")
+                  : ""}
+              </TableCell>
+              <TableCell>
+                <IconButton color="primary" onClick={() => handleEdit(company)}>
                   <EditIcon />
                 </IconButton>
-                <IconButton 
-                 color="error"
-                   onClick={() => handleDelete(company.id)}>
+                <IconButton
+                  color="error"
+                  onClick={() => handleDelete(company.id)}
+                >
                   <DeleteIcon />
                 </IconButton>
               </TableCell>
