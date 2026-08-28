@@ -1,11 +1,21 @@
-import { useState } from "react";
-import { Box, IconButton, TableRow, TableCell } from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
+
+
+import { useEffect, useState } from "react";
+
+import {
+  Box,
+  IconButton,
+  TableRow,
+  TableCell,
+} from "@mui/material";
+
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+
+import dayjs from "dayjs";
+
 import PageHeader from "../../../Components/common/PageHeader";
 import FilterSection from "../../../Components/common/FilterSection";
-import InputField from "../../../Components/common/InputField";
 import SelectField from "../../../Components/common/SelectField";
 import DataTable from "../../../Components/common/DataTable";
 import MainLayout from "../../../layout/MainLayout";
@@ -15,181 +25,446 @@ import CommonDatePicker from "../../../Components/common/CommonDatePicker";
 import CommonCheckbox from "../../../Components/common/CommonCheckbox";
 import SearchSection from "../../../Components/common/searchSection";
 
-function DealsList() {
-  const [page, setPage] = useState(1);
-  const [dealStage, setDealStage] = useState("");
-  const [dealOwner, setDealOwner] = useState("");
-  const [createdDate, setCreatedDate] = useState("");
-  const [openDrawer, setOpenDrawer] = useState(false);
-  const [search, setSearch] = useState("");
-  const [openCreate, setOpenCreate] = useState(false);
+import api from "../../../services/api";
 
-  const dealsData = [
-    {
-      id: 1,
-      name: "Website Revamp – Atlas Corp",
-      leadname:"Presentation Scheduled",
-      stage: "Presentation Scheduled",
-      closeDate: "Apr 8, 2025",
-      owner: "Jane Cooper",
-      amount: "$12,500",
-    },
-    {
-      id: 2,
-      name: "Mobile App for FitBuddy",
-      leadname:"Qualified to Buy",
-      stage: "Qualified to Buy",
-      closeDate: "Apr 8, 2025",
-      owner: "Wade Warren",
-      amount: "$25,000",
-    },
-    {
-      id: 3,
-      name: "HR Software License – ZenoHR",
-      leadname:"Contract Sent",
-      stage: "Contract Sent",
-      closeDate: "Apr 8, 2025",
-      owner: "Brooklyn Simmons",
-      amount: "$18,750",
-    },
-    {
-      id: 4,
-      name: "CRM Onboarding – NexTech",
-      leadname:"Closed Won",
-      stage: "Closed Won",
-      closeDate: "Apr 8, 2025",
-      owner: "Leslie Alexander",
-      amount: "$32,000",
-    },
-    {
-      id: 5,
-      name: "Marketing Suite – QuickAdz",
-      leadname:"Appointment Scheduled",
-      stage: "Appointment Scheduled",
-      closeDate: "Apr 8, 2025",
-      owner: "Jenny Wilson",
-      amount: "$14,800",
-    },
-    {
-      id: 6,
-      name: "Inventory Tool – GreenMart",
-      leadname:"Decision Maker Bought In",
-      stage: "Decision Maker Bought In",
-      closeDate: "Apr 8, 2025",
-      owner: "Guy Hawkins",
-      amount: "$9,300",
-    },
-    {
-      id: 7,
-      name: "ERP Integration – BlueChip",
-      leadname:"Qualified to Buy",
-      stage: "Qualified to Buy",
-      closeDate: "Apr 8, 2025",
-      owner: "Robert Fox",
-      amount: "$41,000",
-    },
-    {
-      id: 8,
-      name: "Loyalty Program – FoodieFox",
-      leadname:"Closed Lost",
-      stage: "Closed Lost",
-      closeDate: "Apr 8, 2025",
-      owner: "Cameron Williamson",
-      amount: "$11,000",
-    },
+
+function DealsList() {
+
+
+  // STATES
+  const [page, setPage] =
+    useState(1);
+
+  const [dealStage, setDealStage] =
+    useState("");
+
+  const [dealOwner, setDealOwner] =
+    useState("");
+
+  const [createdDate, setCreatedDate] =
+    useState("");
+
+  const [openDrawer, setOpenDrawer] =
+    useState(false);
+
+  // Selected deal for edit
+  const [editDeal, setEditDeal] =
+    useState(null);
+
+  const [search, setSearch] =
+    useState("");
+
+  // Backend deals
+  const [dealsData, setDealsData] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+
+  // GET DEALS
+
+  const fetchDeals = async () => {
+
+    try {
+
+      setLoading(true);
+
+      setError("");
+
+
+      const response =
+        await api.get(
+          "/deals/"
+        );
+
+
+      console.log(
+        "DEALS RESPONSE:",
+        response.data
+      );
+
+
+      const data =
+        Array.isArray(response.data)
+          ? response.data
+          : response.data.results || [];
+
+
+      setDealsData(data);
+
+    } catch (error) {
+
+      console.error(
+        "Deals API Error:",
+        error
+      );
+
+      console.error(
+        "Status:",
+        error.response?.status
+      );
+
+      console.error(
+        "Data:",
+        error.response?.data
+      );
+
+
+      setError(
+        error.response?.data?.detail ||
+        "Failed to load deals."
+      );
+
+    } finally {
+
+      setLoading(false);
+    }
+  };
+
+
+
+  // LOAD DEALS WHEN PAGE OPENS
+ 
+  useEffect(() => {
+
+    fetchDeals();
+
+  }, []);
+
+
+
+  // DELETE DEAL
+
+  const handleDelete = async (id) => {
+
+    try {
+
+      await api.delete(
+        `/deals/${id}/`
+      );
+
+
+      // Refresh list
+      await fetchDeals();
+
+    } catch (error) {
+
+      console.error(
+        "Delete Deal Error:",
+        error.response?.data || error
+      );
+    }
+  };
+
+
+ 
+  // EDIT DEAL
+
+  const handleEdit = (deal) => {
+
+    console.log(
+      "EDIT DEAL:",
+      deal
+    );
+
+
+    setEditDeal(deal);
+
+    setOpenDrawer(true);
+  };
+
+
+ 
+  // CREATE DEAL
+ 
+
+  const handleCreate = () => {
+
+    // Important:
+    // Clear edit deal before opening drawer
+
+    setEditDeal(null);
+
+    setOpenDrawer(true);
+  };
+
+
+ 
+  // CLOSE DRAWER
+ 
+
+  const handleCloseDrawer = () => {
+
+    setOpenDrawer(false);
+
+    setEditDeal(null);
+  };
+
+
+ 
+  // FILTER DEALS
+ 
+
+  const filteredDeals =
+    dealsData.filter((deal) => {
+
+      const searchText =
+        search
+          .trim()
+          .toLowerCase();
+
+
+      const matchesSearch =
+        !searchText ||
+
+        deal.deal_name
+          ?.toLowerCase()
+          .includes(searchText) ||
+
+        deal.lead_name
+          ?.toLowerCase()
+          .includes(searchText);
+
+
+      const matchesStage =
+        !dealStage ||
+        deal.deal_stage ===
+          dealStage;
+
+
+      const matchesOwner =
+        !dealOwner ||
+        deal.deal_owner ===
+          dealOwner;
+
+
+      const matchesCreatedDate =
+        !createdDate ||
+        deal.created_date ===
+          createdDate;
+
+
+      return (
+        matchesSearch &&
+        matchesStage &&
+        matchesOwner &&
+        matchesCreatedDate
+      );
+    });
+
+
+ 
+  // DEAL OWNER OPTIONS
+ 
+
+  const dealOwnerOptions = [
+    ...new Set(
+      dealsData
+        .map(
+          (deal) =>
+            deal.deal_owner
+        )
+        .filter(Boolean)
+    ),
   ];
 
+
+ 
+  // UI
+ 
+
   return (
+
     <MainLayout>
+
       <Box
         sx={{
           maxWidth: "1000",
           margin: "0 auto",
           marginTop: "5px",
           padding: "5px",
-          bgcolor: "background.default",
+          bgcolor:
+            "background.default",
           borderRadius: "10px",
           boxShadow: "3px",
         }}
       >
-        {/* outer box for deal header */}
+
+
+        {/* =================================================
+            HEADER
+        ================================================= */}
+
         <Box
           sx={{
             p: 2,
             height: "12vh",
             boxShadow: "4px",
-            border: " 1px solid",
+            border: "1px solid",
             borderColor: "divider",
-            bgcolor: "background.paper",
+            bgcolor:
+              "background.paper",
             marginBottom: "3px",
-            borderTopLeftRadius: "12px",
-            borderTopRightRadius: "12px",
+            borderTopLeftRadius:
+              "12px",
+            borderTopRightRadius:
+              "12px",
           }}
         >
-          {/* ⭐ Page Title (Deals) + (Import and Create) buttons */}
 
-          {/* Left: Page Title */}
           <PageHeader
             title="Deals"
+
             actions={
-              <Box sx={{ display: "flex", gap: 2 }}>
-                <CommonButton variant="outlined">Import</CommonButton>
-                <CommonButton onClick={() => setOpenDrawer(true)}>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                }}
+              >
+
+                {/* IMPORT */}
+
+                <CommonButton
+                  variant="outlined"
+                >
+                  Import
+                </CommonButton>
+
+
+                {/* CREATE */}
+
+                <CommonButton
+                  onClick={
+                    handleCreate
+                  }
+                >
                   Create
                 </CommonButton>
+
               </Box>
             }
           />
-          {/* Drawer */}
+
+
+          {/* =================================================
+              DEAL DRAWER
+          ================================================= */}
+
           <CreateDealsDrawer
-            open={openDrawer}
-            onClose={() => setOpenDrawer(false)}
+
+            open={
+              openDrawer
+            }
+
+            deal={
+              editDeal
+            }
+
+            onClose={
+              handleCloseDrawer
+            }
+
+            onDealSaved={
+              fetchDeals
+            }
+
           />
+
         </Box>
 
-        {/* outer box for search & pagination */}
+
+        {/* =================================================
+            SEARCH + PAGINATION
+        ================================================= */}
+
         <Box
           sx={{
             p: 2,
             boxShadow: "4px",
-            border: " 1px solid #ddd",
-            backgroundColor: "background.paper",
+            border:
+              "1px solid #ddd",
+            backgroundColor:
+              "background.paper",
             height: "12vh",
             marginTop: "4px",
-            transform: "translateY(-5px)",
+            transform:
+              "translateY(-5px)",
           }}
         >
-          {/* ⭐ SEARCH + PAGINATION */}
+
           <SearchSection
-            placeholder="Search Phone, Name, Email"
+
+            placeholder={
+              "Search Phone, Name, Email"
+            }
+
             page={page}
+
             totalPages={68}
-            onPageChange={setPage}
-            searchValue={search}
-            onSearchChange={(e) => setSearch(e.target.value)}
+
+            onPageChange={
+              setPage
+            }
+
+            searchValue={
+              search
+            }
+
+            onSearchChange={
+              (e) =>
+                setSearch(
+                  e.target.value
+                )
+            }
+
           />
+
         </Box>
 
-        {/* ⭐ FILTERS */}
+
+        {/* =================================================
+            FILTERS
+        ================================================= */}
+
         <FilterSection>
-          <SelectField
-            placeholder="Deal Owner"
-            options={[
-              "Jane Cooper",
-              "Wade Warren",
-              "Brooklyn Simmons",
-              "Leslie Alexander",
-              "Jenny Wilson",
-              "Guy Hawkins",
-              "Robert Fox",
-              "Cameron Williamson",
-            ]}
-            value={dealOwner}
-            onChange={(e) => setDealOwner(e.target.value)}
-          />
+
+
+          {/* DEAL OWNER */}
 
           <SelectField
+
+            placeholder="Deal Owner"
+
+            options={
+              dealOwnerOptions
+            }
+
+            value={
+              dealOwner
+            }
+
+            onChange={
+              (e) =>
+                setDealOwner(
+                  e.target.value
+                )
+            }
+
+          />
+
+
+          {/* DEAL STAGE */}
+
+          <SelectField
+
             placeholder="Deal Stage"
+
             options={[
               "Presentation Scheduled",
               "Qualified to Buy",
@@ -199,59 +474,299 @@ function DealsList() {
               "Decision Maker Bought In",
               "Closed Lost",
             ]}
-            value={dealStage}
-            onChange={(e) => setDealStage(e.target.value)}
+
+            value={
+              dealStage
+            }
+
+            onChange={
+              (e) =>
+                setDealStage(
+                  e.target.value
+                )
+            }
+
           />
 
-          {/* Created Date Filter */}
+
+          {/* CREATED DATE */}
+
           <CommonDatePicker
+
             label="Created Date"
-            value={createdDate ? dayjs(createdDate) : null}
-            onChange={(newValue) =>
-              setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
+
+            value={
+              createdDate
+                ? dayjs(
+                    createdDate
+                  )
+                : null
             }
+
+            onChange={
+              (newValue) =>
+                setCreatedDate(
+                  newValue
+                    ? newValue.format(
+                        "YYYY-MM-DD"
+                      )
+                    : ""
+                )
+            }
+
           />
-          <Box sx={{ flexGrow: 1 }} />
+
+
+          <Box
+            sx={{
+              flexGrow: 1,
+            }}
+          />
+
         </FilterSection>
 
-        {/* ⭐ DEALS TABLE */}
+
+        {/* =================================================
+            DEALS TABLE
+        ================================================= */}
+
         <DataTable
+
           columns={[
-            <CommonCheckbox size="medium" />,
+
+            <CommonCheckbox
+              size="medium"
+              key="select"
+            />,
+
             "DEAL NAME",
+
             "LEAD NAME",
+
             "DEAL STAGE",
+
             "CLOSE DATE",
+
             "DEAL OWNER",
+
             "AMOUNT",
+
             "ACTIONS",
+
           ]}
+
         >
-          {dealsData.map((deal) => (
-            <TableRow key={deal.id}>
-              <TableCell>
-                <CommonCheckbox size="medium" />
+
+
+          {/* =================================================
+              LOADING
+          ================================================= */}
+
+          {loading && (
+
+            <TableRow>
+
+              <TableCell
+                colSpan={8}
+                align="center"
+              >
+                Loading...
               </TableCell>
-              <TableCell>{deal.name}</TableCell>
-              <TableCell>{deal.leadname}</TableCell>
-              <TableCell>{deal.stage}</TableCell>
-              <TableCell>{deal.closeDate}</TableCell>
-              <TableCell>{deal.owner}</TableCell>
-              <TableCell>{deal.amount}</TableCell>
-              <TableCell>
-                <IconButton color="primary">
-                  <EditIcon />
-                </IconButton>
-                <IconButton color="error">
-                  <DeleteIcon />
-                </IconButton>
-              </TableCell>
+
             </TableRow>
-          ))}
+
+          )}
+
+
+          {/* =================================================
+              ERROR
+          ================================================= */}
+
+          {!loading &&
+            error && (
+
+              <TableRow>
+
+                <TableCell
+                  colSpan={8}
+                  align="center"
+                >
+                  {error}
+                </TableCell>
+
+              </TableRow>
+
+            )}
+
+
+          {/* =================================================
+              NO DATA
+          ================================================= */}
+
+          {!loading &&
+            !error &&
+            filteredDeals.length === 0 && (
+
+              <TableRow>
+
+                <TableCell
+                  colSpan={8}
+                  align="center"
+                >
+                  No deals found.
+                </TableCell>
+
+              </TableRow>
+
+            )}
+
+
+          {/* =================================================
+              DEAL DATA
+          ================================================= */}
+
+          {!loading &&
+            !error &&
+            filteredDeals.map(
+              (deal) => (
+
+                <TableRow
+                  key={deal.id}
+                >
+
+
+                  {/* CHECKBOX */}
+
+                  <TableCell>
+
+                    <CommonCheckbox
+                      size="medium"
+                    />
+
+                  </TableCell>
+
+
+                  {/* DEAL NAME */}
+
+                  <TableCell>
+
+                    {
+                      deal.deal_name
+                    }
+
+                  </TableCell>
+
+
+                  {/* LEAD NAME */}
+
+                  <TableCell>
+
+                    {
+                      deal.lead_name
+                    }
+
+                  </TableCell>
+
+
+                  {/* DEAL STAGE */}
+
+                  <TableCell>
+
+                    {
+                      deal.deal_stage
+                    }
+
+                  </TableCell>
+
+
+                  {/* CLOSE DATE */}
+
+                  <TableCell>
+
+                    {
+                      deal.close_date
+                    }
+
+                  </TableCell>
+
+
+                  {/* DEAL OWNER */}
+
+                  <TableCell>
+
+                    {
+                      deal.deal_owner
+                    }
+
+                  </TableCell>
+
+
+                  {/* AMOUNT */}
+
+                  <TableCell>
+
+                    $
+                    {Number(
+                      deal.amount
+                    ).toLocaleString()}
+
+                  </TableCell>
+
+
+                  {/* =================================================
+                      ACTIONS
+                  ================================================= */}
+
+                  <TableCell>
+
+
+                    {/* EDIT */}
+
+                    <IconButton
+                      color="primary"
+
+                      onClick={() =>
+                        handleEdit(
+                          deal
+                        )
+                      }
+                    >
+
+                      <EditIcon />
+
+                    </IconButton>
+
+
+                    {/* DELETE */}
+
+                    <IconButton
+                      color="error"
+
+                      onClick={() =>
+                        handleDelete(
+                          deal.id
+                        )
+                      }
+                    >
+
+                      <DeleteIcon />
+
+                    </IconButton>
+
+                  </TableCell>
+
+                </TableRow>
+
+              )
+            )}
+
         </DataTable>
+
       </Box>
+
     </MainLayout>
   );
 }
+
 
 export default DealsList;
