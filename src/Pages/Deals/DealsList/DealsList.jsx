@@ -1,13 +1,6 @@
-
-
 import { useEffect, useState } from "react";
 
-import {
-  Box,
-  IconButton,
-  TableRow,
-  TableCell,
-} from "@mui/material";
+import { Box, IconButton, TableRow, TableCell } from "@mui/material";
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -27,274 +20,267 @@ import SearchSection from "../../../Components/common/searchSection";
 
 import api from "../../../services/api";
 
-
 function DealsList() {
-
-
+  // =================================================
   // STATES
-  const [page, setPage] =
-    useState(1);
+  // =================================================
 
-  const [dealStage, setDealStage] =
-    useState("");
+  const [page, setPage] = useState(1);
 
-  const [dealOwner, setDealOwner] =
-    useState("");
+  const [dealStage, setDealStage] = useState("");
 
-  const [createdDate, setCreatedDate] =
-    useState("");
+  // Deal stages from backend
+  const [dealStageOptions, setDealStageOptions] = useState([]);
 
-  const [openDrawer, setOpenDrawer] =
-    useState(false);
+  const [dealOwner, setDealOwner] = useState("");
+
+  const [createdDate, setCreatedDate] = useState("");
+
+  const [openDrawer, setOpenDrawer] = useState(false);
 
   // Selected deal for edit
-  const [editDeal, setEditDeal] =
-    useState(null);
+  const [editDeal, setEditDeal] = useState(null);
 
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
   // Backend deals
-  const [dealsData, setDealsData] =
-    useState([]);
+  const [dealsData, setDealsData] = useState([]);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
-
+  // =================================================
   // GET DEALS
+  // =================================================
 
   const fetchDeals = async () => {
-
     try {
-
       setLoading(true);
 
       setError("");
 
+      const response = await api.get("/deals/");
 
-      const response =
-        await api.get(
-          "/deals/"
-        );
+      console.log("DEALS RESPONSE:", response.data);
 
-
-      console.log(
-        "DEALS RESPONSE:",
-        response.data
-      );
-
-
-      const data =
-        Array.isArray(response.data)
-          ? response.data
-          : response.data.results || [];
-
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data.results || [];
 
       setDealsData(data);
-
     } catch (error) {
+      console.error("Deals API Error:", error);
 
-      console.error(
-        "Deals API Error:",
-        error
-      );
+      console.error("Status:", error.response?.status);
 
-      console.error(
-        "Status:",
-        error.response?.status
-      );
+      console.error("Data:", error.response?.data);
 
-      console.error(
-        "Data:",
-        error.response?.data
-      );
-
-
-      setError(
-        error.response?.data?.detail ||
-        "Failed to load deals."
-      );
-
+      setError(error.response?.data?.detail || "Failed to load deals.");
     } finally {
-
       setLoading(false);
     }
   };
 
+  // =================================================
+  // GET DEAL STAGES FROM BACKEND
+  // =================================================
 
-
-  // LOAD DEALS WHEN PAGE OPENS
- 
-  useEffect(() => {
-
-    fetchDeals();
-
-  }, []);
-
-
-
-  // DELETE DEAL
-
-  const handleDelete = async (id) => {
-
+  const fetchDealStages = async () => {
     try {
+      const response = await api.get("/deals/stages/");
 
-      await api.delete(
-        `/deals/${id}/`
-      );
+      console.log("DEAL STAGES RESPONSE:", response.data);
 
+      const stages = Array.isArray(response.data)
+        ? response.data
+        : response.data.results || [];
 
-      // Refresh list
-      await fetchDeals();
-
+      setDealStageOptions(stages);
     } catch (error) {
-
-      console.error(
-        "Delete Deal Error:",
-        error.response?.data || error
-      );
+      console.error("Deal Stage API Error:", error);
     }
   };
 
+  // =================================================
+  // LOAD DATA WHEN PAGE OPENS
+  // =================================================
 
- 
+  useEffect(() => {
+    fetchDeals();
+
+    fetchDealStages();
+  }, []);
+
+  // =================================================
+  // DELETE DEAL
+  // =================================================
+
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/deals/${id}/`);
+
+      // Refresh list
+      await fetchDeals();
+    } catch (error) {
+      console.error("Delete Deal Error:", error.response?.data || error);
+    }
+  };
+
+  // =================================================
   // EDIT DEAL
+  // =================================================
 
   const handleEdit = (deal) => {
-
-    console.log(
-      "EDIT DEAL:",
-      deal
-    );
-
+    console.log("EDIT DEAL:", deal);
 
     setEditDeal(deal);
 
     setOpenDrawer(true);
   };
 
-
- 
+  // =================================================
   // CREATE DEAL
- 
+  // =================================================
 
   const handleCreate = () => {
-
-    // Important:
     // Clear edit deal before opening drawer
-
     setEditDeal(null);
 
     setOpenDrawer(true);
   };
 
-
- 
+  // =================================================
   // CLOSE DRAWER
- 
+  // =================================================
 
   const handleCloseDrawer = () => {
-
     setOpenDrawer(false);
 
     setEditDeal(null);
   };
 
+  // // =================================================
+  // // FILTER DEALS
+  // // =================================================
 
- 
+  // const filteredDeals =
+  //   dealsData.filter((deal) => {
+
+  //     const searchText =
+  //       search
+  //         .trim()
+  //         .toLowerCase();
+
+  //     const matchesSearch =
+  //       !searchText ||
+
+  //       deal.deal_name
+  //         ?.toLowerCase()
+  //         .includes(searchText) ||
+
+  //       deal.lead_name
+  //         ?.toLowerCase()
+  //         .includes(searchText);
+
+  //     const matchesStage =
+  //       !dealStage ||
+  //       deal.deal_stage ===
+  //         dealStage;
+
+  //     const matchesOwner =
+  //       !dealOwner ||
+  //       deal.deal_owner ===
+  //         dealOwner;
+
+  //     const matchesCreatedDate =
+  //       !createdDate ||
+  //       (
+  //         deal.created_date &&
+  //         dayjs(
+  //           deal.created_date
+  //         ).format("YYYY-MM-DD") ===
+  //         createdDate
+  //       );
+
+  //     return (
+  //       matchesSearch &&
+  //       matchesStage &&
+  //       matchesOwner &&
+  //       matchesCreatedDate
+  //     );
+
+  //   });
+
+  // =================================================
   // FILTER DEALS
- 
+  // =================================================
 
-  const filteredDeals =
-    dealsData.filter((deal) => {
+  const filteredDeals = dealsData.filter((deal) => {
+    const searchText = search.trim().toLowerCase();
 
-      const searchText =
-        search
-          .trim()
-          .toLowerCase();
+    // Format close date for searching
+    const closeDate = deal.close_date ? dayjs(deal.close_date) : null;
 
+    const closeDateFormats = closeDate
+      ? [
+          closeDate.format("YYYY-MM-DD"),
+          closeDate.format("DD-MM-YYYY"),
+          closeDate.format("DD/MM/YYYY"),
+          closeDate.format("MM-DD-YYYY"),
+          closeDate.format("MM/DD/YYYY"),
+          closeDate.format("DD MMM YYYY").toLowerCase(),
+          closeDate.format("MMM DD, YYYY").toLowerCase(),
+        ]
+      : [];
 
-      const matchesSearch =
-        !searchText ||
+    const matchesCloseDate = closeDateFormats.some((date) =>
+      date.includes(searchText),
+    );
 
-        deal.deal_name
-          ?.toLowerCase()
-          .includes(searchText) ||
+    const matchesSearch =
+      !searchText ||
+      deal.deal_name?.toLowerCase().includes(searchText) ||
+      deal.lead_name?.toLowerCase().includes(searchText) ||
+      matchesCloseDate;
 
-        deal.lead_name
-          ?.toLowerCase()
-          .includes(searchText);
+    const matchesStage = !dealStage || deal.deal_stage === dealStage;
 
+    const matchesOwner = !dealOwner || deal.deal_owner === dealOwner;
 
-      const matchesStage =
-        !dealStage ||
-        deal.deal_stage ===
-          dealStage;
+    const matchesCreatedDate =
+      !createdDate ||
+      (deal.close_date &&
+        dayjs(deal.close_date).format("YYYY-MM-DD") === createdDate);
 
+    return matchesSearch && matchesStage && matchesOwner && matchesCreatedDate;
+  });
 
-      const matchesOwner =
-        !dealOwner ||
-        deal.deal_owner ===
-          dealOwner;
-
-
-      const matchesCreatedDate =
-        !createdDate ||
-        deal.created_date ===
-          createdDate;
-
-
-      return (
-        matchesSearch &&
-        matchesStage &&
-        matchesOwner &&
-        matchesCreatedDate
-      );
-    });
-
-
- 
+  // =================================================
   // DEAL OWNER OPTIONS
- 
+  // =================================================
 
   const dealOwnerOptions = [
-    ...new Set(
-      dealsData
-        .map(
-          (deal) =>
-            deal.deal_owner
-        )
-        .filter(Boolean)
-    ),
+    ...new Set(dealsData.map((deal) => deal.deal_owner).filter(Boolean)),
   ];
 
-
- 
+  // =================================================
   // UI
- 
+  // =================================================
 
   return (
-
     <MainLayout>
-
       <Box
         sx={{
           maxWidth: "1000",
           margin: "0 auto",
           marginTop: "5px",
           padding: "5px",
-          bgcolor:
-            "background.default",
+          bgcolor: "background.default",
           borderRadius: "10px",
           boxShadow: "3px",
         }}
       >
-
-
         {/* =================================================
             HEADER
         ================================================= */}
@@ -306,78 +292,43 @@ function DealsList() {
             boxShadow: "4px",
             border: "1px solid",
             borderColor: "divider",
-            bgcolor:
-              "background.paper",
+            bgcolor: "background.paper",
             marginBottom: "3px",
-            borderTopLeftRadius:
-              "12px",
-            borderTopRightRadius:
-              "12px",
+            borderTopLeftRadius: "12px",
+            borderTopRightRadius: "12px",
           }}
         >
-
           <PageHeader
             title="Deals"
-
             actions={
-
               <Box
                 sx={{
                   display: "flex",
                   gap: 2,
                 }}
               >
-
                 {/* IMPORT */}
 
-                <CommonButton
-                  variant="outlined"
-                >
-                  Import
-                </CommonButton>
-
+                <CommonButton variant="outlined">Import</CommonButton>
 
                 {/* CREATE */}
 
-                <CommonButton
-                  onClick={
-                    handleCreate
-                  }
-                >
-                  Create
-                </CommonButton>
-
+                <CommonButton onClick={handleCreate}>Create</CommonButton>
               </Box>
             }
           />
-
 
           {/* =================================================
               DEAL DRAWER
           ================================================= */}
 
           <CreateDealsDrawer
-
-            open={
-              openDrawer
-            }
-
-            deal={
-              editDeal
-            }
-
-            onClose={
-              handleCloseDrawer
-            }
-
-            onDealSaved={
-              fetchDeals
-            }
-
+            open={openDrawer}
+            deal={editDeal}
+            onClose={handleCloseDrawer}
+            onDealSaved={fetchDeals}
           />
-
         </Box>
-
 
         {/* =================================================
             SEARCH + PAGINATION
@@ -387,157 +338,70 @@ function DealsList() {
           sx={{
             p: 2,
             boxShadow: "4px",
-            border:
-              "1px solid #ddd",
-            backgroundColor:
-              "background.paper",
+            border: "1px solid #ddd",
+            backgroundColor: "background.paper",
             height: "12vh",
             marginTop: "4px",
-            transform:
-              "translateY(-5px)",
+            transform: "translateY(-5px)",
           }}
         >
-
           <SearchSection
-
-            placeholder={
-              "Search Phone, Name, Email"
-            }
-
+            placeholder={"Search Deal Name,Lead Name,Close Date"}
             page={page}
-
             totalPages={68}
-
-            onPageChange={
-              setPage
-            }
-
-            searchValue={
-              search
-            }
-
-            onSearchChange={
-              (e) =>
-                setSearch(
-                  e.target.value
-                )
-            }
-
+            onPageChange={setPage}
+            searchValue={search}
+            onSearchChange={(e) => setSearch(e.target.value)}
           />
-
         </Box>
-
 
         {/* =================================================
             FILTERS
         ================================================= */}
 
         <FilterSection>
-
-
           {/* DEAL OWNER */}
 
           <SelectField
-
             placeholder="Deal Owner"
-
-            options={
-              dealOwnerOptions
-            }
-
-            value={
-              dealOwner
-            }
-
-            onChange={
-              (e) =>
-                setDealOwner(
-                  e.target.value
-                )
-            }
-
+            options={dealOwnerOptions}
+            value={dealOwner}
+            onChange={(e) => setDealOwner(e.target.value)}
           />
-
 
           {/* DEAL STAGE */}
 
           <SelectField
-
             placeholder="Deal Stage"
-
-            options={[
-              "Presentation Scheduled",
-              "Qualified to Buy",
-              "Contract Sent",
-              "Closed Won",
-              "Appointment Scheduled",
-              "Decision Maker Bought In",
-              "Closed Lost",
-            ]}
-
-            value={
-              dealStage
-            }
-
-            onChange={
-              (e) =>
-                setDealStage(
-                  e.target.value
-                )
-            }
-
+            options={dealStageOptions.map((stage) => stage.label)}
+            value={dealStage}
+            onChange={(e) => setDealStage(e.target.value)}
           />
-
 
           {/* CREATED DATE */}
 
           <CommonDatePicker
-
-            label="Created Date"
-
-            value={
-              createdDate
-                ? dayjs(
-                    createdDate
-                  )
-                : null
+            label="Close Date"
+            value={createdDate ? dayjs(createdDate) : null}
+            onChange={(newValue) =>
+              setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
             }
-
-            onChange={
-              (newValue) =>
-                setCreatedDate(
-                  newValue
-                    ? newValue.format(
-                        "YYYY-MM-DD"
-                      )
-                    : ""
-                )
-            }
-
           />
-
 
           <Box
             sx={{
               flexGrow: 1,
             }}
           />
-
         </FilterSection>
-
 
         {/* =================================================
             DEALS TABLE
         ================================================= */}
 
         <DataTable
-
           columns={[
-
-            <CommonCheckbox
-              size="medium"
-              key="select"
-            />,
+            <CommonCheckbox size="medium" key="select" />,
 
             "DEAL NAME",
 
@@ -552,74 +416,43 @@ function DealsList() {
             "AMOUNT",
 
             "ACTIONS",
-
           ]}
-
         >
-
-
           {/* =================================================
               LOADING
           ================================================= */}
 
           {loading && (
-
             <TableRow>
-
-              <TableCell
-                colSpan={8}
-                align="center"
-              >
+              <TableCell colSpan={8} align="center">
                 Loading...
               </TableCell>
-
             </TableRow>
-
           )}
-
 
           {/* =================================================
               ERROR
           ================================================= */}
 
-          {!loading &&
-            error && (
-
-              <TableRow>
-
-                <TableCell
-                  colSpan={8}
-                  align="center"
-                >
-                  {error}
-                </TableCell>
-
-              </TableRow>
-
-            )}
-
+          {!loading && error && (
+            <TableRow>
+              <TableCell colSpan={8} align="center">
+                {error}
+              </TableCell>
+            </TableRow>
+          )}
 
           {/* =================================================
               NO DATA
           ================================================= */}
 
-          {!loading &&
-            !error &&
-            filteredDeals.length === 0 && (
-
-              <TableRow>
-
-                <TableCell
-                  colSpan={8}
-                  align="center"
-                >
-                  No deals found.
-                </TableCell>
-
-              </TableRow>
-
-            )}
-
+          {!loading && !error && filteredDeals.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={8} align="center">
+                No deals found.
+              </TableCell>
+            </TableRow>
+          )}
 
           {/* =================================================
               DEAL DATA
@@ -627,146 +460,64 @@ function DealsList() {
 
           {!loading &&
             !error &&
-            filteredDeals.map(
-              (deal) => (
+            filteredDeals.map((deal) => (
+              <TableRow key={deal.id}>
+                {/* CHECKBOX */}
 
-                <TableRow
-                  key={deal.id}
-                >
+                <TableCell>
+                  <CommonCheckbox size="medium" />
+                </TableCell>
 
+                {/* DEAL NAME */}
 
-                  {/* CHECKBOX */}
+                <TableCell>{deal.deal_name}</TableCell>
 
-                  <TableCell>
+                {/* LEAD NAME */}
 
-                    <CommonCheckbox
-                      size="medium"
-                    />
+                <TableCell>{deal.lead_name}</TableCell>
 
-                  </TableCell>
+                {/* DEAL STAGE */}
 
+                <TableCell>{deal.deal_stage}</TableCell>
 
-                  {/* DEAL NAME */}
+                {/* CLOSE DATE */}
 
-                  <TableCell>
+                <TableCell>{deal.close_date}</TableCell>
 
-                    {
-                      deal.deal_name
-                    }
+                {/* DEAL OWNER */}
 
-                  </TableCell>
+                <TableCell>{deal.deal_owner}</TableCell>
 
+                {/* AMOUNT */}
 
-                  {/* LEAD NAME */}
+                <TableCell>${Number(deal.amount).toLocaleString()}</TableCell>
 
-                  <TableCell>
-
-                    {
-                      deal.lead_name
-                    }
-
-                  </TableCell>
-
-
-                  {/* DEAL STAGE */}
-
-                  <TableCell>
-
-                    {
-                      deal.deal_stage
-                    }
-
-                  </TableCell>
-
-
-                  {/* CLOSE DATE */}
-
-                  <TableCell>
-
-                    {
-                      deal.close_date
-                    }
-
-                  </TableCell>
-
-
-                  {/* DEAL OWNER */}
-
-                  <TableCell>
-
-                    {
-                      deal.deal_owner
-                    }
-
-                  </TableCell>
-
-
-                  {/* AMOUNT */}
-
-                  <TableCell>
-
-                    $
-                    {Number(
-                      deal.amount
-                    ).toLocaleString()}
-
-                  </TableCell>
-
-
-                  {/* =================================================
+                {/* =================================================
                       ACTIONS
                   ================================================= */}
 
-                  <TableCell>
+                <TableCell>
+                  {/* EDIT */}
 
+                  <IconButton color="primary" onClick={() => handleEdit(deal)}>
+                    <EditIcon />
+                  </IconButton>
 
-                    {/* EDIT */}
+                  {/* DELETE */}
 
-                    <IconButton
-                      color="primary"
-
-                      onClick={() =>
-                        handleEdit(
-                          deal
-                        )
-                      }
-                    >
-
-                      <EditIcon />
-
-                    </IconButton>
-
-
-                    {/* DELETE */}
-
-                    <IconButton
-                      color="error"
-
-                      onClick={() =>
-                        handleDelete(
-                          deal.id
-                        )
-                      }
-                    >
-
-                      <DeleteIcon />
-
-                    </IconButton>
-
-                  </TableCell>
-
-                </TableRow>
-
-              )
-            )}
-
+                  <IconButton
+                    color="error"
+                    onClick={() => handleDelete(deal.id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
         </DataTable>
-
       </Box>
-
     </MainLayout>
   );
 }
-
 
 export default DealsList;
