@@ -8,7 +8,7 @@ import InputField from "../../../Components/common/InputField";
 import SelectField from "../../../Components/common/SelectField";
 import StatusChip from "../../../Components/common/StatusChip";
 import DataTable from "../../../Components/common/DataTable";
-// import SearchSection from "../../../Components/common/SearchSection";
+import SearchSection from "../../../Components/common/SearchSection";
 import CommonCheckbox from "../../../Components/common/CommonCheckbox";
 import dayjs from "dayjs";
 import CreateLeadsDrawer from "../components/CreateLeadsDrawer";
