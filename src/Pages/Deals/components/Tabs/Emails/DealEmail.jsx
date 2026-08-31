@@ -1,13 +1,33 @@
+// import React from "react";
+// import DealLeftPanel from "../../DealLeftPanel";
+// import EmailDetails from "../../../../Leads/components/Tabs/Emails/EmailDetails";
+// import { dealTabs } from "../DealTabs";
+
+// export default function DealEmail() {
+//   return (
+//     <>
+//       <DealLeftPanel> <EmailDetails tabs={dealTabs} /></DealLeftPanel>
+     
+//     </>
+//   );
+// }
+
+
 import React from "react";
+import { useParams } from "react-router-dom";
+
 import DealLeftPanel from "../../DealLeftPanel";
 import EmailDetails from "../../../../Leads/components/Tabs/Emails/EmailDetails";
-import { dealTabs } from "../DealTabs";
+import { getDealTabs } from "../DealTabs";
 
 export default function DealEmail() {
+  const { dealId } = useParams();
+
   return (
-    <>
-      <DealLeftPanel> <EmailDetails tabs={dealTabs} /></DealLeftPanel>
-     
-    </>
+    <DealLeftPanel>
+      <EmailDetails
+        tabs={getDealTabs(dealId)}
+      />
+    </DealLeftPanel>
   );
 }

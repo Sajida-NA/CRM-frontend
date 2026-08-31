@@ -116,12 +116,48 @@ function AppRoutes() {
 
       {/* ================= Deal Routes ================= */}
       <Route path="/dealslist" element={<DealsList />} />
-      <Route path="/dealactivities" element={<DealActivities />} />
-      <Route path="/dealmeeting" element={<DealMeeting />} />
+      {/* <Route path="/dealactivities" element={<DealActivities />} /> */}
+
+
+
+         <Route
+  path="/deals/:dealId/activities"
+  element={<DealActivities />}
+/>
+
+<Route
+  path="/deals/:dealId/meeting"
+  element={<DealMeeting />}
+/>
+
+<Route
+  path="/deals/:dealId/note"
+  element={<DealNote />}
+/>
+
+<Route
+  path="/deals/:dealId/calls"
+  element={<DealCalls />}
+/>
+
+<Route
+  path="/deals/:dealId/task"
+  element={<DealTask />}
+/>
+
+<Route
+  path="/deals/:dealId/email"
+  element={<DealEmail />}
+/>
+
+
+
+
+      {/* <Route path="/dealmeeting" element={<DealMeeting />} />
       <Route path="/dealnote" element={<DealNote />} />
       <Route path="/dealcalls" element={<DealCalls />} />
       <Route path="/dealtask" element={<DealTask />} />
-      <Route path="/dealemail" element={<DealEmail />} />
+      <Route path="/dealemail" element={<DealEmail />} /> */}
       <Route path="/dealleftpanel" element={<DealLeftPanel />} />
 
       {/* ================= Common Routes ================= */}
