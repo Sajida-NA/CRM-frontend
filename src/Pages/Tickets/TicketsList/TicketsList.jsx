@@ -57,6 +57,8 @@ export default function TicketsList() {
   // =====================================================
 
   const [ticketsData, setTicketsData] = useState([]);
+  const [users, setUsers] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -67,7 +69,7 @@ export default function TicketsList() {
   const [selectedTickets, setSelectedTickets] = useState([]);
 
   // =====================================================
-  // GET TICKETS
+  // GET TICKETS + USERS
   // =====================================================
 
   const fetchTickets = async () => {
@@ -75,18 +77,28 @@ export default function TicketsList() {
       setLoading(true);
       setError("");
 
-      const response = await api.get("/tickets/");
+      const [ticketsResponse, usersResponse] =
+        await Promise.all([
+          api.get("/tickets/"),
+          api.get("/accounts/users/"),
+        ]);
 
-      setTicketsData(response.data);
+      setTicketsData(ticketsResponse.data);
+      setUsers(usersResponse.data);
 
       // Remove deleted/non-existing tickets from selection
       setSelectedTickets((prev) =>
         prev.filter((id) =>
-          response.data.some((ticket) => ticket.id === id)
+          ticketsResponse.data.some(
+            (ticket) => ticket.id === id
+          )
         )
       );
     } catch (error) {
-      console.error("Error fetching tickets:", error);
+      console.error(
+        "Error fetching tickets/users:",
+        error.response?.data || error
+      );
 
       setError("Failed to load tickets.");
     } finally {
@@ -95,12 +107,27 @@ export default function TicketsList() {
   };
 
   // =====================================================
-  // FETCH TICKETS WHEN PAGE LOADS
+  // FETCH DATA WHEN PAGE LOADS
   // =====================================================
 
   useEffect(() => {
     fetchTickets();
   }, []);
+
+  // =====================================================
+  // OWNER OPTIONS
+  // =====================================================
+
+  const ownerOptions = users
+    .map((user) => {
+      const fullName =
+        `${user.first_name || ""} ${
+          user.last_name || ""
+        }`.trim();
+
+      return fullName || user.email || "";
+    })
+    .filter(Boolean);
 
   // =====================================================
   // SEARCH + FILTER
@@ -109,38 +136,76 @@ export default function TicketsList() {
   const filteredTickets = ticketsData.filter((ticket) => {
     const searchValue = search.trim().toLowerCase();
 
+    const ticketName =
+      ticket.ticket_name?.toLowerCase() || "";
+
+    const dealName =
+      ticket.deal_name?.toLowerCase() || "";
+
+    const ticketOwnerValue =
+      ticket.ticket_owner?.toLowerCase() || "";
+
     const matchesSearch =
       !searchValue ||
-      ticket.ticket_name
-        ?.toLowerCase()
-        .includes(searchValue) ||
-      ticket.deal_name
-        ?.toLowerCase()
-        .includes(searchValue) ||
-      ticket.ticket_owner
-        ?.toLowerCase()
-        .includes(searchValue);
+      ticketName.includes(searchValue) ||
+      dealName.includes(searchValue) ||
+      ticketOwnerValue.includes(searchValue);
+
+    // -----------------------------------------------------
+    // OWNER
+    // -----------------------------------------------------
 
     const matchesOwner =
       !ticketOwner ||
-      ticket.ticket_owner
+      ticketOwnerValue.includes(
+        ticketOwner.toLowerCase()
+      ) ||
+      ticketOwner.toLowerCase().includes(
+        ticketOwnerValue
+      );
+
+    // -----------------------------------------------------
+    // STATUS
+    // -----------------------------------------------------
+
+    const normalizedTicketStatus =
+      ticket.ticket_status
         ?.toLowerCase()
-        .includes(ticketOwner.toLowerCase());
+        .replaceAll("_", " ")
+        .trim();
+
+    const normalizedSelectedStatus =
+      status
+        ?.toLowerCase()
+        .replaceAll("_", " ")
+        .trim();
 
     const matchesStatus =
       !status ||
-      ticket.ticket_status?.toLowerCase() ===
-        status.toLowerCase().replaceAll(" ", "_");
+      normalizedTicketStatus ===
+        normalizedSelectedStatus;
+
+    // -----------------------------------------------------
+    // SOURCE
+    // -----------------------------------------------------
 
     const matchesSource =
       !source ||
       ticket.source?.toLowerCase() ===
         source.toLowerCase();
 
+    // -----------------------------------------------------
+    // PRIORITY
+    // -----------------------------------------------------
+
     const matchesPriority =
       !priority ||
       ticket.priority?.toLowerCase() ===
         priority.toLowerCase();
+
+    // -----------------------------------------------------
+    // CREATED DATE
+    // -----------------------------------------------------
 
     const matchesCreatedDate =
       !createdDate ||
@@ -175,7 +240,10 @@ export default function TicketsList() {
   // =====================================================
 
   const handleSelectAll = () => {
-    if (selectedTickets.length === filteredTickets.length) {
+    if (
+      selectedTickets.length ===
+      filteredTickets.length
+    ) {
       setSelectedTickets([]);
     } else {
       setSelectedTickets(
@@ -302,7 +370,9 @@ export default function TicketsList() {
                   </CommonButton>
 
                   <CommonButton
-                    onClick={() => setOpenDrawer(true)}
+                    onClick={() =>
+                      setOpenDrawer(true)
+                    }
                   >
                     Create
                   </CommonButton>
@@ -355,7 +425,9 @@ export default function TicketsList() {
               page={page}
               totalPages={Math.max(
                 1,
-                Math.ceil(filteredTickets.length / 10)
+                Math.ceil(
+                  filteredTickets.length / 10
+                )
               )}
               onPageChange={setPage}
               searchValue={search}
@@ -371,17 +443,13 @@ export default function TicketsList() {
           ===================================================== */}
 
           <FilterSection>
-            {/* TICKET OWNER */}
+            {/* =================================================
+                TICKET OWNER
+            ================================================= */}
 
             <SelectField
               placeholder="Ticket Owner"
-              options={[
-                "Jane Cooper",
-                "Brooklyn Simmons",
-                "Jenny Wilson",
-                "Robert Fox",
-                "Guy Hawkins",
-              ]}
+              options={ownerOptions}
               value={ticketOwner}
               onChange={(e) => {
                 setTicketOwner(e.target.value);
@@ -389,15 +457,19 @@ export default function TicketsList() {
               }}
             />
 
-            {/* TICKET STATUS */}
+            {/* =================================================
+                TICKET STATUS
+            ================================================= */}
 
             <SelectField
               placeholder="Ticket Status"
               options={[
-                "Waiting on contact",
                 "New",
+                "Open",
+                "In Progress",
+                "Waiting on Contact",
+                "Waiting on Us",
                 "Closed",
-                "Waiting on us",
               ]}
               value={status}
               onChange={(e) => {
@@ -406,7 +478,9 @@ export default function TicketsList() {
               }}
             />
 
-            {/* SOURCE */}
+            {/* =================================================
+                SOURCE
+            ================================================= */}
 
             <SelectField
               placeholder="Source"
@@ -423,7 +497,9 @@ export default function TicketsList() {
               }}
             />
 
-            {/* PRIORITY */}
+            {/* =================================================
+                PRIORITY
+            ================================================= */}
 
             <SelectField
               placeholder="Priority"
@@ -440,7 +516,9 @@ export default function TicketsList() {
               }}
             />
 
-            {/* CREATED DATE */}
+            {/* =================================================
+                CREATED DATE
+            ================================================= */}
 
             <TextField
               type="date"
@@ -480,7 +558,9 @@ export default function TicketsList() {
 
             <Box sx={{ flexGrow: 1 }} />
 
-            {/* CLEAR FILTERS */}
+            {/* =================================================
+                CLEAR FILTERS
+            ================================================= */}
 
             {(ticketOwner ||
               status ||
@@ -574,7 +654,9 @@ export default function TicketsList() {
                         ticket.id
                       )}
                       onChange={() =>
-                        handleSelectTicket(ticket.id)
+                        handleSelectTicket(
+                          ticket.id
+                        )
                       }
                     />
                   </TableCell>
