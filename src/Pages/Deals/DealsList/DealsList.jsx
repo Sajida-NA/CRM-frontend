@@ -16,7 +16,7 @@ import CommonButton from "../../../Components/common/CommonButton";
 import CreateDealsDrawer from "../components/CreateDealsDrawer";
 import CommonDatePicker from "../../../Components/common/CommonDatePicker";
 import CommonCheckbox from "../../../Components/common/CommonCheckbox";
-import SearchSection from "../../../Components/common/searchSection";
+import SearchSection from "../../../Components/common/SearchSection";
 
 import api from "../../../services/api";
 
@@ -435,6 +435,7 @@ const handleDelete = async (deal) => {
             }
           />
 
+         
           {/* CLOSE DATE */}
 
           <CommonDatePicker
