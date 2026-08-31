@@ -34,6 +34,10 @@ function DealsList() {
 
   const [dealOwner, setDealOwner] = useState("");
 
+  // Close Date
+  const [closeDate, setCloseDate] = useState("");
+
+  // Created Date
   const [createdDate, setCreatedDate] = useState("");
 
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -76,7 +80,10 @@ function DealsList() {
 
       console.error("Data:", error.response?.data);
 
-      setError(error.response?.data?.detail || "Failed to load deals.");
+      setError(
+        error.response?.data?.detail ||
+          "Failed to load deals.",
+      );
     } finally {
       setLoading(false);
     }
@@ -90,7 +97,10 @@ function DealsList() {
     try {
       const response = await api.get("/deals/stages/");
 
-      console.log("DEAL STAGES RESPONSE:", response.data);
+      console.log(
+        "DEAL STAGES RESPONSE:",
+        response.data,
+      );
 
       const stages = Array.isArray(response.data)
         ? response.data
@@ -98,7 +108,10 @@ function DealsList() {
 
       setDealStageOptions(stages);
     } catch (error) {
-      console.error("Deal Stage API Error:", error);
+      console.error(
+        "Deal Stage API Error:",
+        error,
+      );
     }
   };
 
@@ -116,16 +129,41 @@ function DealsList() {
   // DELETE DEAL
   // =================================================
 
-  const handleDelete = async (id) => {
-    try {
-      await api.delete(`/deals/${id}/`);
+  // const handleDelete = async (id) => {
+  //   try {
+  //     await api.delete(`/deals/${id}/`);
 
-      // Refresh list
-      await fetchDeals();
-    } catch (error) {
-      console.error("Delete Deal Error:", error.response?.data || error);
-    }
-  };
+  //     // Refresh list
+  //     await fetchDeals();
+  //   } catch (error) {
+  //     console.error(
+  //       "Delete Deal Error:",
+  //       error.response?.data || error,
+  //     );
+  //   }
+  // };
+
+const handleDelete = async (deal) => {
+  const confirmed = window.confirm(
+    `Are you sure you want to delete "${deal.deal_name}"?`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await api.delete(`/deals/${deal.id}/`);
+
+    await fetchDeals();
+  } catch (error) {
+    console.error(
+      "Delete Deal Error:",
+      error.response?.data || error
+    );
+  }
+};
+
+
+
 
   // =================================================
   // EDIT DEAL
@@ -160,58 +198,6 @@ function DealsList() {
     setEditDeal(null);
   };
 
-  // // =================================================
-  // // FILTER DEALS
-  // // =================================================
-
-  // const filteredDeals =
-  //   dealsData.filter((deal) => {
-
-  //     const searchText =
-  //       search
-  //         .trim()
-  //         .toLowerCase();
-
-  //     const matchesSearch =
-  //       !searchText ||
-
-  //       deal.deal_name
-  //         ?.toLowerCase()
-  //         .includes(searchText) ||
-
-  //       deal.lead_name
-  //         ?.toLowerCase()
-  //         .includes(searchText);
-
-  //     const matchesStage =
-  //       !dealStage ||
-  //       deal.deal_stage ===
-  //         dealStage;
-
-  //     const matchesOwner =
-  //       !dealOwner ||
-  //       deal.deal_owner ===
-  //         dealOwner;
-
-  //     const matchesCreatedDate =
-  //       !createdDate ||
-  //       (
-  //         deal.created_date &&
-  //         dayjs(
-  //           deal.created_date
-  //         ).format("YYYY-MM-DD") ===
-  //         createdDate
-  //       );
-
-  //     return (
-  //       matchesSearch &&
-  //       matchesStage &&
-  //       matchesOwner &&
-  //       matchesCreatedDate
-  //     );
-
-  //   });
-
   // =================================================
   // FILTER DEALS
   // =================================================
@@ -219,41 +205,94 @@ function DealsList() {
   const filteredDeals = dealsData.filter((deal) => {
     const searchText = search.trim().toLowerCase();
 
-    // Format close date for searching
-    const closeDate = deal.close_date ? dayjs(deal.close_date) : null;
+    // -------------------------------------------------
+    // CLOSE DATE SEARCH
+    // -------------------------------------------------
 
-    const closeDateFormats = closeDate
+    const closeDateValue = deal.close_date
+      ? dayjs(deal.close_date)
+      : null;
+
+    const closeDateFormats = closeDateValue
       ? [
-          closeDate.format("YYYY-MM-DD"),
-          closeDate.format("DD-MM-YYYY"),
-          closeDate.format("DD/MM/YYYY"),
-          closeDate.format("MM-DD-YYYY"),
-          closeDate.format("MM/DD/YYYY"),
-          closeDate.format("DD MMM YYYY").toLowerCase(),
-          closeDate.format("MMM DD, YYYY").toLowerCase(),
+          closeDateValue.format("YYYY-MM-DD"),
+          closeDateValue.format("DD-MM-YYYY"),
+          closeDateValue.format("DD/MM/YYYY"),
+          closeDateValue.format("MM-DD-YYYY"),
+          closeDateValue.format("MM/DD/YYYY"),
+          closeDateValue
+            .format("DD MMM YYYY")
+            .toLowerCase(),
+          closeDateValue
+            .format("MMM DD, YYYY")
+            .toLowerCase(),
         ]
       : [];
 
-    const matchesCloseDate = closeDateFormats.some((date) =>
-      date.includes(searchText),
-    );
+    const matchesCloseDateSearch =
+      closeDateFormats.some((date) =>
+        date.includes(searchText),
+      );
+
+    // -------------------------------------------------
+    // SEARCH
+    // -------------------------------------------------
 
     const matchesSearch =
       !searchText ||
-      deal.deal_name?.toLowerCase().includes(searchText) ||
-      deal.lead_name?.toLowerCase().includes(searchText) ||
-      matchesCloseDate;
+      deal.deal_name
+        ?.toLowerCase()
+        .includes(searchText) ||
+      deal.lead_name
+        ?.toLowerCase()
+        .includes(searchText) ||
+      matchesCloseDateSearch;
 
-    const matchesStage = !dealStage || deal.deal_stage === dealStage;
+    // -------------------------------------------------
+    // DEAL STAGE
+    // -------------------------------------------------
 
-    const matchesOwner = !dealOwner || deal.deal_owner === dealOwner;
+    const matchesStage =
+      !dealStage ||
+      deal.deal_stage === dealStage;
+
+    // -------------------------------------------------
+    // DEAL OWNER
+    // -------------------------------------------------
+
+    const matchesOwner =
+      !dealOwner ||
+      deal.deal_owner === dealOwner;
+
+    // -------------------------------------------------
+    // CLOSE DATE FILTER
+    // -------------------------------------------------
+
+    const matchesCloseDate =
+      !closeDate ||
+      (deal.close_date &&
+        dayjs(deal.close_date).format(
+          "YYYY-MM-DD",
+        ) === closeDate);
+
+    // -------------------------------------------------
+    // CREATED DATE FILTER
+    // -------------------------------------------------
 
     const matchesCreatedDate =
       !createdDate ||
-      (deal.close_date &&
-        dayjs(deal.close_date).format("YYYY-MM-DD") === createdDate);
+      (deal.created_date &&
+        dayjs(deal.created_date).format(
+          "YYYY-MM-DD",
+        ) === createdDate);
 
-    return matchesSearch && matchesStage && matchesOwner && matchesCreatedDate;
+    return (
+      matchesSearch &&
+      matchesStage &&
+      matchesOwner &&
+      matchesCloseDate &&
+      matchesCreatedDate
+    );
   });
 
   // =================================================
@@ -261,7 +300,11 @@ function DealsList() {
   // =================================================
 
   const dealOwnerOptions = [
-    ...new Set(dealsData.map((deal) => deal.deal_owner).filter(Boolean)),
+    ...new Set(
+      dealsData
+        .map((deal) => deal.deal_owner)
+        .filter(Boolean),
+    ),
   ];
 
   // =================================================
@@ -309,11 +352,15 @@ function DealsList() {
               >
                 {/* IMPORT */}
 
-                <CommonButton variant="outlined">Import</CommonButton>
+                <CommonButton variant="outlined">
+                  Import
+                </CommonButton>
 
                 {/* CREATE */}
 
-                <CommonButton onClick={handleCreate}>Create</CommonButton>
+                <CommonButton onClick={handleCreate}>
+                  Create
+                </CommonButton>
               </Box>
             }
           />
@@ -346,12 +393,16 @@ function DealsList() {
           }}
         >
           <SearchSection
-            placeholder={"Search Deal Name,Lead Name,Close Date"}
+            placeholder={
+              "Search Deal Name,Lead Name,Close Date"
+            }
             page={page}
             totalPages={68}
             onPageChange={setPage}
             searchValue={search}
-            onSearchChange={(e) => setSearch(e.target.value)}
+            onSearchChange={(e) =>
+              setSearch(e.target.value)
+            }
           />
         </Box>
 
@@ -366,25 +417,57 @@ function DealsList() {
             placeholder="Deal Owner"
             options={dealOwnerOptions}
             value={dealOwner}
-            onChange={(e) => setDealOwner(e.target.value)}
+            onChange={(e) =>
+              setDealOwner(e.target.value)
+            }
           />
 
           {/* DEAL STAGE */}
 
           <SelectField
             placeholder="Deal Stage"
-            options={dealStageOptions.map((stage) => stage.label)}
+            options={dealStageOptions.map(
+              (stage) => stage.label,
+            )}
             value={dealStage}
-            onChange={(e) => setDealStage(e.target.value)}
+            onChange={(e) =>
+              setDealStage(e.target.value)
+            }
+          />
+
+          {/* CLOSE DATE */}
+
+          <CommonDatePicker
+            label="Close Date"
+            value={
+              closeDate
+                ? dayjs(closeDate)
+                : null
+            }
+            onChange={(newValue) =>
+              setCloseDate(
+                newValue
+                  ? newValue.format("YYYY-MM-DD")
+                  : "",
+              )
+            }
           />
 
           {/* CREATED DATE */}
 
           <CommonDatePicker
-            label="Close Date"
-            value={createdDate ? dayjs(createdDate) : null}
+            label="Created Date"
+            value={
+              createdDate
+                ? dayjs(createdDate)
+                : null
+            }
             onChange={(newValue) =>
-              setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
+              setCreatedDate(
+                newValue
+                  ? newValue.format("YYYY-MM-DD")
+                  : "",
+              )
             }
           />
 
@@ -401,7 +484,10 @@ function DealsList() {
 
         <DataTable
           columns={[
-            <CommonCheckbox size="medium" key="select" />,
+            <CommonCheckbox
+              size="medium"
+              key="select"
+            />,
 
             "DEAL NAME",
 
@@ -424,7 +510,10 @@ function DealsList() {
 
           {loading && (
             <TableRow>
-              <TableCell colSpan={8} align="center">
+              <TableCell
+                colSpan={8}
+                align="center"
+              >
                 Loading...
               </TableCell>
             </TableRow>
@@ -436,7 +525,10 @@ function DealsList() {
 
           {!loading && error && (
             <TableRow>
-              <TableCell colSpan={8} align="center">
+              <TableCell
+                colSpan={8}
+                align="center"
+              >
                 {error}
               </TableCell>
             </TableRow>
@@ -446,13 +538,18 @@ function DealsList() {
               NO DATA
           ================================================= */}
 
-          {!loading && !error && filteredDeals.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={8} align="center">
-                No deals found.
-              </TableCell>
-            </TableRow>
-          )}
+          {!loading &&
+            !error &&
+            filteredDeals.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  align="center"
+                >
+                  No deals found.
+                </TableCell>
+              </TableRow>
+            )}
 
           {/* =================================================
               DEAL DATA
@@ -470,27 +567,42 @@ function DealsList() {
 
                 {/* DEAL NAME */}
 
-                <TableCell>{deal.deal_name}</TableCell>
+                <TableCell>
+                  {deal.deal_name}
+                </TableCell>
 
                 {/* LEAD NAME */}
 
-                <TableCell>{deal.lead_name}</TableCell>
+                <TableCell>
+                  {deal.lead_name}
+                </TableCell>
 
                 {/* DEAL STAGE */}
 
-                <TableCell>{deal.deal_stage}</TableCell>
+                <TableCell>
+                  {deal.deal_stage}
+                </TableCell>
 
                 {/* CLOSE DATE */}
 
-                <TableCell>{deal.close_date}</TableCell>
+                <TableCell>
+                  {deal.close_date}
+                </TableCell>
 
                 {/* DEAL OWNER */}
 
-                <TableCell>{deal.deal_owner}</TableCell>
+                <TableCell>
+                  {deal.deal_owner}
+                </TableCell>
 
                 {/* AMOUNT */}
 
-                <TableCell>${Number(deal.amount).toLocaleString()}</TableCell>
+                <TableCell>
+                  $
+                  {Number(
+                    deal.amount,
+                  ).toLocaleString()}
+                </TableCell>
 
                 {/* =================================================
                       ACTIONS
@@ -499,7 +611,12 @@ function DealsList() {
                 <TableCell>
                   {/* EDIT */}
 
-                  <IconButton color="primary" onClick={() => handleEdit(deal)}>
+                  <IconButton
+                    color="primary"
+                    onClick={() =>
+                      handleEdit(deal)
+                    }
+                  >
                     <EditIcon />
                   </IconButton>
 
@@ -507,7 +624,9 @@ function DealsList() {
 
                   <IconButton
                     color="error"
-                    onClick={() => handleDelete(deal.id)}
+                    onClick={() =>
+                      handleDelete(deal)
+                    }
                   >
                     <DeleteIcon />
                   </IconButton>
