@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, {
+  useState,
+} from "react";
+
 import {
   Box,
   Typography,
@@ -9,23 +12,211 @@ import {
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
-export default function MeetingCard() {
-  const [open, setOpen] = useState(false);
+
+export default function MeetingCard({
+  meeting,
+}) {
+
+  const [
+    open,
+    setOpen,
+  ] = useState(false);
+
+
+  if (!meeting) {
+    return null;
+  }
+
+
+  // =========================================================
+  // FORMAT DATE
+  // =========================================================
+
+  const formattedDate = meeting.start_date
+    ? new Date(
+        `${meeting.start_date}T00:00:00`
+      ).toLocaleDateString(
+        "en-US",
+        {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }
+      )
+    : "";
+
+
+  // =========================================================
+  // FORMAT TIME
+  // =========================================================
+
+  const formatTime = (time) => {
+
+    if (!time) {
+      return "";
+    }
+
+    const [
+      hours,
+      minutes,
+    ] = time.split(":");
+
+    const date = new Date();
+
+    date.setHours(
+      Number(hours),
+      Number(minutes),
+      0,
+      0
+    );
+
+    return date.toLocaleTimeString(
+      "en-US",
+      {
+        hour: "numeric",
+        minute: "2-digit",
+      }
+    );
+  };
+
+
+  const startTime = formatTime(
+    meeting.start_time
+  );
+
+  const endTime = formatTime(
+    meeting.end_time
+  );
+
+
+  // =========================================================
+  // DURATION
+  // =========================================================
+
+  const calculateDuration = () => {
+
+    if (
+      !meeting.start_time ||
+      !meeting.end_time
+    ) {
+      return "-";
+    }
+
+    const [
+      startHour,
+      startMinute,
+    ] = meeting.start_time
+      .split(":")
+      .map(Number);
+
+    const [
+      endHour,
+      endMinute,
+    ] = meeting.end_time
+      .split(":")
+      .map(Number);
+
+    const start =
+      startHour * 60 +
+      startMinute;
+
+    const end =
+      endHour * 60 +
+      endMinute;
+
+    const difference =
+      end - start;
+
+    if (difference <= 0) {
+      return "-";
+    }
+
+    const hours =
+      Math.floor(
+        difference / 60
+      );
+
+    const minutes =
+      difference % 60;
+
+    if (
+      hours > 0 &&
+      minutes > 0
+    ) {
+      return `${hours} hr ${minutes} min`;
+    }
+
+    if (hours > 0) {
+      return `${hours} hr`;
+    }
+
+    return `${minutes} min`;
+  };
+
+
+  const duration =
+    calculateDuration();
+
+
+  // =========================================================
+  // ORGANIZER
+  // =========================================================
+
+  const organizer =
+    meeting.created_by?.name ||
+    meeting.owner?.name ||
+    "Unknown";
+
+
+  // =========================================================
+  // ATTENDEES
+  // =========================================================
+
+  const attendees =
+    meeting.attendees || [];
+
+
+  // =========================================================
+  // DISPLAY DATE / TIME
+  // =========================================================
+
+  const dateTime =
+    `${formattedDate} at ${startTime}`;
+
+
+  // =========================================================
+  // NOTE HTML
+  // =========================================================
+
+  const noteHtml =
+    meeting.note || "";
+
+
+  // =========================================================
+  // RETURN
+  // =========================================================
 
   return (
+
     <Box
       sx={{
         border: "1px solid",
-        borderColor:"divider",
+        borderColor: "divider",
         borderRadius: "10px",
         bgcolor: "background.paper",
         mt: 2,
         overflow: "hidden",
       }}
     >
-      {/* Header */}
+
+      {/* =====================================================
+          HEADER
+          ===================================================== */}
+
       <Box
-        onClick={() => setOpen(!open)}
+        onClick={() =>
+          setOpen(!open)
+        }
         sx={{
           display: "flex",
           justifyContent: "space-between",
@@ -35,17 +226,46 @@ export default function MeetingCard() {
           cursor: "pointer",
         }}
       >
-        {/* Left */}
-        <Box sx={{ display: "flex", alignItems: "flex-start" }}>
-          <IconButton size="small" sx={{ p: 0, mt: 0.3, mr: 1 }}>
+
+        {/* LEFT */}
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "flex-start",
+          }}
+        >
+
+          <IconButton
+            size="small"
+            sx={{
+              p: 0,
+              mt: 0.3,
+              mr: 1,
+            }}
+          >
+
             {open ? (
-              <KeyboardArrowRightIcon color="primary" />
+
+              <KeyboardArrowDownIcon
+                color="primary"
+              />
+
             ) : (
-              <KeyboardArrowDownIcon color="primary" />
+
+              <KeyboardArrowRightIcon
+                color="primary"
+              />
+
             )}
+
           </IconButton>
 
+
           <Box>
+
+            {/* MEETING TITLE */}
+
             <Typography
               sx={{
                 fontWeight: 600,
@@ -53,24 +273,42 @@ export default function MeetingCard() {
                 color: "text.primary",
               }}
             >
-              Meeting Maria Johnson and Jane Cooper
+              {meeting.title}
             </Typography>
 
-            {!open && (
-              <Typography
+
+            {/* COLLAPSED NOTE */}
+
+            {!open && noteHtml && (
+
+              <Box
                 sx={{
                   mt: 0.5,
                   color: "text.secondary",
                   fontSize: 14,
+
+                  "& p": {
+                    margin: 0,
+                  },
+
+                  "& br": {
+                    display: "block",
+                  },
                 }}
-              >
-                Let's discuss our new product line.
-              </Typography>
+                dangerouslySetInnerHTML={{
+                  __html: noteHtml,
+                }}
+              />
+
             )}
+
           </Box>
+
         </Box>
 
-        {/* Date */}
+
+        {/* DATE */}
+
         <Typography
           sx={{
             color: "text.secondary",
@@ -78,13 +316,27 @@ export default function MeetingCard() {
             whiteSpace: "nowrap",
           }}
         >
-          June 24, 2025 at 5:30PM
+          {dateTime}
         </Typography>
+
       </Box>
 
-      {/* Expanded */}
+
+      {/* =====================================================
+          EXPANDED
+          ===================================================== */}
+
       {open && (
-        <Box sx={{ px: 2 }}>
+
+        <Box
+          sx={{
+            px: 2,
+            pb: 2,
+          }}
+        >
+
+          {/* ORGANIZER */}
+
           <Typography
             sx={{
               color: "text.secondary",
@@ -92,10 +344,14 @@ export default function MeetingCard() {
               fontSize: 15,
             }}
           >
-            Organized by Maria
+            Organized by {organizer}
           </Typography>
 
-          {/* Details */}
+
+          {/* =================================================
+              DETAILS
+              ================================================= */}
+
           <Grid
             container
             sx={{
@@ -105,16 +361,20 @@ export default function MeetingCard() {
               mb: 1,
             }}
           >
+
+            {/* DATE & TIME */}
+
             <Grid size={4}>
+
               <Typography
                 sx={{
                   color: "#516F90",
                   fontSize: 14,
-                  
                 }}
               >
                 Date & Time
               </Typography>
+
 
               <Typography
                 sx={{
@@ -123,11 +383,16 @@ export default function MeetingCard() {
                   mt: 0.5,
                 }}
               >
-                June 24, 2025 at 5:30PM
+                {dateTime}
               </Typography>
+
             </Grid>
 
+
+            {/* DURATION */}
+
             <Grid size={4}>
+
               <Typography
                 sx={{
                   color: "#516F90",
@@ -137,6 +402,7 @@ export default function MeetingCard() {
                 Duration
               </Typography>
 
+
               <Typography
                 sx={{
                   fontWeight: 600,
@@ -144,11 +410,16 @@ export default function MeetingCard() {
                   mt: 0.5,
                 }}
               >
-                1 hr
+                {duration}
               </Typography>
+
             </Grid>
 
+
+            {/* ATTENDEES */}
+
             <Grid size={4}>
+
               <Typography
                 sx={{
                   color: "#516F90",
@@ -158,6 +429,7 @@ export default function MeetingCard() {
                 Attendees
               </Typography>
 
+
               <Typography
                 sx={{
                   fontWeight: 600,
@@ -165,21 +437,54 @@ export default function MeetingCard() {
                   mt: 0.5,
                 }}
               >
-                2
+                {attendees.length}
               </Typography>
+
             </Grid>
+
           </Grid>
 
-          <Typography
-            sx={{
-              color: "#516F90",
-              fontSize: 15,
-            }}
-          >
-            Let's discuss our new product line.
-          </Typography>
+
+          {/* =================================================
+              NOTE
+              ================================================= */}
+
+          {noteHtml && (
+
+            <Box
+              sx={{
+                color: "#516F90",
+                fontSize: 15,
+
+                "& p": {
+                  marginTop: 0,
+                  marginBottom: "8px",
+                },
+
+                "& ul": {
+                  paddingLeft: "20px",
+                },
+
+                "& ol": {
+                  paddingLeft: "20px",
+                },
+
+                "& strong": {
+                  fontWeight: 600,
+                },
+              }}
+              dangerouslySetInnerHTML={{
+                __html: noteHtml,
+              }}
+            />
+
+          )}
+
         </Box>
+
       )}
+
     </Box>
   );
 }
+

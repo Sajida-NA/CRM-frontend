@@ -1,78 +1,3 @@
-// import React, { useState } from "react";
-// import { Box, Typography } from "@mui/material";
-// import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
-// import { dealTabs } from "../DealTabs";
-// import DealActivityCard from "./DealActivityCard";
-
-// export default function DealActivityDetails() {
-//   const [activeTab, setActiveTab] = useState();
-//   return (
-//     <Box
-//       sx={{
-//         p: 3,
-//         fontFamily: "Roboto, sans-serif",
-//         mx: -2,
-//       }}
-//     >
-//       {/* Activity Tabs */}
-//       <Box>
-//         <CommonActivityTabs tabs={dealTabs} activeTab="Activity" />
-//       </Box>
-//       <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
-//         Upcoming
-//       </Typography>
-
-//       {/* Activity Card 1*/}
-//       <DealActivityCard title="Deal activity" date="June 24, 2025 at 5:30PM">
-//         <Typography sx={{ fontSize: 14 }}>
-//           <Box
-//             component="span"
-//             sx={{
-//               color: "text.secondary",
-//               fontWeight: 600,
-//             }}
-//           >
-//             Maria Johnson
-//           </Box>{" "}
-//           <Box component="span" sx={{ color: "text.secondary" }}>
-//             moved deal to
-//           </Box>{" "}
-//           <Box
-//             component="span"
-//             sx={{
-//               color: "text.secondary",
-//             }}
-//           >
-//             Appointment scheduled.
-//           </Box>
-//         </Typography>
-//       </DealActivityCard>
-
-//       {/* Activity Card 2*/}
-
-//       <DealActivityCard>
-//         <Typography sx={{ fontSize: 14 }}>
-//           <Box component="span" sx={{ color: "text.secondary" }}>
-//             This deal was created by
-//           </Box>{" "}
-//           <Box
-//             component="span"
-//             sx={{
-//               color: "text.secondary",
-//               fontWeight: 600,
-//             }}
-//           >
-//             Maria Johnson
-//           </Box>{" "}
-//           <Box component="span" sx={{ color: "text.secondary" }}>
-//             Jun 23, 2025 at 11:22 AM
-//           </Box>
-//         </Typography>
-//       </DealActivityCard>
-//     </Box>
-//   );
-// }
-
 
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
@@ -87,60 +12,60 @@ export default function DealActivityDetails({ dealId }) {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ==========================================
-  // DEAL TABS
-  // ==========================================
-
   const dealTabs = getDealTabs(dealId);
 
-  // ==========================================
+  // =====================================================
   // FETCH DEAL ACTIVITIES
-  // ==========================================
-
-  const fetchActivities = async () => {
-    if (!dealId) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const response = await api.get(
-        `/activities/timeline/deal/${dealId}/`
-      );
-
-      setActivities(
-        Array.isArray(response.data)
-          ? response.data
-          : []
-      );
-    } catch (error) {
-      console.error(
-        "Fetch Deal Activities Error:",
-        error.response?.data || error
-      );
-
-      setActivities([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // ==========================================
-  // FETCH WHEN DEAL ID CHANGES
-  // ==========================================
+  // =====================================================
 
   useEffect(() => {
+    const fetchActivities = async () => {
+      if (!dealId) {
+        setActivities([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+
+        const response = await api.get(
+          `/activities/activity/deal/${dealId}/`
+        );
+
+        console.log(
+          "DEAL ACTIVITY RESPONSE:",
+          response.data
+        );
+
+        setActivities(
+          Array.isArray(response.data)
+            ? response.data
+            : []
+        );
+      } catch (error) {
+        console.error(
+          "Fetch Deal Activities Error:",
+          error.response?.data || error
+        );
+
+        setActivities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchActivities();
   }, [dealId]);
 
-  // ==========================================
+  // =====================================================
   // FORMAT DATE
-  // ==========================================
+  // =====================================================
 
   const formatDate = (date) => {
-    if (!date) return "";
+    if (!date) {
+      return "";
+    }
 
     return new Date(date).toLocaleString("en-US", {
       month: "short",
@@ -151,18 +76,77 @@ export default function DealActivityDetails({ dealId }) {
     });
   };
 
-  // ==========================================
+  // =====================================================
+  // GET ACTIVITY DATA
+  // =====================================================
+
+  const getActivityData = (activity) => {
+    if (activity.data) {
+      return activity.data;
+    }
+
+    if (activity.note) {
+      return activity.note;
+    }
+
+    if (activity.call) {
+      return activity.call;
+    }
+
+    if (activity.task) {
+      return activity.task;
+    }
+
+    if (activity.meeting) {
+      return activity.meeting;
+    }
+
+    if (activity.email) {
+      return activity.email;
+    }
+
+    return null;
+  };
+
+  // =====================================================
+  // GET CREATED BY NAME
+  // =====================================================
+
+  const getCreatedByName = (activity) => {
+    if (activity.created_by_name) {
+      return activity.created_by_name;
+    }
+
+    if (activity.created_by) {
+      if (typeof activity.created_by === "string") {
+        return activity.created_by;
+      }
+
+      return (
+        activity.created_by.name ||
+        activity.created_by.email ||
+        ""
+      );
+    }
+
+    return "";
+  };
+
+  // =====================================================
   // RENDER ACTIVITY
-  // ==========================================
+  // =====================================================
 
   const renderActivity = (activity) => {
-    // ========================================
+    const data = getActivityData(activity);
+    const createdBy = getCreatedByName(activity);
+
+    // ===================================================
     // NOTE
-    // ========================================
+    // ===================================================
 
     if (
       activity.activity_type === "note" &&
-      activity.note
+      data
     ) {
       return (
         <>
@@ -174,9 +158,8 @@ export default function DealActivityDetails({ dealId }) {
                 fontWeight: 600,
               }}
             >
-              {activity.created_by}
+              {createdBy}
             </Box>{" "}
-
             <Box
               component="span"
               sx={{
@@ -187,26 +170,28 @@ export default function DealActivityDetails({ dealId }) {
             </Box>
           </Typography>
 
-          <Typography
-            sx={{
-              mt: 1,
-              fontSize: 14,
-              color: "text.secondary",
-            }}
-          >
-            {activity.note.note}
-          </Typography>
+          {data.note && (
+            <Typography
+              sx={{
+                mt: 1,
+                fontSize: 14,
+                color: "text.secondary",
+              }}
+            >
+              {data.note}
+            </Typography>
+          )}
         </>
       );
     }
 
-    // ========================================
+    // ===================================================
     // CALL
-    // ========================================
+    // ===================================================
 
     if (
       activity.activity_type === "call" &&
-      activity.call
+      data
     ) {
       return (
         <>
@@ -218,9 +203,8 @@ export default function DealActivityDetails({ dealId }) {
                 fontWeight: 600,
               }}
             >
-              {activity.created_by}
+              {createdBy}
             </Box>{" "}
-
             <Box
               component="span"
               sx={{
@@ -231,7 +215,7 @@ export default function DealActivityDetails({ dealId }) {
             </Box>
           </Typography>
 
-          {activity.call.call_outcome && (
+          {data.call_outcome && (
             <Typography
               sx={{
                 mt: 1,
@@ -239,20 +223,20 @@ export default function DealActivityDetails({ dealId }) {
                 color: "text.secondary",
               }}
             >
-              Outcome: {activity.call.call_outcome}
+              Outcome: {data.call_outcome}
             </Typography>
           )}
         </>
       );
     }
 
-    // ========================================
+    // ===================================================
     // TASK
-    // ========================================
+    // ===================================================
 
     if (
       activity.activity_type === "task" &&
-      activity.task
+      data
     ) {
       return (
         <>
@@ -264,9 +248,8 @@ export default function DealActivityDetails({ dealId }) {
                 fontWeight: 600,
               }}
             >
-              {activity.created_by}
+              {createdBy}
             </Box>{" "}
-
             <Box
               component="span"
               sx={{
@@ -277,29 +260,19 @@ export default function DealActivityDetails({ dealId }) {
             </Box>
           </Typography>
 
-          <Typography
-            sx={{
-              mt: 1,
-              fontSize: 14,
-              color: "text.secondary",
-            }}
-          >
-            {activity.task.task_name}
-          </Typography>
-
-          {activity.task.due_date && (
+          {data.task_name && (
             <Typography
               sx={{
-                mt: 0.5,
-                fontSize: 13,
+                mt: 1,
+                fontSize: 14,
                 color: "text.secondary",
               }}
             >
-              Due: {activity.task.due_date}
+              {data.task_name}
             </Typography>
           )}
 
-          {activity.task.priority && (
+          {data.due_date && (
             <Typography
               sx={{
                 mt: 0.5,
@@ -307,55 +280,74 @@ export default function DealActivityDetails({ dealId }) {
                 color: "text.secondary",
               }}
             >
-              Priority: {activity.task.priority}
+              Due: {data.due_date}
+            </Typography>
+          )}
+
+          {data.time && (
+            <Typography
+              sx={{
+                mt: 0.5,
+                fontSize: 13,
+                color: "text.secondary",
+              }}
+            >
+              Time: {data.time}
+            </Typography>
+          )}
+
+          {data.task_type && (
+            <Typography
+              sx={{
+                mt: 0.5,
+                fontSize: 13,
+                color: "text.secondary",
+              }}
+            >
+              Type: {data.task_type}
+            </Typography>
+          )}
+
+          {data.priority && (
+            <Typography
+              sx={{
+                mt: 0.5,
+                fontSize: 13,
+                color: "text.secondary",
+              }}
+            >
+              Priority: {data.priority}
             </Typography>
           )}
         </>
       );
     }
 
-    // ========================================
+    // ===================================================
     // MEETING
-    // ========================================
+    // ===================================================
 
     if (
       activity.activity_type === "meeting" &&
-      activity.meeting
+      data
     ) {
       return (
         <>
-          <Typography sx={{ fontSize: 14 }}>
-            <Box
-              component="span"
+          {/* Meeting title only */}
+          {data.title && (
+            <Typography
               sx={{
-                color: "text.secondary",
+                fontSize: 14,
+                color: "text.primary",
                 fontWeight: 600,
               }}
             >
-              {activity.created_by}
-            </Box>{" "}
+              {data.title}
+            </Typography>
+          )}
 
-            <Box
-              component="span"
-              sx={{
-                color: "text.secondary",
-              }}
-            >
-              created a meeting
-            </Box>{" "}
-
-            <Box
-              component="span"
-              sx={{
-                color: "text.secondary",
-                fontWeight: 600,
-              }}
-            >
-              {activity.meeting.title}
-            </Box>
-          </Typography>
-
-          {activity.meeting.start_date && (
+          {/* Date */}
+          {data.start_date && (
             <Typography
               sx={{
                 mt: 1,
@@ -363,11 +355,12 @@ export default function DealActivityDetails({ dealId }) {
                 color: "text.secondary",
               }}
             >
-              Date: {activity.meeting.start_date}
+              Date: {data.start_date}
             </Typography>
           )}
 
-          {activity.meeting.start_time && (
+          {/* Time */}
+          {data.start_time && (
             <Typography
               sx={{
                 mt: 0.5,
@@ -375,11 +368,15 @@ export default function DealActivityDetails({ dealId }) {
                 color: "text.secondary",
               }}
             >
-              Time: {activity.meeting.start_time}
+              Time: {data.start_time}
+              {data.end_time
+                ? ` - ${data.end_time}`
+                : ""}
             </Typography>
           )}
 
-          {activity.meeting.location && (
+          {/* Location */}
+          {data.location && (
             <Typography
               sx={{
                 mt: 0.5,
@@ -387,20 +384,71 @@ export default function DealActivityDetails({ dealId }) {
                 color: "text.secondary",
               }}
             >
-              Location: {activity.meeting.location}
+              Location: {data.location}
             </Typography>
           )}
+
+          {/* Reminder */}
+          {data.reminder && (
+            <Typography
+              sx={{
+                mt: 0.5,
+                fontSize: 13,
+                color: "text.secondary",
+              }}
+            >
+              Reminder: {data.reminder}
+            </Typography>
+          )}
+
+          {/* Note */}
+          {data.note && (
+            <Typography
+              component="div"
+              sx={{
+                mt: 0.5,
+                fontSize: 13,
+                color: "text.secondary",
+              }}
+              dangerouslySetInnerHTML={{
+                __html: data.note,
+              }}
+            />
+          )}
+
+          {/* Attendees */}
+          {data.attendees &&
+            Array.isArray(data.attendees) &&
+            data.attendees.length > 0 && (
+              <Typography
+                sx={{
+                  mt: 0.5,
+                  fontSize: 13,
+                  color: "text.secondary",
+                }}
+              >
+                Attendees:{" "}
+                {data.attendees
+                  .map((attendee) =>
+                    typeof attendee === "string"
+                      ? attendee
+                      : attendee.name
+                  )
+                  .filter(Boolean)
+                  .join(", ")}
+              </Typography>
+            )}
         </>
       );
     }
 
-    // ========================================
+    // ===================================================
     // EMAIL
-    // ========================================
+    // ===================================================
 
     if (
       activity.activity_type === "email" &&
-      activity.email
+      data
     ) {
       return (
         <>
@@ -412,9 +460,8 @@ export default function DealActivityDetails({ dealId }) {
                 fontWeight: 600,
               }}
             >
-              {activity.created_by}
+              {createdBy}
             </Box>{" "}
-
             <Box
               component="span"
               sx={{
@@ -425,7 +472,7 @@ export default function DealActivityDetails({ dealId }) {
             </Box>
           </Typography>
 
-          {activity.email.subject && (
+          {data.subject && (
             <Typography
               sx={{
                 mt: 1,
@@ -434,16 +481,16 @@ export default function DealActivityDetails({ dealId }) {
                 fontWeight: 600,
               }}
             >
-              {activity.email.subject}
+              {data.subject}
             </Typography>
           )}
         </>
       );
     }
 
-    // ========================================
+    // ===================================================
     // FALLBACK
-    // ========================================
+    // ===================================================
 
     return (
       <Typography
@@ -457,9 +504,9 @@ export default function DealActivityDetails({ dealId }) {
     );
   };
 
-  // ==========================================
+  // =====================================================
   // UI
-  // ==========================================
+  // =====================================================
 
   return (
     <Box
@@ -469,7 +516,7 @@ export default function DealActivityDetails({ dealId }) {
         mx: -2,
       }}
     >
-      {/* Activity Tabs */}
+      {/* TABS */}
 
       <Box>
         <CommonActivityTabs
@@ -478,7 +525,7 @@ export default function DealActivityDetails({ dealId }) {
         />
       </Box>
 
-      {/* Heading */}
+      {/* HEADING */}
 
       <Typography
         variant="h6"
@@ -490,7 +537,7 @@ export default function DealActivityDetails({ dealId }) {
         Upcoming
       </Typography>
 
-      {/* No Deal ID */}
+      {/* NO DEAL ID */}
 
       {!dealId && (
         <Typography
@@ -503,7 +550,7 @@ export default function DealActivityDetails({ dealId }) {
         </Typography>
       )}
 
-      {/* Loading */}
+      {/* LOADING */}
 
       {dealId && loading && (
         <Typography
@@ -516,7 +563,7 @@ export default function DealActivityDetails({ dealId }) {
         </Typography>
       )}
 
-      {/* No Activities */}
+      {/* NO ACTIVITIES */}
 
       {dealId &&
         !loading &&
@@ -531,14 +578,14 @@ export default function DealActivityDetails({ dealId }) {
           </Typography>
         )}
 
-      {/* Activities */}
+      {/* ACTIVITIES */}
 
       {dealId &&
         !loading &&
         activities.length > 0 &&
-        activities.map((activity, index) => (
+        activities.map((activity) => (
           <DealActivityCard
-            key={`${activity.activity_type}-${index}`}
+            key={activity.id}
             title={
               activity.activity_type
                 ? activity.activity_type
@@ -557,3 +604,5 @@ export default function DealActivityDetails({ dealId }) {
     </Box>
   );
 }
+
+

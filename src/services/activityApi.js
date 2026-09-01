@@ -9,7 +9,7 @@ export const getActivityTimeline = async (
   moduleId
 ) => {
   const response = await api.get(
-    `/activities/timeline/${module}/${moduleId}/`
+    `/activities/${module}/${moduleId}/`
   );
 
   return response.data;
@@ -26,7 +26,7 @@ export const getActivityByType = async (
   activityType
 ) => {
   const response = await api.get(
-    `/activities/timeline/${module}/${moduleId}/${activityType}/`
+    `/activities/${module}/${moduleId}/${activityType}/`
   );
 
   return response.data;
