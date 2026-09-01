@@ -1,3 +1,4 @@
+
 import api from "./api";
 
 // ==========================================
@@ -37,6 +38,21 @@ export const getActivityByType = async (
 // NOTE
 // ==========================================
 
+// Get ALL notes
+// GET /api/activities/note/
+
+export const getAllNotes = async () => {
+  const response = await api.get(
+    "/activities/note/"
+  );
+
+  return response.data;
+};
+
+
+// Create Note
+// POST /api/activities/note/
+
 export const createNote = async (data) => {
   const response = await api.post(
     "/activities/note/",
@@ -46,7 +62,14 @@ export const createNote = async (data) => {
   return response.data;
 };
 
-export const updateNote = async (id, data) => {
+
+// Update Note
+// PATCH /api/activities/note/<id>/
+
+export const updateNote = async (
+  id,
+  data
+) => {
   const response = await api.patch(
     `/activities/note/${id}/`,
     data
@@ -54,6 +77,10 @@ export const updateNote = async (id, data) => {
 
   return response.data;
 };
+
+
+// Delete Note
+// DELETE /api/activities/note/<id>/
 
 export const deleteNote = async (id) => {
   const response = await api.delete(
@@ -77,7 +104,11 @@ export const createTask = async (data) => {
   return response.data;
 };
 
-export const updateTask = async (id, data) => {
+
+export const updateTask = async (
+  id,
+  data
+) => {
   const response = await api.patch(
     `/activities/task/${id}/`,
     data
@@ -85,6 +116,7 @@ export const updateTask = async (id, data) => {
 
   return response.data;
 };
+
 
 export const deleteTask = async (id) => {
   const response = await api.delete(
@@ -108,7 +140,11 @@ export const createMeeting = async (data) => {
   return response.data;
 };
 
-export const updateMeeting = async (id, data) => {
+
+export const updateMeeting = async (
+  id,
+  data
+) => {
   const response = await api.patch(
     `/activities/meeting/${id}/`,
     data
@@ -116,6 +152,7 @@ export const updateMeeting = async (id, data) => {
 
   return response.data;
 };
+
 
 export const deleteMeeting = async (id) => {
   const response = await api.delete(
@@ -139,7 +176,11 @@ export const createCall = async (data) => {
   return response.data;
 };
 
-export const updateCall = async (id, data) => {
+
+export const updateCall = async (
+  id,
+  data
+) => {
   const response = await api.patch(
     `/activities/call/${id}/`,
     data
@@ -147,6 +188,7 @@ export const updateCall = async (id, data) => {
 
   return response.data;
 };
+
 
 export const deleteCall = async (id) => {
   const response = await api.delete(
@@ -170,7 +212,11 @@ export const createEmail = async (data) => {
   return response.data;
 };
 
-export const updateEmail = async (id, data) => {
+
+export const updateEmail = async (
+  id,
+  data
+) => {
   const response = await api.put(
     `/activities/email/${id}/`,
     data
@@ -179,6 +225,7 @@ export const updateEmail = async (id, data) => {
   return response.data;
 };
 
+
 export const deleteEmail = async (id) => {
   const response = await api.delete(
     `/activities/email/${id}/`
@@ -186,3 +233,4 @@ export const deleteEmail = async (id) => {
 
   return response.data;
 };
+

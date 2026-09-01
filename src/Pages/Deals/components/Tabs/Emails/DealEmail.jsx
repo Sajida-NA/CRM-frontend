@@ -23,11 +23,16 @@ import { getDealTabs } from "../DealTabs";
 export default function DealEmail() {
   const { dealId } = useParams();
 
+  console.log("DealEmail dealId:", dealId);
+
   return (
     <DealLeftPanel>
       <EmailDetails
         tabs={getDealTabs(dealId)}
+        relatedModule="deal"
+        objectId={dealId}
       />
     </DealLeftPanel>
   );
 }
+
