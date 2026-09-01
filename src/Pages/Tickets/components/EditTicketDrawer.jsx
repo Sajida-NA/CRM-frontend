@@ -20,7 +20,7 @@ import api from "../../../services/api";
 export default function EditTicketDrawer({
   open,
   onClose,
-  ticket,
+  ticketId,
   onUpdated,
 }) {
   const [formData, setFormData] = useState({
@@ -40,11 +40,11 @@ export default function EditTicketDrawer({
   const [loadingData, setLoadingData] = useState(false);
 
   // =====================================================
-  // LOAD USERS + DEALS + TICKET
+  // LOAD TICKET + USERS + DEALS
   // =====================================================
 
   useEffect(() => {
-    if (!open || !ticket?.id) return;
+    if (!open || !ticketId) return;
 
     const fetchData = async () => {
       try {
@@ -52,7 +52,7 @@ export default function EditTicketDrawer({
 
         const [ticketResponse, usersResponse, dealsResponse] =
           await Promise.all([
-            api.get(`/tickets/${ticket.id}/`),
+            api.get(`/tickets/${ticketId}/`),
             api.get("/accounts/users/"),
             api.get("/deals/"),
           ]);
@@ -61,11 +61,11 @@ export default function EditTicketDrawer({
 
         const usersData = Array.isArray(usersResponse.data)
           ? usersResponse.data
-          : usersResponse.data.results || [];
+          : usersResponse.data?.results || [];
 
         const dealsData = Array.isArray(dealsResponse.data)
           ? dealsResponse.data
-          : dealsResponse.data.results || [];
+          : dealsResponse.data?.results || [];
 
         console.log("EDIT TICKET:", ticketDetail);
         console.log("EDIT USERS:", usersData);
@@ -80,27 +80,42 @@ export default function EditTicketDrawer({
 
         let ownerId = "";
 
-        // If backend returns ticket_owner as an ID
+        const ticketOwner = ticketDetail.ticket_owner;
+
+        // Backend returns owner ID
         if (
-          ticketDetail.ticket_owner !== null &&
-          ticketDetail.ticket_owner !== undefined &&
-          typeof ticketDetail.ticket_owner !== "string"
+          ticketOwner !== null &&
+          ticketOwner !== undefined &&
+          typeof ticketOwner === "number"
         ) {
-          ownerId = String(ticketDetail.ticket_owner);
+          ownerId = String(ticketOwner);
         }
 
-        // If backend returns ticket_owner as a string/email
-        if (!ownerId && typeof ticketDetail.ticket_owner === "string") {
+        // Backend returns owner as numeric string
+        if (
+          !ownerId &&
+          typeof ticketOwner === "string" &&
+          !isNaN(ticketOwner)
+        ) {
+          ownerId = String(ticketOwner);
+        }
+
+        // Backend returns owner as email/name
+        if (
+          !ownerId &&
+          typeof ticketOwner === "string"
+        ) {
           const owner = usersData.find((user) => {
-            const fullName = `${user.first_name || ""} ${
-              user.last_name || ""
-            }`.trim();
+            const fullName =
+              `${user.first_name || ""} ${
+                user.last_name || ""
+              }`.trim();
 
             return (
               String(user.email || "").toLowerCase() ===
-                ticketDetail.ticket_owner.toLowerCase() ||
+                ticketOwner.toLowerCase() ||
               fullName.toLowerCase() ===
-                ticketDetail.ticket_owner.toLowerCase()
+                ticketOwner.toLowerCase()
             );
           });
 
@@ -109,23 +124,14 @@ export default function EditTicketDrawer({
           }
         }
 
-        // Fallback to ticket from list
-        if (!ownerId && ticket.ticket_owner) {
-          const owner = usersData.find((user) => {
-            const fullName = `${user.first_name || ""} ${
-              user.last_name || ""
-            }`.trim();
-
-            return (
-              String(user.email || "").toLowerCase() ===
-                String(ticket.ticket_owner).toLowerCase() ||
-              fullName.toLowerCase() ===
-                String(ticket.ticket_owner).toLowerCase()
-            );
-          });
-
-          if (owner) {
-            ownerId = String(owner.id);
+        // Backend returns owner as object
+        if (
+          !ownerId &&
+          ticketOwner &&
+          typeof ticketOwner === "object"
+        ) {
+          if (ticketOwner.id) {
+            ownerId = String(ticketOwner.id);
           }
         }
 
@@ -135,43 +141,47 @@ export default function EditTicketDrawer({
 
         let dealId = "";
 
-        // If backend returns associated_deal as an ID
-        if (
-          ticketDetail.associated_deal !== null &&
-          ticketDetail.associated_deal !== undefined
-        ) {
-          if (typeof ticketDetail.associated_deal === "number") {
-            dealId = String(ticketDetail.associated_deal);
-          }
+        const associatedDeal =
+          ticketDetail.associated_deal;
 
-          if (
-            typeof ticketDetail.associated_deal === "string" &&
-            !isNaN(ticketDetail.associated_deal)
-          ) {
-            dealId = String(ticketDetail.associated_deal);
-          }
+        // Deal ID
+        if (
+          typeof associatedDeal === "number"
+        ) {
+          dealId = String(associatedDeal);
         }
 
-        // If backend returns associated_deal as object
+        // Deal ID as string
         if (
           !dealId &&
-          ticketDetail.associated_deal &&
-          typeof ticketDetail.associated_deal === "object"
+          typeof associatedDeal === "string" &&
+          !isNaN(associatedDeal)
         ) {
-          if (ticketDetail.associated_deal.id) {
-            dealId = String(ticketDetail.associated_deal.id);
+          dealId = String(associatedDeal);
+        }
+
+        // Deal object
+        if (
+          !dealId &&
+          associatedDeal &&
+          typeof associatedDeal === "object"
+        ) {
+          if (associatedDeal.id) {
+            dealId = String(associatedDeal.id);
           }
         }
 
-        // Find deal using deal name
+        // Find deal by deal name
         if (!dealId) {
           const dealName =
-            ticketDetail.deal_name || ticket.deal_name;
+            ticketDetail.deal_name ||
+            ticketDetail.associated_deal_name;
 
           if (dealName) {
             const deal = dealsData.find(
               (item) =>
-                String(item.deal_name || "").toLowerCase() ===
+                String(item.deal_name || "")
+                  .toLowerCase() ===
                 String(dealName).toLowerCase()
             );
 
@@ -186,13 +196,26 @@ export default function EditTicketDrawer({
         // =================================================
 
         setFormData({
-          ticketName: ticketDetail.ticket_name || ticket.ticket_name || "",
-          description: ticketDetail.description || "",
-          ticketStatus: ticketDetail.ticket_status || "",
-          source: ticketDetail.source || "",
-          priority: ticketDetail.priority || "",
-          ticketOwner: ownerId,
-          associatedDeal: dealId,
+          ticketName:
+            ticketDetail.ticket_name || "",
+
+          description:
+            ticketDetail.description || "",
+
+          ticketStatus:
+            ticketDetail.ticket_status || "",
+
+          source:
+            ticketDetail.source || "",
+
+          priority:
+            ticketDetail.priority || "",
+
+          ticketOwner:
+            ownerId,
+
+          associatedDeal:
+            dealId,
         });
       } catch (error) {
         console.error(
@@ -205,7 +228,7 @@ export default function EditTicketDrawer({
     };
 
     fetchData();
-  }, [open, ticket]);
+  }, [open, ticketId]);
 
   // =====================================================
   // HANDLE INPUT CHANGE
@@ -227,6 +250,8 @@ export default function EditTicketDrawer({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!ticketId) return;
+
     try {
       setLoading(true);
 
@@ -240,20 +265,26 @@ export default function EditTicketDrawer({
         associated_deal: Number(formData.associatedDeal),
       };
 
-      console.log("UPDATE TICKET PAYLOAD:", payload);
-
-      const response = await api.put(
-        `/tickets/${ticket.id}/`,
+      console.log(
+        "UPDATE TICKET PAYLOAD:",
         payload
       );
 
-      console.log("Ticket updated:", response.data);
+      const response = await api.put(
+        `/tickets/${ticketId}/`,
+        payload
+      );
+
+      console.log(
+        "Ticket updated:",
+        response.data
+      );
 
       if (onUpdated) {
         await onUpdated();
       }
 
-      onClose();
+      handleClose();
     } catch (error) {
       console.error(
         "Error updating ticket:",
@@ -265,7 +296,7 @@ export default function EditTicketDrawer({
   };
 
   // =====================================================
-  // RESET FORM
+  // CLOSE DRAWER
   // =====================================================
 
   const handleClose = () => {
@@ -280,6 +311,9 @@ export default function EditTicketDrawer({
       ticketOwner: "",
       associatedDeal: "",
     });
+
+    setUsers([]);
+    setDeals([]);
 
     onClose();
   };
@@ -406,17 +440,26 @@ export default function EditTicketDrawer({
                   onChange={handleChange}
                   disabled={loadingData}
                 >
-                  <MenuItem value="NEW">New</MenuItem>
-                  <MenuItem value="OPEN">Open</MenuItem>
+                  <MenuItem value="NEW">
+                    New
+                  </MenuItem>
+
+                  <MenuItem value="OPEN">
+                    Open
+                  </MenuItem>
+
                   <MenuItem value="IN_PROGRESS">
                     In Progress
                   </MenuItem>
+
                   <MenuItem value="WAITING_ON_CONTACT">
                     Waiting on Contact
                   </MenuItem>
+
                   <MenuItem value="WAITING_ON_US">
                     Waiting on Us
                   </MenuItem>
+
                   <MenuItem value="CLOSED">
                     Closed
                   </MenuItem>
@@ -455,10 +498,21 @@ export default function EditTicketDrawer({
                   onChange={handleChange}
                   disabled={loadingData}
                 >
-                  <MenuItem value="CHAT">Chat</MenuItem>
-                  <MenuItem value="EMAIL">Email</MenuItem>
-                  <MenuItem value="PHONE">Phone</MenuItem>
-                  <MenuItem value="WEB">Web</MenuItem>
+                  <MenuItem value="CHAT">
+                    Chat
+                  </MenuItem>
+
+                  <MenuItem value="EMAIL">
+                    Email
+                  </MenuItem>
+
+                  <MenuItem value="PHONE">
+                    Phone
+                  </MenuItem>
+
+                  <MenuItem value="WEB">
+                    Web
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -495,9 +549,18 @@ export default function EditTicketDrawer({
                 onChange={handleChange}
                 disabled={loadingData}
               >
-                <MenuItem value="HIGH">High</MenuItem>
-                <MenuItem value="MEDIUM">Medium</MenuItem>
-                <MenuItem value="LOW">Low</MenuItem>
+                <MenuItem value="HIGH">
+                  High
+                </MenuItem>
+
+                <MenuItem value="MEDIUM">
+                  Medium
+                </MenuItem>
+
+                <MenuItem value="LOW">
+                  Low
+                </MenuItem>
+
                 <MenuItem value="CRITICAL">
                   Critical
                 </MenuItem>
@@ -618,7 +681,9 @@ export default function EditTicketDrawer({
           <CommonButton
             type="submit"
             fullWidth
-            disabled={loading || loadingData}
+            disabled={
+              loading || loadingData || !ticketId
+            }
           >
             {loading ? "Saving..." : "Save"}
           </CommonButton>
