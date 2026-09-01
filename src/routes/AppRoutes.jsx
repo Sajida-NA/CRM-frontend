@@ -68,6 +68,7 @@ import DealLeftPanel from "../Pages/Deals/components/DealLeftPanel";
    Common Components
 =========================== */
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
+import ProtectedRoute from "../Components/common/ProtectedRoute";
 
 function AppRoutes() {
   return (
@@ -79,7 +80,7 @@ function AppRoutes() {
       <Route path="/register" element={<Register />} />
 
       {/* ================= Dashboard Route ================= */}
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/dashboard" element={ <ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
       {/* ================= Lead Routes ================= */}
       <Route path="/leadslist" element={<Leadslist />} />

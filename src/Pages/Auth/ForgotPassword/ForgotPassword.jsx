@@ -5,23 +5,54 @@ import { Link as RouterLink } from "react-router-dom";
 import AuthLayout from "../../../Components/common/AuthLayout";
 import InputField from "../../../Components/common/InputField";
 import CommonButton from "../../../Components/common/CommonButton";
+import CustomSnackbar from "../../../Components/common/CustomSnackbar";
+
+import api from "../../../services/api";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
-
-    setTimeout(() => {
+    try {
+      const response = await api.post("/accounts/forgot-password/", {
+        email: email,
+      });
+      console.log("Password reset request successful:", response.data);
       setSubmitted(true);
+      setSnackbar({
+        open: true,
+        message: "Reset link has been sent to your email.",
+        severity: "success",
+      });
+    } catch (error) {
+      console.error(
+        "Forgot password failed:",
+        JSON.stringify(error.response?.data, null, 2),
+      );
+      setSnackbar({
+        open: true,
+        message:
+          error.response?.data?.detail ||
+          error.response?.data?.message ||
+          "Unable to send reset link. Please try again.",
+        severity: "error",
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
+  
   return (
     <AuthLayout
       title="Forgot Password"

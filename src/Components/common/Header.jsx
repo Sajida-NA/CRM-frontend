@@ -37,10 +37,12 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    handleClose();
-    console.log("Logout Clicked");
-    navigate("/");
-    // Add your logout logic here
+  localStorage.removeItem("access");
+  localStorage.removeItem("refresh");
+  localStorage.removeItem("user");
+  
+  handleClose();
+  navigate("/");
   };
 
   const open = Boolean(anchorEl);
