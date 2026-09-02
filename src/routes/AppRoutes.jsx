@@ -96,12 +96,18 @@ function AppRoutes() {
 
       {/* ================= Company Routes ================= */}
       <Route path="/companieslist" element={<CompaniesList />} />
-      <Route path="/companyactivities" element={<CompanyActivities />} />
+      {/* <Route path="/companyactivities" element={<CompanyActivities />} /> */}
+      <Route path="/companies/:id/activity" element={<CompanyActivities />}/>
       <Route path="/companymeeting" element={<CompanyMeeting />} />
-      <Route path="/companynote" element={<CompanyNote />} />
-      <Route path="/companycalls" element={<CompanyCalls />} />
+      {/* <Route path="/companynote" element={<CompanyNote />} /> */}
+
+      <Route path="/companies/:id/activity/notes" element={<CompanyNote />}/>
+      {/* <Route path="/companycalls" element={<CompanyCalls />} /> */}
+      <Route path="/companies/:id/activity/calls"element={<CompanyCalls />}/>
       <Route path="/companytask" element={<CompanyTask />} />
-      <Route path="/companyemail" element={<CompanyEmail />} />
+      {/* <Route path="/companyemail" element={<CompanyEmail />} /> */}
+
+      <Route path="/companies/:id/activity/emails"element={<CompanyEmail />}/>
       <Route path="/companyleftpanel" element={<CompanyLeftPanel />} />
       
       {/* ================= Ticket Routes ================= */}
