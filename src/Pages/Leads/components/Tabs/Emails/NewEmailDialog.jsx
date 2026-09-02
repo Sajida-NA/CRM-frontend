@@ -56,16 +56,14 @@ export default function NewEmailDialog({
   // ==========================================
 
   const getSenderId = () => {
-    const accessToken =
-      localStorage.getItem("access");
+    const accessToken = localStorage.getItem("access");
 
     if (!accessToken) {
       return null;
     }
 
     try {
-      const tokenParts =
-        accessToken.split(".");
+      const tokenParts = accessToken.split(".");
 
       if (tokenParts.length !== 3) {
         return null;
@@ -77,20 +75,11 @@ export default function NewEmailDialog({
         .replace(/-/g, "+")
         .replace(/_/g, "/");
 
-      const payload = JSON.parse(
-        atob(base64)
-      );
+      const payload = JSON.parse(atob(base64));
 
-      console.log(
-        "JWT payload:",
-        payload
-      );
+      console.log("JWT payload:", payload);
 
-      return (
-        payload.user_id ||
-        payload.id ||
-        null
-      );
+      return payload.user_id || payload.id || null;
     } catch (error) {
       console.error(
         "Unable to read user ID from token:",
@@ -113,8 +102,7 @@ export default function NewEmailDialog({
     if (!subject.trim()) {
       setSnackbar({
         open: true,
-        message:
-          "Please enter a subject.",
+        message: "Please enter a subject.",
         severity: "error",
       });
 
@@ -128,8 +116,7 @@ export default function NewEmailDialog({
     if (!body.trim()) {
       setSnackbar({
         open: true,
-        message:
-          "Please enter email body.",
+        message: "Please enter email body.",
         severity: "error",
       });
 
@@ -143,8 +130,7 @@ export default function NewEmailDialog({
     if (!relatedModule) {
       setSnackbar({
         open: true,
-        message:
-          "Related module is missing.",
+        message: "Related module is missing.",
         severity: "error",
       });
 
@@ -156,14 +142,11 @@ export default function NewEmailDialog({
     // ----------------------------------------
 
     if (!objectId) {
-      console.error(
-        "objectId is missing"
-      );
+      console.error("objectId is missing");
 
       setSnackbar({
         open: true,
-        message:
-          "Recipient record is missing.",
+        message: "Recipient record is missing.",
         severity: "error",
       });
 
@@ -179,8 +162,7 @@ export default function NewEmailDialog({
     if (!senderId) {
       setSnackbar({
         open: true,
-        message:
-          "Logged-in user information not found.",
+        message: "Logged-in user information not found.",
         severity: "error",
       });
 
@@ -194,8 +176,7 @@ export default function NewEmailDialog({
     const data = {
       sender_id: senderId,
 
-      module:
-        relatedModule.toLowerCase(),
+      module: relatedModule.toLowerCase(),
 
       recipient_id: objectId,
 
@@ -208,10 +189,7 @@ export default function NewEmailDialog({
       bcc: [],
     };
 
-    console.log(
-      "EMAIL POST DATA:",
-      data
-    );
+    console.log("EMAIL POST DATA:", data);
 
     try {
       setSending(true);
@@ -236,8 +214,7 @@ export default function NewEmailDialog({
 
       setSnackbar({
         open: true,
-        message:
-          "Email sent successfully.",
+        message: "Email sent successfully.",
         severity: "success",
       });
 
@@ -254,9 +231,7 @@ export default function NewEmailDialog({
       // --------------------------------------
 
       if (onEmailCreated) {
-        onEmailCreated(
-          response.data
-        );
+        onEmailCreated(response.data);
       }
 
       // --------------------------------------
@@ -315,19 +290,14 @@ export default function NewEmailDialog({
     <>
       <Dialog
         open={open}
-        onClose={
-          sending
-            ? undefined
-            : onClose
-        }
+        onClose={sending ? undefined : onClose}
         fullWidth
         maxWidth="sm"
         PaperProps={{
           sx: {
             borderRadius: 2,
             overflow: "hidden",
-            bgcolor:
-              theme.palette.background.paper,
+            bgcolor: theme.palette.background.paper,
           },
         }}
       >
@@ -341,10 +311,8 @@ export default function NewEmailDialog({
             px: 2,
             display: "flex",
             alignItems: "center",
-            justifyContent:
-              "space-between",
-            bgcolor:
-              theme.palette.primary.main,
+            justifyContent: "space-between",
+            bgcolor: theme.palette.primary.main,
             color: "#fff",
           }}
         >
@@ -388,9 +356,11 @@ export default function NewEmailDialog({
                 setEmail(e.target.value)
               }
               placeholder="Recipients"
-              InputProps={{
-                disableUnderline: true,
-                readOnly: true,
+              slotProps={{
+                input: {
+                  disableUnderline: true,
+                  readOnly: true,
+                },
               }}
               sx={{
                 "& input": {
@@ -402,9 +372,7 @@ export default function NewEmailDialog({
             <Typography
               sx={{
                 ml: 2,
-                color:
-                  theme.palette.text
-                    .secondary,
+                color: theme.palette.text.secondary,
                 fontSize: 13,
                 cursor: "pointer",
               }}
@@ -433,8 +401,10 @@ export default function NewEmailDialog({
                 setSubject(e.target.value)
               }
               placeholder="Subject"
-              InputProps={{
-                disableUnderline: true,
+              slotProps={{
+                input: {
+                  disableUnderline: true,
+                },
               }}
             />
           </Box>
@@ -453,8 +423,10 @@ export default function NewEmailDialog({
               setBody(e.target.value)
             }
             placeholder="Body Text"
-            InputProps={{
-              disableUnderline: true,
+            slotProps={{
+              input: {
+                disableUnderline: true,
+              },
             }}
             sx={{
               px: 2,
@@ -462,9 +434,7 @@ export default function NewEmailDialog({
 
               "& textarea": {
                 fontSize: 14,
-                color:
-                  theme.palette.text
-                    .primary,
+                color: theme.palette.text.primary,
               },
             }}
           />
@@ -479,8 +449,7 @@ export default function NewEmailDialog({
               py: 1.5,
               display: "flex",
               alignItems: "center",
-              justifyContent:
-                "space-between",
+              justifyContent: "space-between",
             }}
           >
             <Box
@@ -490,47 +459,41 @@ export default function NewEmailDialog({
               }}
             >
               {/* SEND */}
+
               <Button
                 variant="contained"
                 disabled={sending}
                 onClick={handleSend}
                 sx={{
                   minWidth: 90,
-                  borderRadius:
-                    "6px 0 0 6px",
+                  borderRadius: "6px 0 0 6px",
                   textTransform: "none",
                   boxShadow: "none",
-                  bgcolor:
-                    theme.palette.primary.main,
+                  bgcolor: theme.palette.primary.main,
 
                   "&:hover": {
-                    bgcolor:
-                      theme.palette.primary.dark,
+                    bgcolor: theme.palette.primary.dark,
                     boxShadow: "none",
                   },
                 }}
               >
-                {sending
-                  ? "Sending..."
-                  : "Send"}
+                {sending ? "Sending..." : "Send"}
               </Button>
 
               {/* SEND DROPDOWN */}
+
               <Button
                 variant="contained"
                 disabled={sending}
                 sx={{
                   minWidth: 40,
-                  borderRadius:
-                    "0 6px 6px 0",
+                  borderRadius: "0 6px 6px 0",
                   ml: 0,
-                  bgcolor:
-                    theme.palette.primary.main,
+                  bgcolor: theme.palette.primary.main,
                   boxShadow: "none",
 
                   "&:hover": {
-                    bgcolor:
-                      theme.palette.primary.dark,
+                    bgcolor: theme.palette.primary.dark,
                     boxShadow: "none",
                   },
                 }}
@@ -539,32 +502,38 @@ export default function NewEmailDialog({
               </Button>
 
               {/* FORMAT */}
+
               <IconButton>
                 <FormatColorTextOutlinedIcon />
               </IconButton>
 
               {/* ATTACHMENT */}
+
               <IconButton>
                 <AttachFileOutlinedIcon />
               </IconButton>
 
               {/* LINK */}
+
               <IconButton>
                 <LinkOutlinedIcon />
               </IconButton>
 
               {/* EMOJI */}
+
               <IconButton>
                 <InsertEmoticonOutlinedIcon />
               </IconButton>
 
               {/* IMAGE */}
+
               <IconButton>
                 <ImageOutlinedIcon />
               </IconButton>
             </Box>
 
             {/* DELETE */}
+
             <IconButton
               onClick={handleDelete}
               disabled={sending}
@@ -582,21 +551,15 @@ export default function NewEmailDialog({
       <Snackbar
         open={snackbar.open}
         autoHideDuration={4000}
-        onClose={
-          handleSnackbarClose
-        }
+        onClose={handleSnackbarClose}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",
         }}
       >
         <Alert
-          onClose={
-            handleSnackbarClose
-          }
-          severity={
-            snackbar.severity
-          }
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
           variant="filled"
           sx={{
             width: "100%",
