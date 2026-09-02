@@ -6,3 +6,4 @@ export const ticketTabs = [
   { label: "Tasks", path: "/tickettask" },
   { label: "Meetings", path: "/ticketmeeting" },
 ];
+

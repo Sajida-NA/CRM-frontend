@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import MainLayout from "../../../layout/MainLayout";
 import PageHeader from "../../../Components/common/PageHeader";
 
@@ -27,6 +28,12 @@ import EditTicketDrawer from "../components/EditTicketDrawer";
 import api from "../../../services/api";
 
 export default function TicketsList() {
+  // =====================================================
+  // NAVIGATION
+  // =====================================================
+
+  const navigate = useNavigate();
+
   // =====================================================
   // DRAWERS
   // =====================================================
@@ -443,9 +450,7 @@ export default function TicketsList() {
           ===================================================== */}
 
           <FilterSection>
-            {/* =================================================
-                TICKET OWNER
-            ================================================= */}
+            {/* TICKET OWNER */}
 
             <SelectField
               placeholder="Ticket Owner"
@@ -457,9 +462,7 @@ export default function TicketsList() {
               }}
             />
 
-            {/* =================================================
-                TICKET STATUS
-            ================================================= */}
+            {/* TICKET STATUS */}
 
             <SelectField
               placeholder="Ticket Status"
@@ -478,9 +481,7 @@ export default function TicketsList() {
               }}
             />
 
-            {/* =================================================
-                SOURCE
-            ================================================= */}
+            {/* SOURCE */}
 
             <SelectField
               placeholder="Source"
@@ -497,9 +498,7 @@ export default function TicketsList() {
               }}
             />
 
-            {/* =================================================
-                PRIORITY
-            ================================================= */}
+            {/* PRIORITY */}
 
             <SelectField
               placeholder="Priority"
@@ -516,9 +515,7 @@ export default function TicketsList() {
               }}
             />
 
-            {/* =================================================
-                CREATED DATE
-            ================================================= */}
+            {/* CREATED DATE */}
 
             <TextField
               type="date"
@@ -558,9 +555,7 @@ export default function TicketsList() {
 
             <Box sx={{ flexGrow: 1 }} />
 
-            {/* =================================================
-                CLEAR FILTERS
-            ================================================= */}
+            {/* CLEAR FILTERS */}
 
             {(ticketOwner ||
               status ||
@@ -613,9 +608,7 @@ export default function TicketsList() {
                 </TableCell>
               </TableRow>
             ) : error ? (
-              /* =====================================================
-                  ERROR
-              ===================================================== */
+              /* ERROR */
 
               <TableRow>
                 <TableCell
@@ -626,9 +619,7 @@ export default function TicketsList() {
                 </TableCell>
               </TableRow>
             ) : filteredTickets.length === 0 ? (
-              /* =====================================================
-                  EMPTY
-              ===================================================== */
+              /* EMPTY */
 
               <TableRow>
                 <TableCell
@@ -639,9 +630,7 @@ export default function TicketsList() {
                 </TableCell>
               </TableRow>
             ) : (
-              /* =====================================================
-                  TICKETS
-              ===================================================== */
+              /* TICKETS */
 
               filteredTickets.map((ticket) => (
                 <TableRow key={ticket.id}>
@@ -664,7 +653,24 @@ export default function TicketsList() {
                   {/* TICKET NAME */}
 
                   <TableCell>
-                    {ticket.ticket_name}
+                    <Box
+                      component="span"
+                      onClick={() =>
+                        navigate(
+                          `/tickets/${ticket.id}/activities`
+                        )
+                      }
+                      sx={{
+                        color: "#5948DB",
+                        cursor: "pointer",
+                        fontWeight: 500,
+                        "&:hover": {
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      {ticket.ticket_name}
+                    </Box>
                   </TableCell>
 
                   {/* DEAL NAME */}
