@@ -118,6 +118,165 @@
 // }
 
 
+// import {
+//   Typography,
+//   Box,
+//   Link,
+//   IconButton,
+//   InputAdornment,
+// } from "@mui/material";
+// import { Visibility, VisibilityOff } from "@mui/icons-material";
+// import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import axios from "axios";
+
+// import AuthLayout from "../../../Components/common/AuthLayout";
+// import InputField from "../../../Components/common/InputField";
+// import CommonButton from "../../../Components/common/CommonButton";
+
+// import api from "../../../services/api";
+
+// export default function Login() {
+//   const navigate = useNavigate();
+
+//   const [showPassword, setShowPassword] = useState(false);
+
+//   const [form, setForm] = useState({
+//     email: "",
+//     password: "",
+//   });
+
+//   const handleChange = (e) => {
+//     setForm({
+//       ...form,
+//       [e.target.name]: e.target.value,
+//     });
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     try {
+//       const response = await axios.post(
+//         "http://127.0.0.1:8000/api/accounts/login/",
+//         {
+//           email: form.email,
+//           password: form.password,
+//         }
+//       );
+
+//       // Save JWT tokens
+//       localStorage.setItem("access", response.data.access);
+//       localStorage.setItem("refresh", response.data.refresh);
+
+//       alert("Login Successful!");
+
+//       navigate("/dashboard");
+//     } catch (error) {
+//       console.error(error.response?.data);
+
+//       alert(
+//         error.response?.data?.detail ||
+//         error.response?.data?.non_field_errors?.[0] ||
+//         "Invalid email or password."
+//       );
+//     }
+//   };
+
+//   return (
+//     <AuthLayout
+//       title="Log in"
+//       footer={
+//         <>
+//           Don't have an account?{" "}
+//           <Link href="/register" underline="hover">
+//             Sign up
+//           </Link>
+//         </>
+//       }
+//     >
+//       <Box
+//         component="form"
+//         onSubmit={handleSubmit}
+//         sx={{ width: "100%" }}
+//       >
+//         <Typography variant="body2" fontWeight={500} mb={1}>
+//           Email
+//         </Typography>
+
+//         <InputField
+//           name="email"
+//           type="email"
+//           placeholder="Enter your email"
+//           value={form.email}
+//           onChange={handleChange}
+//           fullWidth
+//           sx={{ mb: 3 }}
+//         />
+
+//         <Box
+//           sx={{
+//             display: "flex",
+//             justifyContent: "space-between",
+//             alignItems: "center",
+//             mb: 1,
+//           }}
+//         >
+//           <Typography variant="body2" fontWeight={500}>
+//             Password
+//           </Typography>
+
+//           <Link
+//             href="/forgot-password"
+//             underline="none"
+//             color="primary"
+//           >
+//             Forgot password?
+//           </Link>
+//         </Box>
+
+//         <InputField
+//           name="password"
+//           type={showPassword ? "text" : "password"}
+//           placeholder="Enter your password"
+//           value={form.password}
+//           onChange={handleChange}
+//           fullWidth
+//           slotProps={{
+//             input: {
+//               endAdornment: (
+//                 <InputAdornment position="end">
+//                   <IconButton
+//                     edge="end"
+//                     onClick={() =>
+//                       setShowPassword(!showPassword)
+//                     }
+//                   >
+//                     {showPassword ? (
+//                       <VisibilityOff />
+//                     ) : (
+//                       <Visibility />
+//                     )}
+//                   </IconButton>
+//                 </InputAdornment>
+//               ),
+//             },
+//           }}
+//         />
+
+//         <CommonButton
+//           type="submit"
+//           fullWidth
+//           sx={{ mt: 4 }}
+//         >
+//           Log in
+//         </CommonButton>
+//       </Box>
+//     </AuthLayout>
+//   );
+// }
+
+
 import {
   Typography,
   Box,
@@ -125,7 +284,12 @@ import {
   IconButton,
   InputAdornment,
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+
+import {
+  Visibility,
+  VisibilityOff,
+} from "@mui/icons-material";
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -133,8 +297,6 @@ import axios from "axios";
 import AuthLayout from "../../../Components/common/AuthLayout";
 import InputField from "../../../Components/common/InputField";
 import CommonButton from "../../../Components/common/CommonButton";
-
-import api from "../../../services/api";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -146,12 +308,20 @@ export default function Login() {
     password: "",
   });
 
+  // =========================================================
+  // INPUT CHANGE
+  // =========================================================
+
   const handleChange = (e) => {
-    setForm({
-      ...form,
+    setForm((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
+
+  // =========================================================
+  // LOGIN
+  // =========================================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -160,20 +330,72 @@ export default function Login() {
       const response = await axios.post(
         "http://127.0.0.1:8000/api/accounts/login/",
         {
-          email: form.email,
+          email: form.email.trim(),
           password: form.password,
         }
       );
 
-      // Save JWT tokens
-      localStorage.setItem("access", response.data.access);
-      localStorage.setItem("refresh", response.data.refresh);
+      console.log("LOGIN RESPONSE:", response.data);
+
+      // =====================================================
+      // SAVE ACCESS TOKEN
+      // =====================================================
+
+      localStorage.setItem(
+        "access",
+        response.data.access
+      );
+
+      // =====================================================
+      // SAVE REFRESH TOKEN
+      // =====================================================
+
+      localStorage.setItem(
+        "refresh",
+        response.data.refresh
+      );
+
+      // =====================================================
+      // SAVE LOGGED-IN USER
+      // =====================================================
+
+      const loggedInUser = response.data.user;
+
+      console.log(
+        "LOGGED-IN USER:",
+        loggedInUser
+      );
+
+      if (!loggedInUser?.id) {
+        alert(
+          "Login successful, but user ID was not returned."
+        );
+        return;
+      }
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(loggedInUser)
+      );
+
+      console.log(
+        "USER SAVED:",
+        loggedInUser
+      );
+
+      // =====================================================
+      // SUCCESS
+      // =====================================================
 
       alert("Login Successful!");
 
       navigate("/dashboard");
+
     } catch (error) {
-      console.error(error.response?.data);
+      console.error(
+        "LOGIN ERROR:",
+        error.response?.data || error
+      );
 
       alert(
         error.response?.data?.detail ||
@@ -183,13 +405,21 @@ export default function Login() {
     }
   };
 
+  // =========================================================
+  // UI
+  // =========================================================
+
   return (
     <AuthLayout
       title="Log in"
       footer={
         <>
           Don't have an account?{" "}
-          <Link href="/register" underline="hover">
+
+          <Link
+            href="/register"
+            underline="hover"
+          >
             Sign up
           </Link>
         </>
@@ -198,9 +428,17 @@ export default function Login() {
       <Box
         component="form"
         onSubmit={handleSubmit}
-        sx={{ width: "100%" }}
+        sx={{
+          width: "100%",
+        }}
       >
-        <Typography variant="body2" fontWeight={500} mb={1}>
+        {/* EMAIL */}
+
+        <Typography
+          variant="body2"
+          fontWeight={500}
+          mb={1}
+        >
           Email
         </Typography>
 
@@ -211,8 +449,12 @@ export default function Login() {
           value={form.email}
           onChange={handleChange}
           fullWidth
-          sx={{ mb: 3 }}
+          sx={{
+            mb: 3,
+          }}
         />
+
+        {/* PASSWORD */}
 
         <Box
           sx={{
@@ -222,7 +464,10 @@ export default function Login() {
             mb: 1,
           }}
         >
-          <Typography variant="body2" fontWeight={500}>
+          <Typography
+            variant="body2"
+            fontWeight={500}
+          >
             Password
           </Typography>
 
@@ -237,7 +482,11 @@ export default function Login() {
 
         <InputField
           name="password"
-          type={showPassword ? "text" : "password"}
+          type={
+            showPassword
+              ? "text"
+              : "password"
+          }
           placeholder="Enter your password"
           value={form.password}
           onChange={handleChange}
@@ -248,8 +497,11 @@ export default function Login() {
                 <InputAdornment position="end">
                   <IconButton
                     edge="end"
+                    type="button"
                     onClick={() =>
-                      setShowPassword(!showPassword)
+                      setShowPassword(
+                        (prev) => !prev
+                      )
                     }
                   >
                     {showPassword ? (
@@ -264,10 +516,14 @@ export default function Login() {
           }}
         />
 
+        {/* LOGIN BUTTON */}
+
         <CommonButton
           type="submit"
           fullWidth
-          sx={{ mt: 4 }}
+          sx={{
+            mt: 4,
+          }}
         >
           Log in
         </CommonButton>
@@ -275,5 +531,3 @@ export default function Login() {
     </AuthLayout>
   );
 }
-
-

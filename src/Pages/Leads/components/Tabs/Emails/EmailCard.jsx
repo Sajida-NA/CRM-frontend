@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Box,
@@ -6,11 +7,66 @@ import {
   IconButton,
   Collapse,
 } from "@mui/material";
+
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 export default function EmailCard({ email }) {
   const [open, setOpen] = useState(false);
+
+  if (!email) {
+    return null;
+  }
+
+  // ==========================================
+  // EMAIL DATA
+  // ==========================================
+
+  const subject =
+    email.subject || "No Subject";
+
+  const sender =
+    email.sender_name ||
+    email.sender_email ||
+    "Unknown";
+
+  const recipient =
+    email.recipient_name ||
+    email.recipient_email ||
+    "Unknown";
+
+  const body = email.body || "";
+
+  // ==========================================
+  // DATE
+  // ==========================================
+
+  const formattedDate = email.date
+    ? new Date(email.date).toLocaleString(
+        "en-US",
+        {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        }
+      )
+    : "";
+
+  // ==========================================
+  // BODY PREVIEW
+  // ==========================================
+
+  const plainBody = body.replace(
+    /<[^>]*>/g,
+    ""
+  );
+
+  const preview =
+    plainBody.length > 80
+      ? `${plainBody.substring(0, 80)}...`
+      : plainBody;
 
   return (
     <Box
@@ -20,7 +76,7 @@ export default function EmailCard({ email }) {
         borderRadius: 2,
         bgcolor: "#fff",
         overflow: "hidden",
-        mt:1
+        mt: 1,
       }}
     >
       {/* Header */}
@@ -35,15 +91,32 @@ export default function EmailCard({ email }) {
           cursor: "pointer",
         }}
       >
-        <Stack direction="row" spacing={1} alignItems="center">
-          <IconButton size="small" sx={{ p: 0 }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+        >
+          {/* Arrow */}
+          <IconButton
+            size="small"
+            sx={{
+              p: 0,
+            }}
+          >
             {open ? (
-              <KeyboardArrowDownIcon color="primary" fontSize="small" />
+              <KeyboardArrowDownIcon
+                color="primary"
+                fontSize="small"
+              />
             ) : (
-              <KeyboardArrowRightIcon color="primary" fontSize="small" />
+              <KeyboardArrowRightIcon
+                color="primary"
+                fontSize="small"
+              />
             )}
           </IconButton>
 
+          {/* Email information */}
           <Box>
             <Typography
               sx={{
@@ -52,7 +125,8 @@ export default function EmailCard({ email }) {
                 color: "#374151",
               }}
             >
-              Logged Email - Hello There
+              Logged Email - {subject}
+
               <Typography
                 component="span"
                 sx={{
@@ -61,10 +135,11 @@ export default function EmailCard({ email }) {
                   ml: 0.5,
                 }}
               >
-                by Maria Johnson
+                by {sender}
               </Typography>
             </Typography>
 
+            {/* Preview */}
             {!open && (
               <Typography
                 sx={{
@@ -73,12 +148,14 @@ export default function EmailCard({ email }) {
                   fontSize: 15,
                 }}
               >
-                Hey Jane Cooper,
+                {preview ||
+                  "No email content"}
               </Typography>
             )}
           </Box>
         </Stack>
 
+        {/* Date */}
         <Typography
           sx={{
             fontSize: 15,
@@ -86,7 +163,7 @@ export default function EmailCard({ email }) {
             whiteSpace: "nowrap",
           }}
         >
-          June 24, 2025 at 5:30PM
+          {formattedDate}
         </Typography>
       </Box>
 
@@ -98,46 +175,31 @@ export default function EmailCard({ email }) {
             pb: 3,
           }}
         >
+          {/* Recipient */}
           <Typography
             sx={{
               color: "#64748B",
               mb: 3,
             }}
           >
-            To Jane Cooper
+            To {recipient}
           </Typography>
 
+          {/* Email Body */}
           <Typography
+            component="div"
             sx={{
-               whiteSpace: "pre-line",
+              whiteSpace: "pre-line",
               lineHeight: 2,
               color: "#64748B",
               fontSize: 13,
             }}
           >
- {`Hey Jane Cooper,
-Thank you for showing interest in CRM!
-We noticed you recently filled out our demo request form on the website and wanted to reach out personally.
-
-Our solution helps businesses streamline sales workflows, track lead progress, and boost conversion rates by up to 40%.
-
-I'd love to schedule a quick call to understand your needs better and show how we can help. Are you available for a 15-minute chat this week?
-
-You can book a time that works for you.
-If you have any specific questions or requirements, feel free to reply to this email directly.
-
-Looking forward to connecting!
-
-Warm regards,
-Rajat Sharma
-Senior Sales Executive
-CRM Pvt. Ltd.
-+91-9876543210
-rajat@salestrackcrm.com
-salestrackcrm.com`} 
+            {plainBody}
           </Typography>
         </Box>
       </Collapse>
     </Box>
   );
 }
+

@@ -1,52 +1,149 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Box, Typography } from "@mui/material";
+
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
 import TaskCard from "./TaskCard";
-import tasks from "./TaskData";
-import CreateTaskDrawer from './CreateTaskDrawer'
+import CreateTaskDrawer from "./CreateTaskDrawer";
 
-export default function TaskDetails({tabs}) {
+import api from "../../../../../services/api";
+
+export default function TaskDetails({
+  tabs,
+  module,
+  moduleId,
+}) {
   const [activeTab, setActiveTab] = useState("Tasks");
-    const [openCreateTask, setOpenCreateTask] = useState(false);
+
+  const [openCreateTask, setOpenCreateTask] =
+    useState(false);
+
+  const [tasks, setTasks] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
+  // ========================================
+  // GET TASKS
+  // ========================================
+
+  const fetchTasks = async () => {
+    if (!module || !moduleId) {
+      setTasks([]);
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await api.get(
+        "/activities/task/"
+      );
+
+      console.log(
+        "ALL TASKS RESPONSE:",
+        response.data
+      );
+
+      const allTasks = Array.isArray(response.data)
+        ? response.data
+        : [];
+
+      // ========================================
+      // FILTER CURRENT MODULE
+      // ========================================
+
+      const filteredTasks = allTasks.filter(
+        (task) =>
+          String(task.module).toLowerCase() ===
+            String(module).toLowerCase() &&
+          Number(task.module_id) ===
+            Number(moduleId)
+      );
+
+      console.log(
+        "CURRENT MODULE:",
+        module
+      );
+
+      console.log(
+        "CURRENT MODULE ID:",
+        moduleId
+      );
+
+      console.log(
+        "FILTERED TASKS:",
+        filteredTasks
+      );
+
+      setTasks(filteredTasks);
+
+    } catch (error) {
+
+      console.error(
+        "FETCH TASKS ERROR:",
+        error.response?.data ||
+          error.message
+      );
+
+      setTasks([]);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  };
+
+  // ========================================
+  // FETCH WHEN MODULE CHANGES
+  // ========================================
+
+  useEffect(() => {
+    fetchTasks();
+  }, [module, moduleId]);
+
+  // ========================================
+  // TASK CREATED
+  // ========================================
+
+  const handleTaskCreated = async () => {
+
+    // Close drawer
+    setOpenCreateTask(false);
+
+    // Get latest tasks from backend
+    await fetchTasks();
+  };
 
   return (
     <div>
+
       <Box
         sx={{
           p: 3,
-          mx:-2,
-          // position: "absolute",
-          // top: 80,
-          // left: 430,
-          // width: "calc(100% - 680px)",
-          // border:'4px solid black'
+          mx: -2,
         }}
       >
-        {/* ACTIVITY TABS */}
 
-        <Box
-          // sx={{
-          //   mt: 10,
-          //   mx: -2,
-          // }}
-        >
-          {/* <CommonActivityTabs
+        {/* ========================================
+            ACTIVITY TABS
+        ======================================== */}
+
+        <Box>
+
+          <CommonActivityTabs
+            tabs={tabs}
             activeTab={activeTab}
-            // onTabChange={setActiveTab}
-            onTabChange={() => {}}
-          /> */}
+            onTabChange={setActiveTab}
+          />
 
-
-           <CommonActivityTabs
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
         </Box>
 
-        {/* Header */}
+        {/* ========================================
+            HEADER
+        ======================================== */}
+
         <Box
           sx={{
             display: "flex",
@@ -55,33 +152,72 @@ export default function TaskDetails({tabs}) {
             mb: 1,
             marginTop: "35px",
             marginLeft: "1px",
-            // border:'1px solid black',
           }}
         >
-          <Typography variant="h6" fontWeight={100}>
+
+          <Typography
+            variant="h6"
+            fontWeight={100}
+          >
             Tasks
           </Typography>
 
           <CommonButton
             variant="contained"
-            onClick={() => setOpenCreateTask(true)}
+            onClick={() =>
+              setOpenCreateTask(true)
+            }
           >
             Create Task
           </CommonButton>
+
         </Box>
 
-        {/* Drawer */}
+        {/* ========================================
+            CREATE TASK DRAWER
+        ======================================== */}
+
         <CreateTaskDrawer
-              open={openCreateTask}
-              onClose={() => setOpenCreateTask(false)}
+          open={openCreateTask}
+          onClose={() =>
+            setOpenCreateTask(false)
+          }
+          module={module}
+          moduleId={moduleId}
+          onTaskCreated={handleTaskCreated}
+        />
+
+        {/* ========================================
+            TASK LIST
+        ======================================== */}
+
+        {loading ? (
+
+          <Typography>
+            Loading tasks...
+          </Typography>
+
+        ) : tasks.length === 0 ? (
+
+          <Typography>
+            No tasks found.
+          </Typography>
+
+        ) : (
+
+          tasks.map((task) => (
+
+            <TaskCard
+              key={task.id}
+              task={task}
             />
 
-        {/* Task detail */}
+          ))
 
-        {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} />
-        ))}
+        )}
+
       </Box>
+
     </div>
   );
 }
