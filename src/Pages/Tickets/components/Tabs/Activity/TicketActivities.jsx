@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useParams } from "react-router-dom";
 
@@ -9,7 +10,8 @@ export default function TicketActivities() {
 
   return (
     <TicketLeftPanel>
-      <TicketActivityDetails ticketId={ticketId} />
+      <TicketActivityDetails />
     </TicketLeftPanel>
   );
 }
+
