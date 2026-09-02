@@ -539,17 +539,19 @@ export default function TicketsList() {
                     : "#667085",
                 },
               }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <CalendarMonthIcon
-                      sx={{
-                        color: "#98A2B3",
-                        fontSize: 20,
-                      }}
-                    />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CalendarMonthIcon
+                        sx={{
+                          color: "#98A2B3",
+                          fontSize: 20,
+                        }}
+                      />
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 
@@ -747,3 +749,4 @@ export default function TicketsList() {
     </div>
   );
 }
+
