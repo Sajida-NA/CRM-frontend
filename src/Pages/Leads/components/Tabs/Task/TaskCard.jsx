@@ -1,5 +1,4 @@
 
-
 import { useState } from "react";
 import {
   Paper,
@@ -72,13 +71,10 @@ export default function TaskCard({ task }) {
   const formattedTime = task.time
     ? new Date(
         `1970-01-01T${task.time}`
-      ).toLocaleTimeString(
-        "en-US",
-        {
-          hour: "numeric",
-          minute: "2-digit",
-        }
-      )
+      ).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      })
     : "-";
 
   // ========================================
@@ -291,7 +287,7 @@ export default function TaskCard({ task }) {
           >
             {/* DUE DATE */}
 
-            <Grid item xs={4}>
+            <Grid size={4}>
               <Typography
                 gutterBottom
                 sx={{
@@ -309,7 +305,7 @@ export default function TaskCard({ task }) {
 
             {/* PRIORITY */}
 
-            <Grid item xs={4}>
+            <Grid size={4}>
               <Typography
                 gutterBottom
                 sx={{
@@ -327,7 +323,7 @@ export default function TaskCard({ task }) {
 
             {/* TYPE */}
 
-            <Grid item xs={4}>
+            <Grid size={4}>
               <Typography
                 gutterBottom
                 sx={{
