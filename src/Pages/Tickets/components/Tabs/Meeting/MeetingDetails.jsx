@@ -8,8 +8,6 @@ import {
   Typography,
 } from "@mui/material";
 
-import { useParams } from "react-router-dom";
-
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
 
@@ -22,9 +20,9 @@ import api from "../../../../../services/api";
 
 export default function MeetingDetails({
   tabs,
+  module = "deal",
+  moduleId,
 }) {
-
-  const { dealId } = useParams();
 
   const [
     activeTab,
@@ -48,16 +46,18 @@ export default function MeetingDetails({
 
 
   // =========================================================
-  // FETCH DEAL MEETINGS
+  // FETCH MEETINGS
   // =========================================================
 
   const fetchMeetings = async () => {
 
-    if (!dealId) {
+    if (!moduleId) {
 
       console.error(
-        "Deal ID not found"
+        `${module} ID not found`
       );
+
+      setMeetings([]);
 
       return;
     }
@@ -66,38 +66,105 @@ export default function MeetingDetails({
 
       setLoading(true);
 
+      const normalizedModule =
+        String(module)
+          .toLowerCase()
+          .trim();
+
+
       console.log(
         "================================="
       );
 
       console.log(
-        "FETCHING MEETINGS FOR DEAL:",
-        dealId
+        "FETCHING MEETINGS"
       );
+
+      console.log(
+        "MODULE:",
+        normalizedModule
+      );
+
+      console.log(
+        "MODULE ID:",
+        moduleId
+      );
+
+
+      const url =
+        `/activities/meeting/${normalizedModule}/${moduleId}/`;
+
 
       console.log(
         "URL:",
-        `/activities/meeting/deal/${dealId}/`
+        url
       );
 
       console.log(
         "================================="
       );
 
-      const response = await api.get(
-        `/activities/meeting/deal/${dealId}/`
-      );
+
+      const response =
+        await api.get(url);
+
 
       console.log(
         "MEETINGS RESPONSE:",
         response.data
       );
 
-      const meetingData = Array.isArray(
-        response.data
-      )
-        ? response.data
-        : response.data?.results || [];
+
+      const meetingData =
+        Array.isArray(response.data)
+          ? response.data
+          : response.data?.results || [];
+
+
+      // =====================================================
+      // DEBUG MEETING DATA
+      // =====================================================
+
+      meetingData.forEach(
+        (meeting) => {
+
+          console.log(
+            "---------------------------------"
+          );
+
+          console.log(
+            "MEETING ID:",
+            meeting.id
+          );
+
+          console.log(
+            "TITLE:",
+            meeting.title
+          );
+
+          console.log(
+            "START DATE:",
+            meeting.start_date
+          );
+
+          console.log(
+            "START TIME:",
+            meeting.start_time
+          );
+
+          console.log(
+            "END TIME:",
+            meeting.end_time
+          );
+
+          console.log(
+            "ATTENDEES:",
+            meeting.attendees
+          );
+
+        }
+      );
+
 
       setMeetings(
         meetingData
@@ -133,7 +200,10 @@ export default function MeetingDetails({
 
     fetchMeetings();
 
-  }, [dealId]);
+  }, [
+    module,
+    moduleId,
+  ]);
 
 
   // =========================================================
@@ -141,6 +211,15 @@ export default function MeetingDetails({
   // =========================================================
 
   const handleOpenCreateMeeting = () => {
+
+    if (!moduleId) {
+
+      console.error(
+        `${module} ID not found`
+      );
+
+      return;
+    }
 
     setOpenCreateMeeting(
       true
@@ -159,7 +238,6 @@ export default function MeetingDetails({
       false
     );
 
-    // Refresh meetings after closing
     fetchMeetings();
 
   };
@@ -234,6 +312,8 @@ export default function MeetingDetails({
         onClose={
           handleCloseCreateMeeting
         }
+        relatedModule={module}
+        objectId={moduleId}
       />
 
 
@@ -273,7 +353,9 @@ export default function MeetingDetails({
                 meeting.id ||
                 index
               }
-              meeting={meeting}
+              meeting={
+                meeting
+              }
             />
 
           )
@@ -284,4 +366,3 @@ export default function MeetingDetails({
     </Box>
   );
 }
-
