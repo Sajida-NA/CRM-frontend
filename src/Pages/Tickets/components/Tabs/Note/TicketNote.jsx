@@ -1,12 +1,22 @@
 import React from "react";
+import { useParams } from "react-router-dom";
+
 import TicketLeftPanel from "../../TicketLeftPanel";
 import NoteDetails from "./NoteDetails";
-import { ticketTabs } from "../TicketTabs";
+import { getTicketTabs } from "../TicketTabs";
 
 export default function TicketNote() {
+  const { ticketId } = useParams();
+
+  const tabs = getTicketTabs(ticketId);
+
   return (
-    <div>
-        <TicketLeftPanel><NoteDetails tabs={ticketTabs}/></TicketLeftPanel>
-     </div>
-  )
+    <TicketLeftPanel>
+      <NoteDetails
+        tabs={tabs}
+        module="ticket"
+        moduleId={ticketId}
+      />
+    </TicketLeftPanel>
+  );
 }

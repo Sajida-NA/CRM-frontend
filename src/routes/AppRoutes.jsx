@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 /* ===========================
    Authentication Pages
 =========================== */
+
 import Login from "../Pages/Auth/Login/login";
 import ForgotPassword from "../Pages/Auth/ForgotPassword/ForgotPassword";
 import Register from "../Pages/Auth/Register/Register";
@@ -10,11 +11,13 @@ import Register from "../Pages/Auth/Register/Register";
 /* ===========================
    Dashboard
 =========================== */
+
 import Dashboard from "../Pages/Dashboard/dashboard";
 
 /* ===========================
    Lead Pages
 =========================== */
+
 import Leadslist from "../Pages/Leads/LeadsList/Leadslist";
 import LeadActivities from "../Pages/Leads/components/Tabs/Activity/LeadActivities";
 import Leadnote from "../Pages/Leads/components/Tabs/Note/Leadnote";
@@ -29,6 +32,7 @@ import CreateTaskDrawer from "../Pages/Leads/components/Tabs/Task/CreateTaskDraw
 /* ===========================
    Company Pages
 =========================== */
+
 import CompaniesList from "../Pages/Companies/CompaniesList/CompaniesList";
 import CompanyActivities from "../Pages/Companies/components/Tabs/Activity/CompanyActivities";
 import CompanyMeeting from "../Pages/Companies/components/Tabs/Meeting/CompanyMeeting";
@@ -41,6 +45,7 @@ import CompanyLeftPanel from "../Pages/Companies/components/CompanyLeftPanel";
 /* ===========================
    Ticket Pages
 =========================== */
+
 import TicketsList from "../Pages/Tickets/TicketsList/TicketsList";
 import CreateTicketDrawer from "../Pages/Tickets/components/CreateTicketDrawer";
 import TicketActivities from "../Pages/Tickets/components/Tabs/Activity/TicketActivities";
@@ -54,6 +59,7 @@ import TicketLeftPanel from "../Pages/Tickets/components/TicketLeftPanel";
 /* ===========================
    Deal Pages
 =========================== */
+
 import DealsList from "../Pages/Deals/DealsList/DealsList";
 import DealActivities from "../Pages/Deals/components/Tabs/Activity/DealActivities";
 import DealMeeting from "../Pages/Deals/components/Tabs/Meeting/DealMeeting";
@@ -66,20 +72,25 @@ import DealLeftPanel from "../Pages/Deals/components/DealLeftPanel";
 /* ===========================
    Common Components
 =========================== */
+
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
 import ResetPassword from "../Pages/Auth/ResetPassword/ResetPassword";
+
 function AppRoutes() {
   return (
     <Routes>
       {/* ================= Authentication Routes ================= */}
+
       <Route path="/" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/register" element={<Register />} />
 
       {/* ================= Dashboard Route ================= */}
+
       <Route path="/dashboard" element={<Dashboard />} />
 
       {/* ================= Lead Routes ================= */}
+
       <Route path="/leadslist" element={<Leadslist />} />
       <Route path="/leadactivities" element={<LeadActivities />} />
       <Route path="/leadnote" element={<Leadnote />} />
@@ -92,113 +103,165 @@ function AppRoutes() {
       <Route path="/createtaskdrawer" element={<CreateTaskDrawer />} />
 
       {/* ================= Company Routes ================= */}
-      {/* <Route path="/companieslist" element={<CompaniesList />} />
-      <Route path="/companyactivities" element={<CompanyActivities />} />
-       <Route path="/companynote" element={<CompanyNote />} />
-       <Route path="/companycalls" element={<CompanyCalls />} />
-      <Route path="/companytask" element={<CompanyTask />} />
-      <Route path="/companyemail" element={<CompanyEmail />} />
-      <Route path="/companyleftpanel" element={<CompanyLeftPanel />} />
- */}
 
+      <Route path="/companieslist" element={<CompaniesList />} />
 
-      {/* ================= Company Routes ================= */}
-
-<Route
-  path="/companieslist"
-  element={<CompaniesList />}
-/>
-
-<Route
-  path="/companies/:id/activity"
-  element={<CompanyActivities />}
-/>
-
-<Route
-  path="/companies/:id/activity/notes"
-  element={<CompanyNote />}
-/>
-
-<Route
-  path="/companies/:id/activity/emails"
-  element={<CompanyEmail />}
-/>
-
-<Route
-  path="/companies/:id/activity/calls"
-  element={<CompanyCalls />}
-/>
-
-<Route
-  path="/companies/:id/activity/tasks"
-  element={<CompanyTask />}
-/>
-
-<Route
-  path="/companies/:id/activity/meetings"
-  element={<CompanyMeeting />}
-/>
-
-<Route
-  path="/companyleftpanel"
-  element={<CompanyLeftPanel />}
-/>
-      
-      {/* <Route path="/companieslist" element={<CompaniesList />} />
       <Route
         path="/company/:companyId/activities"
         element={<CompanyActivities />}
       />
 
-      <Route path="/company/:companyId/meeting" element={<CompanyMeeting />} />
+      <Route
+        path="/company/:companyId/meeting"
+        element={<CompanyMeeting />}
+      />
 
-      <Route path="/company/:companyId/note" element={<CompanyNote />} />
+      <Route
+        path="/company/:companyId/note"
+        element={<CompanyNote />}
+      />
 
-      <Route path="/company/:companyId/calls" element={<CompanyCalls />} />
+      <Route
+        path="/company/:companyId/calls"
+        element={<CompanyCalls />}
+      />
 
-      <Route path="/company/:companyId/task" element={<CompanyTask />} />
+      <Route
+        path="/company/:companyId/task"
+        element={<CompanyTask />}
+      />
 
-      <Route path="/company/:companyId/email" element={<CompanyEmail />} />
-      <Route path="/companyleftpanel" element={<CompanyLeftPanel />} /> */}
+      <Route
+        path="/company/:companyId/email"
+        element={<CompanyEmail />}
+      />
+
+      <Route
+        path="/companyleftpanel"
+        element={<CompanyLeftPanel />}
+      />
 
       {/* ================= Ticket Routes ================= */}
+
       <Route path="/ticketslist" element={<TicketsList />} />
+
+      {/* Dynamic Ticket routes */}
       <Route
         path="/tickets/:ticketId/activities"
         element={<TicketActivities />}
       />
-      <Route path="/tickets/:ticketId/meeting" element={<TicketMeeting />} />
 
-      <Route path="/tickets/:ticketId/note" element={<TicketNote />} />
+      <Route
+        path="/tickets/:ticketId/meeting"
+        element={<TicketMeeting />}
+      />
 
-      <Route path="/tickets/:ticketId/calls" element={<TicketCalls />} />
+      <Route
+        path="/tickets/:ticketId/note"
+        element={<TicketNote />}
+      />
 
-      <Route path="/tickets/:ticketId/task" element={<TicketTask />} />
+      <Route
+        path="/tickets/:ticketId/calls"
+        element={<TicketCalls />}
+      />
 
-      <Route path="/tickets/:ticketId/email" element={<TicketEmail />} />
-      <Route path="/ticketleftpanel" element={<TicketLeftPanel />} />
+      <Route
+        path="/tickets/:ticketId/task"
+        element={<TicketTask />}
+      />
+
+      <Route
+        path="/tickets/:ticketId/email"
+        element={<TicketEmail />}
+      />
+
+      {/* Legacy Ticket routes */}
+      <Route
+        path="/ticketactivities"
+        element={<TicketActivities />}
+      />
+
+      <Route
+        path="/ticketmeeting"
+        element={<TicketMeeting />}
+      />
+
+      <Route
+        path="/ticketnote"
+        element={<TicketNote />}
+      />
+
+      <Route
+        path="/ticketcalls"
+        element={<TicketCalls />}
+      />
+
+      <Route
+        path="/tickettask"
+        element={<TicketTask />}
+      />
+
+      <Route
+        path="/ticketemail"
+        element={<TicketEmail />}
+      />
+
+      <Route
+        path="/ticketleftpanel"
+        element={<TicketLeftPanel />}
+      />
 
       {/* ================= Deal Routes ================= */}
+
       <Route path="/dealslist" element={<DealsList />} />
-      {/* <Route path="/dealactivities" element={<DealActivities />} /> */}
 
-      <Route path="/deals/:dealId/activities" element={<DealActivities />} />
+      <Route
+        path="/deals/:dealId/activities"
+        element={<DealActivities />}
+      />
 
-      <Route path="/deals/:dealId/meeting" element={<DealMeeting />} />
+      <Route
+        path="/deals/:dealId/meeting"
+        element={<DealMeeting />}
+      />
 
-      <Route path="/deals/:dealId/note" element={<DealNote />} />
+      <Route
+        path="/deals/:dealId/note"
+        element={<DealNote />}
+      />
 
-      <Route path="/deals/:dealId/calls" element={<DealCalls />} />
+      <Route
+        path="/deals/:dealId/calls"
+        element={<DealCalls />}
+      />
 
-      <Route path="/deals/:dealId/task" element={<DealTask />} />
+      <Route
+        path="/deals/:dealId/task"
+        element={<DealTask />}
+      />
 
-      <Route path="/deals/:dealId/email" element={<DealEmail />} />
-      
-      <Route path="/dealleftpanel" element={<DealLeftPanel />} />
+      <Route
+        path="/deals/:dealId/email"
+        element={<DealEmail />}
+      />
+
+      <Route
+        path="/dealleftpanel"
+        element={<DealLeftPanel />}
+      />
 
       {/* ================= Common Routes ================= */}
-      <Route path="/entity" element={<CommonEntityHeader />} />
-      <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
+
+      <Route
+        path="/entity"
+        element={<CommonEntityHeader />}
+      />
+
+      <Route
+        path="/reset-password/:uid/:token"
+        element={<ResetPassword />}
+      />
     </Routes>
   );
 }

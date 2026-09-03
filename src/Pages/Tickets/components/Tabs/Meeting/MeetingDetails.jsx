@@ -1,12 +1,8 @@
-import React, {
-  useEffect,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 
-import {
-  Box,
-  Typography,
-} from "@mui/material";
+import { Box, Typography } from "@mui/material";
+
+import { useParams } from "react-router-dom";
 
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
@@ -17,161 +13,98 @@ import MeetingCard from "./MeetingCard";
 
 import api from "../../../../../services/api";
 
-
 export default function MeetingDetails({
   tabs,
-  module = "deal",
+  module,
   moduleId,
 }) {
+  const { dealId, ticketId } = useParams();
 
-  const [
-    activeTab,
-    setActiveTab,
-  ] = useState("Meetings");
+  const finalModule = String(
+    module || (ticketId ? "ticket" : "deal")
+  )
+    .toLowerCase()
+    .trim();
 
-  const [
-    openCreateMeeting,
-    setOpenCreateMeeting,
-  ] = useState(false);
+  const finalModuleId =
+    moduleId ||
+    ticketId ||
+    dealId;
 
-  const [
-    meetings,
-    setMeetings,
-  ] = useState([]);
+  const [activeTab, setActiveTab] = useState("Meetings");
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(false);
+  const [openCreateMeeting, setOpenCreateMeeting] =
+    useState(false);
 
+  const [meetings, setMeetings] = useState([]);
+
+  const [loading, setLoading] = useState(false);
 
   // =========================================================
   // FETCH MEETINGS
   // =========================================================
 
   const fetchMeetings = async () => {
-
-    if (!moduleId) {
-
-      console.error(
-        `${module} ID not found`
-      );
-
+    if (!finalModuleId) {
+      console.error("Related record ID not found");
       setMeetings([]);
-
       return;
     }
 
     try {
-
       setLoading(true);
 
-      const normalizedModule =
-        String(module)
-          .toLowerCase()
-          .trim();
+      console.log("=================================");
+      console.log("FETCHING MEETINGS");
+      console.log("MODULE:", finalModule);
+      console.log("MODULE ID:", finalModuleId);
+      console.log("=================================");
 
-
-      console.log(
-        "================================="
+      const response = await api.get(
+        "/activities/meeting/"
       );
-
-      console.log(
-        "FETCHING MEETINGS"
-      );
-
-      console.log(
-        "MODULE:",
-        normalizedModule
-      );
-
-      console.log(
-        "MODULE ID:",
-        moduleId
-      );
-
-
-      const url =
-        `/activities/meeting/${normalizedModule}/${moduleId}/`;
-
-
-      console.log(
-        "URL:",
-        url
-      );
-
-      console.log(
-        "================================="
-      );
-
-
-      const response =
-        await api.get(url);
-
 
       console.log(
         "MEETINGS RESPONSE:",
         response.data
       );
 
+      const meetingData = Array.isArray(
+        response.data
+      )
+        ? response.data
+        : response.data?.results || [];
 
-      const meetingData =
-        Array.isArray(response.data)
-          ? response.data
-          : response.data?.results || [];
+      const filteredMeetings =
+        meetingData.filter((meeting) => {
+          const meetingModule = String(
+            meeting?.module || ""
+          )
+            .toLowerCase()
+            .trim();
 
+          const relatedId =
+            meeting?.module_id ??
+            meeting?.object_id ??
+            meeting?.lead?.id ??
+            meeting?.deal?.id ??
+            meeting?.company?.id ??
+            meeting?.ticket?.id;
 
-      // =====================================================
-      // DEBUG MEETING DATA
-      // =====================================================
-
-      meetingData.forEach(
-        (meeting) => {
-
-          console.log(
-            "---------------------------------"
+          return (
+            meetingModule === finalModule &&
+            Number(relatedId) ===
+              Number(finalModuleId)
           );
+        });
 
-          console.log(
-            "MEETING ID:",
-            meeting.id
-          );
-
-          console.log(
-            "TITLE:",
-            meeting.title
-          );
-
-          console.log(
-            "START DATE:",
-            meeting.start_date
-          );
-
-          console.log(
-            "START TIME:",
-            meeting.start_time
-          );
-
-          console.log(
-            "END TIME:",
-            meeting.end_time
-          );
-
-          console.log(
-            "ATTENDEES:",
-            meeting.attendees
-          );
-
-        }
+      console.log(
+        "FILTERED MEETINGS:",
+        filteredMeetings
       );
 
-
-      setMeetings(
-        meetingData
-      );
-
+      setMeetings(filteredMeetings);
     } catch (error) {
-
       console.error(
         "FETCH MEETINGS ERROR:",
         error.response?.data || error
@@ -183,94 +116,67 @@ export default function MeetingDetails({
       );
 
       setMeetings([]);
-
     } finally {
-
       setLoading(false);
-
     }
   };
-
 
   // =========================================================
   // LOAD MEETINGS
   // =========================================================
 
   useEffect(() => {
-
-    fetchMeetings();
-
-  }, [
-    module,
-    moduleId,
-  ]);
-
+    if (finalModuleId) {
+      fetchMeetings();
+    }
+  }, [finalModule, finalModuleId]);
 
   // =========================================================
   // OPEN CREATE MEETING
   // =========================================================
 
   const handleOpenCreateMeeting = () => {
-
-    if (!moduleId) {
-
+    if (!finalModuleId) {
       console.error(
-        `${module} ID not found`
+        `${finalModule} ID not found`
       );
-
       return;
     }
 
-    setOpenCreateMeeting(
-      true
-    );
-
+    setOpenCreateMeeting(true);
   };
-
 
   // =========================================================
   // CLOSE CREATE MEETING
   // =========================================================
 
-  const handleCloseCreateMeeting = () => {
-
-    setOpenCreateMeeting(
-      false
-    );
-
-    fetchMeetings();
-
+  const handleCloseCreateMeeting = async () => {
+    setOpenCreateMeeting(false);
+    await fetchMeetings();
   };
-
 
   // =========================================================
   // RETURN
   // =========================================================
 
   return (
-
     <Box
       sx={{
         p: 3,
         mx: -2,
       }}
     >
-
       {/* =====================================================
           ACTIVITY TABS
           ===================================================== */}
 
       <Box>
-
         <CommonActivityTabs
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          title="Deal"
         />
-
       </Box>
-
 
       {/* =====================================================
           HEADER
@@ -285,23 +191,17 @@ export default function MeetingDetails({
           mb: 1,
         }}
       >
-
         <Typography variant="h6">
           Meetings
         </Typography>
 
-
         <CommonButton
           variant="contained"
-          onClick={
-            handleOpenCreateMeeting
-          }
+          onClick={handleOpenCreateMeeting}
         >
           Create Meeting
         </CommonButton>
-
       </Box>
-
 
       {/* =====================================================
           CREATE MEETING DRAWER
@@ -309,20 +209,16 @@ export default function MeetingDetails({
 
       <ScheduleMeeting
         open={openCreateMeeting}
-        onClose={
-          handleCloseCreateMeeting
-        }
-        relatedModule={module}
-        objectId={moduleId}
+        onClose={handleCloseCreateMeeting}
+        module={finalModule}
+        moduleId={finalModuleId}
       />
-
 
       {/* =====================================================
           MEETING LIST
           ===================================================== */}
 
       {loading ? (
-
         <Typography
           sx={{
             mt: 3,
@@ -331,9 +227,7 @@ export default function MeetingDetails({
         >
           Loading meetings...
         </Typography>
-
       ) : meetings.length === 0 ? (
-
         <Typography
           sx={{
             color: "#667085",
@@ -342,27 +236,14 @@ export default function MeetingDetails({
         >
           No meetings found.
         </Typography>
-
       ) : (
-
-        meetings.map(
-          (meeting, index) => (
-
-            <MeetingCard
-              key={
-                meeting.id ||
-                index
-              }
-              meeting={
-                meeting
-              }
-            />
-
-          )
-        )
-
+        meetings.map((meeting, index) => (
+          <MeetingCard
+            key={meeting.id || index}
+            meeting={meeting}
+          />
+        ))
       )}
-
     </Box>
   );
 }

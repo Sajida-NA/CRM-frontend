@@ -1,585 +1,248 @@
-// // import { Box, Drawer } from "@mui/material";
-// // import React, { useState } from "react";
-// // import DrawerHeader from "../../../../../Components/common/DrawerHeader";
-// // import CommonButton from "../../../../../Components/common/CommonButton";
-// // import CommonEditor from "../../../../../Components/common/CommonEditor";
+import { Box, Drawer } from "@mui/material";
+import React, { useState } from "react";
 
-// // export default function Createnote({ open, onClose }) {
-// //   const [formData, setFormData] = useState({
-// //     note: "",
-// //   });
+import DrawerHeader from "../../../../../Components/common/DrawerHeader";
+import CommonButton from "../../../../../Components/common/CommonButton";
+import CommonEditor from "../../../../../Components/common/CommonEditor";
 
-// //   const handleSubmit = (e) => {
-// //     e.preventDefault();
+import { createNote } from "../../../../../services/activityApi";
 
-// //     console.log(formData);
+export default function Createnote({
+  open,
+  onClose,
+  module,
+  moduleId,
+  onSuccess,
+}) {
+  const [formData, setFormData] = useState({
+    note: "",
+  });
 
-// //     // API call goes here
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-// //     onClose(); // Close drawer after saving (optional)
-// //   };
+  // =================================================
+  // HANDLE SUBMIT
+  // =================================================
 
-// //   return (
-// //     <div>
-// //       <Drawer anchor="right" open={open} onClose={onClose}>
-// //         <Box
-// //           component="form"
-// //           onSubmit={handleSubmit}
-// //           sx={{
-// //             width: 500,
-// //             height: "100%",
-// //             display: "flex",
-// //             flexDirection: "column",
-// //             bgcolor: "#fff",
-// //           }}
-// //         >
-// //           {/* Header */}
-// //           <DrawerHeader title="Create Note" onClose={onClose} />
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-// //           {/* Form Body */}
-// //           <Box
-// //             sx={{
-// //               flex: 1,
-// //               p: 3,
-// //               display: "flex",
-// //               flexDirection: "column",
-// //               gap: 3,
-// //               overflowY: "auto",
-// //             }}
-// //           >
-// //             {/* Note */}
-// //             <CommonEditor
-// //               label="Note"
-// //               required
-// //               value={formData.note}
-// //               onChange={(value) =>
-// //                 setFormData((prev) => ({
-// //                   ...prev,
-// //                   note: value,
-// //                 }))
-// //               }
-// //             />
-// //           </Box>
+    setError("");
 
-// //           {/* Footer */}
-// //           <Box
-// //             sx={{
-// //               display: "flex",
-// //               gap: 2,
-// //               p: 3,
-// //               borderTop: "1px solid #E5E7EB",
-// //             }}
-// //           >
-// //             <CommonButton variant="outlined" fullWidth onClick={onClose}>
-// //               Cancel
-// //             </CommonButton>
+    // Validate note
+    if (!formData.note.trim()) {
+      setError("Note is required.");
+      return;
+    }
 
-// //             <CommonButton type="submit" fullWidth>
-// //               Save
-// //             </CommonButton>
-// //           </Box>
-// //         </Box>
-// //       </Drawer>
-// //     </div>
-// //   );
-// // }
+    // Validate module and module ID
+    if (!module || !moduleId) {
+      setError("Related record information is missing.");
+      return;
+    }
 
+    // =================================================
+    // GET LOGGED-IN USER
+    // =================================================
 
-// import { Box, Drawer } from "@mui/material";
-// import React, { useState } from "react";
+    const storedUser = localStorage.getItem("user");
 
-// import DrawerHeader from "../../../../../Components/common/DrawerHeader";
-// import CommonButton from "../../../../../Components/common/CommonButton";
-// import CommonEditor from "../../../../../Components/common/CommonEditor";
-// import api from "../../../../../services/api";
+    let user = null;
 
-// import { createNote } from "../../../../../services/activityApi";
+    try {
+      user = storedUser
+        ? JSON.parse(storedUser)
+        : null;
+    } catch (error) {
+      console.error("Invalid user data:", error);
+    }
 
-// export default function Createnote({
-//   open,
-//   onClose,
-//   dealId,
-//   onSuccess,
-// }) {
-//   const [formData, setFormData] = useState({
-//     note: "",
-//   });
+    const senderId =
+      user?.id ||
+      user?.user_id;
 
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState("");
+    if (!senderId) {
+      setError("Logged-in user information is missing.");
+      return;
+    }
 
-//   // =================================================
-//   // HANDLE SUBMIT
-//   // =================================================
+    // =================================================
+    // CREATE NOTE
+    // =================================================
 
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
+    try {
+      setLoading(true);
 
-//     setError("");
+      const payload = {
+        sender_id: senderId,
+        module: String(module).toLowerCase().trim(),
+        module_id: Number(moduleId),
+        note: formData.note,
+      };
 
-//     // Validate note
-//     if (!formData.note.trim()) {
-//       setError("Note is required.");
-//       return;
-//     }
+      console.log("Creating note:", payload);
 
-//     // Validate deal
-//     if (!dealId) {
-//       setError("Deal ID is missing.");
-//       return;
-//     }
+      const response = await createNote(payload);
 
-//     // =================================================
-//     // GET LOGGED-IN USER
-//     // =================================================
+      console.log(
+        "Note created successfully:",
+        response
+      );
 
-//     const storedUser = localStorage.getItem("user");
+      // Reset form
+      setFormData({
+        note: "",
+      });
 
-//     let user = null;
+      // Notify parent
+      if (onSuccess) {
+        onSuccess(response);
+      }
 
-//     try {
-//       user = storedUser
-//         ? JSON.parse(storedUser)
-//         : null;
-//     } catch (error) {
-//       console.error("Invalid user data:", error);
-//     }
+      // Close drawer
+      onClose();
+    } catch (error) {
+      console.error(
+        "Failed to create note:",
+        error
+      );
 
-//     const senderId =
-//       user?.id ||
-//       user?.user_id;
+      const responseData =
+        error?.response?.data;
 
-//     if (!senderId) {
-//       setError("Logged-in user information is missing.");
-//       return;
-//     }
+      if (
+        responseData &&
+        typeof responseData === "object"
+      ) {
+        const firstError = Object.values(
+          responseData
+        )
+          .flat()
+          .find(Boolean);
 
-//     // =================================================
-//     // CREATE NOTE
-//     // =================================================
+        setError(
+          firstError ||
+          "Failed to create note."
+        );
+      } else {
+        setError(
+          "Failed to create note. Please try again."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-//     try {
-//       setLoading(true);
+  // =================================================
+  // CLOSE
+  // =================================================
 
-//       const payload = {
-//         sender_id: senderId,
-//         module: "deal",
-//         module_id: Number(dealId),
-//         note: formData.note,
-//       };
+  const handleClose = () => {
+    if (loading) return;
 
-//       const response = await createNote(payload);
+    setFormData({
+      note: "",
+    });
 
-//       console.log(
-//         "Note created successfully:",
-//         response
-//       );
+    setError("");
 
-//       // Reset form
-//       setFormData({
-//         note: "",
-//       });
+    onClose();
+  };
 
-//       // Notify parent
-//       if (onSuccess) {
-//         onSuccess(response);
-//       }
+  // =================================================
+  // UI
+  // =================================================
 
-//       // Close drawer
-//       onClose();
+  return (
+    <Drawer
+      anchor="right"
+      open={open}
+      onClose={handleClose}
+    >
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          width: 500,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          bgcolor: "#fff",
+        }}
+      >
+        {/* Header */}
 
-//     } catch (error) {
-//       console.error(
-//         "Failed to create note:",
-//         error
-//       );
+        <DrawerHeader
+          title="Create Note"
+          onClose={handleClose}
+        />
 
-//       const responseData =
-//         error?.response?.data;
+        {/* Form Body */}
 
-//       if (
-//         responseData &&
-//         typeof responseData === "object"
-//       ) {
-//         const firstError = Object.values(
-//           responseData
-//         )
-//           .flat()
-//           .find(Boolean);
+        <Box
+          sx={{
+            flex: 1,
+            p: 3,
+            display: "flex",
+            flexDirection: "column",
+            gap: 3,
+            overflowY: "auto",
+          }}
+        >
+          <CommonEditor
+            label="Note"
+            required
+            value={formData.note}
+            onChange={(value) =>
+              setFormData((prev) => ({
+                ...prev,
+                note: value,
+              }))
+            }
+          />
 
-//         setError(
-//           firstError ||
-//           "Failed to create note."
-//         );
-//       } else {
-//         setError(
-//           "Failed to create note. Please try again."
-//         );
-//       }
+          {error && (
+            <Box
+              sx={{
+                color: "#d32f2f",
+                fontSize: "14px",
+              }}
+            >
+              {error}
+            </Box>
+          )}
+        </Box>
 
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+        {/* Footer */}
 
-//   // =================================================
-//   // CLOSE
-//   // =================================================
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            p: 3,
+            borderTop: "1px solid #E5E7EB",
+          }}
+        >
+          <CommonButton
+            variant="outlined"
+            fullWidth
+            onClick={handleClose}
+            disabled={loading}
+          >
+            Cancel
+          </CommonButton>
 
-//   const handleClose = () => {
-//     if (loading) return;
-
-//     setFormData({
-//       note: "",
-//     });
-
-//     setError("");
-
-//     onClose();
-//   };
-
-//   // =================================================
-//   // UI
-//   // =================================================
-
-//   return (
-//     <Drawer
-//       anchor="right"
-//       open={open}
-//       onClose={handleClose}
-//     >
-//       <Box
-//         component="form"
-//         onSubmit={handleSubmit}
-//         sx={{
-//           width: 500,
-//           height: "100%",
-//           display: "flex",
-//           flexDirection: "column",
-//           bgcolor: "#fff",
-//         }}
-//       >
-//         {/* Header */}
-
-//         <DrawerHeader
-//           title="Create Note"
-//           onClose={handleClose}
-//         />
-
-//         {/* Form Body */}
-
-//         <Box
-//           sx={{
-//             flex: 1,
-//             p: 3,
-//             display: "flex",
-//             flexDirection: "column",
-//             gap: 3,
-//             overflowY: "auto",
-//           }}
-//         >
-//           <CommonEditor
-//             label="Note"
-//             required
-//             value={formData.note}
-//             onChange={(value) =>
-//               setFormData((prev) => ({
-//                 ...prev,
-//                 note: value,
-//               }))
-//             }
-//           />
-
-//           {error && (
-//             <Box
-//               sx={{
-//                 color: "#d32f2f",
-//                 fontSize: "14px",
-//               }}
-//             >
-//               {error}
-//             </Box>
-//           )}
-//         </Box>
-
-//         {/* Footer */}
-
-//         <Box
-//           sx={{
-//             display: "flex",
-//             gap: 2,
-//             p: 3,
-//             borderTop: "1px solid #E5E7EB",
-//           }}
-//         >
-//           <CommonButton
-//             variant="outlined"
-//             fullWidth
-//             onClick={handleClose}
-//             disabled={loading}
-//           >
-//             Cancel
-//           </CommonButton>
-
-//           <CommonButton
-//             type="submit"
-//             fullWidth
-//             disabled={loading}
-//           >
-//             {loading ? "Saving..." : "Save"}
-//           </CommonButton>
-//         </Box>
-//       </Box>
-//     </Drawer>
-//   );
-// }
-
-
-
-import { Box, Drawer } from "@mui/material"; 
-import React, { useState } from "react"; 
- 
-import DrawerHeader from "../../../../../Components/common/DrawerHeader"; 
-import CommonButton from "../../../../../Components/common/CommonButton"; 
-import CommonEditor from "../../../../../Components/common/CommonEditor"; 
- 
-import { createNote } from "../../../../../services/activityApi"; 
- 
-export default function Createnote({ 
-  open, 
-  onClose, 
-  dealId, 
-  onSuccess, 
-}) { 
-  const [formData, setFormData] = useState({ 
-    note: "", 
-  }); 
- 
-  const [loading, setLoading] = useState(false); 
-  const [error, setError] = useState(""); 
- 
-  // ================================================= 
-  // HANDLE SUBMIT 
-  // ================================================= 
- 
-  const handleSubmit = async (e) => { 
-    e.preventDefault(); 
- 
-    setError(""); 
- 
-    // Validate note 
-    if (!formData.note.trim()) { 
-      setError("Note is required."); 
-      return; 
-    } 
- 
-    // Validate deal 
-    if (!dealId) { 
-      setError("Deal ID is missing."); 
-      return; 
-    } 
- 
-    // ================================================= 
-    // GET LOGGED-IN USER 
-    // ================================================= 
- 
-    const storedUser = localStorage.getItem("user"); 
- 
-    let user = null; 
- 
-    try { 
-      user = storedUser 
-        ? JSON.parse(storedUser) 
-        : null; 
-    } catch (error) { 
-      console.error("Invalid user data:", error); 
-    } 
- 
-    const senderId = 
-      user?.id || 
-      user?.user_id; 
- 
-    if (!senderId) { 
-      setError("Logged-in user information is missing."); 
-      return; 
-    } 
- 
-    // ================================================= 
-    // CREATE NOTE 
-    // ================================================= 
- 
-    try { 
-      setLoading(true); 
- 
-      const payload = { 
-        sender_id: senderId, 
-        module: "deal", 
-        module_id: Number(dealId), 
-        note: formData.note, 
-      }; 
- 
-      const response = await createNote(payload); 
- 
-      console.log( 
-        "Note created successfully:", 
-        response 
-      ); 
- 
-      // Reset form 
-      setFormData({ 
-        note: "", 
-      }); 
- 
-      // Notify parent 
-      if (onSuccess) { 
-        onSuccess(response); 
-      } 
- 
-      // Close drawer 
-      onClose(); 
- 
-    } catch (error) { 
-      console.error( 
-        "Failed to create note:", 
-        error 
-      ); 
- 
-      const responseData = 
-        error?.response?.data; 
- 
-      if ( 
-        responseData && 
-        typeof responseData === "object" 
-      ) { 
-        const firstError = Object.values( 
-          responseData 
-        ) 
-          .flat() 
-          .find(Boolean); 
- 
-        setError( 
-          firstError || 
-          "Failed to create note." 
-        ); 
-      } else { 
-        setError( 
-          "Failed to create note. Please try again." 
-        ); 
-      } 
- 
-    } finally { 
-      setLoading(false); 
-    } 
-  }; 
- 
-  // ================================================= 
-  // CLOSE 
-  // ================================================= 
- 
-  const handleClose = () => { 
-    if (loading) return; 
- 
-    setFormData({ 
-      note: "", 
-    }); 
- 
-    setError(""); 
- 
-    onClose(); 
-  }; 
- 
-  // ================================================= 
-  // UI 
-  // ================================================= 
- 
-  return ( 
-    <Drawer 
-      anchor="right" 
-      open={open} 
-      onClose={handleClose} 
-    > 
-      <Box 
-        component="form" 
-        onSubmit={handleSubmit} 
-        sx={{ 
-          width: 500, 
-          height: "100%", 
-          display: "flex", 
-          flexDirection: "column", 
-          bgcolor: "#fff", 
-        }} 
-      > 
-        {/* Header */} 
- 
-        <DrawerHeader 
-          title="Create Note" 
-          onClose={handleClose} 
-        /> 
- 
-        {/* Form Body */} 
- 
-        <Box 
-          sx={{ 
-            flex: 1, 
-            p: 3, 
-            display: "flex", 
-            flexDirection: "column", 
-            gap: 3, 
-            overflowY: "auto", 
-          }} 
-        > 
-          <CommonEditor 
-            label="Note" 
-            required 
-            value={formData.note} 
-            onChange={(value) => 
-              setFormData((prev) => ({ 
-                ...prev, 
-                note: value, 
-              })) 
-            } 
-          /> 
- 
-          {error && ( 
-            <Box 
-              sx={{ 
-                color: "#d32f2f", 
-                fontSize: "14px", 
-              }} 
-            > 
-              {error} 
-            </Box> 
-          )} 
-        </Box> 
- 
-        {/* Footer */} 
- 
-        <Box 
-          sx={{ 
-            display: "flex", 
-            gap: 2, 
-            p: 3, 
-            borderTop: "1px solid #E5E7EB", 
-          }} 
-        > 
-          <CommonButton 
-            variant="outlined" 
-            fullWidth 
-            onClick={handleClose} 
-            disabled={loading} 
-          > 
-            Cancel 
-          </CommonButton> 
- 
-          <CommonButton 
-            type="submit" 
-            fullWidth 
-            disabled={loading} 
-          > 
-            {loading ? "Saving..." : "Save"} 
-          </CommonButton> 
-        </Box> 
-      </Box> 
-    </Drawer> 
-  ); 
-} 
+          <CommonButton
+            type="submit"
+            fullWidth
+            disabled={loading}
+          >
+            {loading ? "Saving..." : "Save"}
+          </CommonButton>
+        </Box>
+      </Box>
+    </Drawer>
+  );
+}

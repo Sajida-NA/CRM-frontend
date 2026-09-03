@@ -12,6 +12,7 @@ import {
   ListItemText,
 } from "@mui/material";
 
+import { useParams } from "react-router-dom";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 
 import dayjs from "dayjs";
@@ -25,13 +26,31 @@ import CommonEditor from "../../../../../Components/common/CommonEditor";
 
 import api from "../../../../../services/api";
 
-
 export default function ScheduleMeeting({
   open,
   onClose,
-  relatedModule = "deal",
+  relatedModule,
   objectId,
+  module,
+  moduleId,
 }) {
+  const { dealId, ticketId } = useParams();
+
+  // Support both the existing API and the newer reusable API.
+  const finalModule = String(
+    module ||
+      relatedModule ||
+      (ticketId ? "ticket" : "deal")
+  )
+    .toLowerCase()
+    .trim();
+
+  const finalModuleId =
+    moduleId ||
+    objectId ||
+    ticketId ||
+    dealId;
+
   const [users, setUsers] = useState([]);
   const [saving, setSaving] = useState(false);
 
@@ -45,7 +64,6 @@ export default function ScheduleMeeting({
     reminder: "",
     note: "",
   });
-
 
   // =========================================================
   // FETCH USERS
@@ -76,7 +94,6 @@ export default function ScheduleMeeting({
     fetchUsers();
   }, [open]);
 
-
   // =========================================================
   // NORMAL INPUT CHANGE
   // =========================================================
@@ -89,7 +106,6 @@ export default function ScheduleMeeting({
       [name]: value,
     }));
   };
-
 
   // =========================================================
   // ATTENDEE CHANGE
@@ -107,7 +123,6 @@ export default function ScheduleMeeting({
     }));
   };
 
-
   // =========================================================
   // SUBMIT
   // =========================================================
@@ -117,10 +132,9 @@ export default function ScheduleMeeting({
 
     console.log("=================================");
     console.log("SAVE MEETING CLICKED");
-    console.log("RELATED MODULE:", relatedModule);
-    console.log("OBJECT ID:", objectId);
+    console.log("MODULE:", finalModule);
+    console.log("MODULE ID:", finalModuleId);
     console.log("=================================");
-
 
     // =======================================================
     // VALIDATION
@@ -170,30 +184,22 @@ export default function ScheduleMeeting({
       return;
     }
 
-    // =======================================================
-    // COMMON MODULE ID VALIDATION
-    // =======================================================
-
-    if (!objectId) {
+    if (!finalModuleId) {
       const moduleName =
-        String(relatedModule).charAt(0).toUpperCase() +
-        String(relatedModule).slice(1);
+        finalModule.charAt(0).toUpperCase() +
+        finalModule.slice(1);
 
       alert(`${moduleName} ID not found.`);
       return;
     }
-
 
     // =======================================================
     // BACKEND PAYLOAD
     // =======================================================
 
     const payload = {
-      // Same common API for every module
-      module: String(relatedModule).toLowerCase(),
-
-      // Lead ID / Deal ID / Company ID / Ticket ID
-      module_id: Number(objectId),
+      module: finalModule,
+      module_id: Number(finalModuleId),
 
       title: formData.title.trim(),
 
@@ -209,8 +215,8 @@ export default function ScheduleMeeting({
         "HH:mm:ss"
       ),
 
-      attendees: formData.attendees.map((id) =>
-        Number(id)
+      attendees: formData.attendees.map(
+        (id) => Number(id)
       ),
 
       location: formData.location,
@@ -220,16 +226,10 @@ export default function ScheduleMeeting({
       note: formData.note.trim(),
     };
 
-
-    // =======================================================
-    // LOG PAYLOAD
-    // =======================================================
-
     console.log("=================================");
     console.log("CREATE MEETING PAYLOAD:");
     console.log(JSON.stringify(payload, null, 2));
     console.log("=================================");
-
 
     // =======================================================
     // API CALL
@@ -250,7 +250,6 @@ export default function ScheduleMeeting({
 
       alert("Meeting created successfully.");
 
-
       // =====================================================
       // RESET FORM
       // =====================================================
@@ -267,9 +266,7 @@ export default function ScheduleMeeting({
       });
 
       onClose();
-
     } catch (error) {
-
       console.error(
         "CREATE MEETING ERROR:",
         error.response?.data || error
@@ -300,12 +297,10 @@ export default function ScheduleMeeting({
           "Failed to create meeting. Check that the Django server is running."
         );
       }
-
     } finally {
       setSaving(false);
     }
   };
-
 
   // =========================================================
   // ATTENDEE OPTIONS
@@ -324,7 +319,6 @@ export default function ScheduleMeeting({
     value: user.id,
   }));
 
-
   // =========================================================
   // SELECTED ATTENDEE NAMES
   // =========================================================
@@ -338,7 +332,6 @@ export default function ScheduleMeeting({
     )
     .map((option) => option.label);
 
-
   // =========================================================
   // RETURN
   // =========================================================
@@ -347,11 +340,7 @@ export default function ScheduleMeeting({
     <Drawer
       anchor="right"
       open={open}
-      onClose={
-        saving
-          ? undefined
-          : onClose
-      }
+      onClose={saving ? undefined : onClose}
     >
       <Box
         component="form"
@@ -364,14 +353,12 @@ export default function ScheduleMeeting({
           bgcolor: "#fff",
         }}
       >
-
         {/* HEADER */}
 
         <DrawerHeader
           title="Schedule Meeting"
           onClose={onClose}
         />
-
 
         {/* BODY */}
 
@@ -385,7 +372,6 @@ export default function ScheduleMeeting({
             overflowY: "auto",
           }}
         >
-
           {/* TITLE */}
 
           <CommonInput
@@ -397,7 +383,6 @@ export default function ScheduleMeeting({
             placeholder="Enter"
             fullWidth
           />
-
 
           {/* START DATE */}
 
@@ -414,11 +399,9 @@ export default function ScheduleMeeting({
             }
           />
 
-
           {/* START / END TIME */}
 
           <Grid container spacing={2}>
-
             <Grid
               size={{
                 xs: 12,
@@ -444,7 +427,6 @@ export default function ScheduleMeeting({
               />
             </Grid>
 
-
             <Grid
               size={{
                 xs: 12,
@@ -469,14 +451,11 @@ export default function ScheduleMeeting({
                 }}
               />
             </Grid>
-
           </Grid>
-
 
           {/* ATTENDEES */}
 
           <Box>
-
             <Typography
               sx={{
                 fontSize: "14px",
@@ -499,16 +478,13 @@ export default function ScheduleMeeting({
               </Box>
             </Typography>
 
-
             <FormControl fullWidth>
-
               <Select
                 multiple
                 displayEmpty
                 value={formData.attendees}
                 onChange={handleAttendeeChange}
                 renderValue={(selected) => {
-
                   if (!selected.length) {
                     return (
                       <Typography
@@ -522,25 +498,30 @@ export default function ScheduleMeeting({
                     );
                   }
 
-                  return selectedAttendeeNames.join(", ");
+                  return selectedAttendeeNames.join(
+                    ", "
+                  );
                 }}
                 sx={{
                   minHeight: "44px",
                   borderRadius: "10px",
                   backgroundColor: "#fff",
 
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#D0D5DD",
-                  },
+                  "& .MuiOutlinedInput-notchedOutline":
+                    {
+                      borderColor: "#D0D5DD",
+                    },
 
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#D0D5DD",
-                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline":
+                    {
+                      borderColor: "#D0D5DD",
+                    },
 
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#6941C6",
-                    borderWidth: "1px",
-                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline":
+                    {
+                      borderColor: "#6941C6",
+                      borderWidth: "1px",
+                    },
 
                   "& .MuiSelect-select": {
                     padding: "10px 14px",
@@ -556,14 +537,11 @@ export default function ScheduleMeeting({
                   },
                 }}
               >
-
                 {attendeeOptions.map((option) => (
-
                   <MenuItem
                     key={option.value}
                     value={option.value}
                   >
-
                     <Checkbox
                       checked={formData.attendees.some(
                         (id) =>
@@ -575,17 +553,11 @@ export default function ScheduleMeeting({
                     <ListItemText
                       primary={option.label}
                     />
-
                   </MenuItem>
-
                 ))}
-
               </Select>
-
             </FormControl>
-
           </Box>
-
 
           {/* LOCATION */}
 
@@ -604,7 +576,6 @@ export default function ScheduleMeeting({
               "Head Office",
             ]}
           />
-
 
           {/* REMINDER */}
 
@@ -638,7 +609,6 @@ export default function ScheduleMeeting({
             ]}
           />
 
-
           {/* NOTE */}
 
           <CommonEditor
@@ -652,9 +622,7 @@ export default function ScheduleMeeting({
               }))
             }
           />
-
         </Box>
-
 
         {/* FOOTER */}
 
@@ -666,7 +634,6 @@ export default function ScheduleMeeting({
             borderTop: "1px solid #E5E7EB",
           }}
         >
-
           <CommonButton
             variant="outlined"
             fullWidth
@@ -676,7 +643,6 @@ export default function ScheduleMeeting({
             Cancel
           </CommonButton>
 
-
           <CommonButton
             type="submit"
             fullWidth
@@ -684,13 +650,8 @@ export default function ScheduleMeeting({
           >
             {saving ? "Saving..." : "Save"}
           </CommonButton>
-
         </Box>
-
       </Box>
     </Drawer>
   );
 }
-
-
-

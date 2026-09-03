@@ -1,13 +1,17 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useState } from "react";
+
 import { Box, Typography } from "@mui/material";
 
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
-import TicketActivityCard from "./TicketActivityCard";
-import { ticketTabs } from "../TicketTabs";
 
-export default function TicketActivityDetails() {
-  const { ticketId } = useParams();
+import TicketActivityCard from "./TicketActivityCard";
+
+import { getTicketTabs } from "../TicketTabs";
+
+export default function TicketActivityDetails({ ticketId }) {
+  const [activeTab, setActiveTab] = useState("Activity");
+
+  const tabs = getTicketTabs(ticketId);
 
   return (
     <Box
@@ -17,11 +21,11 @@ export default function TicketActivityDetails() {
         mx: -2,
       }}
     >
-      {/* Activity Tabs */}
       <Box>
         <CommonActivityTabs
-          tabs={ticketTabs(ticketId)}
-          activeTab="Activity"
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
         />
       </Box>
 
@@ -29,7 +33,6 @@ export default function TicketActivityDetails() {
         Upcoming
       </Typography>
 
-      {/* Activity Card 1 */}
       <TicketActivityCard
         title="Ticket activity"
         date="June 24, 2025 at 5:30PM"
@@ -44,36 +47,32 @@ export default function TicketActivityDetails() {
           >
             Maria Johnson
           </Box>{" "}
+
           <Box
             component="span"
-            sx={{
-              color: "text.secondary",
-            }}
+            sx={{ color: "text.secondary" }}
           >
             moved ticket to
           </Box>{" "}
+
           <Box
             component="span"
-            sx={{
-              color: "text.secondary",
-            }}
+            sx={{ color: "text.secondary" }}
           >
             new.
           </Box>
         </Typography>
       </TicketActivityCard>
 
-      {/* Activity Card 2 */}
       <TicketActivityCard>
         <Typography sx={{ fontSize: 14 }}>
           <Box
             component="span"
-            sx={{
-              color: "text.secondary",
-            }}
+            sx={{ color: "text.secondary" }}
           >
             This ticket was created by
           </Box>{" "}
+
           <Box
             component="span"
             sx={{
@@ -88,4 +87,3 @@ export default function TicketActivityDetails() {
     </Box>
   );
 }
-
