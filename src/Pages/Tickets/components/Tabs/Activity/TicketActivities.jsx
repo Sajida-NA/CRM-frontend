@@ -10,7 +10,7 @@ export default function TicketActivities() {
 
   return (
     <TicketLeftPanel>
-      <TicketActivityDetails />
+      <TicketActivityDetails ticketId={ticketId} />
     </TicketLeftPanel>
   );
 }
