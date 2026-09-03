@@ -1,90 +1,3 @@
-// import { Box, Drawer } from "@mui/material";
-// import React, { useState } from "react";
-// import DrawerHeader from "../../../../../Components/common/DrawerHeader";
-// import CommonButton from "../../../../../Components/common/CommonButton";
-// import CommonEditor from "../../../../../Components/common/CommonEditor";
-
-// export default function Createnote({ open, onClose }) {
-//   const [formData, setFormData] = useState({
-//     note: "",
-//   });
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-
-//     console.log(formData);
-
-//     // API call goes here
-
-//     onClose(); // Close drawer after saving (optional)
-//   };
-
-//   return (
-//     <div>
-//       <Drawer anchor="right" open={open} onClose={onClose}>
-//         <Box
-//           component="form"
-//           onSubmit={handleSubmit}
-//           sx={{
-//             width: 500,
-//             height: "100%",
-//             display: "flex",
-//             flexDirection: "column",
-//             bgcolor: "#fff",
-//           }}
-//         >
-//           {/* Header */}
-//           <DrawerHeader title="Create Note" onClose={onClose} />
-
-//           {/* Form Body */}
-//           <Box
-//             sx={{
-//               flex: 1,
-//               p: 3,
-//               display: "flex",
-//               flexDirection: "column",
-//               gap: 3,
-//               overflowY: "auto",
-//             }}
-//           >
-//             {/* Note */}
-//             <CommonEditor
-//               label="Note"
-//               required
-//               value={formData.note}
-//               onChange={(value) =>
-//                 setFormData((prev) => ({
-//                   ...prev,
-//                   note: value,
-//                 }))
-//               }
-//             />
-//           </Box>
-
-//           {/* Footer */}
-//           <Box
-//             sx={{
-//               display: "flex",
-//               gap: 2,
-//               p: 3,
-//               borderTop: "1px solid #E5E7EB",
-//             }}
-//           >
-//             <CommonButton variant="outlined" fullWidth onClick={onClose}>
-//               Cancel
-//             </CommonButton>
-
-//             <CommonButton type="submit" fullWidth>
-//               Save
-//             </CommonButton>
-//           </Box>
-//         </Box>
-//       </Drawer>
-//     </div>
-//   );
-// }
-
-
 import { Box, Drawer } from "@mui/material";
 import React, { useState } from "react";
 
@@ -97,7 +10,8 @@ import { createNote } from "../../../../../services/activityApi";
 export default function Createnote({
   open,
   onClose,
-  dealId,
+  module,
+  moduleId,
   onSuccess,
 }) {
   const [formData, setFormData] = useState({
@@ -122,9 +36,9 @@ export default function Createnote({
       return;
     }
 
-    // Validate deal
-    if (!dealId) {
-      setError("Deal ID is missing.");
+    // Validate module and module ID
+    if (!module || !moduleId) {
+      setError("Related record information is missing.");
       return;
     }
 
@@ -162,10 +76,12 @@ export default function Createnote({
 
       const payload = {
         sender_id: senderId,
-        module: "deal",
-        module_id: Number(dealId),
+        module: String(module).toLowerCase().trim(),
+        module_id: Number(moduleId),
         note: formData.note,
       };
+
+      console.log("Creating note:", payload);
 
       const response = await createNote(payload);
 
@@ -186,7 +102,6 @@ export default function Createnote({
 
       // Close drawer
       onClose();
-
     } catch (error) {
       console.error(
         "Failed to create note:",
@@ -215,7 +130,6 @@ export default function Createnote({
           "Failed to create note. Please try again."
         );
       }
-
     } finally {
       setLoading(false);
     }
@@ -332,4 +246,3 @@ export default function Createnote({
     </Drawer>
   );
 }
-

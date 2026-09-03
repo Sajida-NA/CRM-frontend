@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
@@ -16,29 +14,33 @@ export default function EmailDetails({
   relatedModule = "deal",
   objectId,
 }) {
-  const { dealId } = useParams();
+  const { dealId, ticketId } = useParams();
 
-  const [activeTab, setActiveTab] =
-    useState("Emails");
+  const [activeTab, setActiveTab] = useState("Emails");
 
   const [openCreateEmail, setOpenCreateEmail] =
     useState(false);
 
   const [emails, setEmails] = useState([]);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   // ==========================================
-  // GET OBJECT ID
+  // GET CURRENT RECORD ID
   // ==========================================
 
   const finalObjectId =
-    objectId || dealId;
+    objectId ||
+    ticketId ||
+    dealId;
+
+  const currentModule = String(relatedModule)
+    .toLowerCase()
+    .trim();
 
   console.log(
     "RELATED MODULE:",
-    relatedModule
+    currentModule
   );
 
   console.log(
@@ -58,14 +60,51 @@ export default function EmailDetails({
         "/activities/email/"
       );
 
-      setEmails(
-        response.data || []
+      const allEmails = Array.isArray(response.data)
+        ? response.data
+        : response.data?.results || [];
+
+      // ========================================
+      // FILTER EMAILS FOR CURRENT RECORD
+      // ========================================
+
+      const filteredEmails = allEmails.filter(
+        (email) => {
+          const emailModule = String(
+            email?.module || ""
+          )
+            .toLowerCase()
+            .trim();
+
+          const relatedId =
+            email?.module_id ??
+            email?.object_id ??
+            email?.deal?.id ??
+            email?.ticket?.id ??
+            email?.lead?.id ??
+            email?.company?.id;
+
+          return (
+            emailModule === currentModule &&
+            Number(relatedId) ===
+              Number(finalObjectId)
+          );
+        }
       );
+
+      console.log(
+        "Filtered Emails:",
+        filteredEmails
+      );
+
+      setEmails(filteredEmails);
     } catch (error) {
       console.error(
         "Get Emails Error:",
-        error
+        error.response?.data || error
       );
+
+      setEmails([]);
     } finally {
       setLoading(false);
     }
@@ -76,23 +115,32 @@ export default function EmailDetails({
   // ==========================================
 
   useEffect(() => {
+    if (!finalObjectId) {
+      setEmails([]);
+      return;
+    }
+
     fetchEmails();
-  }, []);
+  }, [
+    currentModule,
+    finalObjectId,
+  ]);
 
   // ==========================================
   // EMAIL CREATED
   // ==========================================
 
-  const handleEmailCreated = () => {
-    fetchEmails();
+  const handleEmailCreated = async () => {
+    setOpenCreateEmail(false);
+
+    await fetchEmails();
   };
 
   return (
     <Box
       sx={{
         p: 3,
-        fontFamily:
-          "Roboto, sans-serif",
+        fontFamily: "Roboto, sans-serif",
         mx: -2,
       }}
     >
@@ -105,7 +153,6 @@ export default function EmailDetails({
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          title="Deals"
         />
       </Box>
 
@@ -116,8 +163,7 @@ export default function EmailDetails({
       <Box
         sx={{
           display: "flex",
-          justifyContent:
-            "space-between",
+          justifyContent: "space-between",
           alignItems: "center",
           mt: 3,
           mb: 1,
@@ -146,7 +192,7 @@ export default function EmailDetails({
         onClose={() =>
           setOpenCreateEmail(false)
         }
-        relatedModule={relatedModule}
+        relatedModule={currentModule}
         objectId={finalObjectId}
         onEmailCreated={
           handleEmailCreated
@@ -158,17 +204,14 @@ export default function EmailDetails({
       {/* ================================= */}
 
       {loading ? (
-        <Typography
-          sx={{ mt: 3 }}
-        >
+        <Typography sx={{ mt: 3 }}>
           Loading emails...
         </Typography>
       ) : emails.length === 0 ? (
         <Typography
           sx={{
             mt: 3,
-            color:
-              "text.secondary",
+            color: "text.secondary",
           }}
         >
           No emails found.
@@ -184,4 +227,3 @@ export default function EmailDetails({
     </Box>
   );
 }
-

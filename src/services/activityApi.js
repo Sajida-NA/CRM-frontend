@@ -1,4 +1,3 @@
-
 import api from "./api";
 
 // ==========================================
@@ -167,6 +166,54 @@ export const deleteMeeting = async (id) => {
 // CALL
 // ==========================================
 
+// Get calls for a specific CRM module
+// Example:
+// getCallsByModule("ticket", 1)
+// getCallsByModule("deal", 1)
+
+export const getCallsByModule = async (
+  module,
+  moduleId
+) => {
+  const response = await api.get(
+    "/activities/call/"
+  );
+
+  const allCalls = Array.isArray(response.data)
+    ? response.data
+    : response.data?.results || [];
+
+  const currentModule = String(module)
+    .toLowerCase()
+    .trim();
+
+  const currentModuleId = Number(moduleId);
+
+  return allCalls.filter((call) => {
+    const callModule = String(
+      call?.module || ""
+    )
+      .toLowerCase()
+      .trim();
+
+    const relatedId =
+      call?.module_id ??
+      call?.object_id ??
+      call?.deal?.id ??
+      call?.lead?.id ??
+      call?.ticket?.id ??
+      call?.company?.id;
+
+    return (
+      callModule === currentModule &&
+      Number(relatedId) === currentModuleId
+    );
+  });
+};
+
+
+// Create Call
+
 export const createCall = async (data) => {
   const response = await api.post(
     "/activities/call/",
@@ -176,6 +223,8 @@ export const createCall = async (data) => {
   return response.data;
 };
 
+
+// Update Call
 
 export const updateCall = async (
   id,
@@ -189,6 +238,8 @@ export const updateCall = async (
   return response.data;
 };
 
+
+// Delete Call
 
 export const deleteCall = async (id) => {
   const response = await api.delete(
@@ -233,4 +284,3 @@ export const deleteEmail = async (id) => {
 
   return response.data;
 };
-

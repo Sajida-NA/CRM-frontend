@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 
 import {
@@ -37,7 +36,7 @@ export default function CreateLogCall({
   const [saving, setSaving] = useState(false);
 
   // ============================================
-  // SET CONNECTED LEAD / PERSON NAME
+  // SET CONNECTED RECORD NAME
   // ============================================
 
   useEffect(() => {
@@ -100,7 +99,7 @@ export default function CreateLogCall({
     e.preventDefault();
 
     if (!objectId) {
-      console.error("Deal ID is missing.");
+      console.error("Related record ID is missing.");
       return;
     }
 
@@ -137,32 +136,26 @@ export default function CreateLogCall({
       setSaving(true);
 
       const payload = {
-        // Related CRM module
-        module: relatedModule.toLowerCase(),
+        module: String(relatedModule)
+          .toLowerCase()
+          .trim(),
 
-        // Deal ID
         module_id: Number(objectId),
 
-        // Logged-in user
         sender_id: Number(senderId),
 
-        // Call outcome
         call_outcome: formData.callOutcome,
 
-        // Duration in minutes
         duration: Number(formData.duration),
 
-        // Date
         date: formData.date?.format
           ? formData.date.format("YYYY-MM-DD")
           : formData.date,
 
-        // Time
         time: formData.time?.format
           ? formData.time.format("HH:mm:ss")
           : formData.time,
 
-        // Note
         note: formData.note || "",
       };
 
@@ -178,10 +171,6 @@ export default function CreateLogCall({
         response.data
       );
 
-      // ==========================================
-      // RESET FORM
-      // ==========================================
-
       setFormData({
         connected: connectedName || "",
         callOutcome: "",
@@ -190,10 +179,6 @@ export default function CreateLogCall({
         time: null,
         note: "",
       });
-
-      // ==========================================
-      // RETURN CREATED CALL
-      // ==========================================
 
       if (onCallCreated) {
         onCallCreated(response.data);
@@ -227,18 +212,10 @@ export default function CreateLogCall({
           bgcolor: "#fff",
         }}
       >
-        {/* ======================================
-            HEADER
-        ====================================== */}
-
         <DrawerHeader
           title="Log Call"
           onClose={onClose}
         />
-
-        {/* ======================================
-            FORM
-        ====================================== */}
 
         <Box
           sx={{
@@ -257,7 +234,7 @@ export default function CreateLogCall({
             name="connected"
             value={formData.connected}
             onChange={handleChange}
-            placeholder="Lead name"
+            placeholder="Connected record"
             fullWidth
             required
             disabled
@@ -394,9 +371,7 @@ export default function CreateLogCall({
           />
         </Box>
 
-        {/* ======================================
-            FOOTER
-        ====================================== */}
+        {/* FOOTER */}
 
         <Box
           sx={{
@@ -427,4 +402,3 @@ export default function CreateLogCall({
     </Drawer>
   );
 }
-

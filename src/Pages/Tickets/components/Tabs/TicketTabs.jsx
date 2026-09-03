@@ -1,4 +1,4 @@
-export const ticketTabs = (ticketId) => [
+export const getTicketTabs = (ticketId) => [
   {
     label: "Activity",
     path: `/tickets/${ticketId}/activities`,
@@ -25,3 +25,5 @@ export const ticketTabs = (ticketId) => [
   },
 ];
 
+// Temporary compatibility export for existing Ticket components.
+export const ticketTabs = [];
