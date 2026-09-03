@@ -19,7 +19,7 @@ import { useParams } from "react-router-dom";
 
 import EmailDetails from "../../../../Leads/components/Tabs/Emails/EmailDetails";
 import CompanyLeftPanel from "../../CompanyLeftPanel";
-import { companyTabs } from "../CompanyTabs";
+import { getCompanyTabs } from "../CompanyTabs";
 
 
 export default function CompanyEmail() {
@@ -38,11 +38,10 @@ export default function CompanyEmail() {
     <>
       <CompanyLeftPanel>
 
-        <EmailDetails
-          tabs={companyTabs}
-          companyId={id}
-        />
-
+       <EmailDetails
+  tabs={getCompanyTabs(id)}
+  companyId={id}
+/>
       </CompanyLeftPanel>
     </>
   );

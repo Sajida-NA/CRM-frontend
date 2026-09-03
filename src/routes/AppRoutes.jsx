@@ -95,20 +95,57 @@ function AppRoutes() {
       
 
       {/* ================= Company Routes ================= */}
-      <Route path="/companieslist" element={<CompaniesList />} />
-      {/* <Route path="/companyactivities" element={<CompanyActivities />} /> */}
-      <Route path="/companies/:id/activity" element={<CompanyActivities />}/>
-      <Route path="/companymeeting" element={<CompanyMeeting />} />
-      {/* <Route path="/companynote" element={<CompanyNote />} /> */}
-
-      <Route path="/companies/:id/activity/notes" element={<CompanyNote />}/>
-      {/* <Route path="/companycalls" element={<CompanyCalls />} /> */}
-      <Route path="/companies/:id/activity/calls"element={<CompanyCalls />}/>
+      {/* <Route path="/companieslist" element={<CompaniesList />} />
+      <Route path="/companyactivities" element={<CompanyActivities />} />
+       <Route path="/companynote" element={<CompanyNote />} />
+       <Route path="/companycalls" element={<CompanyCalls />} />
       <Route path="/companytask" element={<CompanyTask />} />
-      {/* <Route path="/companyemail" element={<CompanyEmail />} /> */}
-
-      <Route path="/companies/:id/activity/emails"element={<CompanyEmail />}/>
+      <Route path="/companyemail" element={<CompanyEmail />} />
       <Route path="/companyleftpanel" element={<CompanyLeftPanel />} />
+ */}
+
+
+      {/* ================= Company Routes ================= */}
+
+<Route
+  path="/companieslist"
+  element={<CompaniesList />}
+/>
+
+<Route
+  path="/companies/:id/activity"
+  element={<CompanyActivities />}
+/>
+
+<Route
+  path="/companies/:id/activity/notes"
+  element={<CompanyNote />}
+/>
+
+<Route
+  path="/companies/:id/activity/emails"
+  element={<CompanyEmail />}
+/>
+
+<Route
+  path="/companies/:id/activity/calls"
+  element={<CompanyCalls />}
+/>
+
+<Route
+  path="/companies/:id/activity/tasks"
+  element={<CompanyTask />}
+/>
+
+<Route
+  path="/companies/:id/activity/meetings"
+  element={<CompanyMeeting />}
+/>
+
+<Route
+  path="/companyleftpanel"
+  element={<CompanyLeftPanel />}
+/>
       
       {/* ================= Ticket Routes ================= */}
       <Route path="/ticketslist" element={<TicketsList />} />
@@ -122,12 +159,48 @@ function AppRoutes() {
 
       {/* ================= Deal Routes ================= */}
       <Route path="/dealslist" element={<DealsList />} />
-      <Route path="/dealactivities" element={<DealActivities />} />
-      <Route path="/dealmeeting" element={<DealMeeting />} />
+      {/* <Route path="/dealactivities" element={<DealActivities />} /> */}
+
+
+
+         <Route
+  path="/deals/:dealId/activities"
+  element={<DealActivities />}
+/>
+
+<Route
+  path="/deals/:dealId/meeting"
+  element={<DealMeeting />}
+/>
+
+<Route
+  path="/deals/:dealId/note"
+  element={<DealNote />}
+/>
+
+<Route
+  path="/deals/:dealId/calls"
+  element={<DealCalls />}
+/>
+
+<Route
+  path="/deals/:dealId/task"
+  element={<DealTask />}
+/>
+
+<Route
+  path="/deals/:dealId/email"
+  element={<DealEmail />}
+/>
+
+
+
+
+      {/* <Route path="/dealmeeting" element={<DealMeeting />} />
       <Route path="/dealnote" element={<DealNote />} />
       <Route path="/dealcalls" element={<DealCalls />} />
       <Route path="/dealtask" element={<DealTask />} />
-      <Route path="/dealemail" element={<DealEmail />} />
+      <Route path="/dealemail" element={<DealEmail />} /> */}
       <Route path="/dealleftpanel" element={<DealLeftPanel />} />
 
       {/* ================= Common Routes ================= */}

@@ -1,267 +1,239 @@
-// import React, { useState } from "react";
-// import { Box, Typography, Stack, IconButton, Collapse } from "@mui/material";
-// import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
-// import Createnote from "../../../../Leads/components/Tabs/Note/Createnote";
-// import CommonButton from "../../../../../Components/common/CommonButton";
-// import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-// import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-
-// export default function NoteDetails({tabs}) {
-//   const [activeTab, setActiveTab] = useState("Notes");
-//   const [openCreateNote, setOpenCreateNote] = useState(false);
-//   const [open, setOpen] = useState(false);
-
-//   return (
-//     <div>
-//       <Box
-//         sx={{
-//           p: 3,
-//           mx: -2,
-//         }}
-//       >
-//         {/* ACTIVITY TABS */}
-//         <Box>
-//           {/* <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} /> */}
-
-//           <CommonActivityTabs
-//         tabs={tabs}
-//         activeTab={activeTab}
-//         onTabChange={setActiveTab}
-//       />
-//         </Box>
-
-//         {/* Header */}
-//         <Box
-//           sx={{
-//             display: "flex",
-//             justifyContent: "space-between",
-//             alignItems: "center",
-//             mt: 3,
-//             mb: 1,
-//           }}
-//         >
-//           <Typography variant="h6">Notes</Typography>
-
-//           <CommonButton
-//             variant="contained"
-//             onClick={() => setOpenCreateNote(true)}
-//           >
-//             Create Note
-//           </CommonButton>
-//         </Box>
-
-//         {/* Drawer */}
-//         <Createnote
-//           open={openCreateNote}
-//           onClose={() => setOpenCreateNote(false)}
-//         />
-
-//         <Typography variant="h6">June 2025</Typography>
-
-//         <Box
-//           sx={{
-//             border: "1px solid",
-//             borderColor: "divider",
-//             borderRadius: 1,
-//             mt: 1,
-//           }}
-//         >
-//           <Box
-//             onClick={() => setOpen(!open)}
-//             sx={{
-//               display: "flex",
-//               justifyContent: "space-between",
-//               alignItems: "flex-start",
-//               px: 1,
-//               py: 2,
-//               cursor: "pointer",
-//             }}
-//           >
-//             {/* Left Side */}
-//             <Stack direction="row" spacing={1} alignItems="flex-start">
-//               <IconButton size="small" sx={{ p: 0 }}>
-//                 {open ? (
-//                   <KeyboardArrowRightIcon color="primary" fontSize="small"/>
-//                 ) : (
-//                   <KeyboardArrowDownIcon color="primary" fontSize="small"/>
-//                 )}
-//               </IconButton>
-
-//               <Box>
-//                 <Typography
-//                   sx={{
-//                     fontWeight: 600,
-//                     fontSize: 14,
-//                   }}
-//                 >
-//                   Note
-//                   <Typography
-//                     component="span"
-//                     sx={{
-//                       ml: 0.5,
-//                       color:"text.secondary",
-//                       fontWeight: 400,
-//                     }}
-//                   >
-//                     by Maria Johnson
-//                   </Typography>
-//                 </Typography>
-
-//                 <Typography
-//                   sx={{
-//                     mt: 0.5,
-//                     color: "text.secondary",
-//                   }}
-//                 >
-//                   Sample Note
-//                 </Typography>
-//               </Box>
-//             </Stack>
-
-//             {/* Right Side */}
-//             <Typography
-//               sx={{
-//                 color: "text.secondary",
-//                 whiteSpace: "nowrap",
-//                 fontSize: 14,
-//               }}
-//             >
-//               June 24, 2025 at 5:30PM
-//             </Typography>
-//           </Box>
-//         </Box>
-//       </Box>
-//     </div>
-//   );
-// }
 
 
 // import React, { useEffect, useState } from "react";
+
 // import {
 //   Box,
 //   Typography,
 //   Stack,
 //   IconButton,
+//   CircularProgress,
 // } from "@mui/material";
-
-// import { useParams } from "react-router-dom";
-
-// import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-// import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 // import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 // import Createnote from "../../../../Leads/components/Tabs/Note/Createnote";
 // import CommonButton from "../../../../../Components/common/CommonButton";
 
-// import api from "../../../../../services/api";
+// import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+// import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
-// export default function NoteDetails({ tabs }) {
+// import { getAllNotes } from "../../../../../services/activityApi";
 
-//   const { id } = useParams();
-
+// export default function NoteDetails({ tabs, module, moduleId }) {
 //   const [activeTab, setActiveTab] = useState("Notes");
-
-//   const [openCreateNote, setOpenCreateNote] =
-//     useState(false);
+//   const [openCreateNote, setOpenCreateNote] = useState(false);
+//   const [openNote, setOpenNote] = useState(null);
 
 //   const [notes, setNotes] = useState([]);
-
 //   const [loading, setLoading] = useState(true);
 
-//   const [openNotes, setOpenNotes] = useState({});
-
-
-//   // =====================================================
-//   // GET COMPANY NOTES
-//   // =====================================================
+//   // =========================================================
+//   // GET NOTES
+//   // =========================================================
 
 //   const fetchNotes = async () => {
-
-//     if (!id) return;
+//     if (!module || !moduleId) {
+//       setNotes([]);
+//       setLoading(false);
+//       return;
+//     }
 
 //     try {
-
 //       setLoading(true);
 
-//       const response = await api.get(
-//         "/activities/note/",
-//         {
-//           params: {
-//             module: "company",
-//             module_id: id,
-//           },
+//       const data = await getAllNotes();
+
+//       const allNotes = Array.isArray(data)
+//         ? data
+//         : data?.results || [];
+
+//       const currentModule = String(module)
+//         .toLowerCase()
+//         .trim();
+
+//       const currentModuleId = Number(moduleId);
+
+//       const filteredNotes = allNotes.filter((note) => {
+//         const noteModule = String(note?.module || "")
+//           .toLowerCase()
+//           .trim();
+
+//         if (noteModule !== currentModule) {
+//           return false;
 //         }
-//       );
 
-//       console.log(
-//         "Company Notes:",
-//         response.data
-//       );
+//         const relatedObject = note?.[currentModule];
 
-//       setNotes(response.data);
+//         if (!relatedObject) {
+//           return false;
+//         }
 
+//         return Number(relatedObject?.id) === currentModuleId;
+//       });
+
+//       setNotes(filteredNotes);
+
+//       // Keep currently opened note only if it still exists
+//       setOpenNote((currentOpenNote) => {
+//         if (
+//           currentOpenNote &&
+//           !filteredNotes.some(
+//             (note) => note.id === currentOpenNote
+//           )
+//         ) {
+//           return null;
+//         }
+
+//         return currentOpenNote;
+//       });
 //     } catch (error) {
+//       console.error("Failed to fetch notes:", error);
 
-//       console.error(
-//         "Failed to fetch company notes:",
-//         error.response?.data || error
-//       );
-
+//       setNotes([]);
+//       setOpenNote(null);
 //     } finally {
-
 //       setLoading(false);
-
 //     }
 //   };
 
-
-//   // =====================================================
-//   // LOAD NOTES WHEN COMPANY ID CHANGES
-//   // =====================================================
+//   // =========================================================
+//   // FETCH WHEN MODULE / MODULE ID CHANGES
+//   // =========================================================
 
 //   useEffect(() => {
-
 //     fetchNotes();
+//   }, [module, moduleId]);
 
-//   }, [id]);
+//   // =========================================================
+//   // AFTER CREATE NOTE
+//   // =========================================================
 
-
-//   // =====================================================
-//   // OPEN / CLOSE NOTE
-//   // =====================================================
-
-//   const toggleNote = (noteId) => {
-
-//     setOpenNotes((prev) => ({
-//       ...prev,
-//       [noteId]: !prev[noteId],
-//     }));
-
+//   const handleNoteCreated = () => {
+//     setOpenCreateNote(false);
+//     fetchNotes();
 //   };
 
+//   // =========================================================
+//   // FORMAT DATE + TIME
+//   // =========================================================
+
+//   const formatDateTime = (dateString) => {
+//     if (!dateString) {
+//       return "";
+//     }
+
+//     const date = new Date(dateString);
+
+//     if (Number.isNaN(date.getTime())) {
+//       return "";
+//     }
+
+//     const formattedDate = date.toLocaleDateString("en-US", {
+//       month: "long",
+//       day: "numeric",
+//       year: "numeric",
+//     });
+
+//     const formattedTime = date.toLocaleTimeString("en-US", {
+//       hour: "numeric",
+//       minute: "2-digit",
+//     });
+
+//     return `${formattedDate} at ${formattedTime}`;
+//   };
+
+//   // =========================================================
+//   // GROUP NOTES BY MONTH
+//   // =========================================================
+
+//   const groupedNotes = notes.reduce((groups, note) => {
+//     const date = note?.created_at
+//       ? new Date(note.created_at)
+//       : null;
+
+//     const groupName =
+//       date && !Number.isNaN(date.getTime())
+//         ? date.toLocaleDateString("en-US", {
+//             month: "long",
+//             year: "numeric",
+//           })
+//         : "Unknown Date";
+
+//     if (!groups[groupName]) {
+//       groups[groupName] = [];
+//     }
+
+//     groups[groupName].push(note);
+
+//     return groups;
+//   }, {});
+
+//   // =========================================================
+//   // SORT NOTES - NEWEST FIRST
+//   // =========================================================
+
+//   Object.keys(groupedNotes).forEach((month) => {
+//     groupedNotes[month].sort((a, b) => {
+//       const dateA = new Date(a?.created_at || 0);
+//       const dateB = new Date(b?.created_at || 0);
+
+//       return dateB.getTime() - dateA.getTime();
+//     });
+//   });
+
+//   // =========================================================
+//   // OPEN / CLOSE NOTE
+//   // =========================================================
+
+//   const handleToggleNote = (noteId) => {
+//     setOpenNote((current) =>
+//       current === noteId ? null : noteId
+//     );
+//   };
+
+//   // =========================================================
+//   // GET RELATED OBJECT
+//   // =========================================================
+
+//   const getRelatedObject = (note) => {
+//     const currentModule = String(module || "")
+//       .toLowerCase()
+//       .trim();
+
+//     return note?.[currentModule] || null;
+//   };
+
+//   // =========================================================
+//   // GET RELATED OBJECT NAME
+//   // =========================================================
+
+//   const getRelatedObjectName = (note) => {
+//     const relatedObject = getRelatedObject(note);
+
+//     return relatedObject?.name || "Unknown";
+//   };
+
+//   // =========================================================
+//   // RENDER
+//   // =========================================================
 
 //   return (
-//     <Box
-//       sx={{
-//         p: 3,
-//         mx: -2,
-//       }}
-//     >
-
-//       {/* =================================================
+//     <Box sx={{ p: 3, mx: -2 }}>
+//       {/* =====================================================
 //           ACTIVITY TABS
-//       ================================================= */}
+//       ===================================================== */}
 
-//       <CommonActivityTabs
-//         tabs={tabs}
-//         activeTab={activeTab}
-//         onTabChange={setActiveTab}
-//       />
+//       <Box>
+//         <CommonActivityTabs
+//           tabs={tabs}
+//           activeTab={activeTab}
+//           onTabChange={setActiveTab}
+//         />
+//       </Box>
 
-
-//       {/* =================================================
-//           HEADER
-//       ================================================= */}
+//       {/* =====================================================
+//           NOTES HEADER
+//       ===================================================== */}
 
 //       <Box
 //         sx={{
@@ -269,575 +241,841 @@
 //           justifyContent: "space-between",
 //           alignItems: "center",
 //           mt: 3,
-//           mb: 2,
+//           mb: 1,
 //         }}
 //       >
-
 //         <Typography variant="h6">
 //           Notes
 //         </Typography>
 
 //         <CommonButton
 //           variant="contained"
-//           onClick={() =>
-//             setOpenCreateNote(true)
-//           }
+//           onClick={() => setOpenCreateNote(true)}
 //         >
 //           Create Note
 //         </CommonButton>
-
 //       </Box>
 
-
-//       {/* =================================================
-//           CREATE NOTE DRAWER
-//       ================================================= */}
+//       {/* =====================================================
+//           CREATE NOTE DRAWER / MODAL
+//       ===================================================== */}
 
 //       <Createnote
 //         open={openCreateNote}
-
-//         onClose={() =>
-//           setOpenCreateNote(false)
-//         }
-
-//         module="company"
-
-//         moduleId={id}
-
-//         onCreated={fetchNotes}
+//         onClose={() => setOpenCreateNote(false)}
+//         module={module}
+//         moduleId={moduleId}
+//         onSuccess={handleNoteCreated}
 //       />
 
-
-//       {/* =================================================
+//       {/* =====================================================
 //           LOADING
-//       ================================================= */}
+//       ===================================================== */}
 
 //       {loading && (
-//         <Typography color="text.secondary">
-//           Loading notes...
-//         </Typography>
+//         <Box
+//           sx={{
+//             display: "flex",
+//             justifyContent: "center",
+//             py: 5,
+//           }}
+//         >
+//           <CircularProgress size={28} />
+//         </Box>
 //       )}
 
-
-//       {/* =================================================
+//       {/* =====================================================
 //           NO NOTES
-//       ================================================= */}
+//       ===================================================== */}
 
 //       {!loading && notes.length === 0 && (
-//         <Typography color="text.secondary">
-//           No notes found for this company.
-//         </Typography>
+//         <Box
+//           sx={{
+//             py: 5,
+//             textAlign: "center",
+//           }}
+//         >
+//           <Typography color="text.secondary">
+//             No notes found.
+//           </Typography>
+//         </Box>
 //       )}
 
-
-//       {/* =================================================
-//           NOTES
-//       ================================================= */}
+//       {/* =====================================================
+//           NOTES BY MONTH
+//       ===================================================== */}
 
 //       {!loading &&
-//         notes.map((item) => {
+//         Object.entries(groupedNotes).map(
+//           ([month, monthNotes]) => (
+//             <Box key={month}>
+//               {/* =================================================
+//                   MONTH
+//               ================================================= */}
 
-//           const isOpen =
-//             openNotes[item.id];
-
-//           return (
-
-//             <Box
-//               key={item.id}
-//               sx={{
-//                 border: "1px solid",
-//                 borderColor: "divider",
-//                 borderRadius: 1,
-//                 mt: 1,
-//               }}
-//             >
-
-//               {/* =========================================
-//                   NOTE HEADER
-//               ========================================= */}
-
-//               <Box
-//                 onClick={() =>
-//                   toggleNote(item.id)
-//                 }
+//               <Typography
+//                 variant="h6"
 //                 sx={{
-//                   display: "flex",
-//                   justifyContent:
-//                     "space-between",
-//                   alignItems:
-//                     "flex-start",
-//                   px: 1,
-//                   py: 2,
-//                   cursor: "pointer",
+//                   mt: 3,
+//                   mb: 1,
 //                 }}
 //               >
+//                 {month}
+//               </Typography>
 
-//                 {/* LEFT */}
+//               {/* =================================================
+//                   NOTE CARDS
+//               ================================================= */}
 
-//                 <Stack
-//                   direction="row"
-//                   spacing={1}
-//                   alignItems="flex-start"
-//                 >
+//               {monthNotes.map((note) => {
+//                 const isOpen = openNote === note.id;
 
-//                   <IconButton
-//                     size="small"
+//                 const relatedObjectName =
+//                   getRelatedObjectName(note);
+
+//                 return (
+//                   <Box
+//                     key={note.id}
 //                     sx={{
-//                       p: 0,
+//                       border: "1px solid",
+//                       borderColor: "divider",
+//                       borderRadius: 1,
+//                       mt: 1,
+//                       overflow: "hidden",
 //                     }}
 //                   >
+//                     {/* =========================================
+//                         NOTE HEADER
+//                     ========================================= */}
 
-//                     {isOpen ? (
-//                       <KeyboardArrowDownIcon
-//                         color="primary"
-//                         fontSize="small"
-//                       />
-//                     ) : (
-//                       <KeyboardArrowRightIcon
-//                         color="primary"
-//                         fontSize="small"
-//                       />
-//                     )}
-
-//                   </IconButton>
-
-
-//                   <Box>
-
-//                     <Typography
+//                     <Box
 //                       sx={{
-//                         fontWeight: 600,
-//                         fontSize: 14,
+//                         px: 1,
+//                         py: 1.5,
 //                       }}
 //                     >
+//                       {/* =======================================
+//                           NOTE BY ROW
+//                       ======================================= */}
 
-//                       Note
-
-//                       <Typography
-//                         component="span"
-//                         sx={{
-//                           ml: 0.5,
-//                           color:
-//                             "text.secondary",
-//                           fontWeight: 400,
-//                         }}
+//                       <Stack
+//                         direction="row"
+//                         spacing={1}
+//                         alignItems="center"
 //                       >
-//                         by{" "}
-//                         {item.created_by?.name ||
-//                           "Unknown"}
-//                       </Typography>
+//                         <IconButton
+//                           size="small"
+//                           onClick={() =>
+//                             handleToggleNote(note.id)
+//                           }
+//                           sx={{
+//                             p: 0,
+//                             flexShrink: 0,
+//                           }}
+//                         >
+//                           {isOpen ? (
+//                             <KeyboardArrowDownIcon
+//                               color="primary"
+//                               fontSize="small"
+//                             />
+//                           ) : (
+//                             <KeyboardArrowRightIcon
+//                               color="primary"
+//                               fontSize="small"
+//                             />
+//                           )}
+//                         </IconButton>
 
-//                     </Typography>
+//                         <Typography
+//                           sx={{
+//                             fontWeight: 600,
+//                             fontSize: 14,
+//                           }}
+//                         >
+//                           Note by{" "}
+//                           <Box
+//                             component="span"
+//                             sx={{
+//                               fontWeight: 400,
+//                               color: "text.secondary",
+//                             }}
+//                           >
+//                             {relatedObjectName}
+//                           </Box>
+//                         </Typography>
+//                       </Stack>
 
+//                       {/* =======================================
+//                           NOTE CONTENT + DATE
+//                       ======================================= */}
 
-//                     {!isOpen && (
-//                       <Typography
+//                       <Box
 //                         sx={{
+//                           display: "flex",
+//                           justifyContent: "space-between",
+//                           alignItems: "flex-start",
+//                           gap: 2,
+//                           pl: 4,
 //                           mt: 0.5,
-//                           color:
-//                             "text.secondary",
 //                         }}
 //                       >
+//                         {/* NOTE PREVIEW */}
 
-//                         {item.note}
+//                         <Box
+//                           sx={{
+//                             flex: 1,
+//                             minWidth: 0,
+//                             color: "text.secondary",
+//                             display: "-webkit-box",
+//                             WebkitLineClamp: isOpen
+//                               ? "unset"
+//                               : 1,
+//                             WebkitBoxOrient:
+//                               "vertical",
+//                             overflow: isOpen
+//                               ? "visible"
+//                               : "hidden",
+//                             wordBreak: "break-word",
 
-//                       </Typography>
+//                             "& p": {
+//                               margin: 0,
+//                             },
+
+//                             "& ul": {
+//                               margin: 0,
+//                               paddingLeft: 2,
+//                             },
+
+//                             "& ol": {
+//                               margin: 0,
+//                               paddingLeft: 2,
+//                             },
+
+//                             "& li": {
+//                               margin: 0,
+//                             },
+//                           }}
+//                           dangerouslySetInnerHTML={{
+//                             __html: note?.note || "",
+//                           }}
+//                         />
+
+//                         {/* DATE + TIME */}
+
+//                         <Typography
+//                           sx={{
+//                             color: "text.secondary",
+//                             whiteSpace: "nowrap",
+//                             fontSize: 14,
+//                             flexShrink: 0,
+//                           }}
+//                         >
+//                           {formatDateTime(
+//                             note?.created_at
+//                           )}
+//                         </Typography>
+//                       </Box>
+//                     </Box>
+
+//                     {/* =========================================
+//                         EXPANDED NOTE
+//                     ========================================= */}
+
+//                     {isOpen && (
+//                       <Box
+//                         sx={{
+//                           px: 4,
+//                           pb: 2,
+//                           pt: 1,
+//                           borderTop: "1px solid",
+//                           borderColor: "divider",
+//                         }}
+//                       >
+//                         <Box
+//                           sx={{
+//                             fontSize: 14,
+//                             lineHeight: 1.7,
+//                             wordBreak: "break-word",
+
+//                             "& p": {
+//                               marginTop: 0,
+//                               marginBottom: 1,
+//                             },
+
+//                             "& ul": {
+//                               paddingLeft: 3,
+//                             },
+
+//                             "& ol": {
+//                               paddingLeft: 3,
+//                             },
+
+//                             "& li": {
+//                               marginBottom: 0.5,
+//                             },
+
+//                             "& a": {
+//                               color: "primary.main",
+//                             },
+
+//                             "& img": {
+//                               maxWidth: "100%",
+//                             },
+//                           }}
+//                           dangerouslySetInnerHTML={{
+//                             __html: note?.note || "",
+//                           }}
+//                         />
+//                       </Box>
 //                     )}
-
 //                   </Box>
-
-//                 </Stack>
-
-
-//                 {/* RIGHT */}
-
-//                 <Typography
-//                   sx={{
-//                     color:
-//                       "text.secondary",
-//                     whiteSpace:
-//                       "nowrap",
-//                     fontSize: 14,
-//                   }}
-//                 >
-
-//                   {item.created_at
-//                     ? new Date(
-//                         item.created_at
-//                       ).toLocaleString()
-//                     : ""}
-
-//                 </Typography>
-
-//               </Box>
-
-
-//               {/* =========================================
-//                   NOTE CONTENT
-//               ========================================= */}
-
-//               {isOpen && (
-
-//                 <Box
-//                   sx={{
-//                     px: 6,
-//                     pb: 2,
-//                   }}
-//                 >
-
-//                   <Typography
-//                     sx={{
-//                       whiteSpace:
-//                         "pre-wrap",
-//                     }}
-//                   >
-//                     {item.note}
-//                   </Typography>
-
-//                 </Box>
-
-//               )}
-
+//                 );
+//               })}
 //             </Box>
-
-//           );
-
-//         })}
-
+//           )
+//         )}
 //     </Box>
 //   );
 // }
 
 
-
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  Stack,
-  IconButton,
-} from "@mui/material";
-
-import { useParams } from "react-router-dom";
-
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-
-import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
-import Createnote from "../../../../Leads/components/Tabs/Note/Createnote";
-import CommonButton from "../../../../../Components/common/CommonButton";
-
-import api from "../../../../../services/api";
-
-export default function NoteDetails({ tabs }) {
-  const { id } = useParams();
-
-  const [activeTab, setActiveTab] = useState("Notes");
-  const [openCreateNote, setOpenCreateNote] = useState(false);
-
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const [openNotes, setOpenNotes] = useState({});
-
-  // =====================================================
-  // REMOVE HTML FROM NOTE
-  // =====================================================
-
-  const getPlainText = (html) => {
-    if (!html) return "";
-
-    const temp = document.createElement("div");
-
-    temp.innerHTML = html;
-
-    return temp.textContent || temp.innerText || "";
-  };
-
-  // =====================================================
-  // GET COMPANY NOTES
-  // =====================================================
-
-  const fetchNotes = async () => {
-    if (!id) return;
-
-    try {
-      setLoading(true);
-
-      const response = await api.get(
-        "/activities/note/",
-        {
-          params: {
-            module: "company",
-            module_id: id,
-          },
-        }
-      );
-
-      console.log("Company Notes:", response.data);
-
-      setNotes(response.data);
-    } catch (error) {
-      console.error(
-        "Failed to fetch company notes:",
-        error.response?.data || error
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // =====================================================
-  // LOAD NOTES WHEN COMPANY ID CHANGES
-  // =====================================================
-
-  useEffect(() => {
-    fetchNotes();
-  }, [id]);
-
-  // =====================================================
-  // OPEN / CLOSE NOTE
-  // =====================================================
-
-  const toggleNote = (noteId) => {
-    setOpenNotes((prev) => ({
-      ...prev,
-      [noteId]: !prev[noteId],
-    }));
-  };
-
-  return (
-    <Box
-      sx={{
-        p: 3,
-        mx: -2,
-      }}
-    >
-
-      {/* =================================================
-          ACTIVITY TABS
-      ================================================= */}
-
-      <CommonActivityTabs
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-      />
-
-      {/* =================================================
-          HEADER
-      ================================================= */}
-
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mt: 3,
-          mb: 2,
-        }}
-      >
-        <Typography variant="h6">
-          Notes
-        </Typography>
-
-        <CommonButton
-          variant="contained"
-          onClick={() => setOpenCreateNote(true)}
-        >
-          Create Note
-        </CommonButton>
-      </Box>
-
-      {/* =================================================
-          CREATE NOTE DRAWER
-      ================================================= */}
-
-      <Createnote
-        open={openCreateNote}
-        onClose={() => setOpenCreateNote(false)}
-        module="company"
-        moduleId={id}
-        onCreated={fetchNotes}
-      />
-
-      {/* =================================================
-          LOADING
-      ================================================= */}
-
-      {loading && (
-        <Typography color="text.secondary">
-          Loading notes...
-        </Typography>
-      )}
-
-      {/* =================================================
-          NO NOTES
-      ================================================= */}
-
-      {!loading && notes.length === 0 && (
-        <Typography color="text.secondary">
-          No notes found for this company.
-        </Typography>
-      )}
-
-      {/* =================================================
-          NOTES LIST
-      ================================================= */}
-
-      {!loading &&
-        notes.map((item) => {
-          const isOpen = openNotes[item.id];
-
-          const plainNote = getPlainText(item.note);
-
-          return (
-            <Box
-              key={item.id}
-              sx={{
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 1,
-                mt: 1,
-              }}
-            >
-
-              {/* =========================================
-                  NOTE HEADER
-              ========================================= */}
-
-              <Box
-                onClick={() => toggleNote(item.id)}
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  px: 1,
-                  py: 2,
-                  cursor: "pointer",
-                }}
-              >
-
-                {/* =====================================
-                    LEFT SIDE
-                ===================================== */}
-
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="flex-start"
-                >
-
-                  <IconButton
-                    size="small"
-                    sx={{
-                      p: 0,
-                    }}
-                  >
-                    {isOpen ? (
-                      <KeyboardArrowDownIcon
-                        color="primary"
-                        fontSize="small"
-                      />
-                    ) : (
-                      <KeyboardArrowRightIcon
-                        color="primary"
-                        fontSize="small"
-                      />
-                    )}
-                  </IconButton>
-
-                  <Box>
-
-                    {/* NOTE + CREATED BY */}
-
-                    <Typography
-                      sx={{
-                        fontWeight: 600,
-                        fontSize: 14,
-                      }}
-                    >
-                      Note
-
-                      <Typography
-                        component="span"
-                        sx={{
-                          ml: 0.5,
-                          color: "text.secondary",
-                          fontWeight: 400,
-                        }}
-                      >
-                        by{" "}
-                        {item.created_by?.name ||
-                          "Unknown"}
-                      </Typography>
-                    </Typography>
-
-                    {/* =================================
-                        COLLAPSED NOTE
-                    ================================= */}
-
-                    {!isOpen && (
-                      <Typography
-                        sx={{
-                          mt: 0.5,
-                          color: "text.secondary",
-                        }}
-                      >
-                        {plainNote}
-                      </Typography>
-                    )}
-
-                  </Box>
-
-                </Stack>
-
-                {/* =====================================
-                    DATE
-                ===================================== */}
-
-                <Typography
-                  sx={{
-                    color: "text.secondary",
-                    whiteSpace: "nowrap",
-                    fontSize: 14,
-                  }}
-                >
-                  {item.created_at
-                    ? new Date(
-                        item.created_at
-                      ).toLocaleString()
-                    : ""}
-                </Typography>
-
-              </Box>
-
-              {/* =========================================
-                  EXPANDED NOTE
-              ========================================= */}
-
-              {isOpen && (
-                <Box
-                  sx={{
-                    px: 6,
-                    pb: 2,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      whiteSpace: "pre-wrap",
-                    }}
-                  >
-                    {plainNote}
-                  </Typography>
-                </Box>
-              )}
-
-            </Box>
-          );
-        })}
-
-    </Box>
-  );
+ 
+ 
+ 
+import React, { useEffect, useState } from "react"; 
+ 
+import { 
+  Box, 
+  Typography, 
+  Stack, 
+  IconButton, 
+  CircularProgress, 
+} from "@mui/material"; 
+ 
+import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab"; 
+import Createnote from "../../../../Leads/components/Tabs/Note/Createnote"; 
+import CommonButton from "../../../../../Components/common/CommonButton"; 
+ 
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight"; 
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"; 
+ 
+import { getAllNotes } from "../../../../../services/activityApi"; 
+ 
+export default function NoteDetails({ tabs, module, moduleId }) { 
+  const [activeTab, setActiveTab] = useState("Notes"); 
+  const [openCreateNote, setOpenCreateNote] = useState(false); 
+  const [openNote, setOpenNote] = useState(null); 
+ 
+  const [notes, setNotes] = useState([]); 
+  const [loading, setLoading] = useState(true); 
+ 
+  // ========================================================= 
+  // GET NOTES 
+  // ========================================================= 
+ 
+  const fetchNotes = async () => { 
+    if (!module || !moduleId) { 
+      setNotes([]); 
+      setLoading(false); 
+      return; 
+    } 
+ 
+    try { 
+      setLoading(true); 
+ 
+      const data = await getAllNotes(); 
+ 
+      const allNotes = Array.isArray(data) 
+        ? data 
+        : data?.results || []; 
+ 
+      const currentModule = String(module) 
+        .toLowerCase() 
+        .trim(); 
+ 
+      const currentModuleId = Number(moduleId); 
+ 
+      const filteredNotes = allNotes.filter((note) => { 
+        const noteModule = String(note?.module || "") 
+          .toLowerCase() 
+          .trim(); 
+ 
+        if (noteModule !== currentModule) { 
+          return false; 
+        } 
+ 
+        const relatedObject = note?.[currentModule]; 
+ 
+        if (!relatedObject) { 
+          return false; 
+        } 
+ 
+        return Number(relatedObject?.id) === currentModuleId; 
+      }); 
+ 
+      setNotes(filteredNotes); 
+ 
+      // Keep currently opened note only if it still exists 
+      setOpenNote((currentOpenNote) => { 
+        if ( 
+          currentOpenNote && 
+          !filteredNotes.some( 
+            (note) => note.id === currentOpenNote 
+          ) 
+        ) { 
+          return null; 
+        } 
+ 
+        return currentOpenNote; 
+      }); 
+    } catch (error) { 
+      console.error("Failed to fetch notes:", error); 
+ 
+      setNotes([]); 
+      setOpenNote(null); 
+    } finally { 
+      setLoading(false); 
+    } 
+  }; 
+ 
+  // ========================================================= 
+  // FETCH WHEN MODULE / MODULE ID CHANGES 
+  // ========================================================= 
+ 
+  useEffect(() => { 
+    fetchNotes(); 
+  }, [module, moduleId]); 
+ 
+  // ========================================================= 
+  // AFTER CREATE NOTE 
+  // ========================================================= 
+ 
+  const handleNoteCreated = () => { 
+    setOpenCreateNote(false); 
+    fetchNotes(); 
+  }; 
+ 
+  // ========================================================= 
+  // FORMAT DATE + TIME 
+  // ========================================================= 
+ 
+  const formatDateTime = (dateString) => { 
+    if (!dateString) { 
+      return ""; 
+    } 
+ 
+    const date = new Date(dateString); 
+ 
+    if (Number.isNaN(date.getTime())) { 
+      return ""; 
+    } 
+ 
+    const formattedDate = date.toLocaleDateString("en-US", { 
+      month: "long", 
+      day: "numeric", 
+      year: "numeric", 
+    }); 
+ 
+    const formattedTime = date.toLocaleTimeString("en-US", { 
+      hour: "numeric", 
+      minute: "2-digit", 
+    }); 
+ 
+    return `${formattedDate} at ${formattedTime}`; 
+  }; 
+ 
+  // ========================================================= 
+  // GROUP NOTES BY MONTH 
+  // ========================================================= 
+ 
+  const groupedNotes = notes.reduce((groups, note) => { 
+    const date = note?.created_at 
+      ? new Date(note.created_at) 
+      : null; 
+ 
+    const groupName = 
+      date && !Number.isNaN(date.getTime()) 
+        ? date.toLocaleDateString("en-US", { 
+            month: "long", 
+            year: "numeric", 
+          }) 
+        : "Unknown Date"; 
+ 
+    if (!groups[groupName]) { 
+      groups[groupName] = []; 
+    } 
+ 
+    groups[groupName].push(note); 
+ 
+    return groups; 
+  }, {}); 
+ 
+  // ========================================================= 
+  // SORT NOTES - NEWEST FIRST 
+  // ========================================================= 
+ 
+  Object.keys(groupedNotes).forEach((month) => { 
+    groupedNotes[month].sort((a, b) => { 
+      const dateA = new Date(a?.created_at || 0); 
+      const dateB = new Date(b?.created_at || 0); 
+ 
+      return dateB.getTime() - dateA.getTime(); 
+    }); 
+  }); 
+ 
+  // ========================================================= 
+  // OPEN / CLOSE NOTE 
+  // ========================================================= 
+ 
+  const handleToggleNote = (noteId) => { 
+    setOpenNote((current) => 
+      current === noteId ? null : noteId 
+    ); 
+  }; 
+ 
+  // ========================================================= 
+  // GET RELATED OBJECT 
+  // ========================================================= 
+ 
+  const getRelatedObject = (note) => { 
+    const currentModule = String(module || "") 
+      .toLowerCase() 
+      .trim(); 
+ 
+    return note?.[currentModule] || null; 
+  }; 
+ 
+  // ========================================================= 
+  // GET RELATED OBJECT NAME 
+  // ========================================================= 
+ 
+  const getRelatedObjectName = (note) => { 
+    const relatedObject = getRelatedObject(note); 
+ 
+    return relatedObject?.name || "Unknown"; 
+  }; 
+ 
+  // ========================================================= 
+  // RENDER 
+  // ========================================================= 
+ 
+  return ( 
+    <Box sx={{ p: 3, mx: -2 }}> 
+      {/* ===================================================== 
+          ACTIVITY TABS 
+      ===================================================== */} 
+ 
+      <Box> 
+        <CommonActivityTabs 
+          tabs={tabs} 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab} 
+        /> 
+      </Box> 
+ 
+      {/* ===================================================== 
+          NOTES HEADER 
+      ===================================================== */} 
+ 
+      <Box 
+        sx={{ 
+          display: "flex", 
+          justifyContent: "space-between", 
+          alignItems: "center", 
+          mt: 3, 
+          mb: 1, 
+        }} 
+      > 
+        <Typography variant="h6"> 
+          Notes 
+        </Typography> 
+ 
+        <CommonButton 
+          variant="contained" 
+          onClick={() => setOpenCreateNote(true)} 
+        > 
+          Create Note 
+        </CommonButton> 
+      </Box> 
+ 
+      {/* ===================================================== 
+          CREATE NOTE DRAWER / MODAL 
+      ===================================================== */} 
+ 
+      <Createnote 
+        open={openCreateNote} 
+        onClose={() => setOpenCreateNote(false)} 
+        module={module} 
+        moduleId={moduleId} 
+        onSuccess={handleNoteCreated} 
+      /> 
+ 
+      {/* ===================================================== 
+          LOADING 
+      ===================================================== */} 
+ 
+      {loading && ( 
+        <Box 
+          sx={{ 
+            display: "flex", 
+            justifyContent: "center", 
+            py: 5, 
+          }} 
+        > 
+          <CircularProgress size={28} /> 
+        </Box> 
+      )} 
+ 
+      {/* ===================================================== 
+          NO NOTES 
+      ===================================================== */} 
+ 
+      {!loading && notes.length === 0 && ( 
+        <Box 
+          sx={{ 
+            py: 5, 
+            textAlign: "center", 
+          }} 
+        > 
+          <Typography color="text.secondary"> 
+            No notes found. 
+          </Typography> 
+        </Box> 
+      )} 
+ 
+      {/* ===================================================== 
+          NOTES BY MONTH 
+      ===================================================== */} 
+ 
+      {!loading && 
+        Object.entries(groupedNotes).map( 
+          ([month, monthNotes]) => ( 
+            <Box key={month}> 
+              {/* ================================================= 
+                  MONTH 
+              ================================================= */} 
+ 
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  mt: 3, 
+                  mb: 1, 
+                }} 
+              > 
+                {month} 
+              </Typography> 
+ 
+              {/* ================================================= 
+                  NOTE CARDS 
+              ================================================= */} 
+ 
+              {monthNotes.map((note) => { 
+                const isOpen = openNote === note.id; 
+ 
+                const relatedObjectName = 
+                  getRelatedObjectName(note); 
+ 
+                return ( 
+                  <Box 
+                    key={note.id} 
+                    sx={{ 
+                      border: "1px solid", 
+                      borderColor: "divider", 
+                      borderRadius: 1, 
+                      mt: 1, 
+                      overflow: "hidden", 
+                    }} 
+                  > 
+                    {/* ========================================= 
+                        NOTE HEADER 
+                    ========================================= */} 
+ 
+                    <Box 
+                      sx={{ 
+                        px: 1, 
+                        py: 1.5, 
+                      }} 
+                    > 
+                      {/* ======================================= 
+                          NOTE BY ROW 
+                      ======================================= */} 
+ 
+                      <Stack 
+                        direction="row" 
+                        spacing={1} 
+                        alignItems="center" 
+                      > 
+                        <IconButton 
+                          size="small" 
+                          onClick={() => 
+                            handleToggleNote(note.id) 
+                          } 
+                          sx={{ 
+                            p: 0, 
+                            flexShrink: 0, 
+                          }} 
+                        > 
+                          {isOpen ? ( 
+                            <KeyboardArrowDownIcon 
+                              color="primary" 
+                              fontSize="small" 
+                            /> 
+                          ) : ( 
+                            <KeyboardArrowRightIcon 
+                              color="primary" 
+                              fontSize="small" 
+                            /> 
+                          )} 
+                        </IconButton> 
+ 
+                        <Typography 
+                          sx={{ 
+                            fontWeight: 600, 
+                            fontSize: 14, 
+                          }} 
+                        > 
+                          Note by{" "} 
+                          <Box 
+                            component="span" 
+                            sx={{ 
+                              fontWeight: 400, 
+                              color: "text.secondary", 
+                            }} 
+                          > 
+                            {relatedObjectName} 
+                          </Box> 
+                        </Typography> 
+                      </Stack> 
+ 
+                      {/* ======================================= 
+                          NOTE CONTENT + DATE 
+                      ======================================= */} 
+ 
+                      <Box 
+                        sx={{ 
+                          display: "flex", 
+                          justifyContent: "space-between", 
+                          alignItems: "flex-start", 
+                          gap: 2, 
+                          pl: 4, 
+                          mt: 0.5, 
+                        }} 
+                      > 
+                        {/* NOTE PREVIEW */} 
+ 
+                        <Box 
+                          sx={{ 
+                            flex: 1, 
+                            minWidth: 0, 
+                            color: "text.secondary", 
+                            display: "-webkit-box", 
+                            WebkitLineClamp: isOpen 
+                              ? "unset" 
+                              : 1, 
+                            WebkitBoxOrient: 
+                              "vertical", 
+                            overflow: isOpen 
+                              ? "visible" 
+                              : "hidden", 
+                            wordBreak: "break-word", 
+ 
+                            "& p": { 
+                              margin: 0, 
+                            }, 
+ 
+                            "& ul": { 
+                              margin: 0, 
+                              paddingLeft: 2, 
+                            }, 
+ 
+                            "& ol": { 
+                              margin: 0, 
+                              paddingLeft: 2, 
+                            }, 
+ 
+                            "& li": { 
+                              margin: 0, 
+                            }, 
+                          }} 
+                          dangerouslySetInnerHTML={{ 
+                            __html: note?.note || "", 
+                          }} 
+                        /> 
+ 
+                        {/* DATE + TIME */} 
+ 
+                        <Typography 
+                          sx={{ 
+                            color: "text.secondary", 
+                            whiteSpace: "nowrap", 
+                            fontSize: 14, 
+                            flexShrink: 0, 
+                          }} 
+                        > 
+                          {formatDateTime( 
+                            note?.created_at 
+                          )} 
+                        </Typography> 
+                      </Box> 
+                    </Box> 
+ 
+                    {/* ========================================= 
+                        EXPANDED NOTE 
+                    ========================================= */} 
+ 
+                    {isOpen && ( 
+                      <Box 
+                        sx={{ 
+                          px: 4, 
+                          pb: 2, 
+                          pt: 1, 
+                          borderTop: "1px solid", 
+                          borderColor: "divider", 
+                        }} 
+                      > 
+                        <Box 
+                          sx={{ 
+                            fontSize: 14, 
+                            lineHeight: 1.7, 
+                            wordBreak: "break-word", 
+ 
+                            "& p": { 
+                              marginTop: 0, 
+                              marginBottom: 1, 
+                            }, 
+ 
+                            "& ul": { 
+                              paddingLeft: 3, 
+                            }, 
+ 
+                            "& ol": { 
+                              paddingLeft: 3, 
+                            }, 
+ 
+                            "& li": { 
+                              marginBottom: 0.5, 
+                            }, 
+ 
+                            "& a": { 
+                              color: "primary.main", 
+                            }, 
+ 
+                            "& img": { 
+                              maxWidth: "100%", 
+                            }, 
+                          }} 
+                          dangerouslySetInnerHTML={{ 
+                            __html: note?.note || "", 
+                          }} 
+                        /> 
+                      </Box> 
+                    )} 
+                  </Box> 
+                ); 
+              })} 
+            </Box> 
+          ) 
+        )} 
+    </Box> 
+  ); 
 }
-
