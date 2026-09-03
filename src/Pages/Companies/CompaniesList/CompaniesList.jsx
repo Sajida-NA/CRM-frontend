@@ -13,6 +13,7 @@ import CommonButton from "../../../Components/common/CommonButton";
 import dayjs from "dayjs";
 import CommonDatePicker from "../../../Components/common/CommonDatePicker";
 import CommonCheckbox from "../../../Components/common/CommonCheckbox";
+import { useNavigate } from "react-router-dom";
 
 import api from "../../../services/api";
 
@@ -28,6 +29,7 @@ function CompaniesList() {
   const [companiesData, setCompaniesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const navigate = useNavigate();
 
   //filter section ---values same as list
   const industryOptions = [
@@ -268,7 +270,23 @@ const fetchCompanies = async () => {
               <TableCell>{company.city}</TableCell>
               <TableCell>{company.country}</TableCell>
               <TableCell>{company.createdDate}</TableCell> */}
-              <TableCell>{company.company_name}</TableCell>
+              {/* <TableCell>{company.company_name}</TableCell> */}
+              <TableCell>
+  <Box
+    component="span"
+    sx={{
+      color: "primary.main",
+      cursor: "pointer",
+      fontWeight: 500,
+      "&:hover": {
+        textDecoration: "underline",
+      },
+    }}
+    onClick={() => navigate(`/companies/${company.id}/activity`)}
+  >
+    {company.company_name}
+  </Box>
+</TableCell>
               <TableCell>{company.company_owner}</TableCell>
               <TableCell>{company.phone_number}</TableCell>
               <TableCell>{company.industry}</TableCell>

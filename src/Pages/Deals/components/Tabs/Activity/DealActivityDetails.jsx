@@ -230,98 +230,148 @@ export default function DealActivityDetails({ dealId }) {
       );
     }
 
+    // // ===================================================
+    // // TASK
+    // // ===================================================
+
+    // if (
+    //   activity.activity_type === "task" &&
+    //   data
+    // ) {
+    //   return (
+    //     <>
+    //       <Typography sx={{ fontSize: 14 }}>
+    //         <Box
+    //           component="span"
+    //           sx={{
+    //             color: "text.secondary",
+    //             fontWeight: 600,
+    //           }}
+    //         >
+    //           {createdBy}
+    //         </Box>{" "}
+    //         <Box
+    //           component="span"
+    //           sx={{
+    //             color: "text.secondary",
+    //           }}
+    //         >
+    //           created a task
+    //         </Box>
+    //       </Typography>
+
+    //       {data.task_name && (
+    //         <Typography
+    //           sx={{
+    //             mt: 1,
+    //             fontSize: 14,
+    //             color: "text.secondary",
+    //           }}
+    //         >
+    //           {data.task_name}
+    //         </Typography>
+    //       )}
+
+    //       {data.due_date && (
+    //         <Typography
+    //           sx={{
+    //             mt: 0.5,
+    //             fontSize: 13,
+    //             color: "text.secondary",
+    //           }}
+    //         >
+    //           Due: {data.due_date}
+    //         </Typography>
+    //       )}
+
+    //       {data.time && (
+    //         <Typography
+    //           sx={{
+    //             mt: 0.5,
+    //             fontSize: 13,
+    //             color: "text.secondary",
+    //           }}
+    //         >
+    //           Time: {data.time}
+    //         </Typography>
+    //       )}
+
+    //       {data.task_type && (
+    //         <Typography
+    //           sx={{
+    //             mt: 0.5,
+    //             fontSize: 13,
+    //             color: "text.secondary",
+    //           }}
+    //         >
+    //           Type: {data.task_type}
+    //         </Typography>
+    //       )}
+
+    //       {data.priority && (
+    //         <Typography
+    //           sx={{
+    //             mt: 0.5,
+    //             fontSize: 13,
+    //             color: "text.secondary",
+    //           }}
+    //         >
+    //           Priority: {data.priority}
+    //         </Typography>
+    //       )}
+    //     </>
+    //   );
+    // }
+
+
     // ===================================================
-    // TASK
-    // ===================================================
+// TASK
+// ===================================================
 
-    if (
-      activity.activity_type === "task" &&
-      data
-    ) {
-      return (
-        <>
-          <Typography sx={{ fontSize: 14 }}>
-            <Box
-              component="span"
-              sx={{
-                color: "text.secondary",
-                fontWeight: 600,
-              }}
-            >
-              {createdBy}
-            </Box>{" "}
-            <Box
-              component="span"
-              sx={{
-                color: "text.secondary",
-              }}
-            >
-              created a task
-            </Box>
-          </Typography>
+if (
+  activity.activity_type === "task" &&
+  data
+) {
+  return (
+    <>
+      {/* CREATED BY */}
 
-          {data.task_name && (
-            <Typography
-              sx={{
-                mt: 1,
-                fontSize: 14,
-                color: "text.secondary",
-              }}
-            >
-              {data.task_name}
-            </Typography>
-          )}
+      <Typography sx={{ fontSize: 14 }}>
+        <Box
+          component="span"
+          sx={{
+            color: "text.secondary",
+            fontWeight: 600,
+          }}
+        >
+          {createdBy}
+        </Box>{" "}
+        <Box
+          component="span"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
+          created a task
+        </Box>
+      </Typography>
 
-          {data.due_date && (
-            <Typography
-              sx={{
-                mt: 0.5,
-                fontSize: 13,
-                color: "text.secondary",
-              }}
-            >
-              Due: {data.due_date}
-            </Typography>
-          )}
+      {/* TASK NAME ONLY */}
 
-          {data.time && (
-            <Typography
-              sx={{
-                mt: 0.5,
-                fontSize: 13,
-                color: "text.secondary",
-              }}
-            >
-              Time: {data.time}
-            </Typography>
-          )}
-
-          {data.task_type && (
-            <Typography
-              sx={{
-                mt: 0.5,
-                fontSize: 13,
-                color: "text.secondary",
-              }}
-            >
-              Type: {data.task_type}
-            </Typography>
-          )}
-
-          {data.priority && (
-            <Typography
-              sx={{
-                mt: 0.5,
-                fontSize: 13,
-                color: "text.secondary",
-              }}
-            >
-              Priority: {data.priority}
-            </Typography>
-          )}
-        </>
-      );
-    }
+      {data.task_name && (
+        <Typography
+          sx={{
+            mt: 1,
+            fontSize: 14,
+            color: "text.secondary",
+          }}
+        >
+          {data.task_name}
+        </Typography>
+      )}
+    </>
+  );
+}
 
     // ===================================================
     // MEETING
@@ -605,4 +655,151 @@ export default function DealActivityDetails({ dealId }) {
   );
 }
 
+// import React, { useEffect, useState } from "react";
+// import {
+//   Box,
+//   Typography,
+//   CircularProgress,
+// } from "@mui/material";
 
+// import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
+// import ActivityTimeline from "../../../../Leads/components/Tabs/Activity/ActivityTimeline";
+
+// import { getDealTabs } from "../DealTabs";
+// import { getActivityTimeline } from "../../../../../services/activityservice";
+
+// export default function DealActivityDetails({ dealId }) {
+//   const [activities, setActivities] = useState([]);
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const fetchActivities = async () => {
+//       if (!dealId) {
+//         console.log("Deal ID not found");
+//         setActivities([]);
+//         setLoading(false);
+//         return;
+//       }
+
+//       try {
+//         setLoading(true);
+
+//         console.log(
+//           "Fetching deal activities for ID:",
+//           dealId
+//         );
+
+//         const response = await getActivityTimeline(
+//           "deal",
+//           dealId
+//         );
+
+//         console.log(
+//           "Deal activities:",
+//           response.data
+//         );
+
+//         setActivities(
+//           Array.isArray(response.data)
+//             ? response.data
+//             : []
+//         );
+//       } catch (error) {
+//         console.error(
+//           "Error fetching deal activities:",
+//           error.response?.data || error
+//         );
+
+//         setActivities([]);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchActivities();
+//   }, [dealId]);
+
+//   return (
+//     <Box
+//       sx={{
+//         p: 3,
+//         fontFamily: "Roboto, sans-serif",
+//         mx: -2,
+//       }}
+//     >
+//       {/* Activity Tabs */}
+//       <Box>
+//         <CommonActivityTabs
+//           tabs={getDealTabs(dealId)}
+//           activeTab="Activity"
+//         />
+//       </Box>
+
+//       {/* Loading */}
+//       {loading && (
+//         <Box
+//           sx={{
+//             display: "flex",
+//             justifyContent: "center",
+//             py: 5,
+//           }}
+//         >
+//           <CircularProgress />
+//         </Box>
+//       )}
+
+//       {/* Deal ID not found */}
+//       {!loading && !dealId && (
+//         <Typography
+//           sx={{
+//             mt: 5,
+//             textAlign: "center",
+//             color: "text.secondary",
+//           }}
+//         >
+//           Deal ID not found.
+//         </Typography>
+//       )}
+
+//       {/* No activities */}
+//       {!loading &&
+//         dealId &&
+//         activities.length === 0 && (
+//           <Typography
+//             variant="body1"
+//             sx={{
+//               mt: 5,
+//               textAlign: "center",
+//               color: "text.secondary",
+//             }}
+//           >
+//             No activities found for this deal.
+//           </Typography>
+//         )}
+
+//       {/* Activities */}
+//       {!loading &&
+//         dealId &&
+//         activities.length > 0 && (
+//           <Box sx={{ mt: 4 }}>
+//             <Typography
+//               variant="h6"
+//               sx={{
+//                 mb: 3,
+//                 fontWeight: 600,
+//               }}
+//             >
+//               Activities
+//             </Typography>
+
+//             {activities.map((activity) => (
+//               <ActivityTimeline
+//                 key={activity.id}
+//                 activity={activity}
+//               />
+//             ))}
+//           </Box>
+//         )}
+//     </Box>
+//   );
+// }

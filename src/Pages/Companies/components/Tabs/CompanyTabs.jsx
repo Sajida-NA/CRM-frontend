@@ -1,26 +1,36 @@
-export const companyTabs = (companyId) => [
+
+// export const companyTabs = [
+//   { label: "Activity" },
+//   { label: "Notes" },
+//   { label: "Emails" },
+//   { label: "Calls" },
+//   { label: "Tasks" },
+//   { label: "Meetings" },
+// ];
+
+export const getCompanyTabs = (companyId) => [
   {
     label: "Activity",
-    path: `/company/${companyId}/activities`,
+    path: `/companies/${companyId}/activity`,
   },
   {
     label: "Notes",
-    path: `/company/${companyId}/note`,
+    path: `/companies/${companyId}/activity/notes`,
   },
   {
     label: "Emails",
-    path: `/company/${companyId}/email`,
+    path: `/companies/${companyId}/activity/emails`,
   },
   {
     label: "Calls",
-    path: `/company/${companyId}/calls`,
+    path: `/companies/${companyId}/activity/calls`,
   },
   {
     label: "Tasks",
-    path: `/company/${companyId}/task`,
+    path: `/companies/${companyId}/activity/tasks`,
   },
   {
     label: "Meetings",
-    path: `/company/${companyId}/meeting`,
+    path: `/companies/${companyId}/activity/meetings`,
   },
 ];
