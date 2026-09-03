@@ -1,25 +1,20 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+
 
 import CompanyLeftPanel from "../../CompanyLeftPanel";
 import MeetingDetails from "../../../../Tickets/components/Tabs/Meeting/MeetingDetails";
-import { companyTabs } from "../CompanyTabs";
+import { getCompanyTabs } from "../CompanyTabs";
+import { useParams } from "react-router-dom";
 
 export default function CompanyMeeting() {
-
-  const { companyId } = useParams();
-
-  console.log("COMPANY ID:", companyId);
-
+   const {id} = useParams();
   return (
-    <CompanyLeftPanel>
+    <>
+      <CompanyLeftPanel> <MeetingDetails  tabs={getCompanyTabs(id)} 
+        companyId={id}/></CompanyLeftPanel>
+    </>
 
-      <MeetingDetails
-        tabs={companyTabs(companyId)}
-        module="company"
-        moduleId={companyId}
-      />
-
-    </CompanyLeftPanel>
+ 
   );
 }
+

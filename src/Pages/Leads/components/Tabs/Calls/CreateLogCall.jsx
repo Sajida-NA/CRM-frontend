@@ -16,14 +16,16 @@ import FormDatePicker from "../../../../../Components/common/FormDatePicker";
 
 import api from "../../../../../services/api";
 
+
 export default function CreateLogCall({
   open,
   onClose,
-  relatedModule = "deal",
+  relatedModule,
   objectId,
   connectedName = "",
   onCallCreated,
 }) {
+
   const [formData, setFormData] = useState({
     connected: "",
     callOutcome: "",
@@ -40,48 +42,84 @@ export default function CreateLogCall({
   // ============================================
 
   useEffect(() => {
+
+    console.log("CreateLogCall props:", {
+      relatedModule,
+      objectId,
+      connectedName,
+    });
+
+  }, [relatedModule, objectId, connectedName]);
+
+
+  // ============================================================
+  // SET CONNECTED NAME
+  // ============================================================
+
+  useEffect(() => {
+
     setFormData((prev) => ({
       ...prev,
       connected: connectedName || "",
     }));
+
   }, [connectedName]);
 
-  // ============================================
+
+  // ============================================================
   // INPUT CHANGE
-  // ============================================
+  // ============================================================
 
   const handleChange = (e) => {
+
     const { name, value } = e.target;
 
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
   };
 
-  // ============================================
+
+  // ============================================================
   // GET LOGGED-IN USER ID
-  // ============================================
+  // ============================================================
 
   const getSenderId = () => {
+
     try {
-      const accessToken = localStorage.getItem("access");
+
+      const accessToken =
+        localStorage.getItem("access");
 
       if (!accessToken) {
         return null;
       }
 
+      const tokenParts =
+        accessToken.split(".");
+
+      if (tokenParts.length !== 3) {
+        return null;
+      }
+
       const payload = JSON.parse(
         atob(
-          accessToken
-            .split(".")[1]
+          tokenParts[1]
             .replace(/-/g, "+")
             .replace(/_/g, "/")
         )
       );
 
-      return payload.user_id || payload.id || null;
+      return (
+        payload.user_id ||
+        payload.id ||
+        null
+      );
+
     } catch (error) {
+
       console.error(
         "Unable to decode access token:",
         error
@@ -91,11 +129,13 @@ export default function CreateLogCall({
     }
   };
 
-  // ============================================
+
+  // ============================================================
   // SUBMIT
-  // ============================================
+  // ============================================================
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     if (!objectId) {
@@ -103,36 +143,170 @@ export default function CreateLogCall({
       return;
     }
 
-    if (!formData.callOutcome) {
-      console.error("Call outcome is required.");
+
+    // ==========================================================
+    // VALIDATE OBJECT ID
+    // ==========================================================
+
+    if (
+      objectId === undefined ||
+      objectId === null ||
+      objectId === "" ||
+      Number.isNaN(numericObjectId) ||
+      numericObjectId <= 0
+    ) {
+
+      console.error(
+        `${moduleName} ID is missing or invalid.`,
+        {
+          objectId,
+          moduleName,
+        }
+      );
+
       return;
     }
+
+
+    // ==========================================================
+    // VALIDATE CALL OUTCOME
+    // ==========================================================
+
+    if (!formData.callOutcome) {
+
+      console.error(
+        "Call outcome is required."
+      );
+
+      return;
+    }
+
+
+    // ==========================================================
+    // VALIDATE DURATION
+    // ==========================================================
 
     if (!formData.duration) {
-      console.error("Duration is required.");
+
+      console.error(
+        "Duration is required."
+      );
+
       return;
     }
+
+
+    // ==========================================================
+    // VALIDATE DATE
+    // ==========================================================
 
     if (!formData.date) {
-      console.error("Date is required.");
+
+      console.error(
+        "Date is required."
+      );
+
       return;
     }
+
+
+    // ==========================================================
+    // VALIDATE TIME
+    // ==========================================================
 
     if (!formData.time) {
-      console.error("Time is required.");
+
+      console.error(
+        "Time is required."
+      );
+
       return;
     }
 
-    const senderId = getSenderId();
+
+    // ==========================================================
+    // GET CURRENT USER
+    // ==========================================================
+
+    const senderId =
+      getSenderId();
+
 
     if (!senderId) {
+
       console.error(
         "Logged-in user ID could not be found."
       );
+
       return;
     }
 
+
+    // ==========================================================
+    // FORMAT DATE
+    // ==========================================================
+
+    const formattedDate =
+      formData.date?.format
+        ? formData.date.format("YYYY-MM-DD")
+        : formData.date;
+
+
+    // ==========================================================
+    // FORMAT TIME
+    // ==========================================================
+
+    const formattedTime =
+      formData.time?.format
+        ? formData.time.format("HH:mm:ss")
+        : formData.time;
+
+
+    // ==========================================================
+    // CREATE PAYLOAD
+    // ==========================================================
+
+    const payload = {
+
+      // company / deal / lead / ticket
+      module: moduleName,
+
+      // ID of the related record
+      module_id: numericObjectId,
+
+      // logged-in user
+      sender_id: Number(senderId),
+
+      // call information
+      call_outcome:
+        formData.callOutcome,
+
+      duration:
+        Number(formData.duration),
+
+      date:
+        formattedDate,
+
+      time:
+        formattedTime,
+
+      note:
+        formData.note || "",
+    };
+
+
+    console.log(
+      "FINAL CALL PAYLOAD:",
+      payload
+    );
+
+
+    // ==========================================================
+    // SAVE
+    // ==========================================================
+
     try {
+
       setSaving(true);
 
       const payload = {
@@ -167,40 +341,67 @@ export default function CreateLogCall({
       );
 
       console.log(
-        "Call created successfully:",
+        "CALL CREATED SUCCESSFULLY:",
         response.data
       );
 
       setFormData({
-        connected: connectedName || "",
+        connected:
+          connectedName || "",
+
         callOutcome: "",
+
         duration: "",
+
         date: null,
+
         time: null,
+
         note: "",
       });
 
       if (onCallCreated) {
-        onCallCreated(response.data);
+
+        await onCallCreated(
+          response.data
+        );
+
       } else {
+
         onClose();
+
       }
+
     } catch (error) {
+
       console.error(
-        "Error creating call:",
-        error.response?.data || error
+        "ERROR CREATING CALL:",
+        error.response?.data ||
+        error.message ||
+        error
       );
+
     } finally {
+
       setSaving(false);
+
     }
+
   };
 
+
+  // ============================================================
+  // UI
+  // ============================================================
+
   return (
+
     <Drawer
       anchor="right"
       open={open}
       onClose={onClose}
     >
+
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -227,6 +428,7 @@ export default function CreateLogCall({
             overflowY: "auto",
           }}
         >
+
           {/* CONNECTED */}
 
           <CommonInput
@@ -239,6 +441,7 @@ export default function CreateLogCall({
             required
             disabled
           />
+
 
           {/* CALL OUTCOME */}
 
@@ -286,6 +489,7 @@ export default function CreateLogCall({
             ]}
           />
 
+
           {/* DURATION */}
 
           <CommonSelect
@@ -324,10 +528,13 @@ export default function CreateLogCall({
             ]}
           />
 
+
           {/* DATE + TIME */}
 
           <Grid container spacing={2}>
+
             <Grid size={{ xs: 12, md: 6 }}>
+
               <FormDatePicker
                 label="Date"
                 required
@@ -339,9 +546,12 @@ export default function CreateLogCall({
                   }))
                 }
               />
+
             </Grid>
 
+
             <Grid size={{ xs: 12, md: 6 }}>
+
               <CommonTimePicker
                 label="Time"
                 required
@@ -353,8 +563,11 @@ export default function CreateLogCall({
                   }))
                 }
               />
+
             </Grid>
+
           </Grid>
+
 
           {/* NOTE */}
 
@@ -369,6 +582,7 @@ export default function CreateLogCall({
               }))
             }
           />
+
         </Box>
 
         {/* FOOTER */}
@@ -378,9 +592,11 @@ export default function CreateLogCall({
             display: "flex",
             gap: 2,
             p: 3,
-            borderTop: "1px solid #E5E7EB",
+            borderTop:
+              "1px solid #E5E7EB",
           }}
         >
+
           <CommonButton
             variant="outlined"
             fullWidth
@@ -390,15 +606,21 @@ export default function CreateLogCall({
             Cancel
           </CommonButton>
 
+
           <CommonButton
             type="submit"
             fullWidth
             disabled={saving}
           >
-            {saving ? "Saving..." : "Save"}
+            {saving
+              ? "Saving..."
+              : "Save"}
           </CommonButton>
+
         </Box>
+
       </Box>
+
     </Drawer>
   );
 }

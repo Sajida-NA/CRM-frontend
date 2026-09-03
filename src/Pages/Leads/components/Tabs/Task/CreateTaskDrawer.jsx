@@ -160,7 +160,7 @@ export default function CreateTaskDrawer({
 
     if (!module || !moduleId) {
       const message =
-        "Deal information is missing.";
+        "Module information is missing.";
 
       console.error(message);
 
