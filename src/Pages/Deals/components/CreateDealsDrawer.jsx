@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 
 import { Drawer, Box, Grid } from "@mui/material";
@@ -62,7 +63,10 @@ export default function CreateDealsDrawer({
 
       return data;
     } catch (error) {
-      console.error("LEADS ERROR:", error.response?.data || error);
+      console.error(
+        "LEADS ERROR:",
+        error.response?.data || error
+      );
 
       return [];
     }
@@ -84,7 +88,10 @@ export default function CreateDealsDrawer({
 
       return data;
     } catch (error) {
-      console.error("USERS ERROR:", error.response?.data || error);
+      console.error(
+        "USERS ERROR:",
+        error.response?.data || error
+      );
 
       return [];
     }
@@ -100,7 +107,10 @@ export default function CreateDealsDrawer({
     const loadOptions = async () => {
       setError("");
 
-      await Promise.all([fetchLeads(), fetchUsers()]);
+      await Promise.all([
+        fetchLeads(),
+        fetchUsers(),
+      ]);
     };
 
     loadOptions();
@@ -132,21 +142,26 @@ export default function CreateDealsDrawer({
       dealStage: deal.deal_stage || "",
 
       associatedLead:
-        deal.associated_lead !== null && deal.associated_lead !== undefined
+        deal.associated_lead !== null &&
+        deal.associated_lead !== undefined
           ? String(deal.associated_lead)
           : "",
 
       amount:
-        deal.amount !== null && deal.amount !== undefined
+        deal.amount !== null &&
+        deal.amount !== undefined
           ? String(deal.amount)
           : "",
 
       dealOwner:
-        deal.deal_owner_id !== null && deal.deal_owner_id !== undefined
+        deal.deal_owner_id !== null &&
+        deal.deal_owner_id !== undefined
           ? String(deal.deal_owner_id)
           : "",
 
-      closeDate: deal.close_date ? dayjs(deal.close_date) : null,
+      closeDate: deal.close_date
+        ? dayjs(deal.close_date)
+        : null,
 
       priority: deal.priority || "",
     });
@@ -191,7 +206,9 @@ export default function CreateDealsDrawer({
       }
 
       if (!formData.associatedLead) {
-        setError("Please select an associated lead.");
+        setError(
+          "Please select an associated lead."
+        );
 
         setLoading(false);
 
@@ -213,7 +230,9 @@ export default function CreateDealsDrawer({
 
         deal_stage: formData.dealStage,
 
-        associated_lead: Number(formData.associatedLead),
+        associated_lead: Number(
+          formData.associatedLead
+        ),
 
         amount: formData.amount,
 
@@ -233,18 +252,31 @@ export default function CreateDealsDrawer({
       if (isEditMode) {
         console.log("Updating deal:", deal.id);
 
-        const response = await api.put(`/deals/${deal.id}/`, dealData);
+        const response = await api.put(
+          `/deals/${deal.id}/`,
+          dealData
+        );
 
-        console.log("DEAL UPDATED:", response.data);
+        console.log(
+          "DEAL UPDATED:",
+          response.data
+        );
       }
 
       // CREATE DEAL
+
       else {
         console.log("Creating deal");
 
-        const response = await api.post("/deals/", dealData);
+        const response = await api.post(
+          "/deals/",
+          dealData
+        );
 
-        console.log("DEAL CREATED:", response.data);
+        console.log(
+          "DEAL CREATED:",
+          response.data
+        );
       }
 
       // REFRESH DEAL LIST
@@ -261,13 +293,20 @@ export default function CreateDealsDrawer({
 
       onClose();
     } catch (error) {
-      console.error("SAVE DEAL ERROR:", error.response?.data || error);
+      console.error(
+        "SAVE DEAL ERROR:",
+        error.response?.data || error
+      );
 
       if (error.response?.data) {
-        setError(JSON.stringify(error.response.data));
+        setError(
+          JSON.stringify(error.response.data)
+        );
       } else {
         setError(
-          isEditMode ? "Failed to update deal." : "Failed to create deal.",
+          isEditMode
+            ? "Failed to update deal."
+            : "Failed to create deal."
         );
       }
     } finally {
@@ -281,7 +320,9 @@ export default function CreateDealsDrawer({
     value: String(lead.id),
 
     label:
-      `${lead.first_name || ""} ${lead.last_name || ""}`.trim() ||
+      `${lead.first_name || ""} ${
+        lead.last_name || ""
+      }`.trim() ||
       lead.name ||
       lead.email ||
       `Lead ${lead.id}`,
@@ -293,7 +334,9 @@ export default function CreateDealsDrawer({
     value: String(user.id),
 
     label:
-      `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+      `${user.first_name || ""} ${
+        user.last_name || ""
+      }`.trim() ||
       user.username ||
       user.email ||
       `User ${user.id}`,
@@ -302,7 +345,11 @@ export default function CreateDealsDrawer({
   // UI
 
   return (
-    <Drawer anchor="right" open={open} onClose={onClose}>
+    <Drawer
+      anchor="right"
+      open={open}
+      onClose={onClose}
+    >
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -319,7 +366,11 @@ export default function CreateDealsDrawer({
         ================================================= */}
 
         <DrawerHeader
-          title={isEditMode ? "Edit Deal" : "Create Deal"}
+          title={
+            isEditMode
+              ? "Edit Deal"
+              : "Create Deal"
+          }
           onClose={onClose}
         />
 
@@ -388,7 +439,11 @@ export default function CreateDealsDrawer({
           <CommonSelect
             label="Associated Lead"
             required
-            placeholder={leads.length ? "Choose" : "No leads available"}
+            placeholder={
+              leads.length
+                ? "Choose"
+                : "No leads available"
+            }
             options={leadOptions}
             name="associatedLead"
             value={formData.associatedLead}
@@ -412,7 +467,11 @@ export default function CreateDealsDrawer({
           <CommonSelect
             label="Deal Owner"
             required
-            placeholder={users.length ? "Choose" : "No users available"}
+            placeholder={
+              users.length
+                ? "Choose"
+                : "No users available"
+            }
             options={userOptions}
             name="dealOwner"
             value={formData.dealOwner}
@@ -422,7 +481,12 @@ export default function CreateDealsDrawer({
           {/* CLOSE DATE + PRIORITY */}
 
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
+            >
               <FormDatePicker
                 label="Close Date"
                 required
@@ -436,7 +500,12 @@ export default function CreateDealsDrawer({
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid
+              size={{
+                xs: 12,
+                md: 6,
+              }}
+            >
               <CommonSelect
                 label="Priority"
                 required
@@ -444,7 +513,11 @@ export default function CreateDealsDrawer({
                 name="priority"
                 value={formData.priority}
                 onChange={handleChange}
-                options={["High", "Medium", "Low"]}
+                options={[
+                  "High",
+                  "Medium",
+                  "Low",
+                ]}
               />
             </Grid>
           </Grid>
@@ -475,11 +548,20 @@ export default function CreateDealsDrawer({
 
           {/* SAVE / UPDATE */}
 
-          <CommonButton type="submit" fullWidth disabled={loading}>
-            {loading ? "Saving..." : isEditMode ? "Update" : "Save Deal"}
+          <CommonButton
+            type="submit"
+            fullWidth
+            disabled={loading}
+          >
+            {loading
+              ? "Saving..."
+              : isEditMode
+                ? "Update"
+                : "Save Deal"}
           </CommonButton>
         </Box>
       </Box>
     </Drawer>
   );
 }
+

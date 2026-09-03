@@ -59,13 +59,22 @@ export default function MeetingCard({
     const [
       hours,
       minutes,
-    ] = time.split(":");
+    ] = String(time)
+      .split(":")
+      .map(Number);
+
+    if (
+      Number.isNaN(hours) ||
+      Number.isNaN(minutes)
+    ) {
+      return "";
+    }
 
     const date = new Date();
 
     date.setHours(
-      Number(hours),
-      Number(minutes),
+      hours,
+      minutes,
       0,
       0
     );
@@ -105,16 +114,25 @@ export default function MeetingCard({
     const [
       startHour,
       startMinute,
-    ] = meeting.start_time
+    ] = String(meeting.start_time)
       .split(":")
       .map(Number);
 
     const [
       endHour,
       endMinute,
-    ] = meeting.end_time
+    ] = String(meeting.end_time)
       .split(":")
       .map(Number);
+
+    if (
+      Number.isNaN(startHour) ||
+      Number.isNaN(startMinute) ||
+      Number.isNaN(endHour) ||
+      Number.isNaN(endMinute)
+    ) {
+      return "-";
+    }
 
     const start =
       startHour * 60 +
@@ -124,12 +142,23 @@ export default function MeetingCard({
       endHour * 60 +
       endMinute;
 
-    const difference =
+    let difference =
       end - start;
 
-    if (difference <= 0) {
+
+    // ---------------------------------------------------------
+    // SUPPORT MEETINGS THAT CROSS MIDNIGHT
+    // ---------------------------------------------------------
+
+    if (difference < 0) {
+      difference += 24 * 60;
+    }
+
+
+    if (difference === 0) {
       return "-";
     }
+
 
     const hours =
       Math.floor(
@@ -139,6 +168,7 @@ export default function MeetingCard({
     const minutes =
       difference % 60;
 
+
     if (
       hours > 0 &&
       minutes > 0
@@ -146,9 +176,11 @@ export default function MeetingCard({
       return `${hours} hr ${minutes} min`;
     }
 
+
     if (hours > 0) {
       return `${hours} hr`;
     }
+
 
     return `${minutes} min`;
   };
@@ -173,7 +205,9 @@ export default function MeetingCard({
   // =========================================================
 
   const attendees =
-    meeting.attendees || [];
+    Array.isArray(meeting.attendees)
+      ? meeting.attendees
+      : [];
 
 
   // =========================================================
@@ -181,7 +215,9 @@ export default function MeetingCard({
   // =========================================================
 
   const dateTime =
-    `${formattedDate} at ${startTime}`;
+    formattedDate && startTime
+      ? `${formattedDate} at ${startTime}`
+      : formattedDate || startTime || "-";
 
 
   // =========================================================
@@ -206,6 +242,9 @@ export default function MeetingCard({
         bgcolor: "background.paper",
         mt: 2,
         overflow: "hidden",
+        minWidth: 0,
+        width: "100%",
+        boxSizing: "border-box",
       }}
     >
 
@@ -224,6 +263,7 @@ export default function MeetingCard({
           px: 2,
           py: 2,
           cursor: "pointer",
+          minWidth: 0,
         }}
       >
 
@@ -233,6 +273,8 @@ export default function MeetingCard({
           sx={{
             display: "flex",
             alignItems: "flex-start",
+            minWidth: 0,
+            flex: 1,
           }}
         >
 
@@ -242,6 +284,7 @@ export default function MeetingCard({
               p: 0,
               mt: 0.3,
               mr: 1,
+              flexShrink: 0,
             }}
           >
 
@@ -262,7 +305,12 @@ export default function MeetingCard({
           </IconButton>
 
 
-          <Box>
+          <Box
+            sx={{
+              minWidth: 0,
+              overflow: "hidden",
+            }}
+          >
 
             {/* MEETING TITLE */}
 
@@ -271,6 +319,7 @@ export default function MeetingCard({
                 fontWeight: 600,
                 fontSize: 14,
                 color: "text.primary",
+                overflowWrap: "anywhere",
               }}
             >
               {meeting.title}
@@ -286,6 +335,7 @@ export default function MeetingCard({
                   mt: 0.5,
                   color: "text.secondary",
                   fontSize: 14,
+                  overflowWrap: "anywhere",
 
                   "& p": {
                     margin: 0,
@@ -314,6 +364,8 @@ export default function MeetingCard({
             color: "text.secondary",
             fontSize: 14,
             whiteSpace: "nowrap",
+            flexShrink: 0,
+            ml: 2,
           }}
         >
           {dateTime}
@@ -332,6 +384,7 @@ export default function MeetingCard({
           sx={{
             px: 2,
             pb: 2,
+            minWidth: 0,
           }}
         >
 
@@ -359,6 +412,8 @@ export default function MeetingCard({
               borderRadius: 1,
               p: 2,
               mb: 1,
+              width: "100%",
+              boxSizing: "border-box",
             }}
           >
 
@@ -455,6 +510,7 @@ export default function MeetingCard({
               sx={{
                 color: "#516F90",
                 fontSize: 15,
+                overflowWrap: "anywhere",
 
                 "& p": {
                   marginTop: 0,
@@ -487,4 +543,3 @@ export default function MeetingCard({
     </Box>
   );
 }
-

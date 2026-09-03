@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 
 import {
@@ -13,7 +12,6 @@ import {
   ListItemText,
 } from "@mui/material";
 
-import { useParams } from "react-router-dom";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 
 import dayjs from "dayjs";
@@ -27,9 +25,13 @@ import CommonEditor from "../../../../../Components/common/CommonEditor";
 
 import api from "../../../../../services/api";
 
-export default function ScheduleMeeting({ open, onClose }) {
-  const { dealId } = useParams();
 
+export default function ScheduleMeeting({
+  open,
+  onClose,
+  relatedModule = "deal",
+  objectId,
+}) {
   const [users, setUsers] = useState([]);
   const [saving, setSaving] = useState(false);
 
@@ -43,6 +45,7 @@ export default function ScheduleMeeting({ open, onClose }) {
     reminder: "",
     note: "",
   });
+
 
   // =========================================================
   // FETCH USERS
@@ -73,6 +76,7 @@ export default function ScheduleMeeting({ open, onClose }) {
     fetchUsers();
   }, [open]);
 
+
   // =========================================================
   // NORMAL INPUT CHANGE
   // =========================================================
@@ -85,6 +89,7 @@ export default function ScheduleMeeting({ open, onClose }) {
       [name]: value,
     }));
   };
+
 
   // =========================================================
   // ATTENDEE CHANGE
@@ -102,6 +107,7 @@ export default function ScheduleMeeting({ open, onClose }) {
     }));
   };
 
+
   // =========================================================
   // SUBMIT
   // =========================================================
@@ -111,8 +117,10 @@ export default function ScheduleMeeting({ open, onClose }) {
 
     console.log("=================================");
     console.log("SAVE MEETING CLICKED");
-    console.log("DEAL ID:", dealId);
+    console.log("RELATED MODULE:", relatedModule);
+    console.log("OBJECT ID:", objectId);
     console.log("=================================");
+
 
     // =======================================================
     // VALIDATION
@@ -162,29 +170,30 @@ export default function ScheduleMeeting({ open, onClose }) {
       return;
     }
 
-    if (!dealId) {
-      alert("Deal ID not found.");
+    // =======================================================
+    // COMMON MODULE ID VALIDATION
+    // =======================================================
+
+    if (!objectId) {
+      const moduleName =
+        String(relatedModule).charAt(0).toUpperCase() +
+        String(relatedModule).slice(1);
+
+      alert(`${moduleName} ID not found.`);
       return;
     }
+
 
     // =======================================================
     // BACKEND PAYLOAD
     // =======================================================
-    //
-    // sender_id is NOT required from frontend.
-    //
-    // Backend gets logged-in user using:
-    // request.user
-    //
-    // For a Deal:
-    // module    = "deal"
-    // module_id = current deal ID
-    // =======================================================
 
     const payload = {
-      module: "deal",
+      // Same common API for every module
+      module: String(relatedModule).toLowerCase(),
 
-      module_id: Number(dealId),
+      // Lead ID / Deal ID / Company ID / Ticket ID
+      module_id: Number(objectId),
 
       title: formData.title.trim(),
 
@@ -211,6 +220,7 @@ export default function ScheduleMeeting({ open, onClose }) {
       note: formData.note.trim(),
     };
 
+
     // =======================================================
     // LOG PAYLOAD
     // =======================================================
@@ -219,6 +229,7 @@ export default function ScheduleMeeting({ open, onClose }) {
     console.log("CREATE MEETING PAYLOAD:");
     console.log(JSON.stringify(payload, null, 2));
     console.log("=================================");
+
 
     // =======================================================
     // API CALL
@@ -239,6 +250,7 @@ export default function ScheduleMeeting({ open, onClose }) {
 
       alert("Meeting created successfully.");
 
+
       // =====================================================
       // RESET FORM
       // =====================================================
@@ -255,7 +267,9 @@ export default function ScheduleMeeting({ open, onClose }) {
       });
 
       onClose();
+
     } catch (error) {
+
       console.error(
         "CREATE MEETING ERROR:",
         error.response?.data || error
@@ -286,10 +300,12 @@ export default function ScheduleMeeting({ open, onClose }) {
           "Failed to create meeting. Check that the Django server is running."
         );
       }
+
     } finally {
       setSaving(false);
     }
   };
+
 
   // =========================================================
   // ATTENDEE OPTIONS
@@ -308,6 +324,7 @@ export default function ScheduleMeeting({ open, onClose }) {
     value: user.id,
   }));
 
+
   // =========================================================
   // SELECTED ATTENDEE NAMES
   // =========================================================
@@ -320,6 +337,7 @@ export default function ScheduleMeeting({ open, onClose }) {
       )
     )
     .map((option) => option.label);
+
 
   // =========================================================
   // RETURN
@@ -346,12 +364,14 @@ export default function ScheduleMeeting({ open, onClose }) {
           bgcolor: "#fff",
         }}
       >
+
         {/* HEADER */}
 
         <DrawerHeader
           title="Schedule Meeting"
           onClose={onClose}
         />
+
 
         {/* BODY */}
 
@@ -365,6 +385,7 @@ export default function ScheduleMeeting({ open, onClose }) {
             overflowY: "auto",
           }}
         >
+
           {/* TITLE */}
 
           <CommonInput
@@ -376,6 +397,7 @@ export default function ScheduleMeeting({ open, onClose }) {
             placeholder="Enter"
             fullWidth
           />
+
 
           {/* START DATE */}
 
@@ -392,9 +414,11 @@ export default function ScheduleMeeting({ open, onClose }) {
             }
           />
 
+
           {/* START / END TIME */}
 
           <Grid container spacing={2}>
+
             <Grid
               size={{
                 xs: 12,
@@ -420,6 +444,7 @@ export default function ScheduleMeeting({ open, onClose }) {
               />
             </Grid>
 
+
             <Grid
               size={{
                 xs: 12,
@@ -444,11 +469,14 @@ export default function ScheduleMeeting({ open, onClose }) {
                 }}
               />
             </Grid>
+
           </Grid>
+
 
           {/* ATTENDEES */}
 
           <Box>
+
             <Typography
               sx={{
                 fontSize: "14px",
@@ -471,13 +499,16 @@ export default function ScheduleMeeting({ open, onClose }) {
               </Box>
             </Typography>
 
+
             <FormControl fullWidth>
+
               <Select
                 multiple
                 displayEmpty
                 value={formData.attendees}
                 onChange={handleAttendeeChange}
                 renderValue={(selected) => {
+
                   if (!selected.length) {
                     return (
                       <Typography
@@ -525,11 +556,14 @@ export default function ScheduleMeeting({ open, onClose }) {
                   },
                 }}
               >
+
                 {attendeeOptions.map((option) => (
+
                   <MenuItem
                     key={option.value}
                     value={option.value}
                   >
+
                     <Checkbox
                       checked={formData.attendees.some(
                         (id) =>
@@ -541,11 +575,17 @@ export default function ScheduleMeeting({ open, onClose }) {
                     <ListItemText
                       primary={option.label}
                     />
+
                   </MenuItem>
+
                 ))}
+
               </Select>
+
             </FormControl>
+
           </Box>
+
 
           {/* LOCATION */}
 
@@ -564,6 +604,7 @@ export default function ScheduleMeeting({ open, onClose }) {
               "Head Office",
             ]}
           />
+
 
           {/* REMINDER */}
 
@@ -597,6 +638,7 @@ export default function ScheduleMeeting({ open, onClose }) {
             ]}
           />
 
+
           {/* NOTE */}
 
           <CommonEditor
@@ -610,7 +652,9 @@ export default function ScheduleMeeting({ open, onClose }) {
               }))
             }
           />
+
         </Box>
+
 
         {/* FOOTER */}
 
@@ -622,6 +666,7 @@ export default function ScheduleMeeting({ open, onClose }) {
             borderTop: "1px solid #E5E7EB",
           }}
         >
+
           <CommonButton
             variant="outlined"
             fullWidth
@@ -631,6 +676,7 @@ export default function ScheduleMeeting({ open, onClose }) {
             Cancel
           </CommonButton>
 
+
           <CommonButton
             type="submit"
             fullWidth
@@ -638,9 +684,13 @@ export default function ScheduleMeeting({ open, onClose }) {
           >
             {saving ? "Saving..." : "Save"}
           </CommonButton>
+
         </Box>
+
       </Box>
     </Drawer>
   );
 }
+
+
 

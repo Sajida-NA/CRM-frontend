@@ -7,6 +7,7 @@ import calls from "../../../../Leads/components/Tabs/Calls/callData";
 import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
 import CreateLogCall from "../../../../Leads/components/Tabs/Calls/CreateLogCall";
 import { ticketTabs } from "../TicketTabs";
+import { useParams } from "react-router-dom";
 
 export default function TicketCalls() {
   const [activeTab, setActiveTab] = useState();
@@ -27,6 +28,7 @@ export default function TicketCalls() {
             {/* <CommonActivityTabs activeTab={activeTab} onTabChange={() => {}} /> */}
 
             <CommonActivityTabs tabs={ticketTabs} activeTab="Calls" />
+           
           </Box>
 
           {/* Header */}

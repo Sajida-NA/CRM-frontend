@@ -1,8 +1,27 @@
-export const ticketTabs = [
-  { label: "Activity", path: "/ticketactivities" },
-  { label: "Notes", path: "/ticketnote" },
-  { label: "Emails", path: "/ticketemail" },
-  { label: "Calls", path: "/ticketcalls" },
-  { label: "Tasks", path: "/tickettask" },
-  { label: "Meetings", path: "/ticketmeeting" },
+export const ticketTabs = (ticketId) => [
+  {
+    label: "Activity",
+    path: `/tickets/${ticketId}/activities`,
+  },
+  {
+    label: "Notes",
+    path: `/tickets/${ticketId}/note`,
+  },
+  {
+    label: "Emails",
+    path: `/tickets/${ticketId}/email`,
+  },
+  {
+    label: "Calls",
+    path: `/tickets/${ticketId}/calls`,
+  },
+  {
+    label: "Tasks",
+    path: `/tickets/${ticketId}/task`,
+  },
+  {
+    label: "Meetings",
+    path: `/tickets/${ticketId}/meeting`,
+  },
 ];
+
