@@ -1,12 +1,21 @@
-import React from 'react'
-import DealLeftPanel from '../../DealLeftPanel'
-import NoteDetails from '../../../../Tickets/components/Tabs/Note/NoteDetails'
-import { dealTabs } from '../DealTabs'
+
+import React from "react";
+import { useParams } from "react-router-dom";
+
+import DealLeftPanel from "../../DealLeftPanel";
+import NoteDetails from "../../../../Tickets/components/Tabs/Note/NoteDetails";
+import { getDealTabs } from "../DealTabs";
 
 export default function DealNote() {
+  const { dealId } = useParams();
+
   return (
-    <div>
-        <DealLeftPanel> <NoteDetails  tabs={dealTabs}/></DealLeftPanel>
-    </div>
-  )
+    <DealLeftPanel>
+      <NoteDetails
+        tabs={getDealTabs(dealId)}
+        module="deal"
+        moduleId={dealId}
+      />
+    </DealLeftPanel>
+  );
 }

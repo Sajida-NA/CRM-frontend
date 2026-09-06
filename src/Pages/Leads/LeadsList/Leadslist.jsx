@@ -16,6 +16,7 @@ import CommonDatePicker from "../../../Components/common/CommonDatePicker";
 import CommonButton from "../../../Components/common/CommonButton";
 
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 import CreateLeadsDrawer from "../components/CreateLeadsDrawer";
 import MainLayout from "../../../layout/MainLayout";
@@ -41,6 +42,7 @@ export default function Leadslist() {
   const [loading, setLoading] = useState(false);
 
   const [selectedLead, setSelectedLead] = useState(null);
+  const navigate = useNavigate();
 
   // =========================
   // FETCH LEADS
@@ -351,7 +353,22 @@ export default function Leadslist() {
 
               {/* NAME */}
 
-              <TableCell>{lead.name || "-"}</TableCell>
+              <TableCell>
+  <Box
+    component="span"
+    sx={{
+      color: "primary.main",
+      cursor: "pointer",
+      fontWeight: 500,
+      "&:hover": {
+        textDecoration: "underline",
+      },
+    }}
+    onClick={() => navigate(`/leads/${lead.id}/activity`)}
+  >
+    {lead.name || "-"}
+  </Box>
+</TableCell>
 
               {/* EMAIL */}
 

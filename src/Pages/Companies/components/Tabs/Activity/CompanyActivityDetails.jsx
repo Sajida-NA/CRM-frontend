@@ -1,12 +1,495 @@
-import React, { useState } from "react";
-import { Box, Typography } from "@mui/material";
+
+
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
+import { useParams } from "react-router-dom";
+
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
+import { getCompanyTabs } from "../CompanyTabs";
 import CompanyActivityCard from "./CompanyActivityCard";
-import ActivityTimeline from "../../../../Leads/components/Tabs/Activity/ActivityTimeline";
-import { companyTabs } from "../CompanyTabs";
+
+import api from "../../../../../services/api";
 
 export default function CompanyActivityDetails() {
-  const [activeTab, setActiveTab] = useState();
+ const { companyId } = useParams();
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // =====================================================
+  // COMPANY TABS
+  // =====================================================
+
+ const companyTabs = getCompanyTabs(companyId);
+
+  // =====================================================
+  // FETCH COMPANY ACTIVITIES
+  // =====================================================
+      useEffect(() => {
+  const fetchActivities = async () => {
+    if (!companyId) {
+      setActivities([]);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      console.log(
+        "FETCHING COMPANY ACTIVITIES FOR COMPANY:",
+        companyId
+      );
+
+      const response = await api.get(
+        `/activities/activity/company/${companyId}/`
+      );
+
+      console.log(
+        "COMPANY ACTIVITY RESPONSE:",
+        response.data
+      );
+
+      const activityData = Array.isArray(response.data)
+        ? response.data
+        : response.data?.results || [];
+
+      setActivities(activityData);
+    } catch (error) {
+      console.error(
+        "FETCH COMPANY ACTIVITIES ERROR:",
+        error.response?.data || error
+      );
+
+      setActivities([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchActivities();
+}, [companyId]);
+ 
+
+  // 
+
+  // =====================================================
+  // FORMAT DATE
+  // =====================================================
+
+  const formatDate = (date) => {
+    if (!date) {
+      return "";
+    }
+
+    return new Date(date).toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  };
+
+  // =====================================================
+  // GET ACTIVITY DATA
+  // =====================================================
+
+  const getActivityData = (activity) => {
+    if (!activity) {
+      return null;
+    }
+
+    if (activity.data) {
+      return activity.data;
+    }
+
+    if (activity.note) {
+      return activity.note;
+    }
+
+    if (activity.call) {
+      return activity.call;
+    }
+
+    if (activity.task) {
+      return activity.task;
+    }
+
+    if (activity.meeting) {
+      return activity.meeting;
+    }
+
+    if (activity.email) {
+      return activity.email;
+    }
+
+    return null;
+  };
+
+  // =====================================================
+  // GET CREATED BY NAME
+  // =====================================================
+
+  const getCreatedByName = (activity) => {
+    if (!activity) {
+      return "Unknown";
+    }
+
+    if (activity.created_by_name) {
+      return activity.created_by_name;
+    }
+
+    if (activity.created_by) {
+      if (typeof activity.created_by === "string") {
+        return activity.created_by;
+      }
+
+      return (
+        activity.created_by.name ||
+        activity.created_by.email ||
+        "Unknown"
+      );
+    }
+
+    return "Unknown";
+  };
+
+  // =====================================================
+  // RENDER ACTIVITY
+  // =====================================================
+
+  const renderActivity = (activity) => {
+    const data = getActivityData(activity);
+    const createdBy = getCreatedByName(activity);
+
+    // ===================================================
+    // NOTE
+    // ===================================================
+
+    if (
+      activity.activity_type === "note" &&
+      data
+    ) {
+      return (
+        <>
+          <Typography sx={{ fontSize: 14 }}>
+            <Box
+              component="span"
+              sx={{
+                color: "text.secondary",
+                fontWeight: 600,
+              }}
+            >
+              {createdBy}
+            </Box>{" "}
+
+            <Box
+              component="span"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              added a note
+            </Box>
+          </Typography>
+
+          {data.note && (
+            <Typography
+              sx={{
+                mt: 1,
+                fontSize: 14,
+                color: "text.secondary",
+              }}
+            >
+              {data.note}
+            </Typography>
+          )}
+        </>
+      );
+    }
+
+    // ===================================================
+    // CALL
+    // ===================================================
+
+    if (
+      activity.activity_type === "call" &&
+      data
+    ) {
+      return (
+        <>
+          <Typography sx={{ fontSize: 14 }}>
+            <Box
+              component="span"
+              sx={{
+                color: "text.secondary",
+                fontWeight: 600,
+              }}
+            >
+              {createdBy}
+            </Box>{" "}
+
+            <Box
+              component="span"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              made a call
+            </Box>
+          </Typography>
+
+          {data.call_outcome && (
+            <Typography
+              sx={{
+                mt: 1,
+                fontSize: 14,
+                color: "text.secondary",
+              }}
+            >
+              Outcome: {data.call_outcome}
+            </Typography>
+          )}
+
+          {data.note && (
+            <Typography
+              sx={{
+                mt: 1,
+                fontSize: 14,
+                color: "text.secondary",
+              }}
+            >
+              {data.note}
+            </Typography>
+          )}
+        </>
+      );
+    }
+
+    // ===================================================
+    // TASK
+    // ===================================================
+
+    if (
+      activity.activity_type === "task" &&
+      data
+    ) {
+      return (
+        <>
+          <Typography sx={{ fontSize: 14 }}>
+            <Box
+              component="span"
+              sx={{
+                color: "text.secondary",
+                fontWeight: 600,
+              }}
+            >
+              {createdBy}
+            </Box>{" "}
+
+            <Box
+              component="span"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              created a task
+            </Box>
+          </Typography>
+
+          {data.task_name && (
+            <Typography
+              sx={{
+                mt: 1,
+                fontSize: 14,
+                color: "text.secondary",
+              }}
+            >
+              {data.task_name}
+            </Typography>
+          )}
+        </>
+      );
+    }
+
+    // ===================================================
+    // MEETING
+    // ===================================================
+
+    if (
+      activity.activity_type === "meeting" &&
+      data
+    ) {
+      return (
+        <>
+          <Typography
+            sx={{
+              fontSize: 14,
+              color: "text.primary",
+              fontWeight: 600,
+            }}
+          >
+            {data.title || "Meeting"}
+          </Typography>
+
+          {data.start_date && (
+            <Typography
+              sx={{
+                mt: 1,
+                fontSize: 13,
+                color: "text.secondary",
+              }}
+            >
+              Date: {data.start_date}
+            </Typography>
+          )}
+
+          {data.start_time && (
+            <Typography
+              sx={{
+                mt: 0.5,
+                fontSize: 13,
+                color: "text.secondary",
+              }}
+            >
+              Time: {data.start_time}
+              {data.end_time
+                ? ` - ${data.end_time}`
+                : ""}
+            </Typography>
+          )}
+
+          {data.location && (
+            <Typography
+              sx={{
+                mt: 0.5,
+                fontSize: 13,
+                color: "text.secondary",
+              }}
+            >
+              Location: {data.location}
+            </Typography>
+          )}
+
+          {data.reminder && (
+            <Typography
+              sx={{
+                mt: 0.5,
+                fontSize: 13,
+                color: "text.secondary",
+              }}
+            >
+              Reminder: {data.reminder}
+            </Typography>
+          )}
+
+          {data.note && (
+            <Typography
+              sx={{
+                mt: 0.5,
+                fontSize: 13,
+                color: "text.secondary",
+              }}
+            >
+              Note: {data.note}
+            </Typography>
+          )}
+
+          {Array.isArray(data.attendees) &&
+            data.attendees.length > 0 && (
+              <Typography
+                sx={{
+                  mt: 0.5,
+                  fontSize: 13,
+                  color: "text.secondary",
+                }}
+              >
+                Attendees:{" "}
+                {data.attendees
+                  .map((attendee) =>
+                    typeof attendee === "string"
+                      ? attendee
+                      : attendee?.name
+                  )
+                  .filter(Boolean)
+                  .join(", ")}
+              </Typography>
+            )}
+        </>
+      );
+    }
+
+    // ===================================================
+    // EMAIL
+    // ===================================================
+
+    if (
+      activity.activity_type === "email" &&
+      data
+    ) {
+      return (
+        <>
+          <Typography sx={{ fontSize: 14 }}>
+            <Box
+              component="span"
+              sx={{
+                color: "text.secondary",
+                fontWeight: 600,
+              }}
+            >
+              {createdBy}
+            </Box>{" "}
+
+            <Box
+              component="span"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              sent an email
+            </Box>
+          </Typography>
+
+          {data.subject && (
+            <Typography
+              sx={{
+                mt: 1,
+                fontSize: 14,
+                color: "text.secondary",
+                fontWeight: 600,
+              }}
+            >
+              {data.subject}
+            </Typography>
+          )}
+        </>
+      );
+    }
+
+    // ===================================================
+    // FALLBACK
+    // ===================================================
+
+    return (
+      <Typography
+        sx={{
+          fontSize: 14,
+          color: "text.secondary",
+        }}
+      >
+        {activity.activity_type || "Activity"}
+      </Typography>
+    );
+  };
+
+  // =====================================================
+  // UI
+  // =====================================================
+
   return (
     <Box
       sx={{
@@ -15,66 +498,122 @@ export default function CompanyActivityDetails() {
         mx: -2,
       }}
     >
-      {/* Activity Tabs */}
+
+      {/* =================================================
+          TABS
+      ================================================= */}
+
       <Box>
-        <CommonActivityTabs tabs={companyTabs} activeTab="Activity" />
+        <CommonActivityTabs
+          tabs={companyTabs}
+          activeTab="Activity"
+        />
       </Box>
-      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
+
+      {/* =================================================
+          UPCOMING
+      ================================================= */}
+
+      <Typography
+        variant="h6"
+        sx={{
+          mt: 2,
+          mb: 2,
+          fontWeight: 600,
+        }}
+      >
         Upcoming
       </Typography>
 
-      <CompanyActivityCard
-        title="Ticket activity"
-        user="Maria Johnson"
-        action="created"
-        entity="Ticket 1"
-        date="June 24, 2025 at 5:30PM"
-      />
-      <CompanyActivityCard
-        title="Ticket activity"
-        user="Maria Johnson"
-        action="created"
-        entity="Ticket 1"
-        date="June 24, 2025 at 5:30PM"
-      />
+      {/* =================================================
+          COMPANY companyId NOT FOUND
+      ================================================= */}
 
-      <Box>
+      {!companyId&& (
         <Typography
-          variant="h6"
           sx={{
-            mb: 3,
-            fontWeight: 600,
+            fontSize: 14,
+            color: "text.secondary",
           }}
         >
-          June 2025
+          Company companyId not found.
         </Typography>
+      )}
 
-        <ActivityTimeline
-          highlightedText="Call"
-          normalText="from Maria Johnson"
-          description="Brought Maria through our latest product line. She's interested and is going to get back to me."
-          date="June 24, 2025 at 5:30PM"
-        />
+      {/* =================================================
+          LOADING
+      ================================================= */}
 
-        <ActivityTimeline
-          highlightedText="Meeting Maria Johnson and Jane Cooper"
-          description="Let's discuss our new product line."
-          date="June 24, 2025 at 5:30PM"
-        />
+      {companyId && loading && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            py: 5,
+          }}
+        >
+          <CircularProgress size={24} />
+        </Box>
+      )}
 
-        <ActivityTimeline
-          highlightedText="Email tracking"
-          description="Jane Cooper opened Hello there"
-          date="June 24, 2025 at 5:30PM"
-        />
+      {/* =================================================
+          NO ACTIVITIES
+      ================================================= */}
 
-        <ActivityTimeline
-          highlightedText="Note"
-          normalText="by Maria Johnson"
-          description="Sample Note"
-          date="June 24, 2025 at 5:30PM"
-        />
-      </Box>
+      {companyId &&
+        !loading &&
+        activities.length === 0 && (
+          <Typography
+            sx={{
+              fontSize: 14,
+              color: "text.secondary",
+            }}
+          >
+            No activities found.
+          </Typography>
+        )}
+
+      {/* =================================================
+          ACTIVITIES
+      ================================================= */}
+
+      {companyId &&
+        !loading &&
+        activities.length > 0 &&
+        activities.map((activity) => (
+
+          // <CompanyActivityCard
+          //   key={activity.companyId}
+          //   title={
+          //     activity.activity_type
+          //       ? activity.activity_type
+          //           .charAt(0)
+          //           .toUpperCase() +
+          //         activity.activity_type.slice(1)
+          //       : "Activity"
+          //   }
+          //   date={formatDate(
+          //     activity.created_at
+          //   )}
+          // >
+          //   {renderActivity(activity)}
+          // </CompanyActivityCard>
+          <CompanyActivityCard
+  key={activity.id}
+  title={
+    activity.activity_type
+      ? activity.activity_type.charAt(0).toUpperCase() +
+        activity.activity_type.slice(1)
+      : "Activity"
+  }
+  date={formatDate(activity.created_at)}
+>
+  {renderActivity(activity)}
+</CompanyActivityCard>
+
+        ))}
     </Box>
   );
 }
+
+

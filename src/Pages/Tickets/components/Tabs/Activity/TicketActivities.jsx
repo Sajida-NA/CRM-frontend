@@ -1,9 +1,17 @@
-import React from 'react'
-import TicketLeftPanel from '../../TicketLeftPanel'
-import TicketActivityDetails from './TicketActivityDetails'
+
+import React from "react";
+import { useParams } from "react-router-dom";
+
+import TicketLeftPanel from "../../TicketLeftPanel";
+import TicketActivityDetails from "./TicketActivityDetails";
 
 export default function TicketActivities() {
+  const { ticketId } = useParams();
+
   return (
-   <TicketLeftPanel><TicketActivityDetails/></TicketLeftPanel>
-  )
+    <TicketLeftPanel>
+      <TicketActivityDetails ticketId={ticketId} />
+    </TicketLeftPanel>
+  );
 }
+

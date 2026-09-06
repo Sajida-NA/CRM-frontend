@@ -1,4 +1,8 @@
+
+
+
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Box, IconButton, TableRow, TableCell } from "@mui/material";
 
@@ -16,11 +20,17 @@ import CommonButton from "../../../Components/common/CommonButton";
 import CreateDealsDrawer from "../components/CreateDealsDrawer";
 import CommonDatePicker from "../../../Components/common/CommonDatePicker";
 import CommonCheckbox from "../../../Components/common/CommonCheckbox";
-import SearchSection from "../../../Components/common/searchSection";
+import SearchSection from "../../../Components/common/SearchSection";
 
 import api from "../../../services/api";
 
 function DealsList() {
+  // =================================================
+  // NAVIGATION
+  // =================================================
+
+  const navigate = useNavigate();
+
   // =================================================
   // STATES
   // =================================================
@@ -121,7 +131,6 @@ function DealsList() {
 
   useEffect(() => {
     fetchDeals();
-
     fetchDealStages();
   }, []);
 
@@ -129,41 +138,24 @@ function DealsList() {
   // DELETE DEAL
   // =================================================
 
-  // const handleDelete = async (id) => {
-  //   try {
-  //     await api.delete(`/deals/${id}/`);
-
-  //     // Refresh list
-  //     await fetchDeals();
-  //   } catch (error) {
-  //     console.error(
-  //       "Delete Deal Error:",
-  //       error.response?.data || error,
-  //     );
-  //   }
-  // };
-
-const handleDelete = async (deal) => {
-  const confirmed = window.confirm(
-    `Are you sure you want to delete "${deal.deal_name}"?`
-  );
-
-  if (!confirmed) return;
-
-  try {
-    await api.delete(`/deals/${deal.id}/`);
-
-    await fetchDeals();
-  } catch (error) {
-    console.error(
-      "Delete Deal Error:",
-      error.response?.data || error
+  const handleDelete = async (deal) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${deal.deal_name}"?`,
     );
-  }
-};
 
+    if (!confirmed) return;
 
+    try {
+      await api.delete(`/deals/${deal.id}/`);
 
+      await fetchDeals();
+    } catch (error) {
+      console.error(
+        "Delete Deal Error:",
+        error.response?.data || error,
+      );
+    }
+  };
 
   // =================================================
   // EDIT DEAL
@@ -182,7 +174,6 @@ const handleDelete = async (deal) => {
   // =================================================
 
   const handleCreate = () => {
-    // Clear edit deal before opening drawer
     setEditDeal(null);
 
     setOpenDrawer(true);
@@ -435,6 +426,7 @@ const handleDelete = async (deal) => {
             }
           />
 
+         
           {/* CLOSE DATE */}
 
           <CommonDatePicker
@@ -559,6 +551,7 @@ const handleDelete = async (deal) => {
             !error &&
             filteredDeals.map((deal) => (
               <TableRow key={deal.id}>
+
                 {/* CHECKBOX */}
 
                 <TableCell>
@@ -568,7 +561,21 @@ const handleDelete = async (deal) => {
                 {/* DEAL NAME */}
 
                 <TableCell>
-                  {deal.deal_name}
+                  <Box
+                    component="span"
+                    sx={{
+                      cursor: "pointer",
+                      color: "primary.main",
+                      fontWeight: 500,
+                    }}
+                    onClick={() =>
+                      navigate(
+                        `/deals/${deal.id}/activities`,
+                      )
+                    }
+                  >
+                    {deal.deal_name}
+                  </Box>
                 </TableCell>
 
                 {/* LEAD NAME */}
@@ -609,6 +616,7 @@ const handleDelete = async (deal) => {
                   ================================================= */}
 
                 <TableCell>
+
                   {/* EDIT */}
 
                   <IconButton
@@ -630,6 +638,7 @@ const handleDelete = async (deal) => {
                   >
                     <DeleteIcon />
                   </IconButton>
+
                 </TableCell>
               </TableRow>
             ))}

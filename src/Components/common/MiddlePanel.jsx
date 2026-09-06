@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, TextField, Button, InputAdornment } from "@mui/material";
+import { Box, TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
 // import CommonActivityTabs from "./CommonActivityTab";
@@ -32,16 +32,18 @@ export default function MiddlePanel({
           fullWidth
           placeholder="Search activities"
           variant="outlined"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon
-                  sx={{
-                    color: "#bdb7b7",
-                  }}
-                />
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon
+                    sx={{
+                      color: "#bdb7b7",
+                    }}
+                  />
+                </InputAdornment>
+              ),
+            },
           }}
           sx={{
             flex: 1,
@@ -79,6 +81,7 @@ export default function MiddlePanel({
 
         {/* <Box sx={{ width: 160, flexShrink: 0 }}>{action}</Box> */}
       </Box>
+
       <Box>{children}</Box>
     </Box>
   );

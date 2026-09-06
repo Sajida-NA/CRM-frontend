@@ -1,14 +1,15 @@
 import React from "react";
+import { useParams } from "react-router-dom";
+
 import LeadsLeftPanel from "../../LeadsLeftPanel";
-// import EmailDetails from "./EmailDetails";
 import ActivityDetails from "./ActivityDetails";
+
 export default function LeadActivities() {
+  const { leadId } = useParams();
+
   return (
-    <>
-    <LeadsLeftPanel>
-        <ActivityDetails></ActivityDetails>
+    <LeadsLeftPanel leadId={leadId}>
+      <ActivityDetails leadId={leadId} />
     </LeadsLeftPanel>
-    </>
   );
 }
-

@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 
 import {
@@ -78,6 +76,8 @@ export default function CreateCompanyDrawer({
         };
       });
 
+      console.log("User options:", userOptions);
+
       setUsers(userOptions);
 
       return userOptions;
@@ -95,9 +95,11 @@ export default function CreateCompanyDrawer({
   // =====================================================
 
   useEffect(() => {
-    if (open) {
-      fetchUsers();
+    if (!open) {
+      return;
     }
+
+    fetchUsers();
   }, [open]);
 
   // =====================================================
@@ -109,9 +111,9 @@ export default function CreateCompanyDrawer({
       return;
     }
 
-    // -----------------------------------------------------
+    // ===================================================
     // CREATE MODE
-    // -----------------------------------------------------
+    // ===================================================
 
     if (!company) {
       setFormData(emptyForm);
@@ -119,93 +121,64 @@ export default function CreateCompanyDrawer({
       return;
     }
 
-    // -----------------------------------------------------
+    // ===================================================
     // EDIT MODE
-    // -----------------------------------------------------
+    // ===================================================
 
-    const loadCompanyData = async () => {
+    const loadCompanyData = () => {
       try {
         setError("");
 
-        console.log("Loading company into form:", company);
+        console.log(
+          "Loading company into edit form:",
+          company
+        );
 
         // =================================================
-        // IMPORTANT
-        // company.company_owner is currently the NAME
-        // Example: "Aron Paul"
-        //
-        // CommonSelect needs the USER ID
-        // Example: "13"
+        // COMPANY OWNER ID
         // =================================================
 
-        let ownerId = "";
+        const ownerId =
+          company.company_owner !== undefined &&
+          company.company_owner !== null
+            ? String(company.company_owner)
+            : "";
 
-        // -------------------------------------------------
-        // If backend gives owner ID directly
-        // -------------------------------------------------
+        console.log(
+          "Company Owner ID:",
+          ownerId
+        );
 
-        if (
-          company.company_owner_id !== undefined &&
-          company.company_owner_id !== null
-        ) {
-          ownerId = String(company.company_owner_id);
-        }
-
-        // -------------------------------------------------
-        // Otherwise find ID using owner name
-        // -------------------------------------------------
-
-        else if (company.company_owner) {
-          let userOptions = users;
-
-          // If users are not loaded yet, fetch them
-          if (userOptions.length === 0) {
-            userOptions = await fetchUsers();
-          }
-
-          const ownerName = String(
-            company.company_owner
-          )
-            .trim()
-            .toLowerCase();
-
-          const matchedUser = userOptions.find(
-            (user) =>
-              String(user.label)
-                .trim()
-                .toLowerCase() === ownerName
-          );
-
-          if (matchedUser) {
-            ownerId = String(matchedUser.value);
-          } else {
-            console.warn(
-              "Company owner not found in users:",
-              company.company_owner
-            );
-          }
-        }
-
-        console.log("Owner ID for edit:", ownerId);
+        console.log(
+          "Company Owner Name:",
+          company.company_owner_name
+        );
 
         // =================================================
-        // SET FORM
+        // SET FORM DATA
         // =================================================
 
         setFormData({
-          domainName: company.domain_name || "",
+          domainName:
+            company.domain_name || "",
 
-          companyName: company.company_name || "",
+          companyName:
+            company.company_name || "",
 
-          companyOwner: ownerId,
+          companyOwner:
+            ownerId,
 
-          industry: company.industry || "",
+          industry:
+            company.industry || "",
 
-          type: company.type || "",
+          type:
+            company.type || "",
 
-          city: company.city || "",
+          city:
+            company.city || "",
 
-          country: company.country_region || "",
+          country:
+            company.country_region || "",
 
           noOfEmployees:
             company.no_of_employees ?? "",
@@ -216,7 +189,8 @@ export default function CreateCompanyDrawer({
           phoneNumber:
             company.phone_number || "",
 
-          email: company.email || "",
+          email:
+            company.email || "",
         });
       } catch (error) {
         console.error(
@@ -230,30 +204,28 @@ export default function CreateCompanyDrawer({
       }
     };
 
+    // IMPORTANT:
+    // Actually call the function
     loadCompanyData();
   }, [company, open]);
 
-
   // =====================================================
-// PHONE NUMBER VALIDATION
-// =====================================================
+  // PHONE NUMBER VALIDATION
+  // =====================================================
 
-const validatePhoneNumber = (phone) => {
-  if (!phone) {
-    return "Phone number is required.";
-  }
+  const validatePhoneNumber = (phone) => {
+    if (!phone) {
+      return "Phone number is required.";
+    }
 
-  // Remove spaces, -, (, ), etc.
-  const digitsOnly = phone.replace(/\D/g, "");
+    const digitsOnly = phone.replace(/\D/g, "");
 
-  // Exactly 10 digits
-  if (digitsOnly.length !== 10) {
-    return "Phone number must contain exactly 10 digits.";
-  }
+    if (digitsOnly.length !== 10) {
+      return "Phone number must contain exactly 10 digits.";
+    }
 
-  return "";
-};
-
+    return "";
+  };
 
   // =====================================================
   // HANDLE INPUT CHANGE
@@ -265,14 +237,22 @@ const validatePhoneNumber = (phone) => {
       value,
     } = e.target;
 
-    if (name === "phoneNumber") {
-    const digitsOnly = value.replace(/\D/g, "");
+    // ===================================================
+    // PHONE NUMBER
+    // ===================================================
 
-    // Don't allow more than 10 digits
-    if (digitsOnly.length > 10) {
-      return;
+    if (name === "phoneNumber") {
+      const digitsOnly = value.replace(/\D/g, "");
+
+      // Don't allow more than 10 digits
+      if (digitsOnly.length > 10) {
+        return;
+      }
     }
-  }
+
+    // ===================================================
+    // UPDATE FORM
+    // ===================================================
 
     setFormData((prev) => ({
       ...prev,
@@ -286,51 +266,59 @@ const validatePhoneNumber = (phone) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-     
+
+    // ===================================================
     // PHONE VALIDATION
+    // ===================================================
 
+    const phoneError = validatePhoneNumber(
+      formData.phoneNumber
+    );
 
-  const phoneError = validatePhoneNumber(formData.phoneNumber);
+    if (phoneError) {
+      setError(phoneError);
+      return;
+    }
 
-  if (phoneError) {
-    setError(phoneError);
-    return;
-  }
+    // ===================================================
+    // OWNER VALIDATION
+    // ===================================================
+
+    if (!formData.companyOwner) {
+      setError("Please select a company owner.");
+      return;
+    }
 
     try {
       setLoading(true);
       setError("");
 
       // =================================================
-      // VALIDATE OWNER
-      // =================================================
-
-      if (!formData.companyOwner) {
-        setError("Please select a company owner.");
-        setLoading(false);
-        return;
-      }
-
-      // =================================================
       // PAYLOAD
       // =================================================
 
       const payload = {
-        domain_name: formData.domainName,
+        domain_name:
+          formData.domainName,
 
-        company_name: formData.companyName,
+        company_name:
+          formData.companyName,
 
-        company_owner: Number(
-          formData.companyOwner
-        ),
+        // Database receives USER ID
+        company_owner:
+          Number(formData.companyOwner),
 
-        industry: formData.industry,
+        industry:
+          formData.industry,
 
-        type: formData.type,
+        type:
+          formData.type,
 
-        city: formData.city,
+        city:
+          formData.city,
 
-        country_region: formData.country,
+        country_region:
+          formData.country,
 
         no_of_employees:
           formData.noOfEmployees
@@ -347,19 +335,21 @@ const validatePhoneNumber = (phone) => {
           formData.email,
       };
 
-      console.log("Company payload:", payload);
+      console.log(
+        "Company payload:",
+        payload
+      );
 
       // =================================================
-      // UPDATE
+      // UPDATE COMPANY
       // =================================================
 
       if (isEditMode) {
         console.log(
-          "Updating company:",
+          "Updating company ID:",
           company.id
         );
 
-        // Your Django view supports PUT
         const response = await api.put(
           `/companies/${company.id}/`,
           payload
@@ -372,11 +362,13 @@ const validatePhoneNumber = (phone) => {
       }
 
       // =================================================
-      // CREATE
+      // CREATE COMPANY
       // =================================================
 
       else {
-        console.log("Creating company");
+        console.log(
+          "Creating company"
+        );
 
         const response = await api.post(
           "/companies/",
@@ -402,6 +394,8 @@ const validatePhoneNumber = (phone) => {
       // =================================================
 
       setFormData(emptyForm);
+
+      setError("");
 
       // =================================================
       // CLOSE DRAWER
@@ -487,7 +481,9 @@ const validatePhoneNumber = (phone) => {
           }}
         >
 
-          {/* ERROR */}
+          {/* =================================================
+              ERROR
+          ================================================= */}
 
           {error && (
             <Box
@@ -501,7 +497,9 @@ const validatePhoneNumber = (phone) => {
             </Box>
           )}
 
-          {/* DOMAIN NAME */}
+          {/* =================================================
+              DOMAIN NAME
+          ================================================= */}
 
           <CommonInput
             label="Domain Name"
@@ -513,7 +511,9 @@ const validatePhoneNumber = (phone) => {
             required
           />
 
-          {/* COMPANY NAME */}
+          {/* =================================================
+              COMPANY NAME
+          ================================================= */}
 
           <CommonInput
             label="Company Name"
@@ -539,13 +539,14 @@ const validatePhoneNumber = (phone) => {
             required
           />
 
-          {/* INDUSTRY + TYPE */}
+          {/* =================================================
+              INDUSTRY + TYPE
+          ================================================= */}
 
           <Grid
             container
             spacing={2}
           >
-
             <Grid
               size={{
                 xs: 12,
@@ -589,10 +590,11 @@ const validatePhoneNumber = (phone) => {
                 onChange={handleChange}
               />
             </Grid>
-
           </Grid>
 
-          {/* CITY + COUNTRY */}
+          {/* =================================================
+              CITY + COUNTRY
+          ================================================= */}
 
           <Box
             sx={{
@@ -600,7 +602,6 @@ const validatePhoneNumber = (phone) => {
               gap: 2,
             }}
           >
-
             <CommonInput
               label="City"
               placeholder="Enter"
@@ -616,10 +617,11 @@ const validatePhoneNumber = (phone) => {
               value={formData.country}
               onChange={handleChange}
             />
-
           </Box>
 
-          {/* EMPLOYEES + REVENUE */}
+          {/* =================================================
+              EMPLOYEES + REVENUE
+          ================================================= */}
 
           <Box
             sx={{
@@ -627,7 +629,6 @@ const validatePhoneNumber = (phone) => {
               gap: 2,
             }}
           >
-
             <CommonInput
               label="No of Employees"
               placeholder="Enter"
@@ -643,10 +644,11 @@ const validatePhoneNumber = (phone) => {
               value={formData.annualRevenue}
               onChange={handleChange}
             />
-
           </Box>
 
-          {/* PHONE */}
+          {/* =================================================
+              PHONE
+          ================================================= */}
 
           <PhoneInputField
             label="Phone Number"
@@ -656,7 +658,9 @@ const validatePhoneNumber = (phone) => {
             onChange={handleChange}
           />
 
-          {/* EMAIL */}
+          {/* =================================================
+              EMAIL
+          ================================================= */}
 
           <CommonInput
             label="Email"
@@ -666,7 +670,6 @@ const validatePhoneNumber = (phone) => {
             value={formData.email}
             onChange={handleChange}
           />
-
         </Box>
 
         {/* =================================================
@@ -678,12 +681,13 @@ const validatePhoneNumber = (phone) => {
             display: "flex",
             gap: 2,
             p: 3,
-            borderTop:
-              "1px solid #E5E7EB",
+            borderTop: "1px solid #E5E7EB",
           }}
         >
 
-          {/* CANCEL */}
+          {/* =================================================
+              CANCEL
+          ================================================= */}
 
           <CommonButton
             variant="outlined"
@@ -694,7 +698,9 @@ const validatePhoneNumber = (phone) => {
             Cancel
           </CommonButton>
 
-          {/* SAVE / UPDATE */}
+          {/* =================================================
+              SAVE / UPDATE
+          ================================================= */}
 
           <CommonButton
             type="submit"
@@ -707,9 +713,7 @@ const validatePhoneNumber = (phone) => {
               ? "Update"
               : "Save"}
           </CommonButton>
-
         </Box>
-
       </Box>
     </Drawer>
   );

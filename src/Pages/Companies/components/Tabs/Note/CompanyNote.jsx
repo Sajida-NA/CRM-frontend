@@ -1,14 +1,23 @@
 import React from "react";
+import { useParams } from "react-router-dom";
+
 import CompanyLeftPanel from "../../CompanyLeftPanel";
+// import NoteDetails from "../../../../Leads/components/Tabs/Note/NoteDetails";
 import NoteDetails from "../../../../Tickets/components/Tabs/Note/NoteDetails";
-import { companyTabs } from "../CompanyTabs";
+import { getCompanyTabs } from "../CompanyTabs";
 
 export default function CompanyNote() {
+  const { companyId } = useParams();
+
+  console.log("Company ID in CompanyNote:", companyId);
+
   return (
-    <div>
-      <CompanyLeftPanel>
-        <NoteDetails tabs={companyTabs} />
-      </CompanyLeftPanel>
-    </div>
+    <CompanyLeftPanel>
+      <NoteDetails
+        tabs={getCompanyTabs(companyId)}
+        module="company"
+        moduleId={companyId}
+      />
+    </CompanyLeftPanel>
   );
 }

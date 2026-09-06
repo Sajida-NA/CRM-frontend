@@ -1,12 +1,24 @@
+
+
 import React from "react";
+import { useParams } from "react-router-dom";
+
 import TicketLeftPanel from "../../TicketLeftPanel";
 import EmailDetails from "../../../../Leads/components/Tabs/Emails/EmailDetails";
 import { ticketTabs } from "../TicketTabs";
 
 export default function TicketEmail() {
+  const { ticketId } = useParams();
+
+  const tabs = ticketTabs(ticketId);
+
   return (
-    <>
-      <TicketLeftPanel> <EmailDetails tabs={ticketTabs}/></TicketLeftPanel>
-    </>
+    <TicketLeftPanel>
+      <EmailDetails
+        tabs={tabs}
+        relatedModule="ticket"
+        objectId={ticketId}
+      />
+    </TicketLeftPanel>
   );
 }

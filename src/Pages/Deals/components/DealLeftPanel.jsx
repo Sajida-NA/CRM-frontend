@@ -1,44 +1,137 @@
-import React,  { useState } from "react";
+
+
+
+
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 import CreateLogCall from "../../Leads/components/Tabs/Calls/CreateLogCall";
+import api from "../../../services/api";
 
 export default function DealLeftPanel({ children }) {
-   const [stage, setStage] = useState("Appointment Scheduled");
+  const { dealId } = useParams();
+
+  const [deal, setDeal] = useState(null);
+  const [stage, setStage] = useState("");
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
+
+  // ============================================================
+  // FETCH DEAL DETAILS
+  // ============================================================
+
+  useEffect(() => {
+    const fetchDeal = async () => {
+      try {
+        const response = await api.get(`/deals/${dealId}/`);
+
+        console.log("DEAL DETAILS:", response.data);
+
+        setDeal(response.data);
+
+        // Backend field = deal_stage
+        setStage(response.data.deal_stage || "");
+      } catch (error) {
+        console.error(
+          "Fetch Deal Details Error:",
+          error.response?.data || error
+        );
+      }
+    };
+
+    if (dealId) {
+      fetchDeal();
+    }
+  }, [dealId]);
+
+  // ============================================================
+  // LOADING
+  // ============================================================
+
+  if (!deal) {
+    return null;
+  }
+
+  // ============================================================
+  // OWNER NAME
+  // ============================================================
+
+  const ownerName =
+    deal.deal_owner ||
+    deal.owner_name ||
+    deal.owner?.name ||
+    deal.owner?.username ||
+    "-";
+
+  // ============================================================
+  // LEAD NAME
+  // ============================================================
+
+  const leadName =
+    deal.lead_name ||
+    deal.lead?.name ||
+    (
+      `${deal.lead?.first_name || ""} ${
+        deal.lead?.last_name || ""
+      }`
+    ).trim() ||
+    "-";
+
+  // ============================================================
+  // DEAL DETAILS
+  // ============================================================
 
   const dealDetails = [
     {
       label: "Deal Owner",
-      value: "Jane Cooper",
+      value: ownerName,
     },
     {
       label: "Priority",
-      value: "High",
+      value: deal.priority || "-",
     },
     {
       label: "Created Date",
-      value: "04/08/2025 2:31 PM GMT+5:30",
+      value: deal.created_date || "-",
     },
     {
       label: "Lead Name",
-      value: "Lead Name",
+      value: leadName,
     },
   ];
 
+  // ============================================================
+  // DATA FOR COMMON ENTITY HEADER
+  // ============================================================
+
   const leftPanelData = {
     profile: {
-      name: "Website Revamp - Atlas Corp",
-      subTitle: "Amount : $12,500",
-      stage,
-      setStage,
+      name: deal.deal_name || deal.name || "-",
+
+      subTitle: `Amount : $${deal.amount || 0}`,
+
+      stage: stage,
+
+      setStage: setStage,
+
       email: "",
     },
+
     sectionTitle: "About this Deal",
+
     leadDetails: dealDetails,
+
     summaryTitle: "AI Deal Summary",
+
     summaryText:
-      'The deal "Enterprise Software Deal" is currently in the Negotiation stage with an expected value of $25,000. No recent meeting, call, or note transcripts are available.',
+      `The deal "${deal.deal_name || deal.name || "-"}" is currently in the ${
+        stage || "-"
+      } stage with an expected value of $${deal.amount || 0}.`,
   };
+
+  // ============================================================
+  // RETURN
+  // ============================================================
 
   return (
     <>
@@ -50,10 +143,19 @@ export default function DealLeftPanel({ children }) {
         {children}
       </CommonEntityHeader>
 
+      {/* ========================================================
+          CREATE / LOG CALL
+      ======================================================== */}
+
       <CreateLogCall
         open={openCreateLogCall}
         onClose={() => setOpenCreateLogCall(false)}
+        relatedModule="deal"
+        objectId={dealId}
+        connectedName={leadName}
       />
     </>
   );
 }
+
+

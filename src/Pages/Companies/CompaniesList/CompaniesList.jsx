@@ -1,3 +1,6 @@
+
+
+
 import { useState, useEffect } from "react";
 import { Box, IconButton, TableRow, TableCell } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -13,6 +16,7 @@ import CommonButton from "../../../Components/common/CommonButton";
 import dayjs from "dayjs";
 import CommonDatePicker from "../../../Components/common/CommonDatePicker";
 import CommonCheckbox from "../../../Components/common/CommonCheckbox";
+import { useNavigate } from "react-router-dom";
 
 import api from "../../../services/api";
 
@@ -28,6 +32,7 @@ function CompaniesList() {
   const [companiesData, setCompaniesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const navigate = useNavigate();
 
   //filter section ---values same as list
   const industryOptions = [
@@ -46,61 +51,59 @@ function CompaniesList() {
     ),
   ];
 
+  // by filtering , filtered data will only display
+  const fetchCompanies = async () => {
+    try {
+      setLoading(true);
 
- 
+      const params = {};
 
-// by filtering , filtered data will only display
+      if (industry) {
+        params.industry = industry;
+      }
 
-const fetchCompanies = async () => {
-  try {
-    setLoading(true);
+      if (city) {
+        params.city = city;
+      }
 
-    const params = {};
+      if (country) {
+        params.country_region = country;
+      }
 
-    if (industry) {
-      params.industry = industry;
+      if (search) {
+        params.search = search;
+      }
+
+      if (createdDate) {
+        params.created_date = createdDate;
+      }
+
+      const response = await api.get("/companies/", {
+        params: params,
+      });
+
+      console.log("Filtered Companies:", response.data);
+
+      setCompaniesData(response.data);
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+    } finally {
+      setLoading(false);
     }
-
-    if (city) {
-      params.city = city;
-    }
-
-    if (country) {
-      params.country_region = country;
-    }
-
-    if (search) {
-      params.search = search;
-    }
-
-    if (createdDate) {
-      params.created_date = createdDate;
-    }
-
-    const response = await api.get("/companies/", {
-      params: params,
-    });
-
-    console.log("Filtered Companies:", response.data);
-
-    setCompaniesData(response.data);
-
-  } catch (error) {
-    console.error("Error fetching companies:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   //EDIT COMPANY
   const handleEdit = (company) => {
     console.log("Editing company:", company);
+
+    console.log("Company Owner ID:", company.company_owner);
+    console.log("Company Owner Name:", company.company_owner_name);
+
     setSelectedCompany(company);
     setOpenDrawer(true);
   };
 
   // DELETE COMPANY
-
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this company?",
@@ -118,11 +121,10 @@ const fetchCompanies = async () => {
     }
   };
 
-//CALLING FETCH COMPANIES WHILE SEARCHING OR FILTERING
-
- useEffect(() => {
-  fetchCompanies();
-}, [industry, city, country, search, createdDate]);
+  //CALLING FETCH COMPANIES WHILE SEARCHING OR FILTERING
+  useEffect(() => {
+    fetchCompanies();
+  }, [industry, city, country, search, createdDate]);
 
   return (
     <MainLayout>
@@ -158,14 +160,20 @@ const fetchCompanies = async () => {
             actions={
               <Box sx={{ display: "flex", gap: 2 }}>
                 <CommonButton variant="outlined">Import</CommonButton>
-                <CommonButton onClick={() => setOpenDrawer(true)}>
+
+                <CommonButton
+                  onClick={() => {
+                    setSelectedCompany(null);
+                    setOpenDrawer(true);
+                  }}
+                >
                   Create
                 </CommonButton>
               </Box>
             }
           />
+
           {/* DRAWER */}
-        
           <CreateCompanyDrawer
             open={openDrawer}
             onClose={() => {
@@ -236,9 +244,12 @@ const fetchCompanies = async () => {
             label="Created Date"
             value={createdDate ? dayjs(createdDate) : null}
             onChange={(newValue) =>
-              setCreatedDate(newValue ? newValue.format("YYYY-MM-DD") : "")
+              setCreatedDate(
+                newValue ? newValue.format("YYYY-MM-DD") : "",
+              )
             }
           />
+
           <Box sx={{ flexGrow: 1 }} />
         </FilterSection>
 
@@ -261,28 +272,70 @@ const fetchCompanies = async () => {
               <TableCell>
                 <CommonCheckbox size="medium" />
               </TableCell>
-              {/* <TableCell>{company.companyName}</TableCell>
-              <TableCell>{company.companyOwner}</TableCell>
-              <TableCell>{company.phoneNumber}</TableCell>
-              <TableCell>{company.industry}</TableCell>
-              <TableCell>{company.city}</TableCell>
-              <TableCell>{company.country}</TableCell>
-              <TableCell>{company.createdDate}</TableCell> */}
-              <TableCell>{company.company_name}</TableCell>
-              <TableCell>{company.company_owner}</TableCell>
-              <TableCell>{company.phone_number}</TableCell>
-              <TableCell>{company.industry}</TableCell>
-              <TableCell>{company.city}</TableCell>
-              <TableCell>{company.country_region}</TableCell>
+
+              {/* COMPANY NAME */}
+              <TableCell>
+                <Box
+                  component="span"
+                  sx={{
+                    color: "primary.main",
+                    cursor: "pointer",
+                    fontWeight: 500,
+                    "&:hover": {
+                      textDecoration: "underline",
+                    },
+                  }}
+                  onClick={() =>
+                    navigate(`/company/${company.id}/activities`)
+                  }
+                >
+                  {company.company_name}
+                </Box>
+              </TableCell>
+
+              {/* COMPANY OWNER */}
+              <TableCell>
+                {company.company_owner_name || "-"}
+              </TableCell>
+
+              {/* PHONE NUMBER */}
+              <TableCell>
+                {company.phone_number || "-"}
+              </TableCell>
+
+              {/* INDUSTRY */}
+              <TableCell>
+                {company.industry || "-"}
+              </TableCell>
+
+              {/* CITY */}
+              <TableCell>
+                {company.city || "-"}
+              </TableCell>
+
+              {/* COUNTRY */}
+              <TableCell>
+                {company.country_region || "-"}
+              </TableCell>
+
+              {/* CREATED DATE */}
               <TableCell>
                 {company.created_date
-                  ? dayjs(company.created_date).format("MMM D, YYYY h:mm A")
+                  ? dayjs(company.created_date).format(
+                      "MMM D, YYYY h:mm A",
+                    )
                   : ""}
               </TableCell>
+
+              {/* ACTIONS */}
               <TableCell>
-                <IconButton color="primary" onClick={() => handleEdit(company)}>
+                <IconButton
+                  color="primary"
+                  onClick={() => handleEdit(company)}
+                >
                   <EditIcon />
                 </IconButton>
+
                 <IconButton
                   color="error"
                   onClick={() => handleDelete(company.id)}
