@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
@@ -13,16 +15,17 @@ export default function EmailDetails({
   tabs,
   relatedModule = "deal",
   objectId,
+  companyId,
 }) {
-  const { dealId, ticketId } = useParams();
+  const {
+    dealId,
+    ticketId,
+    companyId: routeCompanyId,
+  } = useParams();
 
   const [activeTab, setActiveTab] = useState("Emails");
-
-  const [openCreateEmail, setOpenCreateEmail] =
-    useState(false);
-
+  const [openCreateEmail, setOpenCreateEmail] = useState(false);
   const [emails, setEmails] = useState([]);
-
   const [loading, setLoading] = useState(false);
 
   // ==========================================
@@ -31,6 +34,8 @@ export default function EmailDetails({
 
   const finalObjectId =
     objectId ||
+    companyId ||
+    routeCompanyId ||
     ticketId ||
     dealId;
 
@@ -38,15 +43,8 @@ export default function EmailDetails({
     .toLowerCase()
     .trim();
 
-  console.log(
-    "RELATED MODULE:",
-    currentModule
-  );
-
-  console.log(
-    "OBJECT ID:",
-    finalObjectId
-  );
+  console.log("RELATED MODULE:", currentModule);
+  console.log("OBJECT ID:", finalObjectId);
 
   // ==========================================
   // GET EMAILS
@@ -58,6 +56,11 @@ export default function EmailDetails({
 
       const response = await api.get(
         "/activities/email/"
+      );
+
+      console.log(
+        "ALL EMAILS FROM API:",
+        response.data
       );
 
       const allEmails = Array.isArray(response.data)
@@ -84,10 +87,17 @@ export default function EmailDetails({
             email?.lead?.id ??
             email?.company?.id;
 
+          console.log("Checking email:", {
+            emailId: email?.id,
+            emailModule,
+            relatedId,
+            currentModule,
+            finalObjectId,
+          });
+
           return (
             emailModule === currentModule &&
-            Number(relatedId) ===
-              Number(finalObjectId)
+            Number(relatedId) === Number(finalObjectId)
           );
         }
       );
@@ -98,6 +108,7 @@ export default function EmailDetails({
       );
 
       setEmails(filteredEmails);
+
     } catch (error) {
       console.error(
         "Get Emails Error:",
@@ -105,6 +116,7 @@ export default function EmailDetails({
       );
 
       setEmails([]);
+
     } finally {
       setLoading(false);
     }
@@ -121,10 +133,7 @@ export default function EmailDetails({
     }
 
     fetchEmails();
-  }, [
-    currentModule,
-    finalObjectId,
-  ]);
+  }, [currentModule, finalObjectId]);
 
   // ==========================================
   // EMAIL CREATED
@@ -135,6 +144,10 @@ export default function EmailDetails({
 
     await fetchEmails();
   };
+
+  // ==========================================
+  // RENDER
+  // ==========================================
 
   return (
     <Box
@@ -194,9 +207,7 @@ export default function EmailDetails({
         }
         relatedModule={currentModule}
         objectId={finalObjectId}
-        onEmailCreated={
-          handleEmailCreated
-        }
+        onEmailCreated={handleEmailCreated}
       />
 
       {/* ================================= */}

@@ -61,8 +61,8 @@ export default function MeetingDetails({
       console.log("=================================");
 
       const response = await api.get(
-        "/activities/meeting/"
-      );
+  `/activities/meeting/${finalModule}/${finalModuleId}/`
+);
 
       console.log(
         "MEETINGS RESPONSE:",
@@ -247,3 +247,4 @@ export default function MeetingDetails({
     </Box>
   );
 }
+

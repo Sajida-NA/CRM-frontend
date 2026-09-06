@@ -1,3 +1,7 @@
+
+
+
+
 import React, { useEffect, useState } from "react";
 
 import { Box, Typography } from "@mui/material";
@@ -16,8 +20,7 @@ export default function TaskDetails({
 }) {
   const [activeTab, setActiveTab] = useState("Tasks");
 
-  const [openCreateTask, setOpenCreateTask] =
-    useState(false);
+  const [openCreateTask, setOpenCreateTask] = useState(false);
 
   const [tasks, setTasks] = useState([]);
 
@@ -29,6 +32,11 @@ export default function TaskDetails({
 
   const fetchTasks = async () => {
     if (!module || !moduleId) {
+      console.log("Missing module or moduleId:", {
+        module,
+        moduleId,
+      });
+
       setTasks([]);
       return;
     }
@@ -36,67 +44,56 @@ export default function TaskDetails({
     try {
       setLoading(true);
 
-      const response = await api.get(
-        "/activities/task/"
-      );
+      console.log("Fetching tasks for:", {
+        module,
+        moduleId,
+      });
 
-      console.log(
-        "ALL TASKS RESPONSE:",
-        response.data
-      );
+      const response = await api.get("/activities/task/");
+
+      console.log("ALL TASKS RESPONSE:", response.data);
+
+      // Support both:
+      // [...]
+      // OR
+      // { results: [...] }
 
       const allTasks = Array.isArray(response.data)
         ? response.data
-        : [];
+        : response.data?.results || [];
+
+      console.log("ALL TASKS:", allTasks);
 
       // ========================================
-      // FILTER CURRENT MODULE
+      // FILTER CURRENT LEAD
       // ========================================
 
       const filteredTasks = allTasks.filter(
         (task) =>
           String(task.module).toLowerCase() ===
             String(module).toLowerCase() &&
-          Number(task.module_id) ===
-            Number(moduleId)
+          Number(task.module_id) === Number(moduleId)
       );
 
-      console.log(
-        "CURRENT MODULE:",
-        module
-      );
-
-      console.log(
-        "CURRENT MODULE ID:",
-        moduleId
-      );
-
-      console.log(
-        "FILTERED TASKS:",
-        filteredTasks
-      );
+      console.log("CURRENT MODULE:", module);
+      console.log("CURRENT MODULE ID:", moduleId);
+      console.log("FILTERED TASKS:", filteredTasks);
 
       setTasks(filteredTasks);
-
     } catch (error) {
-
       console.error(
         "FETCH TASKS ERROR:",
-        error.response?.data ||
-          error.message
+        error.response?.data || error.message
       );
 
       setTasks([]);
-
     } finally {
-
       setLoading(false);
-
     }
   };
 
   // ========================================
-  // FETCH WHEN MODULE CHANGES
+  // FETCH WHEN MODULE / ID CHANGES
   // ========================================
 
   useEffect(() => {
@@ -107,37 +104,38 @@ export default function TaskDetails({
   // TASK CREATED
   // ========================================
 
-  const handleTaskCreated = async () => {
+  const handleTaskCreated = async (createdTask) => {
+    console.log("TASK CREATED:", createdTask);
 
     // Close drawer
     setOpenCreateTask(false);
 
-    // Get latest tasks from backend
+    // Refresh task list
     await fetchTasks();
   };
 
+  // ========================================
+  // UI
+  // ========================================
+
   return (
     <div>
-
       <Box
         sx={{
           p: 3,
           mx: -2,
         }}
       >
-
         {/* ========================================
             ACTIVITY TABS
         ======================================== */}
 
         <Box>
-
           <CommonActivityTabs
             tabs={tabs}
             activeTab={activeTab}
             onTabChange={setActiveTab}
           />
-
         </Box>
 
         {/* ========================================
@@ -154,7 +152,6 @@ export default function TaskDetails({
             marginLeft: "1px",
           }}
         >
-
           <Typography
             variant="h6"
             fontWeight={100}
@@ -164,13 +161,10 @@ export default function TaskDetails({
 
           <CommonButton
             variant="contained"
-            onClick={() =>
-              setOpenCreateTask(true)
-            }
+            onClick={() => setOpenCreateTask(true)}
           >
             Create Task
           </CommonButton>
-
         </Box>
 
         {/* ========================================
@@ -179,9 +173,7 @@ export default function TaskDetails({
 
         <CreateTaskDrawer
           open={openCreateTask}
-          onClose={() =>
-            setOpenCreateTask(false)
-          }
+          onClose={() => setOpenCreateTask(false)}
           module={module}
           moduleId={moduleId}
           onTaskCreated={handleTaskCreated}
@@ -192,32 +184,22 @@ export default function TaskDetails({
         ======================================== */}
 
         {loading ? (
-
           <Typography>
             Loading tasks...
           </Typography>
-
         ) : tasks.length === 0 ? (
-
           <Typography>
             No tasks found.
           </Typography>
-
         ) : (
-
           tasks.map((task) => (
-
             <TaskCard
               key={task.id}
               task={task}
             />
-
           ))
-
         )}
-
       </Box>
-
     </div>
   );
 }

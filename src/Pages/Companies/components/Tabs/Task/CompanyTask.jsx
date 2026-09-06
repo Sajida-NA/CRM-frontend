@@ -6,14 +6,16 @@ import TaskDetails from "../../../../Leads/components/Tabs/Task/TaskDetails";
 import { getCompanyTabs } from "../CompanyTabs";
 
 export default function CompanyTask() {
-  const { id } = useParams();
+  const { companyId } = useParams();
 
   return (
-    <CompanyLeftPanel>
+   <CompanyLeftPanel>
       <TaskDetails
-        tabs={getCompanyTabs(id)}
+        tabs={getCompanyTabs(companyId)}
+        relatedModule="company"
         module="company"
-        moduleId={id}
+        moduleId={companyId}
+        companyId={companyId}
       />
     </CompanyLeftPanel>
   );

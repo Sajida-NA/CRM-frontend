@@ -91,7 +91,7 @@ function AppRoutes() {
 
       {/* ================= Lead Routes ================= */}
 
-      <Route path="/leadslist" element={<Leadslist />} />
+      {/* <Route path="/leadslist" element={<Leadslist />} />
       <Route path="/leadactivities" element={<LeadActivities />} />
       <Route path="/leadnote" element={<Leadnote />} />
       <Route path="/leadcalls" element={<Leadcalls />} />
@@ -100,7 +100,39 @@ function AppRoutes() {
       <Route path="/leademail" element={<LeadEmail />} />
       <Route path="/emailcard" element={<EmailCard />} />
       <Route path="/leadsleftpanel" element={<LeadsLeftPanel />} />
-      <Route path="/createtaskdrawer" element={<CreateTaskDrawer />} />
+      <Route path="/createtaskdrawer" element={<CreateTaskDrawer />} /> */}
+
+
+      <Route path="/leadslist" element={<Leadslist />} />
+      <Route
+  path="/leads/:leadId/activity"
+  element={<LeadActivities />}
+/>
+
+<Route
+  path="/leads/:leadId/note"
+  element={<Leadnote />}
+/>
+
+<Route
+  path="/leads/:leadId/calls"
+  element={<Leadcalls />}
+/>
+
+<Route
+  path="/leads/:leadId/meeting"
+  element={<LeadMeeting />}
+/>
+
+<Route
+  path="/leads/:leadId/task"
+  element={<LeadTask />}
+/>
+
+<Route
+  path="/leads/:leadId/email"
+  element={<LeadEmail />}
+/>
 
       {/* ================= Company Routes ================= */}
 

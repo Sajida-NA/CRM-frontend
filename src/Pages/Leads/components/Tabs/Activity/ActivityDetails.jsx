@@ -1,12 +1,75 @@
-import React, { useState } from "react";
+
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
+
+import { useParams } from "react-router-dom";
+
+import {
+  Box,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
+
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
-import ActivityCard from "./ActivityCard";
-import { Box, Typography } from "@mui/material";
 import ActivityTimeline from "./ActivityTimeline";
-import { leadTabs } from "../LeadTabs";
+import { getLeadTabs } from "../LeadTabs";
+import api from "../../../../../services/api";
 
 export default function ActivityDetails() {
-  const [activeTab, setActiveTab] = useState();
+  const { leadId } = useParams();
+
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // ========================================
+  // FETCH ACTIVITIES
+  // ========================================
+
+  const fetchActivities = useCallback(async () => {
+    if (!leadId) return;
+
+    try {
+      setLoading(true);
+
+      const response = await api.get(
+        `/activities/activity/lead/${leadId}/`
+      );
+
+      console.log(
+        "LEAD ACTIVITIES RESPONSE:",
+        response.data
+      );
+
+      setActivities(
+        Array.isArray(response.data)
+          ? response.data
+          : response.data?.results || []
+      );
+
+    } catch (error) {
+      console.error(
+        "ERROR FETCHING LEAD ACTIVITIES:",
+        error.response?.data || error.message
+      );
+
+      setActivities([]);
+
+    } finally {
+      setLoading(false);
+    }
+  }, [leadId]);
+
+  // ========================================
+  // LOAD ACTIVITIES
+  // ========================================
+
+  useEffect(() => {
+    fetchActivities();
+  }, [fetchActivities]);
+
   return (
     <Box
       sx={{
@@ -15,66 +78,54 @@ export default function ActivityDetails() {
         mx: -2,
       }}
     >
-      {/* Activity Tabs */}
-      <Box>
-        <CommonActivityTabs tabs={leadTabs} activeTab="Activity" />
-      </Box>
-      <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
-        Upcoming
-      </Typography>
+      {/* ACTIVITY TABS */}
 
-      <ActivityCard
-        title="Task assigned to Maria Johnson"
-        description="Prepare quote for Jane Cooper"
-        date="June 24, 2025 at 5:30 PM"
-        overdue
-        showCheckbox
+      <CommonActivityTabs
+        tabs={getLeadTabs(leadId)}
+        activeTab="Activity"
       />
 
-      <ActivityCard
-        title="Task assigned to Maria Johnson"
-        description="Prepare quote for Jane Cooper"
-        date="June 24, 2025 at 5:30 PM"
-        overdue
-        showCheckbox
-      />
-      <Box>
-        <Typography
-          variant="h6"
+      {/* LOADING */}
+
+      {loading && (
+        <Box
           sx={{
-            mb: 3,
-            fontWeight: 600,
+            display: "flex",
+            justifyContent: "center",
+            py: 5,
           }}
         >
-          June 2025
-        </Typography>
+          <CircularProgress />
+        </Box>
+      )}
 
-        <ActivityTimeline
-          highlightedText="Call"
-          normalText="from Maria Johnson"
-          description="Brought Maria through our latest product line. She's interested and is going to get back to me."
-          date="June 24, 2025 at 5:30PM"
-        />
+      {/* NO ACTIVITIES */}
 
-        <ActivityTimeline
-          highlightedText="Meeting Maria Johnson and Jane Cooper"
-          description="Let's discuss our new product line."
-          date="June 24, 2025 at 5:30PM"
-        />
+      {!loading &&
+        activities.length === 0 && (
+          <Box sx={{ py: 5 }}>
+            <Typography
+              color="text.secondary"
+              textAlign="center"
+            >
+              No activities found for this lead.
+            </Typography>
+          </Box>
+        )}
 
-        <ActivityTimeline
-          highlightedText="Email tracking"
-          description="Jane Cooper opened Hello there"
-          date="June 24, 2025 at 5:30PM"
-        />
+      {/* ACTIVITY LIST */}
 
-        <ActivityTimeline
-          highlightedText="Note"
-          normalText="by Maria Johnson"
-          description="Sample Note"
-          date="June 24, 2025 at 5:30PM"
-        />
-      </Box>
+      {!loading &&
+        activities.length > 0 && (
+          <Box sx={{ mt: 3 }}>
+            {activities.map((activity) => (
+              <ActivityTimeline
+                key={activity.id}
+                activity={activity}
+              />
+            ))}
+          </Box>
+        )}
     </Box>
   );
 }

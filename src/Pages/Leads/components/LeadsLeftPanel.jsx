@@ -1,55 +1,126 @@
-import React, { useState } from "react";
+
+
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, CircularProgress, Typography } from "@mui/material";
+
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 import CommonButton from "../../../Components/common/CommonButton";
 import CreateLogCall from "./Tabs/Calls/CreateLogCall";
 
-export default function LeadsLeftPanel({ children }) {
+import { getLeadById } from "../../../services/leads";
 
+export default function LeadsLeftPanel({ children, leadId }) {
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
 
+  const [lead, setLead] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchLead = async () => {
+      try {
+        setLoading(true);
+
+        console.log("Fetching Lead ID:", leadId);
+
+        const response = await getLeadById(leadId);
+
+        console.log("Lead Details:", response.data);
+
+        setLead(response.data);
+      } catch (error) {
+        console.error(
+          "Error fetching lead:",
+          error.response?.data || error.message
+        );
+
+        setLead(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (leadId) {
+      fetchLead();
+    }
+  }, [leadId]);
+
+  // Loading
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          minHeight: "400px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // Lead not found
+  if (!lead) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h6">
+          Lead not found
+        </Typography>
+      </Box>
+    );
+  }
+
+  // Get lead name
+  const leadName =
+    lead.name ||
+    `${lead.first_name || ""} ${lead.last_name || ""}`.trim() ||
+    "-";
+
+  // Dynamic lead details
   const leadDetails = [
     {
       label: "Email",
-      value: "janecooper@gmail.com",
+      value: lead.email || "-",
     },
     {
       label: "First Name",
-      value: "Jane",
+      value: lead.first_name || "-",
     },
     {
       label: "Last Name",
-      value: "Cooper",
+      value: lead.last_name || "-",
     },
     {
       label: "Phone Number",
-      value: "078 5432 8505",
+      value: lead.phone_number || "-",
     },
     {
       label: "Lead Status",
-      value: "New",
+      value: lead.lead_status || "-",
     },
     {
       label: "Job Title",
-      value: "Salesperson",
+      value: lead.job_title || "-",
     },
     {
       label: "Created Date",
-      value: "04/08/2025 2:31 PM GMT+5:30",
+      value: lead.created_date || "-",
     },
   ];
 
-
   const leftPanelData = {
     profile: {
-      name: "Jane Cooper",
-      subTitle: "Salesperson",
-      email: "",
+      name: leadName,
+      subTitle: lead.job_title || "",
+      email: lead.email || "",
     },
 
-     showProfileEdit: true, 
+    showProfileEdit: true,
 
-      showProfileImage: true,
+    showProfileImage: true,
 
     sectionTitle: "About this lead",
 
@@ -61,27 +132,41 @@ export default function LeadsLeftPanel({ children }) {
       "There are no activities associated with this lead and further details are needed to provide a comprehensive summary.",
   };
 
-
   return (
     <>
-      <CommonEntityHeader
+      {/* <CommonEntityHeader
         title="Leads"
         leftPanelData={leftPanelData}
         action={<CommonButton>Convert</CommonButton>}
-
-        // Call button click from left panel
         onCallClick={() => setOpenCreateLogCall(true)}
       >
         {children}
-      </CommonEntityHeader>
+      </CommonEntityHeader> */}
 
+      <CommonEntityHeader
+  title="Leads"
+  leftPanelData={leftPanelData}
+  action={
+    <CommonButton onClick={() => navigate("/dealslist")}>
+      Convert
+    </CommonButton>
+  }
+  onCallClick={() => setOpenCreateLogCall(true)}
+>
+  {children}
+</CommonEntityHeader>
 
       {/* Log Call Drawer */}
       <CreateLogCall
-        open={openCreateLogCall}
-        onClose={() => setOpenCreateLogCall(false)}
-      />
-
+  open={openCreateLogCall}
+  onClose={() => setOpenCreateLogCall(false)}
+  relatedModule="lead"
+  objectId={leadId}
+  connectedName={leadName}
+  onCallCreated={() => {
+    setOpenCreateLogCall(false);
+  }}
+/>
     </>
   );
 }
