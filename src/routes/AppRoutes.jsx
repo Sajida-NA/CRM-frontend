@@ -68,12 +68,10 @@ import DealLeftPanel from "../Pages/Deals/components/DealLeftPanel";
    Common Components
 =========================== */
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
-<<<<<<< HEAD
 import ProtectedRoute from "../Components/common/ProtectedRoute";
-
-=======
 import ResetPassword from "../Pages/Auth/ResetPassword/ResetPassword";
->>>>>>> 6a82e18729aabe531aadf90d57f68c871f05cc3d
+
+
 function AppRoutes() {
   return (
     <Routes>

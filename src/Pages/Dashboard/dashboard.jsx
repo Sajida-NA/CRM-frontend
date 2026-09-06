@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Grid} from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import Header from "../../Components/common/Header";
 import Sidebar from "../../Components/common/Sidebar";
 import StatsCards from "./components/StatCard";
@@ -7,8 +7,7 @@ import ConversionFunnel from "./components/ConversionFunnel";
 import SalesReports from "./components/SalesReports";
 import TeamPerformance from "./components/TeamPerformance";
 
-
- const Dashboard = () => {
+const Dashboard = () => {
   return (
     <Box sx={{ bgcolor: "#F5F7FB", minHeight: "100vh" }}>
       <Header />
@@ -22,7 +21,6 @@ import TeamPerformance from "./components/TeamPerformance";
           <StatsCards />
 
           {/* Row 2: Funnel (fixed width) + Sales Reports (fills leftover space) */}
-
           <Box
             sx={{
               display: "flex",
@@ -62,6 +60,7 @@ import TeamPerformance from "./components/TeamPerformance";
               <SalesReports />
             </Box>
           </Box>
+
           {/* Team Performance Tracking  */}
           <Box
             sx={{
@@ -79,8 +78,6 @@ import TeamPerformance from "./components/TeamPerformance";
       </Box>
     </Box>
   );
-}
+};
 
 export default Dashboard;
-
-

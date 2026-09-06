@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -17,23 +17,44 @@ import {
   Tooltip,
 } from "recharts";
 
-const data = [
-  { month: "Jan", sales: 400 },
-  { month: "Feb", sales: 1000 },
-  { month: "Mar", sales: 200 },
-  { month: "Apr", sales: 600 },
-  { month: "May", sales: 800 },
-  { month: "Jun", sales: 500 },
-  { month: "Jul", sales: 700 },
-  { month: "Aug", sales: 900 },
-  { month: "Sep", sales: 300 },
-  { month: "Oct", sales: 400 },
-  { month: "Nov", sales: 600 },
-  { month: "Dec", sales: 750 },
-];
+import api from "../../../services/api";
 
 const SalesReports = () => {
   const [period, setPeriod] = useState("Monthly");
+
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSalesReport = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get("/dashboard/sales-report/",{
+          params: {
+            period: period,
+          },
+        });
+
+        console.log("Dashboard sales report:", response.data);
+
+        const formattedData = response.data.map((item) => ({
+          month: item.month,
+          sales: Number(item.revenue),
+        }));
+
+        setData(formattedData);
+      } catch (error) {
+        console.error(
+          "Failed to fetch sales report:",
+          error.response?.data || error.message,
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSalesReport();
+  }, [period]);
 
   return (
     <Paper

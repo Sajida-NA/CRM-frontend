@@ -1,38 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, Paper, Button } from "@mui/material";
-
-const rows = [
-  {
-    name: "Ethan Harper",
-    active: 25,
-    closed: 10,
-    revenue: 12000,
-    change: "+3.4%",
-  },
-  {
-    name: "Olivia Bennett",
-    active: 30,
-    closed: 15,
-    revenue: 15000,
-    change: "-0.1%",
-  },
-  {
-    name: "Liam Carter",
-    active: 22,
-    closed: 12,
-    revenue: 10000,
-    change: "+3.4%",
-  },
-  {
-    name: "Sophia Evans",
-    active: 28,
-    closed: 14,
-    revenue: 13000,
-    change: "+2.8%",
-  },
-];
+import api from "../../../services/api";
 
 const TeamPerformance = () => {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    const fetchTeamPerformance = async () => {
+      try {
+        const response = await api.get("/dashboard/team-performance/");
+        console.log("Dashboard team performance:", response.data);
+
+        const formattedData = response.data.map((employee) => ({
+          name: `${employee.first_name} ${employee.last_name}`,
+          active: employee.active_deals,
+          closed: employee.closed_deals,
+          revenue: Number(employee.revenue),
+          change: employee.revenue_change,
+        }));
+
+        setRows(formattedData);
+      } catch (error) {
+        console.error("Team Performance API Error:", error);
+      }
+    };
+
+    fetchTeamPerformance();
+  }, []);
+
   const exportCSV = () => {
     const header = [
       "Name",
@@ -41,12 +36,14 @@ const TeamPerformance = () => {
       "Revenue Amount",
       "Revenue % Change",
     ];
+
     const csvRows = [
       header.join(","),
       ...rows.map((r) =>
         [r.name, r.active, r.closed, `$${r.revenue}`, r.change].join(","),
       ),
     ];
+
     const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -74,6 +71,7 @@ const TeamPerformance = () => {
         >
           Team Performance Tracking
         </Typography>
+
         <Button
           variant="outlined"
           sx={{
