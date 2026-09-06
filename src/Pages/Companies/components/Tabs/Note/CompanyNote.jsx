@@ -1,19 +1,23 @@
 import React from "react";
-import CompanyLeftPanel from "../../CompanyLeftPanel";
-import NoteDetails from "../../../../Tickets/components/Tabs/Note/NoteDetails";
-import { getCompanyTabs } from "../CompanyTabs";
 import { useParams } from "react-router-dom";
 
+import CompanyLeftPanel from "../../CompanyLeftPanel";
+// import NoteDetails from "../../../../Leads/components/Tabs/Note/NoteDetails";
+import NoteDetails from "../../../../Tickets/components/Tabs/Note/NoteDetails";
+import { getCompanyTabs } from "../CompanyTabs";
+
 export default function CompanyNote() {
-  const { id } = useParams();
+  const { companyId } = useParams();
+
+  console.log("Company ID in CompanyNote:", companyId);
+
   return (
-    <div>
-      <CompanyLeftPanel>
-
-
-        <NoteDetails tabs={getCompanyTabs(id)} 
-         companyId={id}/>
-      </CompanyLeftPanel>
-    </div>
+    <CompanyLeftPanel>
+      <NoteDetails
+        tabs={getCompanyTabs(companyId)}
+        module="company"
+        moduleId={companyId}
+      />
+    </CompanyLeftPanel>
   );
 }

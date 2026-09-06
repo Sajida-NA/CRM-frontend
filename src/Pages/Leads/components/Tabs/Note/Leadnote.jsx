@@ -1,12 +1,23 @@
-import React from 'react'
-import LeadsLeftPanel from '../../LeadsLeftPanel'
-import NoteDetails from '../../../../Tickets/components/Tabs/Note/NoteDetails'
-import { leadTabs } from '../LeadTabs'
+
+import React from "react";
+import { useParams } from "react-router-dom";
+
+import LeadsLeftPanel from "../../LeadsLeftPanel";
+import NoteDetails from "../../../../Tickets/components/Tabs/Note/NoteDetails";
+import { getLeadTabs } from "../LeadTabs";
 
 export default function Leadnote() {
+  const { leadId } = useParams();
+
   return (
     <div>
-      <LeadsLeftPanel> <NoteDetails tabs={leadTabs}/></LeadsLeftPanel>
+      <LeadsLeftPanel leadId={leadId}>
+        <NoteDetails
+          tabs={getLeadTabs(leadId)}
+          module="lead"
+          moduleId={leadId}
+        />
+      </LeadsLeftPanel>
     </div>
-  )
+  );
 }

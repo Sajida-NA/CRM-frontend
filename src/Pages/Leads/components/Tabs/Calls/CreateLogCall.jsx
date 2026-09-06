@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 
 import {
@@ -37,9 +38,10 @@ export default function CreateLogCall({
 
   const [saving, setSaving] = useState(false);
 
-  // ============================================
-  // SET CONNECTED RECORD NAME
-  // ============================================
+
+  // ============================================================
+  // DEBUG PROPS
+  // ============================================================
 
   useEffect(() => {
 
@@ -138,8 +140,28 @@ export default function CreateLogCall({
 
     e.preventDefault();
 
-    if (!objectId) {
-      console.error("Related record ID is missing.");
+
+    // ==========================================================
+    // GET MODULE NAME
+    // ==========================================================
+
+    const moduleName = String(
+      relatedModule || ""
+    )
+      .toLowerCase()
+      .trim();
+
+
+    // ==========================================================
+    // VALIDATE MODULE
+    // ==========================================================
+
+    if (!moduleName) {
+
+      console.error(
+        "Related module is missing."
+      );
+
       return;
     }
 
@@ -151,8 +173,31 @@ export default function CreateLogCall({
     if (
       objectId === undefined ||
       objectId === null ||
-      objectId === "" ||
-      Number.isNaN(numericObjectId) ||
+      objectId === ""
+    ) {
+
+      console.error(
+        "Related record ID is missing."
+      );
+
+      return;
+    }
+
+
+    // ==========================================================
+    // CONVERT OBJECT ID TO NUMBER
+    // ==========================================================
+
+    const numericObjectId =
+      Number(objectId);
+
+
+    // ==========================================================
+    // VALIDATE NUMERIC OBJECT ID
+    // ==========================================================
+
+    if (
+      !Number.isInteger(numericObjectId) ||
       numericObjectId <= 0
     ) {
 
@@ -160,7 +205,7 @@ export default function CreateLogCall({
         `${moduleName} ID is missing or invalid.`,
         {
           objectId,
-          moduleName,
+          numericObjectId,
         }
       );
 
@@ -268,16 +313,16 @@ export default function CreateLogCall({
 
     const payload = {
 
-      // company / deal / lead / ticket
+      // lead / deal / company / ticket
       module: moduleName,
 
-      // ID of the related record
+      // related record ID
       module_id: numericObjectId,
 
       // logged-in user
       sender_id: Number(senderId),
 
-      // call information
+      // call details
       call_outcome:
         formData.callOutcome,
 
@@ -302,63 +347,54 @@ export default function CreateLogCall({
 
 
     // ==========================================================
-    // SAVE
+    // SAVE CALL
     // ==========================================================
 
     try {
 
       setSaving(true);
 
-      const payload = {
-        module: String(relatedModule)
-          .toLowerCase()
-          .trim(),
-
-        module_id: Number(objectId),
-
-        sender_id: Number(senderId),
-
-        call_outcome: formData.callOutcome,
-
-        duration: Number(formData.duration),
-
-        date: formData.date?.format
-          ? formData.date.format("YYYY-MM-DD")
-          : formData.date,
-
-        time: formData.time?.format
-          ? formData.time.format("HH:mm:ss")
-          : formData.time,
-
-        note: formData.note || "",
-      };
-
-      console.log("Creating call:", payload);
 
       const response = await api.post(
         "/activities/call/",
         payload
       );
 
+
       console.log(
         "CALL CREATED SUCCESSFULLY:",
         response.data
       );
 
+
+      // ========================================================
+      // RESET FORM
+      // ========================================================
+
       setFormData({
         connected:
           connectedName || "",
 
-        callOutcome: "",
+        callOutcome:
+          "",
 
-        duration: "",
+        duration:
+          "",
 
-        date: null,
+        date:
+          null,
 
-        time: null,
+        time:
+          null,
 
-        note: "",
+        note:
+          "",
       });
+
+
+      // ========================================================
+      // CALLBACK
+      // ========================================================
 
       if (onCallCreated) {
 
@@ -371,6 +407,7 @@ export default function CreateLogCall({
         onClose();
 
       }
+
 
     } catch (error) {
 
@@ -413,10 +450,20 @@ export default function CreateLogCall({
           bgcolor: "#fff",
         }}
       >
+
+        {/* =====================================================
+            HEADER
+        ====================================================== */}
+
         <DrawerHeader
           title="Log Call"
           onClose={onClose}
         />
+
+
+        {/* =====================================================
+            FORM BODY
+        ====================================================== */}
 
         <Box
           sx={{
@@ -585,15 +632,17 @@ export default function CreateLogCall({
 
         </Box>
 
-        {/* FOOTER */}
+
+        {/* =====================================================
+            FOOTER
+        ====================================================== */}
 
         <Box
           sx={{
             display: "flex",
             gap: 2,
             p: 3,
-            borderTop:
-              "1px solid #E5E7EB",
+            borderTop: "1px solid #E5E7EB",
           }}
         >
 
@@ -622,5 +671,6 @@ export default function CreateLogCall({
       </Box>
 
     </Drawer>
+
   );
 }

@@ -1,4 +1,8 @@
+
+
+
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 import {
   Box,
@@ -6,50 +10,142 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-import { useParams } from "react-router-dom";
-
 import TicketLeftPanel from "../../TicketLeftPanel";
-
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
 
 import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
 import CreateLogCall from "../../../../Leads/components/Tabs/Calls/CreateLogCall";
 
-import { getTicketTabs } from "../TicketTabs";
-import { getCallsByModule } from "../../../../../services/activityApi";
+import { ticketTabs } from "../TicketTabs";
+import api from "../../../../../services/api";
 
 export default function TicketCalls() {
   const { ticketId } = useParams();
 
   const [activeTab, setActiveTab] = useState("Calls");
+
+  const [ticket, setTicket] = useState(null);
+
   const [calls, setCalls] = useState([]);
+
   const [loading, setLoading] = useState(true);
+
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
 
-  const tabs = getTicketTabs(ticketId);
 
-  // ==========================================
+
+  // ============================================================
+  // FETCH TICKET
+  // ============================================================
+
+  const fetchTicket = async () => {
+    if (!ticketId) {
+      return;
+    }
+
+    try {
+      const response = await api.get(
+        `/tickets/${ticketId}/`
+      );
+
+      // api.get(`/activities/activity/ticket/${ticketId}/call/`)
+      // api.get(`/activities/activity/ticket/${ticketId}/call/`)
+
+      console.log(
+        "TICKET RESPONSE:",
+        response.data
+      );
+
+      setTicket(response.data);
+    } catch (error) {
+      console.error(
+        "ERROR FETCHING TICKET:",
+        error.response?.data || error
+      );
+
+      setTicket(null);
+    }
+  };
+
+  // ============================================================
   // FETCH TICKET CALLS
-  // ==========================================
+  // ============================================================
 
   const fetchCalls = async () => {
-    if (!ticketId) return;
+    if (!ticketId) {
+      setCalls([]);
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
 
-      const data = await getCallsByModule(
-        "ticket",
+      const response = await api.get(
+        "/activities/call/"
+      );
+
+      console.log(
+        "ALL CALLS FROM API:",
+        response.data
+      );
+
+      console.log(
+        "CURRENT TICKET ID:",
         ticketId
       );
 
-      console.log("Ticket Calls:", data);
+      // ========================================================
+      // GET ARRAY
+      // ========================================================
 
-      setCalls(data);
+      const allCalls = Array.isArray(response.data)
+        ? response.data
+        : response.data?.results || [];
+
+
+
+
+      // ========================================================
+      // FILTER CURRENT TICKET CALLS
+      // ========================================================
+
+      const ticketCalls = allCalls.filter((call) => {
+        const module = String(
+          call.module || ""
+        )
+          .trim()
+          .toLowerCase();
+
+        const currentTicketId =
+          call.ticket?.id;
+
+        console.log(
+          "CHECKING TICKET CALL:",
+          {
+            callId: call.id,
+            module,
+            ticketId: currentTicketId,
+            currentTicketId: ticketId,
+          }
+        );
+
+        return (
+          module === "ticket" &&
+          Number(currentTicketId) === Number(ticketId)
+        );
+      });
+
+      console.log(
+        "FILTERED TICKET CALLS:",
+        ticketCalls
+      );
+
+      setCalls(ticketCalls);
     } catch (error) {
       console.error(
-        "Error fetching Ticket calls:",
+        "ERROR FETCHING TICKET CALLS:",
         error.response?.data || error
       );
 
@@ -59,144 +155,156 @@ export default function TicketCalls() {
     }
   };
 
-  // ==========================================
+  // ============================================================
   // INITIAL LOAD
-  // ==========================================
+  // ============================================================
 
   useEffect(() => {
+    if (!ticketId) {
+      return;
+    }
+
+    fetchTicket();
     fetchCalls();
   }, [ticketId]);
 
-  // ==========================================
-  // CALL CREATED
-  // ==========================================
+  // ============================================================
+  // TICKET NAME
+  // ============================================================
 
-  const handleCallCreated = async () => {
-    setOpenCreateLogCall(false);
+  const ticketName =
+  ticket?.ticket_name ||
+  ticket?.name ||
+  ticket?.title ||
+  `Ticket #${ticketId}`;
 
-    await fetchCalls();
-  };
+const ticketOwnerName =
+  ticket?.ticket_owner || "";
+
+  // ============================================================
+  // RENDER
+  // ============================================================
 
   return (
-    <div>
-      <TicketLeftPanel>
+    <TicketLeftPanel
+      onCallCreated={fetchCalls}
+    >
+      <Box
+        sx={{
+          p: 3,
+          mx: -2,
+        }}
+      >
+
+        {/* ====================================================
+            ACTIVITY TABS
+        ==================================================== */}
+
+        <CommonActivityTabs
+          tabs={ticketTabs(ticketId)}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+
+        {/* ====================================================
+            CALL HEADER
+        ==================================================== */}
+
         <Box
           sx={{
-            p: 3,
-            mx: -2,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mt: 3,
+            mb: 1,
           }}
         >
-          {/* ACTIVITY TABS */}
+          <Typography variant="h6">
+            Calls
+          </Typography>
 
-          <Box>
-            <CommonActivityTabs
-              tabs={tabs}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
-          </Box>
+          <CommonButton
+            variant="contained"
+            onClick={() =>
+              setOpenCreateLogCall(true)
+            }
+          >
+            Make a Phone Call
+          </CommonButton>
+        </Box>
 
-          {/* HEADER */}
+        {/* ====================================================
+            LOG CALL DRAWER
+        ==================================================== */}
 
+        <CreateLogCall
+  open={openCreateLogCall}
+  onClose={() => setOpenCreateLogCall(false)}
+  relatedModule="ticket"
+  objectId={ticketId}
+  connectedName={ticketOwnerName}
+  onCallCreated={fetchCalls}
+/>
+
+        {/* ====================================================
+            CALLS
+        ==================================================== */}
+
+        {loading ? (
           <Box
             sx={{
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: "center",
               alignItems: "center",
-              mt: 3,
-              mb: 1,
+              py: 4,
             }}
           >
-            <Typography variant="h6">
-              Calls
-            </Typography>
-
-            <CommonButton
-              variant="contained"
-              onClick={() =>
-                setOpenCreateLogCall(true)
-              }
-            >
-              Make a Phone Call
-            </CommonButton>
+            <CircularProgress size={28} />
           </Box>
-
-          {/* CREATE CALL DRAWER */}
-
-          <CreateLogCall
-            open={openCreateLogCall}
-            onClose={() =>
-              setOpenCreateLogCall(false)
-            }
-            relatedModule="ticket"
-            objectId={ticketId}
-            connectedName={`Ticket #${ticketId}`}
-            onCallCreated={handleCallCreated}
-          />
-
-          {/* MONTH */}
-
-          <Typography variant="h6">
-            June 2025
+        ) : calls.length === 0 ? (
+          <Typography
+            color="text.secondary"
+            sx={{
+              mt: 2,
+            }}
+          >
+            No calls found for this ticket.
           </Typography>
+        ) : (
+          calls.map((call) => (
+            <CallCard
+              key={call.id}
+              call={{
+                ...call,
 
-          {/* CALL LIST */}
+                name: ticketOwnerName,
 
-          {loading ? (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                py: 4,
+                description:
+                  call.note || "",
+
+                date:
+                  call.date || "",
+
+                time:
+                  call.time || "",
+
+                call_outcome:
+                  call.call_outcome ||
+                  call.outcome ||
+                  "",
+
+                duration:
+                  call.duration !== null &&
+                  call.duration !== undefined
+                    ? Number(call.duration)
+                    : null,
               }}
-            >
-              <CircularProgress size={28} />
-            </Box>
-          ) : calls.length === 0 ? (
-            <Typography
-              color="text.secondary"
-              sx={{ mt: 2 }}
-            >
-              No calls found for this ticket.
-            </Typography>
-          ) : (
-            calls.map((call) => (
-              <CallCard
-                key={call.id}
-                call={{
-                  ...call,
-
-                  name:
-                    call.ticket?.name ||
-                    call.ticket?.ticket_name ||
-                    `Ticket #${ticketId}`,
-
-                  description:
-                    call.note || "",
-
-                  date:
-                    call.date || "",
-
-                  time:
-                    call.time || "",
-
-                  call_outcome:
-                    call.call_outcome ||
-                    call.outcome ||
-                    "",
-
-                  duration:
-                    call.duration !== null &&
-                    call.duration !== undefined
-                      ? Number(call.duration)
-                      : null,
-                }}
-              />
-            ))
-          )}
-        </Box>
-      </TicketLeftPanel>
-    </div>
+            />
+          ))
+        )}
+      </Box>
+    </TicketLeftPanel>
   );
 }
+
+

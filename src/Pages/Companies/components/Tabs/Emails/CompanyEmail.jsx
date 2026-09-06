@@ -1,17 +1,3 @@
-// import React from "react";
-// import EmailDetails from "../../../../Leads/components/Tabs/Emails/EmailDetails";
-// import CompanyLeftPanel from "../../CompanyLeftPanel";
-// import { companyTabs } from "../CompanyTabs";
-
-// export default function CompanyEmail() {
-//   return (
-//     <>
-//       <CompanyLeftPanel>
-//         <EmailDetails tabs={companyTabs} />
-//       </CompanyLeftPanel>
-//     </>
-//   );
-// }
 
 
 import React from "react";
@@ -21,29 +7,18 @@ import EmailDetails from "../../../../Leads/components/Tabs/Emails/EmailDetails"
 import CompanyLeftPanel from "../../CompanyLeftPanel";
 import { getCompanyTabs } from "../CompanyTabs";
 
-
 export default function CompanyEmail() {
+  const { companyId } = useParams();
 
-  // Get company ID from URL
-  // Example:
-  // /companies/5/activity/emails
-  //
-  // id will be "5"
-
-  const { id } = useParams();
-
-  console.log("Company ID in CompanyEmail:", id);
+  console.log("Company ID in CompanyEmail:", companyId);
 
   return (
-    <>
-      <CompanyLeftPanel>
-
-       <EmailDetails
-  tabs={getCompanyTabs(id)}
-  companyId={id}
-/>
-      </CompanyLeftPanel>
-    </>
+    <CompanyLeftPanel>
+      <EmailDetails
+        tabs={getCompanyTabs(companyId)}
+         relatedModule="company"
+        companyId={companyId}
+      />
+    </CompanyLeftPanel>
   );
 }
-

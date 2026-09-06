@@ -1,92 +1,3 @@
-// import React from "react";
-// import { Box, Typography } from "@mui/material";
-// import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-
-// export default function ActivityTimeline({
-//     title,
-//     highlightedText,
-//     normalText = "",
-//     description,
-//     date,
-// }) {
-//     return (
-//         <Box
-//             sx={{
-//                 display: "flex",
-//                 justifyContent: "space-between",
-//                 alignItems: "flex-start",
-//                 p: 1,
-//                 mb: 1,
-//                 border: "1px solid",
-//                 borderColor: "divider",
-//                 borderRadius: 1,
-//                 bgcolor: "background.paper",
-//             }}
-//         >
-//             {/* Left */}
-//             <Box sx={{ flex: 1 }}>
-//                 <Box
-//                     sx={{
-//                         display: "flex",
-//                         alignItems: "center",
-//                         gap: 0.5,
-//                     }}
-//                 >
-//                     <KeyboardArrowDownIcon
-//                         sx={{
-//                             fontSize: 18,
-//                             color: "primary.main",
-//                         }}
-//                     />
-
-//                     <Typography
-//                         variant="body1"
-//                         sx={{
-//                             fontWeight: 600,
-//                             color: "text.primary",
-//                         }}
-//                     >
-//                         {highlightedText}
-//                     </Typography>
-
-//                     {normalText && (
-//                         <Typography
-//                             variant="body1"
-//                             sx={{
-//                                 color: "text.secondary",
-//                             }}
-//                         >
-//                             {normalText}
-//                         </Typography>
-//                     )}
-//                 </Box>
-
-//                 <Typography
-//                     variant="body2"
-//                     sx={{
-//                         mt: 1,
-//                         ml: 3,
-//                         color: "text.secondary",
-//                     }}
-//                 >
-//                     {description}
-//                 </Typography>
-//             </Box>
-
-//             {/* Right */}
-//             <Typography
-//                 variant="body2"
-//                 sx={{
-//                     ml: 3,
-//                     whiteSpace: "nowrap",
-//                     color: "text.secondary",
-//                 }}
-//             >
-//                 {date}
-//             </Typography>
-//         </Box>
-//     );
-// }
 
 import React from "react";
 import { Box, Typography } from "@mui/material";
@@ -96,173 +7,180 @@ export default function ActivityTimeline({ activity }) {
 
   const type = activity.activity_type;
   const data = activity.data || {};
-
-  // Show user's name instead of user ID
   const createdBy = activity.created_by_name || "Unknown user";
+
+  const formatDate = (date) => {
+    if (!date) return "";
+
+    return new Date(date).toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  };
 
   const getTitle = () => {
     switch (type) {
       case "call":
         return "Call";
-
-      case "note":
-        return "Note";
-
       case "task":
         return "Task";
-
+      case "note":
+        return "Note";
       case "meeting":
         return "Meeting";
-
       case "email":
         return "Email";
-
       default:
-        return type || "Activity";
+        return "Activity";
     }
   };
 
-//   const getDescription = () => {
-//     switch (type) {
-//       case "note":
-//         return data.note || "";
+  const getActionText = () => {
+    switch (type) {
+      case "call":
+        return "made a call";
 
-//       case "call":
-//         return data.call_outcome || "";
+      case "task":
+        return "created a task";
 
-//       case "task":
-//         return data.task_name || "";
+      case "note":
+        return "created a note";
 
-//       case "meeting":
-//         return data.title || "";
+      case "meeting":
+        return "created a meeting";
 
-//       case "email":
-//         return data.subject || "";
+      case "email":
+        return "sent an email";
 
-//       default:
-//         return "";
-//     }
-//   };
-
-const getDescription = () => {
-  switch (type) {
-    case "note":
-      return data.note || "";
-
-    case "call":
-      return data.note || "";
-
-    case "task":
-      return data.task_name || "";
-
-    case "meeting":
-      return data.title || "";
-
-    case "email":
-      return data.subject || "";
-
-    default:
-      return "";
-  }
-};
-
-  const formatDate = (date) => {
-    if (!date) return "";
-
-    return new Date(date).toLocaleString();
+      default:
+        return "created an activity";
+    }
   };
 
   return (
     <Box
       sx={{
-        display: "flex",
-        gap: 2,
-        mb: 3,
+        border: "1px solid #e0e0e0",
+        borderRadius: "8px",
+        backgroundColor: "#fff",
         p: 2,
-        borderBottom: "1px solid",
-        borderColor: "divider",
+        mb: 2,
       }}
     >
-      {/* Activity icon */}
-      <Box
+      {/* Activity Type */}
+      <Typography
         sx={{
-          width: 40,
-          height: 40,
-          minWidth: 40,
-          borderRadius: "50%",
-          bgcolor: "grey.200",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          fontSize: "15px",
           fontWeight: 600,
+          color: "#333",
+          mb: 0.8,
         }}
       >
-        {type ? type.charAt(0).toUpperCase() : "A"}
-      </Box>
+        {getTitle()}
+      </Typography>
 
-      {/* Activity content */}
-      <Box sx={{ flex: 1 }}>
-        {/* Activity title */}
-        <Typography
-          variant="subtitle1"
-          sx={{
-            fontWeight: 600,
-          }}
-        >
-          {getTitle()}
-        </Typography>
+      {/* User action */}
+      <Typography
+        sx={{
+          fontSize: "14px",
+          color: "#333",
+          mb: 0.8,
+        }}
+      >
+        <strong>{createdBy}</strong>{" "}
+        {getActionText()}
+      </Typography>
 
-        {/* Created by user name */}
+      {/* Call details */}
+      {type === "call" && (
+        <>
+          {data.call_outcome && (
+            <Typography
+              sx={{
+                fontSize: "13px",
+                color: "text.secondary",
+                mb: 0.5,
+              }}
+            >
+              Outcome: {data.call_outcome}
+            </Typography>
+          )}
+
+          {data.note && (
+            <Typography
+              sx={{
+                fontSize: "13px",
+                color: "text.secondary",
+                mb: 0.5,
+              }}
+            >
+              {data.note}
+            </Typography>
+          )}
+        </>
+      )}
+
+      {/* Task details */}
+      {type === "task" && data.task_name && (
         <Typography
-          variant="body2"
           sx={{
+            fontSize: "13px",
             color: "text.secondary",
             mb: 0.5,
           }}
         >
-          by {createdBy}
+          {data.task_name}
         </Typography>
+      )}
 
-        {/* Activity description */}
+      {/* Note details */}
+      {type === "note" && data.note && (
         <Typography
-          variant="body2"
           sx={{
+            fontSize: "13px",
+            color: "text.secondary",
             mb: 0.5,
           }}
         >
-          {getDescription()}
+          {data.note}
         </Typography>
+      )}
 
-        {/* Task details */}
-        {type === "task" && (
-          <Typography
-            variant="caption"
-            color="text.secondary"
-          >
-            Due: {data.due_date || "-"} | Priority:{" "}
-            {data.priority || "-"}
-          </Typography>
-        )}
+      {/* Meeting details */}
+      {type === "meeting" && data.title && (
+        <Typography
+          sx={{
+            fontSize: "13px",
+            color: "text.secondary",
+            mb: 0.5,
+          }}
+        >
+          {data.title}
+        </Typography>
+      )}
 
-        {/* Meeting details */}
-        {type === "meeting" && (
-          <Typography
-            variant="caption"
-            color="text.secondary"
-          >
-            {data.start_date || ""}{" "}
-            {data.start_time || ""}
-            {data.location ? ` | ${data.location}` : ""}
-          </Typography>
-        )}
-      </Box>
+      {/* Email details */}
+      {type === "email" && data.subject && (
+        <Typography
+          sx={{
+            fontSize: "13px",
+            color: "text.secondary",
+            mb: 0.5,
+          }}
+        >
+          {data.subject}
+        </Typography>
+      )}
 
-      {/* Activity date */}
+      {/* Date */}
       <Typography
-        variant="caption"
         sx={{
-          color: "text.secondary",
-          whiteSpace: "nowrap",
+          fontSize: "12px",
+          color: "#888",
+          mt: 1,
         }}
       >
         {formatDate(activity.created_at)}

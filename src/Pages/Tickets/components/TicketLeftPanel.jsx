@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -153,13 +155,21 @@ export default function TicketLeftPanel({ children }) {
           CREATE / LOG CALL
       ======================================================== */}
 
-      <CreateLogCall
+      {/* <CreateLogCall
         open={openCreateLogCall}
         onClose={() => setOpenCreateLogCall(false)}
         relatedModule="ticket"
         objectId={ticketId}
         connectedName={ticketName}
-      />
+      /> */}
+
+      <CreateLogCall
+  open={openCreateLogCall}
+  onClose={() => setOpenCreateLogCall(false)}
+  relatedModule="ticket"
+  objectId={ticketId}
+  connectedName={ownerName}
+/>
     </>
   );
 }

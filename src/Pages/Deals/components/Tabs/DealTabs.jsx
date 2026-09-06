@@ -1,11 +1,4 @@
-// export const dealTabs = [
-//   { label: "Activity", path: "/dealactivities" },
-//   { label: "Notes", path: "/dealnote" },
-//   { label: "Emails", path: "/dealemail" },
-//   { label: "Calls", path: "/dealcalls" },
-//   { label: "Tasks", path: "/dealtask" },
-//   { label: "Meetings", path: "/dealmeeting" },
-// ];
+
 export const getDealTabs = (dealId) => [
   {
     label: "Activity",

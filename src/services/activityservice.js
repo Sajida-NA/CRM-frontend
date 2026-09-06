@@ -1,15 +1,3 @@
-// import api from "./api";
-
-// export const getActivityTimeline = (module, moduleId) => {
-//   return api.get(`activities/${module}/${moduleId}/`);
-// };
-
-// export const getActivityType = (module, moduleId, activityType) => {
-//   return api.get(
-//     `activities/${module}/${moduleId}/${activityType}/`
-//   );
-// };
-
 
 import api from "./api";
 
