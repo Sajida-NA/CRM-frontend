@@ -97,40 +97,54 @@ import axios from "axios";
 import AuthLayout from "../../../Components/common/AuthLayout";
 import InputField from "../../../Components/common/InputField";
 import CommonButton from "../../../Components/common/CommonButton";
+import CustomSnackbar from "../../../Components/common/CustomSnackbar";
+
+import api from "../../../services/api";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
-
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/accounts/forgot-password/",
-        {
-          email,
-        }
-      );
-
-      alert(response.data.message);
+      const response = await api.post("/accounts/forgot-password/", {
+        email: email,
+      });
+      console.log("Password reset request successful:", response.data);
       setSubmitted(true);
+      setSnackbar({
+        open: true,
+        message: "Reset link has been sent to your email.",
+        severity: "success",
+      });
     } catch (error) {
-      console.error(error.response?.data);
-
-      alert(
-        error.response?.data?.email?.[0] ||
-        error.response?.data?.message ||
-        "Failed to send reset link."
+      console.error(
+        "Forgot password failed:",
+        JSON.stringify(error.response?.data, null, 2),
       );
+      setSnackbar({
+        open: true,
+        message:
+          error.response?.data?.detail ||
+          error.response?.data?.message ||
+          "Unable to send reset link. Please try again.",
+        severity: "error",
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  
   return (
     <AuthLayout
       title="Forgot Password"

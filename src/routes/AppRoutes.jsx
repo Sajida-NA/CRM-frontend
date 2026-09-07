@@ -74,7 +74,9 @@ import DealLeftPanel from "../Pages/Deals/components/DealLeftPanel";
 =========================== */
 
 import CommonEntityHeader from "../Components/common/CommonEntityHeader";
+import ProtectedRoute from "../Components/common/ProtectedRoute";
 import ResetPassword from "../Pages/Auth/ResetPassword/ResetPassword";
+
 
 function AppRoutes() {
   return (
@@ -86,8 +88,7 @@ function AppRoutes() {
       <Route path="/register" element={<Register />} />
 
       {/* ================= Dashboard Route ================= */}
-
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/dashboard" element={ <ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
       {/* ================= Lead Routes ================= */}
 
@@ -103,7 +104,7 @@ function AppRoutes() {
       <Route path="/createtaskdrawer" element={<CreateTaskDrawer />} /> */}
 
 
-      <Route path="/leadslist" element={<Leadslist />} />
+      <Route path="/leadslist" element={<ProtectedRoute><Leadslist /></ProtectedRoute>} />
       <Route
   path="/leads/:leadId/activity"
   element={<LeadActivities />}
@@ -136,7 +137,7 @@ function AppRoutes() {
 
       {/* ================= Company Routes ================= */}
 
-      <Route path="/companieslist" element={<CompaniesList />} />
+      <Route path="/companieslist" element={ <ProtectedRoute><CompaniesList /></ProtectedRoute>} />
 
       <Route
         path="/company/:companyId/activities"
@@ -175,7 +176,7 @@ function AppRoutes() {
 
       {/* ================= Ticket Routes ================= */}
 
-      <Route path="/ticketslist" element={<TicketsList />} />
+      <Route path="/ticketslist" element={ <ProtectedRoute><TicketsList /></ProtectedRoute>} />
 
       {/* Dynamic Ticket routes */}
       <Route
@@ -246,7 +247,7 @@ function AppRoutes() {
 
       {/* ================= Deal Routes ================= */}
 
-      <Route path="/dealslist" element={<DealsList />} />
+      <Route path="/dealslist" element={ <ProtectedRoute><DealsList /></ProtectedRoute>} />
 
       <Route
         path="/deals/:dealId/activities"
