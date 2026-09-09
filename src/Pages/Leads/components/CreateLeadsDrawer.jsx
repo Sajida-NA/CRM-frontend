@@ -1,6 +1,4 @@
 
-
-
 import React, { useState, useEffect } from "react";
 import { Drawer, Box } from "@mui/material";
 
@@ -13,7 +11,6 @@ import CommonMultiSelect from "../../../Components/common/CommonMultiSelect";
 
 import api from "../../../services/api";
 
-
 import {
   createLead,
   updateLead,
@@ -24,7 +21,7 @@ export default function CreateLeadsDrawer({
   open,
   onClose,
   onSuccess,
-   selectedLead,
+  selectedLead,
 }) {
   // =====================================================
   // EMPTY FORM
@@ -49,48 +46,53 @@ export default function CreateLeadsDrawer({
 
   const [formData, setFormData] = useState(emptyForm);
 
-  // All products from backend
+  // Products from backend
   const [products, setProducts] = useState([]);
 
-  // Users for Contact Owner
+  // Users from backend
   const [users, setUsers] = useState([]);
 
-  // Lead statuses
+  // Lead statuses from backend
   const [leadStatuses, setLeadStatuses] = useState([]);
+
+  // Companies from backend
+  const [companies, setCompanies] = useState([]);
 
   const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState("");
-
-  const [companies, setCompanies] = useState([]);
 
   // =====================================================
   // FETCH USERS
   // =====================================================
 
   const fetchUsers = async () => {
-  try {
-    const response = await api.get("/accounts/users/");
+    try {
+      const response = await api.get("/accounts/users/");
 
-    console.log("Users:", response.data);
+      console.log("Users from backend:", response.data);
 
-    const userOptions = response.data.map((user) => {
-      const fullName =
-        `${user.first_name || ""} ${user.last_name || ""}`.trim();
+      const userOptions = response.data.map((user) => {
+        const fullName =
+          `${user.first_name || ""} ${user.last_name || ""}`.trim();
 
-      return {
-        value: String(user.id),
-        label: fullName || user.email,
-        company: user.company_name || "",
-      };
-    });
+        return {
+          value: String(user.id),
+          label: fullName || user.email,
+        };
+      });
 
-    setUsers(userOptions);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    setError("Failed to load contact owners.");
-  }
-};
+      setUsers(userOptions);
+    } catch (error) {
+      console.error(
+        "Error fetching users:",
+        error.response?.data || error.message
+      );
+
+      setError("Failed to load contact owners.");
+    }
+  };
+
   // =====================================================
   // FETCH LEAD STATUSES
   // =====================================================
@@ -99,23 +101,10 @@ export default function CreateLeadsDrawer({
     try {
       const response = await api.get("/leads/lead-statuses/");
 
-      console.log("Lead Statuses:", response.data);
-
-      /*
-        If backend returns:
-
-        [
-          { id: 1, name: "New" },
-          { id: 2, name: "Open" }
-        ]
-
-        convert to:
-
-        [
-          { value: "New", label: "New" },
-          { value: "Open", label: "Open" }
-        ]
-      */
+      console.log(
+        "Lead statuses from backend:",
+        response.data
+      );
 
       const statusOptions = response.data.map((status) => {
         if (typeof status === "string") {
@@ -126,14 +115,24 @@ export default function CreateLeadsDrawer({
         }
 
         return {
-          value: status.value || status.name || status.id,
-          label: status.label || status.name || status.value,
+          value:
+            status.value ||
+            status.name ||
+            status.id,
+
+          label:
+            status.label ||
+            status.name ||
+            status.value,
         };
       });
 
       setLeadStatuses(statusOptions);
     } catch (error) {
-      console.error("Error fetching lead statuses:", error);
+      console.error(
+        "Error fetching lead statuses:",
+        error.response?.data || error.message
+      );
 
       setError("Failed to load lead statuses.");
     }
@@ -143,114 +142,156 @@ export default function CreateLeadsDrawer({
   // FETCH PRODUCTS
   // =====================================================
 
-const fetchProducts = async () => {
-  try {
-    const response = await api.get("/leads/products/");
-
-    console.log("Products from backend:", response.data);
-
-    // Backend already returns { value, label }
-    setProducts(response.data);
-
-    console.log("Product options:", response.data);
-  } catch (error) {
-    console.error(
-      "Error fetching products:",
-      error.response?.data || error.message
-    );
-
-    console.error("Status:", error.response?.status);
-
-    setError("Failed to load products.");
-  }
-};
-
-//==================================================================
-//FETCH COMPANY
-//=================================================================
-const fetchCompanies = async () => {
-  try {
-    const response = await api.get("/leads/companies/");
-
-    console.log("Companies from backend:", response.data);
-
-    setCompanies(response.data);
-
-    console.log("Company options:", response.data);
-  } catch (error) {
-    console.error(
-      "Error fetching companies:",
-      error.response?.data || error.message
-    );
-
-    setError("Failed to load companies.");
-  }
-};
-
-  // =====================================================
-  // LOAD DATA WHEN DRAWER OPENS
-  // =====================================================
-
-  useEffect(() => {
-    if (open) {
-      fetchUsers();
-      fetchLeadStatuses();
-      fetchProducts();
-      fetchCompanies();
-    }
-  }, [open]);
-
-
-  useEffect(() => {
-  const loadLead = async () => {
-    if (!selectedLead) {
-      setFormData(emptyForm);
-      return;
-    }
-
+  const fetchProducts = async () => {
     try {
-      setLoading(true);
-      setError("");
+      const response = await api.get(
+        "/leads/products/"
+      );
 
-      const response = await getLeadById(selectedLead.id);
+      console.log(
+        "Products from backend:",
+        response.data
+      );
 
-      const lead = response.data;
-
-      setFormData({
-        email: lead.email || "",
-        firstName: lead.first_name || "",
-        lastName: lead.last_name || "",
-        phoneNumber: lead.phone_number || "",
-        jobTitle: lead.job_title || "",
-        contactOwner: lead.contact_owner
-          ? String(lead.contact_owner)
-          : "",
-        leadStatus: lead.lead_status || "",
-        products: lead.products
-          ? lead.products.map((id) => String(id))
-          : [],
-        company: lead.company
-          ? String(lead.company)
-          : "",
-        city: lead.city || "",
-      });
-
+      setProducts(response.data);
     } catch (error) {
       console.error(
-        "Error loading lead:",
+        "Error fetching products:",
         error.response?.data || error.message
       );
 
-      setError("Failed to load lead details.");
-    } finally {
-      setLoading(false);
+      setError("Failed to load products.");
     }
   };
 
-  if (open) {
-    loadLead();
-  }
-}, [open, selectedLead]);
+  // =====================================================
+  // FETCH COMPANIES
+  // =====================================================
+
+  const fetchCompanies = async () => {
+    try {
+      const response = await api.get(
+        "/leads/companies/"
+      );
+
+      console.log(
+        "Companies from backend:",
+        response.data
+      );
+
+      setCompanies(response.data);
+    } catch (error) {
+      console.error(
+        "Error fetching companies:",
+        error.response?.data || error.message
+      );
+
+      setError("Failed to load companies.");
+    }
+  };
+
+  // =====================================================
+  // LOAD DROPDOWN DATA WHEN DRAWER OPENS
+  // =====================================================
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    setError("");
+
+    fetchUsers();
+    fetchLeadStatuses();
+    fetchProducts();
+    fetchCompanies();
+  }, [open]);
+
+  // =====================================================
+  // LOAD LEAD FOR EDIT
+  // =====================================================
+
+  useEffect(() => {
+    const loadLead = async () => {
+      // CREATE MODE
+      if (!selectedLead) {
+        setFormData(emptyForm);
+        return;
+      }
+
+      // EDIT MODE
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await getLeadById(
+          selectedLead.id
+        );
+
+        const lead = response.data;
+
+        console.log(
+          "Lead details from backend:",
+          lead
+        );
+
+        setFormData({
+          email: lead.email || "",
+
+          firstName:
+            lead.first_name || "",
+
+          lastName:
+            lead.last_name || "",
+
+          phoneNumber:
+            lead.phone_number || "",
+
+          jobTitle:
+            lead.job_title || "",
+
+          contactOwner:
+            lead.contact_owner
+              ? String(lead.contact_owner)
+              : "",
+
+          leadStatus:
+            lead.lead_status || "",
+
+          products:
+            Array.isArray(lead.products)
+              ? lead.products.map((id) =>
+                  String(id)
+                )
+              : [],
+
+          company:
+            lead.company
+              ? String(lead.company)
+              : "",
+
+          city:
+            lead.city || "",
+        });
+      } catch (error) {
+        console.error(
+          "Error loading lead:",
+          error.response?.data ||
+            error.message
+        );
+
+        setError(
+          "Failed to load lead details."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (open) {
+      loadLead();
+    }
+  }, [open, selectedLead]);
 
   // =====================================================
   // PHONE NUMBER VALIDATION
@@ -261,10 +302,15 @@ const fetchCompanies = async () => {
       return "Phone number is required.";
     }
 
-    const digitsOnly = phone.replace(/\D/g, "");
+    const digitsOnly = phone.replace(
+      /\D/g,
+      ""
+    );
 
     if (digitsOnly.length !== 10) {
-      return "Phone number must contain exactly 10 digits.";
+      return (
+        "Phone number must contain exactly 10 digits."
+      );
     }
 
     return "";
@@ -276,32 +322,16 @@ const fetchCompanies = async () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
- // -----------------------------------------------------
-    // contact owners correspomding company
-    // -----------------------------------------------------
-
-
-      if (name === "contactOwner") {
-    const selectedUser = users.find(
-      (user) => String(user.value) === String(value)
-    );
-
-    setFormData((prev) => ({
-      ...prev,
-      contactOwner: value,
-      company: selectedUser?.company || "",
-    }));
-
-    return;
-  }
-
 
     // -----------------------------------------------------
     // PHONE NUMBER
     // -----------------------------------------------------
 
     if (name === "phoneNumber") {
-      const digitsOnly = value.replace(/\D/g, "");
+      const digitsOnly = value.replace(
+        /\D/g,
+        ""
+      );
 
       if (digitsOnly.length > 10) {
         return;
@@ -313,7 +343,32 @@ const fetchCompanies = async () => {
     // -----------------------------------------------------
 
     if (name === "products") {
-      console.log("Selected product IDs:", value);
+      console.log(
+        "Selected product IDs:",
+        value
+      );
+    }
+
+    // -----------------------------------------------------
+    // COMPANY
+    // -----------------------------------------------------
+
+    if (name === "company") {
+      console.log(
+        "Selected company ID:",
+        value
+      );
+    }
+
+    // -----------------------------------------------------
+    // CONTACT OWNER
+    // -----------------------------------------------------
+
+    if (name === "contactOwner") {
+      console.log(
+        "Selected contact owner ID:",
+        value
+      );
     }
 
     // -----------------------------------------------------
@@ -325,7 +380,10 @@ const fetchCompanies = async () => {
       [name]: value,
     }));
 
-    // Clear error
+    // -----------------------------------------------------
+    // CLEAR ERROR
+    // -----------------------------------------------------
+
     if (error) {
       setError("");
     }
@@ -342,9 +400,10 @@ const fetchCompanies = async () => {
     // PHONE VALIDATION
     // -----------------------------------------------------
 
-    const phoneError = validatePhoneNumber(
-      formData.phoneNumber
-    );
+    const phoneError =
+      validatePhoneNumber(
+        formData.phoneNumber
+      );
 
     if (phoneError) {
       setError(phoneError);
@@ -356,7 +415,10 @@ const fetchCompanies = async () => {
     // -----------------------------------------------------
 
     if (!formData.contactOwner) {
-      setError("Please select a contact owner.");
+      setError(
+        "Please select a contact owner."
+      );
+
       return;
     }
 
@@ -369,60 +431,73 @@ const fetchCompanies = async () => {
       // =================================================
 
       const payload = {
-  email: formData.email,
-  first_name: formData.firstName,
-  last_name: formData.lastName,
-  phone_number: formData.phoneNumber,
-  job_title: formData.jobTitle,
-  contact_owner: formData.contactOwner
-    ? Number(formData.contactOwner)
-    : null,
-  lead_status: formData.leadStatus || "New",
-  products: formData.products.map((id) => Number(id)),
-  company: formData.company
-    ? Number(formData.company)
-    : null,
-  city: formData.city,
-};
-      console.log("Sending Lead:", payload);
+        email: formData.email,
 
-      /*
-        Example payload:
+        first_name:
+          formData.firstName,
 
-        {
-          email: "john@gmail.com",
-          first_name: "John",
-          last_name: "Smith",
-          phone_number: "9876543210",
-          job_title: "Manager",
-          contact_owner: 4,
-          lead_status: "New",
-          products: [1, 3],
-          company: "ABC Technologies",
-          city: "Dubai"
-        }
-      */
+        last_name:
+          formData.lastName,
+
+        phone_number:
+          formData.phoneNumber,
+
+        job_title:
+          formData.jobTitle,
+
+        contact_owner:
+          formData.contactOwner
+            ? Number(formData.contactOwner)
+            : null,
+
+        lead_status:
+          formData.leadStatus || "New",
+
+        products:
+          formData.products.map((id) =>
+            Number(id)
+          ),
+
+        company:
+          formData.company
+            ? Number(formData.company)
+            : null,
+
+        city:
+          formData.city,
+      };
+
+      console.log(
+        "Sending Lead:",
+        payload
+      );
 
       // =================================================
-      // CREATE LEAD
+      // CREATE / UPDATE
       // =================================================
 
-    let response;
+      let response;
 
-if (selectedLead) {
-  response = await updateLead(
-    selectedLead.id,
-    payload
-  );
+      if (selectedLead) {
+        response = await updateLead(
+          selectedLead.id,
+          payload
+        );
 
-  console.log("Lead updated:", response.data);
-} else {
-  response = await createLead(payload);
+        console.log(
+          "Lead updated:",
+          response.data
+        );
+      } else {
+        response = await createLead(
+          payload
+        );
 
-  console.log("Lead created:", response.data);
-}
-
-      
+        console.log(
+          "Lead created:",
+          response.data
+        );
+      }
 
       // =================================================
       // REFRESH LEAD LIST
@@ -445,16 +520,23 @@ if (selectedLead) {
       onClose();
     } catch (error) {
       console.error(
-        "Error creating lead:",
-        error.response?.data || error.message
+        "Error saving lead:",
+        error.response?.data ||
+          error.message
       );
 
       if (error.response?.data) {
         setError(
-          JSON.stringify(error.response.data)
+          JSON.stringify(
+            error.response.data
+          )
         );
       } else {
-        setError("Failed to create lead.");
+        setError(
+          selectedLead
+            ? "Failed to update lead."
+            : "Failed to create lead."
+        );
       }
     } finally {
       setLoading(false);
@@ -486,15 +568,14 @@ if (selectedLead) {
             HEADER
         ================================================= */}
 
-        {/* <DrawerHeader
-          title="Create Lead"
-          onClose={onClose}
-        /> */}
-
         <DrawerHeader
-  title={selectedLead ? "Edit Lead" : "Create Lead"}
-  onClose={onClose}
-/>
+          title={
+            selectedLead
+              ? "Edit Lead"
+              : "Create Lead"
+          }
+          onClose={onClose}
+        />
 
         {/* =================================================
             FORM
@@ -519,7 +600,8 @@ if (selectedLead) {
               sx={{
                 color: "red",
                 fontSize: "14px",
-                wordBreak: "break-word",
+                wordBreak:
+                  "break-word",
               }}
             >
               {error}
@@ -622,7 +704,7 @@ if (selectedLead) {
           />
 
           {/* =================================================
-              PRODUCTS - MULTI SELECT
+              PRODUCTS
           ================================================= */}
 
           <CommonMultiSelect
@@ -638,24 +720,14 @@ if (selectedLead) {
               COMPANY
           ================================================= */}
 
-         <CommonSelect
-  label="Company"
-  name="company"
-  value={formData.company}
-  onChange={handleChange}
-  placeholder="Select Contact Owner First"
-  options={
-    formData.company
-      ? [
-          {
-            value: formData.company,
-            label: formData.company,
-          },
-        ]
-      : []
-  }
-  disabled
-/>
+          <CommonSelect
+            label="Company"
+            name="company"
+            value={formData.company}
+            onChange={handleChange}
+            placeholder="Select Company"
+            options={companies}
+          />
 
           {/* =================================================
               CITY
@@ -680,7 +752,8 @@ if (selectedLead) {
             display: "flex",
             gap: 2,
             p: 3,
-            borderTop: "1px solid #E5E7EB",
+            borderTop:
+              "1px solid #E5E7EB",
           }}
         >
           {/* CANCEL */}
@@ -702,15 +775,13 @@ if (selectedLead) {
             disabled={loading}
           >
             {loading
-  ? "Saving..."
-  : selectedLead
-  ? "Update Lead"
-  : "Save Lead"}
+              ? "Saving..."
+              : selectedLead
+              ? "Update Lead"
+              : "Save Lead"}
           </CommonButton>
         </Box>
       </Box>
     </Drawer>
   );
 }
-
-

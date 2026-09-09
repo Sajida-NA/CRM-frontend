@@ -19,27 +19,48 @@ export default function CommonEntityHeader({
   leftPanelData = {},
   children,
   action,
+
+  // Quick action callbacks
   onCallClick,
+  onNoteClick,
+  onEmailClick,
+  onTaskClick,
+  onMeetingClick,
 }) {
+  // =====================================================
+  // QUICK ACTION CLICK HANDLER
+  // =====================================================
 
-  // Handles quick action button clicks
   const handleActionClick = (type) => {
+    switch (type) {
+      case "Call":
+        onCallClick?.();
+        break;
 
-    if (type === "Call") {
-      onCallClick?.();
-      return;
+      case "Note":
+        onNoteClick?.();
+        break;
+
+      case "Email":
+        onEmailClick?.();
+        break;
+
+      case "Task":
+        onTaskClick?.();
+        break;
+
+      case "Meeting":
+        onMeetingClick?.();
+        break;
+
+      default:
+        console.log("Unknown action:", type);
     }
-
-    const tabMap = {
-      Note: "Notes",
-      Email: "Emails",
-      Task: "Tasks",
-      Meeting: "Meetings",
-    };
-
-    console.log(tabMap[type]);
   };
 
+  // =====================================================
+  // DEFAULT QUICK ACTIONS
+  // =====================================================
 
   const actions = [
     {
@@ -64,42 +85,14 @@ export default function CommonEntityHeader({
     },
   ];
 
+  
 
-  const leadDetails = [
-    {
-      label: "Email",
-      value: "janecooper@gmail.com",
-    },
-    {
-      label: "First Name",
-      value: "Jane",
-    },
-    {
-      label: "Last Name",
-      value: "Cooper",
-    },
-    {
-      label: "Phone Number",
-      value: "078 5432 8505",
-    },
-    {
-      label: "Lead Status",
-      value: "New",
-    },
-    {
-      label: "Job Title",
-      value: "Salesperson",
-    },
-    {
-      label: "Created Date",
-      value: "04/08/2025 2:31 PM GMT+5:30",
-    },
-  ];
-
+  // =====================================================
+  // RENDER
+  // =====================================================
 
   return (
     <MainLayout title={title}>
-
       <Box
         sx={{
           width: "100%",
@@ -111,8 +104,10 @@ export default function CommonEntityHeader({
           overflow: "hidden",
         }}
       >
+        {/* =================================================
+            LEFT PANEL
+        ================================================= */}
 
-        {/* Left Panel */}
         <LeftPanel
           title={title}
           actions={leftPanelData.actions || actions}
@@ -122,25 +117,28 @@ export default function CommonEntityHeader({
           }
           profile={leftPanelData.profile}
           sectionTitle={leftPanelData.sectionTitle}
-          showProfileEdit={leftPanelData.showProfileEdit} 
-            showProfileImage={leftPanelData.showProfileImage}
+          showProfileEdit={leftPanelData.showProfileEdit}
+          showProfileImage={leftPanelData.showProfileImage}
         />
 
+        {/* =================================================
+            MIDDLE PANEL
+        ================================================= */}
 
-        {/* Middle Panel */}
         <MiddlePanel action={action}>
           {children}
         </MiddlePanel>
 
+        {/* =================================================
+            RIGHT PANEL
+        ================================================= */}
 
-        {/* Right Panel */}
         <RightPanel
           summaryTitle={leftPanelData.summaryTitle}
           summaryText={leftPanelData.summaryText}
         />
-
       </Box>
-
     </MainLayout>
   );
 }
+

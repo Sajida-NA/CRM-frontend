@@ -13,28 +13,39 @@ import MeetingCard from "./MeetingCard";
 
 import api from "../../../../../services/api";
 
-export default function MeetingDetails({
-  tabs,
-  module,
-  moduleId,
-}) {
-  const { dealId, ticketId } = useParams();
+export default function MeetingDetails({ tabs, module, moduleId }) {
+  const { leadId, dealId, ticketId } = useParams();
+
+  // =========================================================
+  // DETERMINE MODULE
+  // =========================================================
 
   const finalModule = String(
-    module || (ticketId ? "ticket" : "deal")
+    module || (leadId ? "lead" : ticketId ? "ticket" : "deal"),
   )
     .toLowerCase()
     .trim();
 
-  const finalModuleId =
-    moduleId ||
-    ticketId ||
-    dealId;
+  // =========================================================
+  // DETERMINE MODULE ID
+  // =========================================================
+
+  const finalModuleId = moduleId || leadId || ticketId || dealId;
+
+  console.log("=================================");
+  console.log("MEETING DETAILS");
+  console.log("MODULE PROP:", module);
+  console.log("MODULE ID PROP:", moduleId);
+  console.log("URL LEAD ID:", leadId);
+  console.log("URL DEAL ID:", dealId);
+  console.log("URL TICKET ID:", ticketId);
+  console.log("FINAL MODULE:", finalModule);
+  console.log("FINAL MODULE ID:", finalModuleId);
+  console.log("=================================");
 
   const [activeTab, setActiveTab] = useState("Meetings");
 
-  const [openCreateMeeting, setOpenCreateMeeting] =
-    useState(false);
+  const [openCreateMeeting, setOpenCreateMeeting] = useState(false);
 
   const [meetings, setMeetings] = useState([]);
 
@@ -47,6 +58,7 @@ export default function MeetingDetails({
   const fetchMeetings = async () => {
     if (!finalModuleId) {
       console.error("Related record ID not found");
+
       setMeetings([]);
       return;
     }
@@ -54,66 +66,47 @@ export default function MeetingDetails({
     try {
       setLoading(true);
 
-      console.log("=================================");
-      console.log("FETCHING MEETINGS");
-      console.log("MODULE:", finalModule);
-      console.log("MODULE ID:", finalModuleId);
-      console.log("=================================");
+      console.log("FETCHING MEETINGS:", finalModule, finalModuleId);
 
       const response = await api.get(
-  `/activities/meeting/${finalModule}/${finalModuleId}/`
-);
-
-      console.log(
-        "MEETINGS RESPONSE:",
-        response.data
+        `/activities/meeting/${finalModule}/${finalModuleId}/`,
       );
 
-      const meetingData = Array.isArray(
-        response.data
-      )
+      console.log("MEETINGS RESPONSE:", response.data);
+
+      const meetingData = Array.isArray(response.data)
         ? response.data
         : response.data?.results || [];
 
-      const filteredMeetings =
-        meetingData.filter((meeting) => {
-          const meetingModule = String(
-            meeting?.module || ""
-          )
-            .toLowerCase()
-            .trim();
+      const filteredMeetings = meetingData.filter((meeting) => {
+        const meetingModule = String(meeting?.module || "")
+          .toLowerCase()
+          .trim();
 
-          const relatedId =
-            meeting?.module_id ??
-            meeting?.object_id ??
-            meeting?.lead?.id ??
-            meeting?.deal?.id ??
-            meeting?.company?.id ??
-            meeting?.ticket?.id;
+        const relatedId =
+          meeting?.module_id ??
+          meeting?.object_id ??
+          meeting?.lead?.id ??
+          meeting?.deal?.id ??
+          meeting?.company?.id ??
+          meeting?.ticket?.id;
 
-          return (
-            meetingModule === finalModule &&
-            Number(relatedId) ===
-              Number(finalModuleId)
-          );
-        });
+        return (
+          meetingModule === finalModule &&
+          Number(relatedId) === Number(finalModuleId)
+        );
+      });
 
-      console.log(
-        "FILTERED MEETINGS:",
-        filteredMeetings
-      );
+      console.log("FILTERED MEETINGS:", filteredMeetings);
 
       setMeetings(filteredMeetings);
     } catch (error) {
       console.error(
         "FETCH MEETINGS ERROR:",
-        error.response?.data || error
+        error.response?.data || error.message || error,
       );
 
-      console.error(
-        "STATUS:",
-        error.response?.status
-      );
+      console.error("STATUS:", error.response?.status);
 
       setMeetings([]);
     } finally {
@@ -136,10 +129,15 @@ export default function MeetingDetails({
   // =========================================================
 
   const handleOpenCreateMeeting = () => {
+    console.log("CREATE MEETING CLICKED");
+
+    console.log("MODULE:", finalModule);
+
+    console.log("MODULE ID:", finalModuleId);
+
     if (!finalModuleId) {
-      console.error(
-        `${finalModule} ID not found`
-      );
+      console.error(`${finalModule} ID not found`);
+
       return;
     }
 
@@ -152,6 +150,7 @@ export default function MeetingDetails({
 
   const handleCloseCreateMeeting = async () => {
     setOpenCreateMeeting(false);
+
     await fetchMeetings();
   };
 
@@ -191,14 +190,9 @@ export default function MeetingDetails({
           mb: 1,
         }}
       >
-        <Typography variant="h6">
-          Meetings
-        </Typography>
+        <Typography variant="h6">Meetings</Typography>
 
-        <CommonButton
-          variant="contained"
-          onClick={handleOpenCreateMeeting}
-        >
+        <CommonButton variant="contained" onClick={handleOpenCreateMeeting}>
           Create Meeting
         </CommonButton>
       </Box>
@@ -238,13 +232,9 @@ export default function MeetingDetails({
         </Typography>
       ) : (
         meetings.map((meeting, index) => (
-          <MeetingCard
-            key={meeting.id || index}
-            meeting={meeting}
-          />
+          <MeetingCard key={meeting.id || index} meeting={meeting} />
         ))
       )}
     </Box>
   );
 }
-

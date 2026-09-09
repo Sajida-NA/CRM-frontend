@@ -1,14 +1,7 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import {
-  Box,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
+import { Box, Typography, CircularProgress } from "@mui/material";
 
 import TicketLeftPanel from "../../TicketLeftPanel";
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
@@ -26,14 +19,10 @@ export default function TicketCalls() {
   const [activeTab, setActiveTab] = useState("Calls");
 
   const [ticket, setTicket] = useState(null);
-
   const [calls, setCalls] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
-
-
 
   // ============================================================
   // FETCH TICKET
@@ -45,24 +34,13 @@ export default function TicketCalls() {
     }
 
     try {
-      const response = await api.get(
-        `/tickets/${ticketId}/`
-      );
+      const response = await api.get(`/tickets/${ticketId}/`);
 
-      // api.get(`/activities/activity/ticket/${ticketId}/call/`)
-      // api.get(`/activities/activity/ticket/${ticketId}/call/`)
-
-      console.log(
-        "TICKET RESPONSE:",
-        response.data
-      );
+      console.log("TICKET RESPONSE:", response.data);
 
       setTicket(response.data);
     } catch (error) {
-      console.error(
-        "ERROR FETCHING TICKET:",
-        error.response?.data || error
-      );
+      console.error("ERROR FETCHING TICKET:", error.response?.data || error);
 
       setTicket(null);
     }
@@ -82,71 +60,36 @@ export default function TicketCalls() {
     try {
       setLoading(true);
 
+      // ========================================================
+      // CORRECT BACKEND ENDPOINT
+      // ========================================================
+
       const response = await api.get(
-        "/activities/call/"
+        `/activities/activity/ticket/${ticketId}/call/`,
       );
 
-      console.log(
-        "ALL CALLS FROM API:",
-        response.data
-      );
-
-      console.log(
-        "CURRENT TICKET ID:",
-        ticketId
-      );
+      console.log("TICKET CALLS RESPONSE:", response.data);
 
       // ========================================================
-      // GET ARRAY
+      // BACKEND RESPONSE:
+      //
+      // {
+      //   module: "ticket",
+      //   module_id: 1,
+      //   activity_type: "call",
+      //   activities: [...]
+      // }
       // ========================================================
 
-      const allCalls = Array.isArray(response.data)
-        ? response.data
-        : response.data?.results || [];
+      const ticketCalls = response.data?.activities || [];
 
-
-
-
-      // ========================================================
-      // FILTER CURRENT TICKET CALLS
-      // ========================================================
-
-      const ticketCalls = allCalls.filter((call) => {
-        const module = String(
-          call.module || ""
-        )
-          .trim()
-          .toLowerCase();
-
-        const currentTicketId =
-          call.ticket?.id;
-
-        console.log(
-          "CHECKING TICKET CALL:",
-          {
-            callId: call.id,
-            module,
-            ticketId: currentTicketId,
-            currentTicketId: ticketId,
-          }
-        );
-
-        return (
-          module === "ticket" &&
-          Number(currentTicketId) === Number(ticketId)
-        );
-      });
-
-      console.log(
-        "FILTERED TICKET CALLS:",
-        ticketCalls
-      );
+      console.log("TICKET CALLS:", ticketCalls);
 
       setCalls(ticketCalls);
     } catch (error) {
       console.error(
         "ERROR FETCHING TICKET CALLS:",
-        error.response?.data || error
+        error.response?.data || error,
       );
 
       setCalls([]);
@@ -173,29 +116,29 @@ export default function TicketCalls() {
   // ============================================================
 
   const ticketName =
-  ticket?.ticket_name ||
-  ticket?.name ||
-  ticket?.title ||
-  `Ticket #${ticketId}`;
+    ticket?.ticket_name ||
+    ticket?.name ||
+    ticket?.title ||
+    `Ticket #${ticketId}`;
 
-const ticketOwnerName =
-  ticket?.ticket_owner || "";
+  // ============================================================
+  // TICKET OWNER
+  // ============================================================
+
+  const ticketOwnerName = ticket?.ticket_owner || "";
 
   // ============================================================
   // RENDER
   // ============================================================
 
   return (
-    <TicketLeftPanel
-      onCallCreated={fetchCalls}
-    >
+    <TicketLeftPanel onCallCreated={fetchCalls}>
       <Box
         sx={{
           p: 3,
           mx: -2,
         }}
       >
-
         {/* ====================================================
             ACTIVITY TABS
         ==================================================== */}
@@ -219,15 +162,11 @@ const ticketOwnerName =
             mb: 1,
           }}
         >
-          <Typography variant="h6">
-            Calls
-          </Typography>
+          <Typography variant="h6">Calls</Typography>
 
           <CommonButton
             variant="contained"
-            onClick={() =>
-              setOpenCreateLogCall(true)
-            }
+            onClick={() => setOpenCreateLogCall(true)}
           >
             Make a Phone Call
           </CommonButton>
@@ -238,13 +177,13 @@ const ticketOwnerName =
         ==================================================== */}
 
         <CreateLogCall
-  open={openCreateLogCall}
-  onClose={() => setOpenCreateLogCall(false)}
-  relatedModule="ticket"
-  objectId={ticketId}
-  connectedName={ticketOwnerName}
-  onCallCreated={fetchCalls}
-/>
+          open={openCreateLogCall}
+          onClose={() => setOpenCreateLogCall(false)}
+          relatedModule="ticket"
+          objectId={ticketId}
+          connectedName={ticketName}
+          onCallCreated={fetchCalls}
+        />
 
         {/* ====================================================
             CALLS
@@ -271,40 +210,9 @@ const ticketOwnerName =
             No calls found for this ticket.
           </Typography>
         ) : (
-          calls.map((call) => (
-            <CallCard
-              key={call.id}
-              call={{
-                ...call,
-
-                name: ticketOwnerName,
-
-                description:
-                  call.note || "",
-
-                date:
-                  call.date || "",
-
-                time:
-                  call.time || "",
-
-                call_outcome:
-                  call.call_outcome ||
-                  call.outcome ||
-                  "",
-
-                duration:
-                  call.duration !== null &&
-                  call.duration !== undefined
-                    ? Number(call.duration)
-                    : null,
-              }}
-            />
-          ))
+          calls.map((call) => <CallCard key={call.id} call={call} />)
         )}
       </Box>
     </TicketLeftPanel>
   );
 }
-
-

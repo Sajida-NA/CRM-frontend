@@ -120,7 +120,7 @@ export default function EmailCard({ email }) {
           <Box> 
             <Typography 
               sx={{ 
-                fontSize: 18, 
+                fontSize: 14, 
                 fontWeight: 700, 
                 color: "#374151", 
               }} 
@@ -145,7 +145,7 @@ export default function EmailCard({ email }) {
                 sx={{ 
                   mt: 0.5, 
                   color: "#64748B", 
-                  fontSize: 15, 
+                  fontSize: 14, 
                 }} 
               > 
                 {preview || 
