@@ -1,20 +1,29 @@
 
-
-
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
+
 import CreateLogCall from "../../Leads/components/Tabs/Calls/CreateLogCall";
+import Createnote from "../../Leads/components/Tabs/Note/Createnote";
+import NewEmailDialog from "../../Leads/components/Tabs/Emails/NewEmailDialog";
+import ScheduleMeeting from "../../Leads/components/Tabs/Meetings/ScheduleMeeting";
+import CreateTaskDrawer from "../../Leads/components/Tabs/Task/CreateTaskDrawer";
+
 import api from "../../../services/api";
 
-export default function DealLeftPanel({ children }) {
+export default function DealLeftPanel({
+  children,
+  onCallCreated,
+  onNoteCreated,
+  onEmailCreated,
+  onTaskCreated,
+}) {
   const { dealId } = useParams();
 
   const [deal, setDeal] = useState(null);
   const [stage, setStage] = useState("");
-  const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
+  const [activeDrawer, setActiveDrawer] = useState(null);
 
   // ============================================================
   // FETCH DEAL DETAILS
@@ -78,6 +87,15 @@ export default function DealLeftPanel({ children }) {
     "-";
 
   // ============================================================
+  // DEAL NAME
+  // ============================================================
+
+  const dealName =
+    deal.deal_name ||
+    deal.name ||
+    "-";
+
+  // ============================================================
   // DEAL DETAILS
   // ============================================================
 
@@ -101,12 +119,64 @@ export default function DealLeftPanel({ children }) {
   ];
 
   // ============================================================
+  // CLOSE DRAWER
+  // ============================================================
+
+  const closeDrawer = () => {
+    setActiveDrawer(null);
+  };
+
+  // ============================================================
+  // ACTIVITY CREATED CALLBACKS
+  // ============================================================
+
+  const handleCallCreated = async (createdCall) => {
+    console.log("Deal call created:", createdCall);
+
+    setActiveDrawer(null);
+
+    if (onCallCreated) {
+      await onCallCreated(createdCall);
+    }
+  };
+
+  const handleNoteCreated = async (createdNote) => {
+    console.log("Deal note created:", createdNote);
+
+    setActiveDrawer(null);
+
+    if (onNoteCreated) {
+      await onNoteCreated(createdNote);
+    }
+  };
+
+  const handleEmailCreated = async (createdEmail) => {
+    console.log("Deal email created:", createdEmail);
+
+    setActiveDrawer(null);
+
+    if (onEmailCreated) {
+      await onEmailCreated(createdEmail);
+    }
+  };
+
+  const handleTaskCreated = async (createdTask) => {
+    console.log("Deal task created:", createdTask);
+
+    setActiveDrawer(null);
+
+    if (onTaskCreated) {
+      await onTaskCreated(createdTask);
+    }
+  };
+
+  // ============================================================
   // DATA FOR COMMON ENTITY HEADER
   // ============================================================
 
   const leftPanelData = {
     profile: {
-      name: deal.deal_name || deal.name || "-",
+      name: dealName,
 
       subTitle: `Amount : $${deal.amount || 0}`,
 
@@ -123,10 +193,9 @@ export default function DealLeftPanel({ children }) {
 
     summaryTitle: "AI Deal Summary",
 
-    summaryText:
-      `The deal "${deal.deal_name || deal.name || "-"}" is currently in the ${
-        stage || "-"
-      } stage with an expected value of $${deal.amount || 0}.`,
+    summaryText: `The deal "${dealName}" is currently in the ${
+      stage || "-"
+    } stage with an expected value of $${deal.amount || 0}.`,
   };
 
   // ============================================================
@@ -138,7 +207,21 @@ export default function DealLeftPanel({ children }) {
       <CommonEntityHeader
         title="Deals"
         leftPanelData={leftPanelData}
-        onCallClick={() => setOpenCreateLogCall(true)}
+
+        // CALL
+        onCallClick={() => setActiveDrawer("call")}
+
+        // NOTE
+        onNoteClick={() => setActiveDrawer("note")}
+
+        // EMAIL
+        onEmailClick={() => setActiveDrawer("email")}
+
+        // TASK
+        onTaskClick={() => setActiveDrawer("task")}
+
+        // MEETING
+        onMeetingClick={() => setActiveDrawer("meeting")}
       >
         {children}
       </CommonEntityHeader>
@@ -148,14 +231,60 @@ export default function DealLeftPanel({ children }) {
       ======================================================== */}
 
       <CreateLogCall
-        open={openCreateLogCall}
-        onClose={() => setOpenCreateLogCall(false)}
+        open={activeDrawer === "call"}
+        onClose={closeDrawer}
         relatedModule="deal"
         objectId={dealId}
         connectedName={leadName}
+        onCallCreated={handleCallCreated}
+      />
+
+      {/* ========================================================
+          CREATE NOTE
+      ======================================================== */}
+
+      <Createnote
+        open={activeDrawer === "note"}
+        onClose={closeDrawer}
+        module="deal"
+        moduleId={dealId}
+        onSuccess={handleNoteCreated}
+      />
+
+      {/* ========================================================
+          SEND EMAIL
+      ======================================================== */}
+
+      <NewEmailDialog
+        open={activeDrawer === "email"}
+        onClose={closeDrawer}
+        relatedModule="deal"
+        objectId={dealId}
+        onEmailCreated={handleEmailCreated}
+      />
+
+      {/* ========================================================
+          CREATE TASK
+      ======================================================== */}
+
+      <CreateTaskDrawer
+        open={activeDrawer === "task"}
+        onClose={closeDrawer}
+        module="deal"
+        moduleId={dealId}
+        onTaskCreated={handleTaskCreated}
+      />
+
+      {/* ========================================================
+          SCHEDULE MEETING
+      ======================================================== */}
+
+      <ScheduleMeeting
+        open={activeDrawer === "meeting"}
+        onClose={closeDrawer}
+        relatedModule="deal"
+        objectId={dealId}
       />
     </>
   );
 }
-
-
