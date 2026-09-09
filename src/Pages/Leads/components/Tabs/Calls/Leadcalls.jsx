@@ -250,8 +250,11 @@
 // }
 
 
-
-import React, { useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import {
   Box,
@@ -272,6 +275,8 @@ import { getLeadTabs } from "../LeadTabs";
 
 import api from "../../../../../services/api";
 
+import useCallPolling from "../../../../../hooks/useCallPolling";
+
 
 export default function Leadcalls() {
 
@@ -288,14 +293,17 @@ export default function Leadcalls() {
 
 
   // ========================================================
-  // GET CALLS
+  // GET LEAD CALLS
   // ========================================================
 
-  const fetchCalls = async () => {
+  const fetchCalls = useCallback(async () => {
 
     if (!leadId) {
+
       setCalls([]);
+
       setLoading(false);
+
       return;
     }
 
@@ -316,6 +324,11 @@ export default function Leadcalls() {
         ? response.data
         : response.data?.activities || [];
 
+      console.log(
+        "CALL DATA FOR CARDS:",
+        callData
+      );
+
       setCalls(callData);
 
     } catch (error) {
@@ -333,14 +346,40 @@ export default function Leadcalls() {
       setLoading(false);
 
     }
-  };
 
+  }, [leadId]);
+
+
+  // ========================================================
+  // LOAD CALLS WHEN LEAD CHANGES
+  // ========================================================
 
   useEffect(() => {
 
     fetchCalls();
 
-  }, [leadId]);
+  }, [fetchCalls]);
+
+
+  // ========================================================
+  // AUTOMATIC TWILIO POLLING
+  //
+  // Every 3 seconds:
+  //
+  // /activities/call/<id>/sync/
+  //
+  // Updates:
+  // - twilio_status
+  // - duration
+  // - call_outcome
+  //
+  // Stops automatically when call finishes.
+  // ========================================================
+
+  useCallPolling(
+    calls,
+    setCalls
+  );
 
 
   // ========================================================
@@ -356,18 +395,22 @@ export default function Leadcalls() {
     setOpenCreateLogCall(false);
 
     await fetchCalls();
+
   };
 
 
   // ========================================================
-  // MAKE REAL PHONE CALL
+  // MAKE REAL TWILIO PHONE CALL
   //
-  // IMPORTANT:
-  // Frontend sends ONLY module + module_id.
+  // Frontend sends ONLY:
   //
-  // It DOES NOT send:
-  // - user phone
+  // module
+  // module_id
+  //
+  // Backend gets:
+  // - logged-in CRM user
   // - lead phone
+  // - Twilio credentials
   // ========================================================
 
   const handleMakePhoneCall = async () => {
@@ -392,13 +435,22 @@ export default function Leadcalls() {
       );
 
       console.log(
-        "CALL START RESPONSE:",
+        "TWILIO CALL START RESPONSE:",
         response.data
       );
 
+      // ----------------------------------------------------
+      // IMPORTANT
+      //
+      // Reload immediately so the new CallCard
+      // gets the Twilio SID and initial status.
+      // ----------------------------------------------------
+
+      await fetchCalls();
+
       alert(
         response.data?.message ||
-        "Your phone will ring shortly."
+        "Your phone call has been started."
       );
 
     } catch (error) {
@@ -428,7 +480,12 @@ export default function Leadcalls() {
 
       <LeadsLeftPanel leadId={leadId}>
 
-        <Box sx={{ p: 3, mx: -2 }}>
+        <Box
+          sx={{
+            p: 3,
+            mx: -2,
+          }}
+        >
 
           {/* =================================================
               ACTIVITY TABS
@@ -499,41 +556,41 @@ export default function Leadcalls() {
               EMPTY
           ================================================= */}
 
-          {!loading && calls.length === 0 && (
+          {!loading &&
+            calls.length === 0 && (
 
-            <Typography
-              sx={{
-                py: 5,
-                textAlign: "center",
-                color: "text.secondary",
-              }}
-            >
-
-              No calls found for this lead.
-
-            </Typography>
+              <Typography
+                sx={{
+                  py: 5,
+                  textAlign: "center",
+                  color: "text.secondary",
+                }}
+              >
+                No calls found for this lead.
+              </Typography>
 
           )}
 
 
           {/* =================================================
-              CALL CARDS
+              CALL LIST
           ================================================= */}
 
-          {!loading && calls.length > 0 && (
+          {!loading &&
+            calls.length > 0 && (
 
-            <Box>
+              <Box>
 
-              {calls.map((call) => (
+                {calls.map((call) => (
 
-                <CallCard
-                  key={call.id}
-                  call={call}
-                />
+                  <CallCard
+                    key={call.id}
+                    call={call}
+                  />
 
-              ))}
+                ))}
 
-            </Box>
+              </Box>
 
           )}
 
