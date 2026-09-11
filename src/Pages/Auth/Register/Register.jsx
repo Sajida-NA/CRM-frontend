@@ -1,236 +1,3 @@
-// import { Typography, Grid, Link } from "@mui/material";
-// import { Link as RouterLink } from "react-router-dom";
-// import { useState } from "react";
-// import AuthLayout from "../../../Components/common/AuthLayout";
-// import InputField from "../../../Components/common/InputField";
-// import SelectField from "../../../Components/common/SelectField";
-// import CommonButton from "../../../Components/common/CommonButton";
-// import api from "../../../services/api"
-
-// export default function Register() {
-//   const [form, setForm] = useState({
-//     firstName: "",
-//     lastName: "",
-//     email: "",
-//     phone: "",
-//     password: "",
-//     confirmPassword: "",
-//     companyName: "",
-//     industry: "",
-//     country: "",
-//     role: "",
-//   });
-
-//   const handleChange = (e) => {
-//     setForm({
-//       ...form,
-//       [e.target.name]: e.target.value,
-//     });
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     try {
-//       const response = await api.post("/accounts/register/",
-//         {
-//           first_name: form.firstName,
-//           last_name: form.lastName,
-//           email: form.email,
-//           phone_number: form.phone,
-//           password: form.password,
-//           confirm_password: form.confirmPassword,
-//           company_name: form.companyName,
-//           industry_type: form.industry,
-//           country: form.country,
-//           role: form.role,
-//         },
-//       );
-
-//       console.log("Registration successful:", response.data);
-//     } catch (error) {
-//       console.error("Registration failed:", JSON.stringify(error.response?.data, null, 2));
-//     }
-//   };
-
- 
-  
-
-//   return (
-//     <AuthLayout
-//       title="Register"
-//       maxWidth={900}
-//       footer={
-//         <>
-//           Already have an account?{" "}
-//           <Link component={RouterLink} to="/" underline="none" fontWeight={600}>
-//             Login
-//           </Link>
-//         </>
-//       }
-//     >
-//       <Grid container spacing={3} component="form" onSubmit={handleSubmit}>
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
-//             First Name
-//           </Typography>
-//           <InputField
-//             name="firstName"
-//             placeholder="Enter your first name"
-//             value={form.firstName}
-//             onChange={handleChange}
-//             fullWidth
-//           />
-//         </Grid>
-
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
-//             Last Name
-//           </Typography>
-//           <InputField
-//             name="lastName"
-//             placeholder="Enter your last name"
-//             value={form.lastName}
-//             onChange={handleChange}
-//             fullWidth
-//           />
-//         </Grid>
-
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
-//             Email
-//           </Typography>
-//           <InputField
-//             name="email"
-//             type="email"
-//             placeholder="Enter your email"
-//             value={form.email}
-//             onChange={handleChange}
-//             fullWidth
-//           />
-//         </Grid>
-
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
-//             Phone Number
-//           </Typography>
-//           <InputField
-//             name="phone"
-//             placeholder="Enter your phone number"
-//             value={form.phone}
-//             onChange={handleChange}
-//             fullWidth
-//           />
-//         </Grid>
-
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
-//             Password
-//           </Typography>
-//           <InputField
-//             name="password"
-//             type="password"
-//             placeholder="Enter your password"
-//             value={form.password}
-//             onChange={handleChange}
-//             fullWidth
-//           />
-//         </Grid>
-
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
-//             Confirm Password
-//           </Typography>
-//           <InputField
-//             name="confirmPassword"
-//             type="password"
-//             placeholder="Confirm your password"
-//             value={form.confirmPassword}
-//             onChange={handleChange}
-//             fullWidth
-//           />
-//         </Grid>
-
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
-//             Company Name
-//           </Typography>
-//           <InputField
-//             name="companyName"
-//             placeholder="Enter company name"
-//             value={form.companyName}
-//             onChange={handleChange}
-//             fullWidth
-//           />
-//         </Grid>
-
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
-//             Industry Type
-//           </Typography>
-//           <SelectField
-//             name="industry"
-//             value={form.industry}
-//             onChange={handleChange}
-//             options={[
-//               "IT",
-//               "Finance",
-//               "Healthcare",
-//               "Education",
-//               "Manufacturing",
-//               "Retail",
-//               "Other",
-//             ]}
-//             placeholder="Choose "
-//             fullWidth
-//           />
-//         </Grid>
-
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
-//             Country / Region
-//           </Typography>
-//           <InputField
-//             name="country"
-//             placeholder="Enter your country"
-//             value={form.country}
-//             onChange={handleChange}
-//             fullWidth
-//           />
-//         </Grid>
-
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <Typography variant="body2" fontWeight={500} sx={{ mb: 0.5 }}>
-//             Role
-//           </Typography>
-//           <SelectField
-//             name="role"
-//             value={form.role}
-//             onChange={handleChange}
-//             options={["Admin", "User","Contact Owner"]}
-//             placeholder="Choose"
-//             fullWidth
-//           />
-//         </Grid>
-
-//         <Grid size={{ xs: 12, md: 6 }}>
-//           <CommonButton
-//             type="submit"
-//             fullWidth
-//             sx={{
-//               mt: 1,
-//               height: 42,
-//             }}
-//           >
-//             Register
-//           </CommonButton>
-//         </Grid>
-//       </Grid>
-//     </AuthLayout>
-//   );
-// }
-
-
 
 import { Typography, Grid, Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
@@ -380,6 +147,7 @@ export default function Register() {
             <InputField
               name="email"
               type="email"
+               autoComplete="off"
               placeholder="Enter your email"
               value={form.email}
               onChange={handleChange}
@@ -407,6 +175,7 @@ export default function Register() {
             <InputField
               name="password"
               type="password"
+               autoComplete="new-password"
               placeholder="Enter your password"
               value={form.password}
               onChange={handleChange}
@@ -421,6 +190,7 @@ export default function Register() {
             <InputField
               name="confirmPassword"
               type="password"
+               autoComplete="new-password"
               placeholder="Confirm your password"
               value={form.confirmPassword}
               onChange={handleChange}
@@ -484,7 +254,7 @@ export default function Register() {
               name="role"
               value={form.role}
               onChange={handleChange}
-              options={["Admin", "User", "Contact Owner"]}
+              options={["Admin", "User"]}
               placeholder="Choose"
               fullWidth
             />

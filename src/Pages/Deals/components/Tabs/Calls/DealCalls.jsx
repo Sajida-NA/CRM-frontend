@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -6,9 +11,7 @@ import { Box, Typography, CircularProgress } from "@mui/material";
 import DealLeftPanel from "../../DealLeftPanel";
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
-
 import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
-import CreateLogCall from "../../../../Leads/components/Tabs/Calls/CreateLogCall";
 
 import { getDealTabs } from "../DealTabs";
 import api from "../../../../../services/api";
@@ -17,15 +20,15 @@ export default function DealCalls() {
   const { dealId } = useParams();
 
   const [activeTab, setActiveTab] = useState("Calls");
-
   const [deal, setDeal] = useState(null);
-
   const [calls, setCalls] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
+<<<<<<< HEAD
   const [openCreateCall, setOpenCreateCall] = useState(false);
 
+=======
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
   // ============================================================
   // FETCH DEAL
   // ============================================================
@@ -42,7 +45,14 @@ export default function DealCalls() {
 
       setDeal(response.data);
     } catch (error) {
+<<<<<<< HEAD
       console.error("ERROR FETCHING DEAL:", error.response?.data || error);
+=======
+      console.error(
+        "ERROR FETCHING DEAL:",
+        error.response?.data || error
+      );
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
 
       setDeal(null);
     }
@@ -63,6 +73,7 @@ export default function DealCalls() {
       setLoading(true);
 
       const response = await api.get(
+<<<<<<< HEAD
         `/activities/activity/deal/${dealId}/call/`,
       );
 
@@ -71,12 +82,34 @@ export default function DealCalls() {
       const dealCalls = response.data?.activities || [];
 
       console.log("DEAL CALL DATA:", dealCalls);
+=======
+        `/activities/activity/deal/${dealId}/call/`
+      );
+
+      console.log(
+        "DEAL CALLS API RESPONSE:",
+        response.data
+      );
+
+      const dealCalls = Array.isArray(response.data)
+        ? response.data
+        : response.data?.activities || [];
+
+      console.log(
+        "DEAL CALL DATA:",
+        dealCalls
+      );
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
 
       setCalls(dealCalls);
     } catch (error) {
       console.error(
         "ERROR FETCHING DEAL CALLS:",
+<<<<<<< HEAD
         error.response?.data || error,
+=======
+        error.response?.data || error
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
       );
 
       setCalls([]);
@@ -105,6 +138,7 @@ export default function DealCalls() {
   const leadName =
     deal?.lead_name ||
     deal?.lead?.name ||
+<<<<<<< HEAD
     `${deal?.lead?.first_name || ""} ${deal?.lead?.last_name || ""}`.trim() ||
     "Unknown";
 
@@ -114,11 +148,26 @@ export default function DealCalls() {
 
   const dealName = deal?.deal_name || deal?.name || `Deal #${dealId}`;
 
+=======
+    `${deal?.lead?.first_name || ""} ${
+      deal?.lead?.last_name || ""
+    }`.trim() ||
+    "Unknown";
+
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
   // ============================================================
   // LEAD PHONE NUMBER
   // ============================================================
 
+<<<<<<< HEAD
   const leadPhone = deal?.lead_phone || deal?.lead?.phone_number || "";
+=======
+  const leadPhone =
+    deal?.lead_phone ||
+    deal?.lead?.phone_number ||
+    deal?.lead?.phone ||
+    "";
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
 
   // ============================================================
   // MAKE PHONE CALL
@@ -127,12 +176,16 @@ export default function DealCalls() {
   const handleMakePhoneCall = () => {
     if (!leadPhone) {
       alert("Lead phone number is not available.");
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
       return;
     }
 
     const phoneNumber = String(leadPhone).trim();
 
+<<<<<<< HEAD
     const cleanPhoneNumber = phoneNumber.replace(/\s+/g, "");
 
     console.log("Calling Lead:", leadName);
@@ -160,12 +213,34 @@ export default function DealCalls() {
     await fetchCalls();
   };
 
+=======
+    const cleanPhoneNumber = phoneNumber.replace(
+      /[^\d+]/g,
+      ""
+    );
+
+    console.log("Calling Lead:", leadName);
+    console.log("Phone Number:", cleanPhoneNumber);
+
+    // IMPORTANT:
+    // This only makes the actual phone call.
+    // It does NOT open CreateLogCall drawer.
+    window.location.href = `tel:${cleanPhoneNumber}`;
+  };
+
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
   // ============================================================
   // RENDER
   // ============================================================
 
   return (
+<<<<<<< HEAD
     <DealLeftPanel>
+=======
+    <DealLeftPanel
+      onCallCreated={fetchCalls}
+    >
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
       <Box
         sx={{
           p: 3,
@@ -197,9 +272,20 @@ export default function DealCalls() {
             mb: 1,
           }}
         >
+<<<<<<< HEAD
           <Typography variant="h6">Calls</Typography>
 
           <CommonButton variant="contained" onClick={handleOpenCreateCall}>
+=======
+          <Typography variant="h6">
+            Calls
+          </Typography>
+
+          <CommonButton
+            variant="contained"
+            onClick={handleMakePhoneCall}
+          >
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
             Make a Phone Call
           </CommonButton>
         </Box>
@@ -208,7 +294,13 @@ export default function DealCalls() {
             MONTH
         ==================================================== */}
 
+<<<<<<< HEAD
         <Typography variant="h6">June 2025</Typography>
+=======
+        <Typography variant="h6">
+          June 2025
+        </Typography>
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f
 
         {/* ====================================================
             LOADING
@@ -235,6 +327,7 @@ export default function DealCalls() {
             No calls found for this deal.
           </Typography>
         ) : (
+<<<<<<< HEAD
           calls.map((call) => <CallCard key={call.id} call={call} />)
         )}
       </Box>
@@ -254,3 +347,16 @@ export default function DealCalls() {
     </DealLeftPanel>
   );
 }
+=======
+          calls.map((call) => (
+            <CallCard
+              key={call.id}
+              call={call}
+            />
+          ))
+        )}
+      </Box>
+    </DealLeftPanel>
+  );
+}
+>>>>>>> 1011e65cdd73d614c29396060edf8d61202ec74f

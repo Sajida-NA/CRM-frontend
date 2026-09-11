@@ -1,88 +1,3 @@
-// import { useState } from "react";
-// import { useParams, useNavigate } from "react-router-dom";
-// import axios from "axios";
-
-// const ResetPassword = () => {
-//   const { uid, token } = useParams();
-//   const navigate = useNavigate();
-
-//   const [newPassword, setNewPassword] = useState("");
-//   const [confirmPassword, setConfirmPassword] = useState("");
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     // Frontend validation
-//     if (newPassword.length < 8) {
-//       alert("Password must be at least 8 characters long.");
-//       return;
-//     }
-
-//     if (newPassword !== confirmPassword) {
-//       alert("Passwords do not match.");
-//       return;
-//     }
-
-//     console.log({
-//       uid,
-//       token,
-//       new_password: newPassword,
-//       confirm_password: confirmPassword,
-//     });
-
-//     try {
-//       const response = await axios.post(
-//         "http://127.0.0.1:8000/api/accounts/reset-password/",
-//         {
-//           uid,
-//           token,
-//           new_password: newPassword,
-//           confirm_password: confirmPassword,
-//         }
-//       );
-
-//       alert(response.data.message);
-//       navigate("/");
-//     } catch (error) {
-//       console.log(error.response?.data);
-//       alert(JSON.stringify(error.response?.data));
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <h2>Reset Password</h2>
-
-//       <form onSubmit={handleSubmit}>
-//         <input
-//           type="password"
-//           placeholder="New Password"
-//           value={newPassword}
-//           onChange={(e) => setNewPassword(e.target.value)}
-//         />
-
-//         <br />
-//         <br />
-
-//         <input
-//           type="password"
-//           placeholder="Confirm Password"
-//           value={confirmPassword}
-//           onChange={(e) => setConfirmPassword(e.target.value)}
-//         />
-
-//         <br />
-//         <br />
-
-//         <button type="submit">Reset Password</button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default ResetPassword;
-
-
 
 import {
   Typography,
@@ -95,11 +10,13 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 
 import AuthLayout from "../../../Components/common/AuthLayout";
 import InputField from "../../../Components/common/InputField";
 import CommonButton from "../../../Components/common/CommonButton";
+import CustomSnackbar from "../../../Components/common/CustomSnackbar";
+
+import { publicApi } from "../../../services/api";
 
 export default function ResetPassword() {
   const { uid, token } = useParams();
@@ -111,6 +28,14 @@ export default function ResetPassword() {
   const [form, setForm] = useState({
     newPassword: "",
     confirmPassword: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
   });
 
   const handleChange = (e) => {
@@ -125,144 +50,152 @@ export default function ResetPassword() {
 
     // Password validation
     if (form.newPassword.length < 8) {
-      alert("Password must be at least 8 characters long.");
+      setSnackbar({
+        open: true,
+        message: "Password must be at least 8 characters long.",
+        severity: "error",
+      });
       return;
     }
 
     // Confirm password validation
     if (form.newPassword !== form.confirmPassword) {
-      alert("Passwords do not match.");
+      setSnackbar({
+        open: true,
+        message: "Passwords do not match.",
+        severity: "error",
+      });
       return;
     }
 
-    try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/accounts/reset-password/",
-        {
-          uid: uid,
-          token: token,
-          new_password: form.newPassword,
-          confirm_password: form.confirmPassword,
-        }
-      );
+    setLoading(true);
 
-      alert(response.data.message || "Password reset successful!");
+    try {
+      const response = await  publicApi.post("/accounts/reset-password/", {
+        uid: uid,
+        token: token,
+        new_password: form.newPassword,
+        confirm_password: form.confirmPassword,
+      });
+
+      console.log("Password reset successful:", response.data);
+
+      setSnackbar({
+        open: true,
+        message: response.data.message || "Password reset successful!",
+        severity: "success",
+      });
 
       // Navigate to login
-      navigate("/");
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (error) {
-      console.error(error.response?.data);
+      console.error(
+        "Password reset failed:",
+        JSON.stringify(error.response?.data, null, 2),
+      );
 
       const errorData = error.response?.data;
 
-      alert(
-        errorData?.detail ||
+      setSnackbar({
+        open: true,
+        message:
+          errorData?.detail ||
           errorData?.message ||
           errorData?.non_field_errors?.[0] ||
-          "Password reset failed."
-      );
+          "Password reset failed.",
+        severity: "error",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <AuthLayout
-      title="Reset Password"
-      footer={
-        <>
-          Remember your password?{" "}
-          <Link href="/" underline="hover">
-            Log in
-          </Link>
-        </>
-      }
-    >
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{ width: "100%" }}
+    <>
+      {" "}
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+      />
+      <AuthLayout
+        title="Reset Password"
+        footer={
+          <>
+            Remember your password?{" "}
+            <Link href="/" underline="hover">
+              Log in
+            </Link>
+          </>
+        }
       >
-        {/* New Password */}
-        <Typography variant="body2" fontWeight={500} mb={1}>
-          New Password
-        </Typography>
+        <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+          {/* New Password */}
+          <Typography variant="body2" fontWeight={500} mb={1}>
+            New Password
+          </Typography>
 
-        <InputField
-          name="newPassword"
-          type={showNewPassword ? "text" : "password"}
-          placeholder="Enter your new password"
-          value={form.newPassword}  sx={{ mb: 2 }}
-          onChange={handleChange}
-          fullWidth
-          slotProps={{
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    edge="end"
-                    onClick={() =>
-                      setShowNewPassword((prev) => !prev)
-                    }
-                  >
-                    {showNewPassword ? (
-                      <VisibilityOff />
-                    ) : (
-                      <Visibility />
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
+          <InputField
+            name="newPassword"
+            type={showNewPassword ? "text" : "password"}
+            placeholder="Enter your new password"
+            value={form.newPassword}
+            sx={{ mb: 2 }}
+            onChange={handleChange}
+            fullWidth
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      edge="end"
+                      onClick={() => setShowNewPassword((prev) => !prev)}
+                    >
+                      {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
 
-        {/* Confirm Password */}
-        <Typography
-          variant="body2"
-          fontWeight={500}
-          mb={1}
-          mt={3}
-        >
-          Confirm Password
-        </Typography>
+          {/* Confirm Password */}
+          <Typography variant="body2" fontWeight={500} mb={1} mt={3}>
+            Confirm Password
+          </Typography>
 
-        <InputField
-          name="confirmPassword"
-          type={showConfirmPassword ? "text" : "password"}
-          placeholder="Confirm your new password"
-          value={form.confirmPassword}
-          onChange={handleChange}
-          fullWidth
-          slotProps={{
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    edge="end"
-                    onClick={() =>
-                      setShowConfirmPassword((prev) => !prev)
-                    }
-                  >
-                    {showConfirmPassword ? (
-                      <VisibilityOff />
-                    ) : (
-                      <Visibility />
-                    )}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
+          <InputField
+            name="confirmPassword"
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="Confirm your new password"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            fullWidth
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      edge="end"
+                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
 
-        {/* Reset Password Button */}
-        <CommonButton
-          type="submit"
-          fullWidth
-          sx={{ mt: 4 }}
-        >
-          Reset Password
-        </CommonButton>
-      </Box>
-    </AuthLayout>
+          {/* Reset Password Button */}
+          <CommonButton type="submit" fullWidth sx={{ mt: 4 }}>
+            Reset Password
+          </CommonButton>
+        </Box>
+      </AuthLayout>
+    </>
   );
 }
