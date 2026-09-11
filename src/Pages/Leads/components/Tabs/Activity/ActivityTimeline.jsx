@@ -97,18 +97,7 @@ export default function ActivityTimeline({ activity }) {
       {/* Call details */}
       {type === "call" && (
         <>
-          {/* {data.call_outcome && (
-            <Typography
-              sx={{
-                fontSize: "13px",
-                color: "text.secondary",
-                mb: 0.5,
-              }}
-            >
-              Outcome: {data.call_outcome}
-            </Typography>
-          )} */}
-
+         
           {data.note && (
             <Typography
               sx={{
