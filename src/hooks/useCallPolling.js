@@ -60,6 +60,7 @@ export default function useCallPolling(calls, setCalls) {
             )
           );
 
+          
           // Stop polling after call finishes
           if (
             response.data?.is_terminal ||
