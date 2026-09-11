@@ -2,353 +2,587 @@
 
 
 
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+// import React, { useEffect, useState } from "react";
+// import { useParams } from "react-router-dom";
 
-import {
-  Box,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
+// import {
+//   Box,
+//   Typography,
+//   CircularProgress,
+// } from "@mui/material";
 
-import CompanyLeftPanel from "../../CompanyLeftPanel";
-import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
-import CommonButton from "../../../../../Components/common/CommonButton";
+// import CompanyLeftPanel from "../../CompanyLeftPanel";
+// import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
+// import CommonButton from "../../../../../Components/common/CommonButton";
 
-import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
+// import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
 
-import { getCompanyTabs } from "../CompanyTabs";
-import api from "../../../../../services/api";
+// import { getCompanyTabs } from "../CompanyTabs";
+// import api from "../../../../../services/api";
 
-export default function CompanyCalls() {
-  const { companyId } = useParams();
+// export default function CompanyCalls() {
+//   const { companyId } = useParams();
 
-  const [activeTab, setActiveTab] = useState("Calls");
-  const [company, setCompany] = useState(null);
-  const [calls, setCalls] = useState([]);
-  const [loading, setLoading] = useState(true);
+//   const [activeTab, setActiveTab] = useState("Calls");
+//   const [company, setCompany] = useState(null);
+//   const [calls, setCalls] = useState([]);
+//   const [loading, setLoading] = useState(true);
 
-  // ============================================================
-  // FETCH COMPANY
-  // ============================================================
+//   // ============================================================
+//   // FETCH COMPANY
+//   // ============================================================
 
-  const fetchCompany = async () => {
-    if (!companyId) return;
+//   const fetchCompany = async () => {
+//     if (!companyId) return;
 
-    try {
-      const response = await api.get(
-        `/companies/${companyId}/`
-      );
+//     try {
+//       const response = await api.get(
+//         `/companies/${companyId}/`
+//       );
+
+// //       const response = await api.get(
+// //   `/activities/activity/company/${companyId}/call/`
+// // );
+
+//       console.log("COMPANY:", response.data);
+
+//       setCompany(response.data);
+
+//     } catch (error) {
+//       console.error(
+//         "Error fetching company:",
+//         error.response?.data || error
+//       );
+
+//       setCompany(null);
+//     }
+//   };
+
+//   // ============================================================
+//   // FETCH COMPANY CALLS
+//   // ============================================================
+
+//   const fetchCalls = async () => {
+//     if (!companyId) {
+//       setCalls([]);
+//       setLoading(false);
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+
+//       /*
+//        * IMPORTANT:
+//        *
+//        * Get activities belonging to THIS company.
+//        *
+//        * Example:
+//        * /activities/timeline/company/5/
+//        *
+//        * Then only keep activity_type === "call".
+//        */
 
 //       const response = await api.get(
-//   `/activities/activity/company/${companyId}/call/`
-// );
-
-      console.log("COMPANY:", response.data);
-
-      setCompany(response.data);
-
-    } catch (error) {
-      console.error(
-        "Error fetching company:",
-        error.response?.data || error
-      );
-
-      setCompany(null);
-    }
-  };
-
-  // ============================================================
-  // FETCH COMPANY CALLS
-  // ============================================================
-
-  const fetchCalls = async () => {
-    if (!companyId) {
-      setCalls([]);
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      /*
-       * IMPORTANT:
-       *
-       * Get activities belonging to THIS company.
-       *
-       * Example:
-       * /activities/timeline/company/5/
-       *
-       * Then only keep activity_type === "call".
-       */
-
-      const response = await api.get(
-        `/activities/timeline/company/${companyId}/`
-      );
+//         `/activities/timeline/company/${companyId}/`
+//       );
 
       
-      // const response = await api.get(
-      //   "/activities/call/"
-      // );
+//       // const response = await api.get(
+//       //   "/activities/call/"
+//       // );
 
-      console.log(
-        "COMPANY ACTIVITY TIMELINE:",
-        response.data
-      );
+//       console.log(
+//         "COMPANY ACTIVITY TIMELINE:",
+//         response.data
+//       );
 
-      const activities = Array.isArray(response.data)
-        ? response.data
-        : response.data?.results || [];
+//       const activities = Array.isArray(response.data)
+//         ? response.data
+//         : response.data?.results || [];
 
-      // ========================================================
-      // ONLY CALL ACTIVITIES
-      // ========================================================
+//       // ========================================================
+//       // ONLY CALL ACTIVITIES
+//       // ========================================================
 
-      const companyCalls = activities.filter(
-        (activity) =>
-          activity.activity_type === "call" &&
-          activity.data
-      );
+//       const companyCalls = activities.filter(
+//         (activity) =>
+//           activity.activity_type === "call" &&
+//           activity.data
+//       );
 
-      console.log(
-        "COMPANY CALLS:",
-        companyCalls
-      );
+//       console.log(
+//         "COMPANY CALLS:",
+//         companyCalls
+//       );
 
-      setCalls(companyCalls);
+//       setCalls(companyCalls);
 
-    } catch (error) {
-      console.error(
-        "Error fetching company calls:",
-        error.response?.data || error
-      );
+//     } catch (error) {
+//       console.error(
+//         "Error fetching company calls:",
+//         error.response?.data || error
+//       );
 
-      setCalls([]);
+//       setCalls([]);
 
-    } finally {
-      setLoading(false);
-    }
-  };
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-  // ============================================================
-  // INITIAL LOAD
-  // ============================================================
+//   // ============================================================
+//   // INITIAL LOAD
+//   // ============================================================
 
-  useEffect(() => {
-    if (!companyId) return;
+//   useEffect(() => {
+//     if (!companyId) return;
 
-    fetchCompany();
-    fetchCalls();
+//     fetchCompany();
+//     fetchCalls();
 
-  }, [companyId]);
+//   }, [companyId]);
 
-  // ============================================================
-  // COMPANY NAME
-  // ============================================================
+//   // ============================================================
+//   // COMPANY NAME
+//   // ============================================================
 
-  const companyName =
-    company?.company_name ||
-    company?.name ||
-    `Company #${companyId}`;
+//   const companyName =
+//     company?.company_name ||
+//     company?.name ||
+//     `Company #${companyId}`;
 
-  // ============================================================
-  // COMPANY PHONE
-  // ============================================================
+//   // ============================================================
+//   // COMPANY PHONE
+//   // ============================================================
 
-  const companyPhone =
-    company?.phone_number ||
-    company?.phone ||
-    "";
+//   const companyPhone =
+//     company?.phone_number ||
+//     company?.phone ||
+//     "";
 
-  // ============================================================
-  // MAKE PHONE CALL
-  // ============================================================
+//   // ============================================================
+//   // MAKE PHONE CALL
+//   // ============================================================
 
-  const handleMakePhoneCall = () => {
-    if (!companyPhone) {
-      alert(
-        "Company phone number is not available."
-      );
+//   const handleMakePhoneCall = () => {
+//     if (!companyPhone) {
+//       alert(
+//         "Company phone number is not available."
+//       );
 
-      return;
-    }
+//       return;
+//     }
 
-    const phoneNumber =
-      String(companyPhone).trim();
+//     const phoneNumber =
+//       String(companyPhone).trim();
 
-    const cleanPhoneNumber =
-      phoneNumber.replace(/\s+/g, "");
+//     const cleanPhoneNumber =
+//       phoneNumber.replace(/\s+/g, "");
 
-    console.log(
-      "Calling Company:",
-      companyName
-    );
+//     console.log(
+//       "Calling Company:",
+//       companyName
+//     );
 
-    console.log(
-      "Phone Number:",
-      cleanPhoneNumber
-    );
+//     console.log(
+//       "Phone Number:",
+//       cleanPhoneNumber
+//     );
 
-    window.location.href =
-      `tel:${cleanPhoneNumber}`;
-  };
+//     window.location.href =
+//       `tel:${cleanPhoneNumber}`;
+//   };
 
-  // ============================================================
-  // RENDER
-  // ============================================================
+//   // ============================================================
+//   // RENDER
+//   // ============================================================
 
-  return (
-    <CompanyLeftPanel
-      onCallCreated={fetchCalls}
-    >
-      <Box
-        sx={{
-          p: 3,
-          mx: -2,
-        }}
-      >
+//   return (
+//     <CompanyLeftPanel
+//       onCallCreated={fetchCalls}
+//     >
+//       <Box
+//         sx={{
+//           p: 3,
+//           mx: -2,
+//         }}
+//       >
 
-        {/* ====================================================
-            ACTIVITY TABS
-        ==================================================== */}
+//         {/* ====================================================
+//             ACTIVITY TABS
+//         ==================================================== */}
 
-        <CommonActivityTabs
-          tabs={getCompanyTabs(companyId)}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+//         <CommonActivityTabs
+//           tabs={getCompanyTabs(companyId)}
+//           activeTab={activeTab}
+//           onTabChange={setActiveTab}
+//         />
 
-        {/* ====================================================
-            CALL HEADER
-        ==================================================== */}
+//         {/* ====================================================
+//             CALL HEADER
+//         ==================================================== */}
 
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mt: 3,
-            mb: 1,
-          }}
-        >
+//         <Box
+//           sx={{
+//             display: "flex",
+//             justifyContent: "space-between",
+//             alignItems: "center",
+//             mt: 3,
+//             mb: 1,
+//           }}
+//         >
 
-          <Typography variant="h6">
-            Calls
-          </Typography>
+//           <Typography variant="h6">
+//             Calls
+//           </Typography>
 
-          <CommonButton
-            variant="contained"
-            onClick={handleMakePhoneCall}
-          >
-            Make a Phone Call
-          </CommonButton>
+//           <CommonButton
+//             variant="contained"
+//             onClick={handleMakePhoneCall}
+//           >
+//             Make a Phone Call
+//           </CommonButton>
 
-        </Box>
+//         </Box>
 
-        {/* ====================================================
-            CALLS
-        ==================================================== */}
+//         {/* ====================================================
+//             CALLS
+//         ==================================================== */}
 
-        {loading ? (
+//         {loading ? (
 
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              py: 4,
-            }}
-          >
-            <CircularProgress size={28} />
-          </Box>
+//           <Box
+//             sx={{
+//               display: "flex",
+//               justifyContent: "center",
+//               alignItems: "center",
+//               py: 4,
+//             }}
+//           >
+//             <CircularProgress size={28} />
+//           </Box>
 
-        ) : calls.length === 0 ? (
+//         ) : calls.length === 0 ? (
 
-          <Typography
-            color="text.secondary"
-            sx={{
-              mt: 2,
-            }}
-          >
-            No calls found for this company.
-          </Typography>
+//           <Typography
+//             color="text.secondary"
+//             sx={{
+//               mt: 2,
+//             }}
+//           >
+//             No calls found for this company.
+//           </Typography>
 
-        ) : (
+//         ) : (
 
-          calls.map((activity) => {
+//           calls.map((activity) => {
 
-            /*
-             * The actual Call information is inside:
-             *
-             * activity.data
-             */
+//             /*
+//              * The actual Call information is inside:
+//              *
+//              * activity.data
+//              */
 
-            const call = activity.data;
+//             const call = activity.data;
 
-            return (
-              <CallCard
-                key={activity.id}
-                call={{
-                  ...call,
+//             return (
+//               <CallCard
+//                 key={activity.id}
+//                 call={{
+//                   ...call,
 
-                  /*
-                   * Company information
-                   */
+//                   /*
+//                    * Company information
+//                    */
 
-                  name: companyName,
+//                   name: companyName,
 
-                  /*
-                   * Description / note
-                   */
+//                   /*
+//                    * Description / note
+//                    */
 
-                  description:
-                    call.note ||
-                    "",
+//                   description:
+//                     call.note ||
+//                     "",
 
-                  /*
-                   * Call date
-                   */
+//                   /*
+//                    * Call date
+//                    */
 
-                  date:
-                    call.date ||
-                    call.created_at ||
-                    "",
+//                   date:
+//                     call.date ||
+//                     call.created_at ||
+//                     "",
 
-                  /*
-                   * Call time
-                   */
+//                   /*
+//                    * Call time
+//                    */
 
-                  time:
-                    call.time ||
-                    "",
+//                   time:
+//                     call.time ||
+//                     "",
 
-                  /*
-                   * Outcome
-                   */
+//                   /*
+//                    * Outcome
+//                    */
 
-                  call_outcome:
-                    call.call_outcome ||
-                    "",
+//                   call_outcome:
+//                     call.call_outcome ||
+//                     "",
 
-                  /*
-                   * Duration
-                   */
+//                   /*
+//                    * Duration
+//                    */
 
-                  duration:
-                    call.duration !== null &&
-                    call.duration !== undefined
-                      ? Number(call.duration)
-                      : null,
-                }}
-              />
-            );
-          })
+//                   duration:
+//                     call.duration !== null &&
+//                     call.duration !== undefined
+//                       ? Number(call.duration)
+//                       : null,
+//                 }}
+//               />
+//             );
+//           })
 
-        )}
+//         )}
 
-      </Box>
-    </CompanyLeftPanel>
-  );
-}
+//       </Box>
+//     </CompanyLeftPanel>
+//   );
+// }
 
+
+
+import React, { useEffect, useState } from "react"; 
+import { useParams } from "react-router-dom"; 
+import { 
+Box, 
+Typography, 
+CircularProgress, 
+} from "@mui/material"; 
+import CompanyLeftPanel from "../../CompanyLeftPanel"; 
+import CommonActivityTabs from 
+"../../../../../Components/common/CommonActivityTab"; 
+import CommonButton from "../../../../../Components/common/CommonButton"; 
+import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard"; 
+import { getCompanyTabs } from "../CompanyTabs"; 
+import api from "../../../../../services/api"; 
+export default function CompanyCalls() { 
+const { companyId } = useParams(); 
+const [activeTab, setActiveTab] = useState("Calls"); 
+const [company, setCompany] = useState(null); 
+const [calls, setCalls] = useState([]); 
+const [loading, setLoading] = useState(true); 
+// ============================================================ 
+// DEBUG 
+// ============================================================ 
+console.log("========== COMPANY CALLS =========="); 
+console.log("Company ID:", companyId); 
+console.log("Current URL:", window.location.pathname); 
+// ============================================================ 
+// FETCH COMPANY 
+// ============================================================ 
+const fetchCompany = async () => { 
+if (!companyId) { 
+console.error("Company ID is missing"); 
+return; 
+} 
+try { 
+const response = await api.get( 
+`/companies/${companyId}/` 
+); 
+console.log( 
+"COMPANY RESPONSE:", 
+response.data 
+); 
+setCompany(response.data); 
+} catch (error) { 
+console.error( 
+"ERROR FETCHING COMPANY:", 
+error.response?.data || error 
+); 
+ 
+      setCompany(null); 
+    } 
+  }; 
+ 
+  // ============================================================ 
+  // FETCH COMPANY CALLS 
+  // ============================================================ 
+ 
+  const fetchCalls = async () => { 
+    console.log( 
+      "========== FETCH COMPANY CALLS ==========" 
+    ); 
+ 
+    if (!companyId) { 
+      console.error("Company ID is missing"); 
+ 
+      setCalls([]); 
+      setLoading(false); 
+ 
+      return; 
+    } 
+ 
+    try { 
+      setLoading(true); 
+ 
+      const url = 
+        `/activities/activity/company/${companyId}/call/`; 
+ 
+      console.log( 
+        "COMPANY CALL API:", 
+        url 
+      ); 
+ 
+      const response = await api.get(url); 
+ 
+      console.log( 
+        "COMPANY CALLS API RESPONSE:", 
+        response.data 
+      ); 
+const companyCalls = 
+response.data?.activities || []; 
+console.log( 
+"COMPANY CALL DATA:", 
+companyCalls 
+); 
+setCalls(companyCalls); 
+} catch (error) { 
+console.error( 
+"ERROR FETCHING COMPANY CALLS:", 
+error.response?.data || error 
+); 
+setCalls([]); 
+} finally { 
+setLoading(false); 
+} 
+}; 
+// ============================================================ 
+// INITIAL LOAD 
+// ============================================================ 
+useEffect(() => { 
+if (!companyId) { 
+return; 
+} 
+fetchCompany(); 
+fetchCalls(); 
+}, [companyId]); 
+// ============================================================ 
+// COMPANY NAME 
+// ============================================================ 
+const companyName = 
+company?.company_name || 
+company?.name || 
+`Company #${companyId}`; 
+// ============================================================ 
+// COMPANY PHONE 
+// ============================================================ 
+const companyPhone = 
+company?.phone_number || 
+company?.phone || 
+""; 
+// ============================================================ 
+// MAKE PHONE CALL 
+// ============================================================ 
+const handleMakePhoneCall = () => { 
+if (!companyPhone) { 
+alert( 
+"Company phone number is not available." 
+); 
+return; 
+} 
+const phoneNumber = 
+String(companyPhone).trim(); 
+const cleanPhoneNumber = 
+phoneNumber.replace(/\s+/g, ""); 
+console.log( 
+"Calling Company:", 
+companyName 
+); 
+console.log( 
+"Phone Number:", 
+cleanPhoneNumber 
+); 
+window.location.href = 
+`tel:${cleanPhoneNumber}`; 
+}; 
+// ============================================================ 
+// RENDER 
+// ============================================================ 
+return ( 
+<CompanyLeftPanel 
+onCallCreated={fetchCalls} 
+> 
+<Box 
+sx={{ 
+p: 3, 
+mx: -2, 
+}} 
+> 
+{/* ==================================================== 
+ACTIVITY TABS 
+==================================================== */} 
+<CommonActivityTabs 
+tabs={getCompanyTabs(companyId)} 
+activeTab={activeTab} 
+onTabChange={setActiveTab} 
+/> 
+{/* ==================================================== 
+CALL HEADER 
+==================================================== */} 
+<Box 
+sx={{ 
+display: "flex", 
+justifyContent: "space-between", 
+alignItems: "center", 
+mt: 3, 
+mb: 1, 
+}} 
+> 
+<Typography variant="h6"> 
+Calls 
+</Typography> 
+<CommonButton 
+variant="contained" 
+onClick={handleMakePhoneCall} 
+> 
+Make a Phone Call 
+</CommonButton> 
+</Box> 
+{/* ==================================================== 
+CALLS 
+==================================================== */} 
+{loading ? ( 
+<Box 
+sx={{ 
+display: "flex", 
+justifyContent: "center", 
+alignItems: "center", 
+py: 4, 
+}} 
+> 
+<CircularProgress size={28} /> 
+</Box> 
+) : calls.length === 0 ? ( 
+<Typography 
+color="text.secondary" 
+sx={{ 
+mt: 2, 
+}} 
+> 
+No calls found for this company. 
+</Typography> 
+) : ( 
+calls.map((call) => ( 
+<CallCard 
+key={call.id} 
+call={call} 
+/> 
+)) 
+)} 
+</Box> 
+</CompanyLeftPanel> 
+); 
+} 

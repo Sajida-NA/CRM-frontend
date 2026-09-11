@@ -215,17 +215,17 @@ export default function DealActivityDetails({ dealId }) {
             </Box>
           </Typography>
 
-          {data.call_outcome && (
-            <Typography
-              sx={{
-                mt: 1,
-                fontSize: 14,
-                color: "text.secondary",
-              }}
-            >
-              Outcome: {data.call_outcome}
-            </Typography>
-          )}
+          {data.note && (
+                      <Typography
+                        sx={{
+                          fontSize: "13px",
+                          color: "text.secondary",
+                          mb: 0.5,
+                        }}
+                      >
+                        {data.note}
+                      </Typography>
+                    )}
         </>
       );
     }

@@ -243,7 +243,7 @@ export default function CompanyActivityDetails() {
             </Box>
           </Typography>
 
-          {data.call_outcome && (
+          {/* {data.call_outcome && (
             <Typography
               sx={{
                 mt: 1,
@@ -253,7 +253,7 @@ export default function CompanyActivityDetails() {
             >
               Outcome: {data.call_outcome}
             </Typography>
-          )}
+          )} */}
 
           {data.note && (
             <Typography
@@ -320,108 +320,53 @@ export default function CompanyActivityDetails() {
     // MEETING
     // ===================================================
 
-    if (
-      activity.activity_type === "meeting" &&
-      data
-    ) {
-      return (
-        <>
-          <Typography
-            sx={{
-              fontSize: 14,
-              color: "text.primary",
-              fontWeight: 600,
-            }}
-          >
-            {data.title || "Meeting"}
-          </Typography>
+   // ===================================================
+// MEETING
+// ===================================================
 
-          {data.start_date && (
-            <Typography
-              sx={{
-                mt: 1,
-                fontSize: 13,
-                color: "text.secondary",
-              }}
-            >
-              Date: {data.start_date}
-            </Typography>
-          )}
+if (
+  activity.activity_type === "meeting" &&
+  data
+) {
+  return (
+    <>
+      {/* USER WHO CREATED THE MEETING */}
+      <Typography sx={{ fontSize: 14 }}>
+        <Box
+          component="span"
+          sx={{
+            color: "text.secondary",
+            fontWeight: 600,
+          }}
+        >
+          {createdBy}
+        </Box>{" "}
 
-          {data.start_time && (
-            <Typography
-              sx={{
-                mt: 0.5,
-                fontSize: 13,
-                color: "text.secondary",
-              }}
-            >
-              Time: {data.start_time}
-              {data.end_time
-                ? ` - ${data.end_time}`
-                : ""}
-            </Typography>
-          )}
+        <Box
+          component="span"
+          sx={{
+            color: "text.secondary",
+          }}
+        >
+          created a meeting
+        </Box>
+      </Typography>
 
-          {data.location && (
-            <Typography
-              sx={{
-                mt: 0.5,
-                fontSize: 13,
-                color: "text.secondary",
-              }}
-            >
-              Location: {data.location}
-            </Typography>
-          )}
-
-          {data.reminder && (
-            <Typography
-              sx={{
-                mt: 0.5,
-                fontSize: 13,
-                color: "text.secondary",
-              }}
-            >
-              Reminder: {data.reminder}
-            </Typography>
-          )}
-
-          {data.note && (
-            <Typography
-              sx={{
-                mt: 0.5,
-                fontSize: 13,
-                color: "text.secondary",
-              }}
-            >
-              Note: {data.note}
-            </Typography>
-          )}
-
-          {Array.isArray(data.attendees) &&
-            data.attendees.length > 0 && (
-              <Typography
-                sx={{
-                  mt: 0.5,
-                  fontSize: 13,
-                  color: "text.secondary",
-                }}
-              >
-                Attendees:{" "}
-                {data.attendees
-                  .map((attendee) =>
-                    typeof attendee === "string"
-                      ? attendee
-                      : attendee?.name
-                  )
-                  .filter(Boolean)
-                  .join(", ")}
-              </Typography>
-            )}
-        </>
-      );
-    }
+      {/* MEETING NOTE */}
+      {data.note && (
+        <Typography
+          sx={{
+            mt: 1,
+            fontSize: 14,
+            color: "text.secondary",
+          }}
+        >
+          {data.note}
+        </Typography>
+      )}
+    </>
+  );
+}
 
     // ===================================================
     // EMAIL
