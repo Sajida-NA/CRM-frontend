@@ -1,507 +1,341 @@
-// import React, { useEffect, useState } from "react";
-// import { useParams } from "react-router-dom";
 
-// import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-// import CreateLogCall from "../../Leads/components/Tabs/Calls/CreateLogCall";
-// import Createnote from "../../Leads/components/Tabs/Note/Createnote";
-// import NewEmailDialog from "../../Leads/components/Tabs/Emails/NewEmailDialog";
-// import ScheduleMeeting from "../../Leads/components/Tabs/Meetings/ScheduleMeeting";
-// import CreateTaskDrawer from "../../Leads/components/Tabs/Task/CreateTaskDrawer";
+import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 
-// import api from "../../../services/api";
+import CreateLogCall from "../../Leads/components/Tabs/Calls/CreateLogCall";
+import Createnote from "../../Leads/components/Tabs/Note/Createnote";
+import NewEmailDialog from "../../Leads/components/Tabs/Emails/NewEmailDialog";
+import ScheduleMeeting from "../../Leads/components/Tabs/Meetings/ScheduleMeeting";
+import CreateTaskDrawer from "../../Leads/components/Tabs/Task/CreateTaskDrawer";
 
-// export default function TicketLeftPanel({
-//   children,
-//   onCallCreated,
-//   onNoteCreated,
-//   onEmailCreated,
-//   onTaskCreated,
-// }) {
-//   const { ticketId } = useParams();
+import api from "../../../services/api";
 
-//   const [ticket, setTicket] = useState(null);
-//   const [status, setStatus] = useState("");
-//   const [activeDrawer, setActiveDrawer] = useState(null);
+export default function TicketLeftPanel({
+  children,
+  onCallCreated,
+  onNoteCreated,
+  onEmailCreated,
+  onTaskCreated,
+}) {
+  const { ticketId } = useParams();
 
-//   // ============================================================
-//   // FETCH TICKET DETAILS
-//   // ============================================================
+  const [ticket, setTicket] = useState(null);
+  const [status, setStatus] = useState("");
+  const [activeDrawer, setActiveDrawer] = useState(null);
 
-//   useEffect(() => {
-//     const fetchTicket = async () => {
-//       try {
-//         const response = await api.get(`/tickets/${ticketId}/`);
+  // =========================================================
+  // FETCH TICKET DETAILS
+  // =========================================================
 
-//         console.log("TICKET DETAILS:", response.data);
+  useEffect(() => {
+    const fetchTicket = async () => {
+      try {
+        const response = await api.get(`/tickets/${ticketId}/`);
 
-//         setTicket(response.data);
+        console.log("TICKET DETAILS:", response.data);
 
-//         setStatus(
-//           response.data.ticket_status
-//             ? response.data.ticket_status
-//                 .toLowerCase()
-//                 .replace(/\b\w/g, (char) => char.toUpperCase())
-//             : "",
-//         );
-//       } catch (error) {
-//         console.error(
-//           "Fetch Ticket Details Error:",
-//           error.response?.data || error,
-//         );
-//       }
-//     };
+        setTicket(response.data);
 
-//     if (ticketId) {
-//       fetchTicket();
-//     }
-//   }, [ticketId]);
+        // Convert backend status to display status
+        const statusMap = {
+          NEW: "New",
+          OPEN: "Open",
+          IN_PROGRESS: "In Progress",
+          WAITING_ON_CONTACT: "Waiting on Contact",
+          WAITING_ON_US: "Waiting on Us",
+          CLOSED: "Closed",
+        };
 
-//   // ============================================================
-//   // LOADING
-//   // ============================================================
+        const backendStatus = response.data.ticket_status;
 
-//   if (!ticket) {
-//     return null;
-//   }
+        setStatus(statusMap[backendStatus] || "");
+      } catch (error) {
+        console.error(
+          "Fetch Ticket Details Error:",
+          error.response?.data || error
+        );
+      }
+    };
 
-//   // ============================================================
-//   // TICKET DATA
-//   // ============================================================
+    if (ticketId) {
+      fetchTicket();
+    }
+  }, [ticketId]);
 
-//   const ticketName = ticket.ticket_name || ticket.name || "-";
+  // =========================================================
+  // UPDATE TICKET STATUS
+  // =========================================================
 
-//   const description = ticket.description || "-";
+  const handleStatusChange = async (newStatus) => {
+    try {
+      // Frontend display value -> backend value
+      const statusMap = {
+        New: "NEW",
+        Open: "OPEN",
+        "In Progress": "IN_PROGRESS",
+        "Waiting on Contact": "WAITING_ON_CONTACT",
+        "Waiting on Us": "WAITING_ON_US",
+        Closed: "CLOSED",
+      };
 
-//   const ownerName =
-//     ticket.ticket_owner ||
-//     ticket.owner_name ||
-//     ticket.owner?.name ||
-//     ticket.owner?.username ||
-//     "-";
+      const backendStatus = statusMap[newStatus];
 
-//   const priority = ticket.priority || "-";
+      if (!backendStatus) {
+        console.error("Invalid ticket status:", newStatus);
+        return;
+      }
 
-//   const createdDate = ticket.created_date || ticket.created_at || "-";
+      console.log("Updating ticket status:", backendStatus);
 
-//   // ============================================================
-//   // TICKET DETAILS
-//   // ============================================================
+      // Update backend
+      const response = await api.patch(`/tickets/${ticketId}/`, {
+        ticket_status: backendStatus,
+      });
 
-//   const ticketDetails = [
-//     {
-//       label: "Ticket Description",
-//       value: description,
-//     },
-//     {
-//       label: "Ticket Owner",
-//       value: ownerName,
-//     },
-//     {
-//       label: "Priority",
-//       value: priority,
-//     },
-//     {
-//       label: "Created Date",
-//       value: createdDate,
-//     },
-//   ];
+      console.log("STATUS UPDATE RESPONSE:", response.data);
 
-//   // ============================================================
-//   // CLOSE DRAWER
-//   // ============================================================
+      // Update local status
+      setStatus(newStatus);
 
-//   const closeDrawer = () => {
-//     setActiveDrawer(null);
-//   };
+      // Update ticket state
+      setTicket((prev) => ({
+        ...prev,
+        ticket_status: backendStatus,
+      }));
+    } catch (error) {
+      console.error(
+        "Ticket Status Update Error:",
+        error.response?.data || error
+      );
+    }
+  };
 
-//   // ============================================================
-//   // ACTIVITY CREATED CALLBACKS
-//   // ============================================================
+  // =========================================================
+  // LOADING
+  // =========================================================
 
-//   const handleCallCreated = async (createdCall) => {
-//     console.log("Ticket call created:", createdCall);
+  if (!ticket) {
+    return null;
+  }
 
-//     setActiveDrawer(null);
+  // =========================================================
+  // TICKET DATA
+  // =========================================================
 
-//     if (onCallCreated) {
-//       await onCallCreated(createdCall);
-//     }
-//   };
+  const ticketName = ticket.ticket_name || ticket.name || "-";
 
-//   const handleNoteCreated = async (createdNote) => {
-//     console.log("Ticket note created:", createdNote);
+  const description = ticket.description || "-";
 
-//     setActiveDrawer(null);
+  const ownerName =
+    ticket.ticket_owner ||
+    ticket.owner_name ||
+    ticket.owner?.name ||
+    ticket.owner?.username ||
+    "-";
 
-//     if (onNoteCreated) {
-//       await onNoteCreated(createdNote);
-//     }
-//   };
+  const priority = ticket.priority || "-";
 
-//   const handleEmailCreated = async (createdEmail) => {
-//     console.log("Ticket email created:", createdEmail);
+  const createdDate =
+    ticket.created_date ||
+    ticket.created_at ||
+    "-";
 
-//     setActiveDrawer(null);
+  // =========================================================
+  // ABOUT TICKET DETAILS
+  // =========================================================
 
-//     if (onEmailCreated) {
-//       await onEmailCreated(createdEmail);
-//     }
-//   };
+  const ticketDetails = [
+    {
+      label: "Ticket Description",
+      value: description,
+    },
+    {
+      label: "Ticket Owner",
+      value: ownerName,
+    },
+    {
+      label: "Priority",
+      value: priority,
+    },
+    {
+      label: "Created Date",
+      value: createdDate,
+    },
+  ];
 
-//   const handleTaskCreated = async (createdTask) => {
-//     console.log("Ticket task created:", createdTask);
+  // =========================================================
+  // CLOSE DRAWER
+  // =========================================================
 
-//     setActiveDrawer(null);
+  const closeDrawer = () => {
+    setActiveDrawer(null);
+  };
 
-//     if (onTaskCreated) {
-//       await onTaskCreated(createdTask);
-//     }
-//   };
+  // =========================================================
+  // CALL CREATED
+  // =========================================================
 
-//   // ============================================================
-//   // LEFT PANEL DATA
-//   // ============================================================
+  const handleCallCreated = async (createdCall) => {
+    console.log("Ticket call created:", createdCall);
 
-//   const leftPanelData = {
-//     profile: {
-//       name: ticketName,
+    setActiveDrawer(null);
 
-//       status: status,
+    if (onCallCreated) {
+      await onCallCreated(createdCall);
+    }
+  };
 
-//       setStatus: setStatus,
+  // =========================================================
+  // NOTE CREATED
+  // =========================================================
 
-//       email: "",
-//     },
+  const handleNoteCreated = async (createdNote) => {
+    console.log("Ticket note created:", createdNote);
 
-//     showProfileEdit: false,
+    setActiveDrawer(null);
 
-//     showProfileImage: false,
+    if (onNoteCreated) {
+      await onNoteCreated(createdNote);
+    }
+  };
 
-//     sectionTitle: "About this Ticket",
+  // =========================================================
+  // EMAIL CREATED
+  // =========================================================
 
-//     leadDetails: ticketDetails,
+  const handleEmailCreated = async (createdEmail) => {
+    console.log("Ticket email created:", createdEmail);
 
-//     summaryTitle: "AI Ticket Summary",
+    setActiveDrawer(null);
 
-//     summaryText: `The ticket "${ticketName}" currently has a ${
-//       status || "-"
-//     } status with ${priority} priority.`,
-//   };
+    if (onEmailCreated) {
+      await onEmailCreated(createdEmail);
+    }
+  };
 
-//   // ============================================================
-//   // RETURN
-//   // ============================================================
+  // =========================================================
+  // TASK CREATED
+  // =========================================================
 
-//   return (
-//     <>
-//       <CommonEntityHeader
-//         title="Tickets"
-//         leftPanelData={leftPanelData}
-//         onCallClick={() => setActiveDrawer("call")}
-//         onNoteClick={() => setActiveDrawer("note")}
-//         onEmailClick={() => setActiveDrawer("email")}
-//         onTaskClick={() => setActiveDrawer("task")}
-//         onMeetingClick={() => setActiveDrawer("meeting")}
-//       >
-//         {children}
-//       </CommonEntityHeader>
+  const handleTaskCreated = async (createdTask) => {
+    console.log("Ticket task created:", createdTask);
 
-//       {/* ========================================================
-//           CREATE / LOG CALL
-//       ======================================================== */}
+    setActiveDrawer(null);
 
-//       <CreateLogCall
-//         open={activeDrawer === "call"}
-//         onClose={closeDrawer}
-//         relatedModule="ticket"
-//         objectId={ticketId}
-//         connectedName={ticketName}
-//         onCallCreated={handleCallCreated}
-//       />
+    if (onTaskCreated) {
+      await onTaskCreated(createdTask);
+    }
+  };
 
-//       {/* ========================================================
-//           CREATE NOTE
-//       ======================================================== */}
+  // =========================================================
+  // LEFT PANEL DATA
+  // =========================================================
 
-//       <Createnote
-//         open={activeDrawer === "note"}
-//         onClose={closeDrawer}
-//         module="ticket"
-//         moduleId={ticketId}
-//         onSuccess={handleNoteCreated}
-//       />
+  const leftPanelData = {
+    profile: {
+      name: ticketName,
 
-//       {/* ========================================================
-//           SEND EMAIL
-//       ======================================================== */}
+      status: status,
 
-//       <NewEmailDialog
-//         open={activeDrawer === "email"}
-//         onClose={closeDrawer}
-//         relatedModule="ticket"
-//         objectId={ticketId}
-//         onEmailCreated={handleEmailCreated}
-//       />
+      setStatus: handleStatusChange,
 
-//       {/* ========================================================
-//           CREATE TASK
-//       ======================================================== */}
+      email: "",
+    },
 
-//       <CreateTaskDrawer
-//         open={activeDrawer === "task"}
-//         onClose={closeDrawer}
-//         module="ticket"
-//         moduleId={ticketId}
-//         onTaskCreated={handleTaskCreated}
-//       />
+    showProfileEdit: false,
 
-//       {/* ========================================================
-//           SCHEDULE MEETING
-//       ======================================================== */}
+    showProfileImage: false,
 
-//       <ScheduleMeeting
-//         open={activeDrawer === "meeting"}
-//         onClose={closeDrawer}
-//         relatedModule="ticket"
-//         objectId={ticketId}
-//       />
-//     </>
-//   );
-// }
+    sectionTitle: "About this Ticket",
 
-import React, { useEffect, useState } from "react"; 
-import { useParams } from "react-router-dom"; 
-import CommonEntityHeader from "../../../Components/common/CommonEntityHeader"; 
-import CreateLogCall from "../../Leads/components/Tabs/Calls/CreateLogCall"; 
-import Createnote from "../../Leads/components/Tabs/Note/Createnote"; 
-import NewEmailDialog from "../../Leads/components/Tabs/Emails/NewEmailDialog"; 
-import ScheduleMeeting from 
-"../../Leads/components/Tabs/Meetings/ScheduleMeeting"; 
-import CreateTaskDrawer from "../../Leads/components/Tabs/Task/CreateTaskDrawer"; 
-import api from "../../../services/api"; 
-export default function TicketLeftPanel({ 
-children, 
-onCallCreated, 
-onNoteCreated, 
-onEmailCreated, 
-onTaskCreated, 
-}) { 
-const { ticketId } = useParams(); 
-const [ticket, setTicket] = useState(null); 
-const [status, setStatus] = useState(""); 
-const [activeDrawer, setActiveDrawer] = useState(null); 
-// ============================================================ 
-// FETCH TICKET DETAILS 
-// ============================================================ 
-useEffect(() => { 
-const fetchTicket = async () => { 
-try { 
-const response = await api.get(`/tickets/${ticketId}/`); 
-console.log("TICKET DETAILS:", response.data); 
-setTicket(response.data); 
-setStatus( 
-response.data.ticket_status 
-? response.data.ticket_status 
-.toLowerCase() 
-.replace(/\b\w/g, (char) => char.toUpperCase()) 
-: "" 
-); 
-} catch (error) { 
-console.error( 
-"Fetch Ticket Details Error:", 
-error.response?.data || error 
-); 
-} 
-}; 
-if (ticketId) { 
-fetchTicket(); 
-} 
-}, [ticketId]); 
-// ============================================================ 
-// LOADING 
-// ============================================================ 
-if (!ticket) { 
-return null; 
-} 
-// ============================================================ 
-// TICKET DATA 
-// ============================================================ 
-const ticketName = 
-ticket.ticket_name || 
-ticket.name || 
-"-"; 
-const description = 
-ticket.description || 
-"-"; 
-const ownerName = 
-ticket.ticket_owner || 
-ticket.owner_name || 
-ticket.owner?.name || 
-ticket.owner?.username || 
-"-"; 
-const priority = 
-ticket.priority || 
-"-"; 
-const createdDate = 
-ticket.created_date || 
-ticket.created_at || 
-"-"; 
-// ============================================================ 
-// TICKET DETAILS 
-// ============================================================ 
-const ticketDetails = [ 
-{ 
-label: "Ticket Description", 
-value: description, 
-}, 
-{ 
-label: "Ticket Owner", 
-value: ownerName, 
-}, 
-{ 
-label: "Priority", 
-value: priority, 
-}, 
-{ 
-label: "Created Date", 
-value: createdDate, 
-}, 
-]; 
-// ============================================================ 
-// CLOSE DRAWER 
-// ============================================================ 
-const closeDrawer = () => { 
-setActiveDrawer(null); 
-}; 
-// ============================================================ 
-// ACTIVITY CREATED CALLBACKS 
-// ============================================================ 
-const handleCallCreated = async (createdCall) => { 
-console.log("Ticket call created:", createdCall); 
-setActiveDrawer(null); 
-if (onCallCreated) { 
-await onCallCreated(createdCall); 
-} 
-}; 
-const handleNoteCreated = async (createdNote) => { 
-console.log("Ticket note created:", createdNote); 
-setActiveDrawer(null); 
-if (onNoteCreated) { 
-      await onNoteCreated(createdNote); 
-    } 
-  }; 
- 
-  const handleEmailCreated = async (createdEmail) => { 
-    console.log("Ticket email created:", createdEmail); 
- 
-    setActiveDrawer(null); 
- 
-    if (onEmailCreated) { 
-      await onEmailCreated(createdEmail); 
-    } 
-  }; 
- 
-  const handleTaskCreated = async (createdTask) => { 
-    console.log("Ticket task created:", createdTask); 
- 
-    setActiveDrawer(null); 
- 
-    if (onTaskCreated) { 
-      await onTaskCreated(createdTask); 
-    } 
-  }; 
- 
-  // ============================================================ 
-  // LEFT PANEL DATA 
-  // ============================================================ 
- 
-  const leftPanelData = { 
-    profile: { 
-      name: ticketName, 
- 
-      status: status, 
- 
-      setStatus: setStatus, 
- 
-      email: "", 
-    }, 
- 
-    showProfileEdit: false, 
-showProfileImage: false, 
-sectionTitle: "About this Ticket", 
-leadDetails: ticketDetails, 
-summaryTitle: "AI Ticket Summary", 
-summaryText: `The ticket "${ticketName}" currently has a ${ 
-status || "-" 
-} status with ${priority} priority.`, 
-}; 
-// ============================================================ 
-// RETURN 
-// ============================================================ 
-return ( 
-<> 
-<CommonEntityHeader 
-title="Tickets" 
-leftPanelData={leftPanelData} 
-onCallClick={() => setActiveDrawer("call")} 
-onNoteClick={() => setActiveDrawer("note")} 
-onEmailClick={() => setActiveDrawer("email")} 
-onTaskClick={() => setActiveDrawer("task")} 
-onMeetingClick={() => setActiveDrawer("meeting")} 
-> 
-{children} 
-</CommonEntityHeader> 
-{/* ======================================================== 
-CREATE / LOG CALL 
-======================================================== */} 
-<CreateLogCall 
-open={activeDrawer === "call"} 
-onClose={closeDrawer} 
-relatedModule="ticket" 
-objectId={ticketId} 
-connectedName={ticketName} 
-onCallCreated={handleCallCreated} 
-/> 
-{/* ======================================================== 
-CREATE NOTE 
-======================================================== */} 
-<Createnote 
-open={activeDrawer === "note"} 
-onClose={closeDrawer} 
-module="ticket" 
-moduleId={ticketId} 
-onSuccess={handleNoteCreated} 
-/> 
-{/* ======================================================== 
-SEND EMAIL 
-======================================================== */} 
-<NewEmailDialog 
-open={activeDrawer === "email"} 
-onClose={closeDrawer} 
-relatedModule="ticket" 
-objectId={ticketId} 
-onEmailCreated={handleEmailCreated} 
-/> 
-{/* ======================================================== 
-CREATE TASK 
-======================================================== */} 
-<CreateTaskDrawer 
-open={activeDrawer === "task"} 
-onClose={closeDrawer} 
-module="ticket" 
-moduleId={ticketId} 
-onTaskCreated={handleTaskCreated} 
-/> 
-{/* ======================================================== 
-SCHEDULE MEETING 
-======================================================== */} 
-<ScheduleMeeting 
-open={activeDrawer === "meeting"} 
-onClose={closeDrawer} 
-relatedModule="ticket" 
-objectId={ticketId} 
-/> 
-</> 
-); 
+    leadDetails: ticketDetails,
+
+    summaryTitle: "AI Ticket Summary",
+
+    summaryText: `The ticket "${ticketName}" currently has a ${
+      status || "-"
+    } status with ${priority} priority.`,
+  };
+
+  // =========================================================
+  // RETURN
+  // =========================================================
+
+  return (
+    <>
+      <CommonEntityHeader
+        title="Tickets"
+        leftPanelData={leftPanelData}
+        onCallClick={() => setActiveDrawer("call")}
+        onNoteClick={() => setActiveDrawer("note")}
+        onEmailClick={() => setActiveDrawer("email")}
+        onTaskClick={() => setActiveDrawer("task")}
+        onMeetingClick={() => setActiveDrawer("meeting")}
+      >
+        {children}
+      </CommonEntityHeader>
+
+      {/* =====================================================
+          CALL
+      ===================================================== */}
+
+      <CreateLogCall
+        open={activeDrawer === "call"}
+        onClose={closeDrawer}
+        relatedModule="ticket"
+        objectId={ticketId}
+        connectedName={ticketName}
+        onCallCreated={handleCallCreated}
+      />
+
+      {/* =====================================================
+          NOTE
+      ===================================================== */}
+
+      <Createnote
+        open={activeDrawer === "note"}
+        onClose={closeDrawer}
+        module="ticket"
+        moduleId={ticketId}
+        onSuccess={handleNoteCreated}
+      />
+
+      {/* =====================================================
+          EMAIL
+      ===================================================== */}
+
+      <NewEmailDialog
+        open={activeDrawer === "email"}
+        onClose={closeDrawer}
+        relatedModule="ticket"
+        objectId={ticketId}
+        onEmailCreated={handleEmailCreated}
+      />
+
+      {/* =====================================================
+          TASK
+      ===================================================== */}
+
+      <CreateTaskDrawer
+        open={activeDrawer === "task"}
+        onClose={closeDrawer}
+        module="ticket"
+        moduleId={ticketId}
+        onTaskCreated={handleTaskCreated}
+      />
+
+      {/* =====================================================
+          MEETING
+      ===================================================== */}
+
+      <ScheduleMeeting
+        open={activeDrawer === "meeting"}
+        onClose={closeDrawer}
+        relatedModule="ticket"
+        objectId={ticketId}
+      />
+    </>
+  );
 }
