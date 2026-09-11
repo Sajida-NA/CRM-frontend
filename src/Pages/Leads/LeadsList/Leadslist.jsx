@@ -27,11 +27,7 @@ import dayjs from "dayjs";
 import CreateLeadsDrawer from "../components/CreateLeadsDrawer";
 import MainLayout from "../../../layout/MainLayout";
 
-import {
-  getLeads,
-  deleteLead,
-  getLeadStatuses,
-} from "../../../services/leads";
+import { getLeads, deleteLead, getLeadStatuses } from "../../../services/leads";
 
 
 export default function Leadslist() {
@@ -88,7 +84,7 @@ export default function Leadslist() {
 
       console.error(
         "Error fetching leads:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
 
     } finally {
@@ -109,10 +105,7 @@ export default function Leadslist() {
 
       const response = await getLeadStatuses();
 
-      console.log(
-        "Lead Status API Response:",
-        response.data
-      );
+      console.log("Lead Status API Response:", response.data);
 
       setLeadStatuses(response.data);
 
@@ -120,7 +113,7 @@ export default function Leadslist() {
 
       console.error(
         "Error fetching lead statuses:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
 
     }
@@ -134,7 +127,7 @@ export default function Leadslist() {
   const handleDelete = async (id) => {
 
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this lead?"
+      "Are you sure you want to delete this lead?",
     );
 
     if (!confirmDelete) {
@@ -154,7 +147,7 @@ export default function Leadslist() {
 
       console.error(
         "Error deleting lead:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
 
       alert("Failed to delete lead.");
@@ -190,6 +183,18 @@ export default function Leadslist() {
 
   }, [searchParams]);
 
+
+  // =========================
+  // GET SEARCH FROM URL
+  // =========================
+
+  useEffect(() => {
+    const searchFromUrl = searchParams.get("search");
+
+    if (searchFromUrl) {
+      setSearch(searchFromUrl);
+    }
+  });
 
   // =========================
   // LOAD LEADS
@@ -242,10 +247,7 @@ export default function Leadslist() {
 
 
     const matchesSearch =
-      searchText === "" ||
-      matchesName ||
-      matchesEmail ||
-      matchesPhone;
+      searchText === "" || matchesName || matchesEmail || matchesPhone;
 
 
     // =========================
@@ -254,8 +256,7 @@ export default function Leadslist() {
 
     const matchesStatus =
       status === "" ||
-      String(lead.lead_status || "").trim() ===
-        String(status || "").trim();
+      String(lead.lead_status || "").trim() === String(status || "").trim();
 
 
     // =========================
@@ -264,11 +265,8 @@ export default function Leadslist() {
 
     const matchesCreatedDate =
       createdDate === "" ||
-      (
-        lead.created_date &&
-        dayjs(lead.created_date).format("YYYY-MM-DD") ===
-          createdDate
-      );
+      (lead.created_date &&
+        dayjs(lead.created_date).format("YYYY-MM-DD") === createdDate);
 
 
     return (
@@ -287,7 +285,6 @@ export default function Leadslist() {
   return (
 
     <MainLayout>
-
       {/* =========================================
           MAIN CONTAINER
       ========================================= */}
@@ -303,7 +300,6 @@ export default function Leadslist() {
           boxShadow: "3px",
         }}
       >
-
         {/* =========================================
             HEADER
         ========================================= */}
@@ -320,7 +316,6 @@ export default function Leadslist() {
             borderTopRightRadius: "12px",
           }}
         >
-
           <PageHeader
             title="Leads"
             actions={
@@ -330,12 +325,9 @@ export default function Leadslist() {
                   gap: 2,
                 }}
               >
-
                 {/* IMPORT */}
 
-                <CommonButton variant="outlined">
-                  Import
-                </CommonButton>
+                <CommonButton variant="outlined">Import</CommonButton>
 
 
                 {/* CREATE */}
@@ -351,7 +343,6 @@ export default function Leadslist() {
                 >
                   Create
                 </CommonButton>
-
               </Box>
             }
           />
@@ -382,7 +373,6 @@ export default function Leadslist() {
             }}
 
           />
-
         </Box>
 
 
@@ -402,7 +392,6 @@ export default function Leadslist() {
             transform: "translateY(-5px)",
           }}
         >
-
           <SearchSection
 
             placeholder="Search Phone, Name, Email"
@@ -429,7 +418,6 @@ export default function Leadslist() {
         ========================================= */}
 
         <FilterSection>
-
           {/* LEAD STATUS */}
 
           <SelectField
@@ -480,7 +468,6 @@ export default function Leadslist() {
 
 
           <Box sx={{ flexGrow: 1 }} />
-
         </FilterSection>
 
 
@@ -501,15 +488,12 @@ export default function Leadslist() {
           ]}
 
         >
-
           {/* IMPORTANT:
               filteredLeads instead of leads
           */}
 
           {filteredLeads.map((lead) => (
-
             <TableRow key={lead.id}>
-
               {/* CHECKBOX */}
 
               <TableCell>
@@ -554,16 +538,12 @@ export default function Leadslist() {
 
               {/* EMAIL */}
 
-              <TableCell>
-                {lead.email || "-"}
-              </TableCell>
+              <TableCell>{lead.email || "-"}</TableCell>
 
 
               {/* PHONE */}
 
-              <TableCell>
-                {lead.phone_number || "-"}
-              </TableCell>
+              <TableCell>{lead.phone_number || "-"}</TableCell>
 
 
               {/* CREATED DATE */}
@@ -571,11 +551,7 @@ export default function Leadslist() {
               <TableCell>
 
                 {lead.created_date
-                  ? dayjs(
-                      lead.created_date
-                    ).format(
-                      "MMM D, YYYY h:mm A"
-                    )
+                  ? dayjs(lead.created_date).format("MMM D, YYYY h:mm A")
                   : "-"}
 
               </TableCell>
@@ -595,7 +571,6 @@ export default function Leadslist() {
               {/* ACTIONS */}
 
               <TableCell>
-
                 {/* EDIT */}
 
                 <IconButton
@@ -630,20 +605,12 @@ export default function Leadslist() {
                   <DeleteIcon />
 
                 </IconButton>
-
               </TableCell>
-
             </TableRow>
-
           ))}
-
         </DataTable>
-
       </Box>
-
     </MainLayout>
 
   );
 }
-
-
