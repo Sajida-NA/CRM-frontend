@@ -215,113 +215,21 @@ export default function DealActivityDetails({ dealId }) {
             </Box>
           </Typography>
 
-          {data.call_outcome && (
-            <Typography
-              sx={{
-                mt: 1,
-                fontSize: 14,
-                color: "text.secondary",
-              }}
-            >
-              Outcome: {data.call_outcome}
-            </Typography>
-          )}
+          {data.note && (
+                      <Typography
+                        sx={{
+                          fontSize: "13px",
+                          color: "text.secondary",
+                          mb: 0.5,
+                        }}
+                      >
+                        {data.note}
+                      </Typography>
+                    )}
         </>
       );
     }
 
-    // // ===================================================
-    // // TASK
-    // // ===================================================
-
-    // if (
-    //   activity.activity_type === "task" &&
-    //   data
-    // ) {
-    //   return (
-    //     <>
-    //       <Typography sx={{ fontSize: 14 }}>
-    //         <Box
-    //           component="span"
-    //           sx={{
-    //             color: "text.secondary",
-    //             fontWeight: 600,
-    //           }}
-    //         >
-    //           {createdBy}
-    //         </Box>{" "}
-    //         <Box
-    //           component="span"
-    //           sx={{
-    //             color: "text.secondary",
-    //           }}
-    //         >
-    //           created a task
-    //         </Box>
-    //       </Typography>
-
-    //       {data.task_name && (
-    //         <Typography
-    //           sx={{
-    //             mt: 1,
-    //             fontSize: 14,
-    //             color: "text.secondary",
-    //           }}
-    //         >
-    //           {data.task_name}
-    //         </Typography>
-    //       )}
-
-    //       {data.due_date && (
-    //         <Typography
-    //           sx={{
-    //             mt: 0.5,
-    //             fontSize: 13,
-    //             color: "text.secondary",
-    //           }}
-    //         >
-    //           Due: {data.due_date}
-    //         </Typography>
-    //       )}
-
-    //       {data.time && (
-    //         <Typography
-    //           sx={{
-    //             mt: 0.5,
-    //             fontSize: 13,
-    //             color: "text.secondary",
-    //           }}
-    //         >
-    //           Time: {data.time}
-    //         </Typography>
-    //       )}
-
-    //       {data.task_type && (
-    //         <Typography
-    //           sx={{
-    //             mt: 0.5,
-    //             fontSize: 13,
-    //             color: "text.secondary",
-    //           }}
-    //         >
-    //           Type: {data.task_type}
-    //         </Typography>
-    //       )}
-
-    //       {data.priority && (
-    //         <Typography
-    //           sx={{
-    //             mt: 0.5,
-    //             fontSize: 13,
-    //             color: "text.secondary",
-    //           }}
-    //         >
-    //           Priority: {data.priority}
-    //         </Typography>
-    //       )}
-    //     </>
-    //   );
-    // }
 
 
     // ===================================================

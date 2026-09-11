@@ -92,7 +92,6 @@ const StatsCards = () => {
             </CardContent>
 
             {/* Right side: circular icon with blurred bg */}
-
             <Box
               sx={{
                 width: 80,
@@ -101,16 +100,12 @@ const StatsCards = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                bgcolor: `${item.color}30`,
+                bgcolor: `${item.color}30`, // semi-transparent background
               }}
             >
               {/* Force icon color here */}
-
               {React.cloneElement(item.icon, {
-                sx: {
-                  color: item.color,
-                  fontSize: 26,
-                },
+                sx: { color: item.color, fontSize: 26 },
               })}
             </Box>
           </Card>
@@ -121,5 +116,4 @@ const StatsCards = () => {
 };
 
 export default StatsCards;
-
 

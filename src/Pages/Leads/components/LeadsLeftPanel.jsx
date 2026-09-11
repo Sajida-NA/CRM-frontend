@@ -2,20 +2,48 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
 
 import CommonEntityHeader from "../../../Components/common/CommonEntityHeader";
 import CommonButton from "../../../Components/common/CommonButton";
+
 import CreateLogCall from "./Tabs/Calls/CreateLogCall";
+import Createnote from "./Tabs/Note/Createnote";
+import NewEmailDialog from "./Tabs/Emails/NewEmailDialog";
+import ScheduleMeeting from "./Tabs/Meetings/ScheduleMeeting";
+import CreateTaskDrawer from "./Tabs/Task/CreateTaskDrawer";
 
 import { getLeadById } from "../../../services/leads";
 
-export default function LeadsLeftPanel({ children, leadId }) {
-  const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
+export default function LeadsLeftPanel({
+  children,
+  leadId,
+
+  // Activity callbacks
+  onCallCreated,
+  onNoteCreated,
+  onEmailCreated,
+  onTaskCreated,
+  onMeetingCreated,
+}) {
+  // ============================================================
+  // STATE
+  // ============================================================
+
+  const [activeDrawer, setActiveDrawer] = useState(null);
 
   const [lead, setLead] = useState(null);
   const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
+
+  // ============================================================
+  // FETCH LEAD
+  // ============================================================
 
   useEffect(() => {
     const fetchLead = async () => {
@@ -46,7 +74,10 @@ export default function LeadsLeftPanel({ children, leadId }) {
     }
   }, [leadId]);
 
-  // Loading
+  // ============================================================
+  // LOADING
+  // ============================================================
+
   if (loading) {
     return (
       <Box
@@ -62,7 +93,10 @@ export default function LeadsLeftPanel({ children, leadId }) {
     );
   }
 
-  // Lead not found
+  // ============================================================
+  // LEAD NOT FOUND
+  // ============================================================
+
   if (!lead) {
     return (
       <Box sx={{ p: 3 }}>
@@ -73,13 +107,19 @@ export default function LeadsLeftPanel({ children, leadId }) {
     );
   }
 
-  // Get lead name
+  // ============================================================
+  // LEAD NAME
+  // ============================================================
+
   const leadName =
     lead.name ||
     `${lead.first_name || ""} ${lead.last_name || ""}`.trim() ||
     "-";
 
-  // Dynamic lead details
+  // ============================================================
+  // LEAD DETAILS
+  // ============================================================
+
   const leadDetails = [
     {
       label: "Email",
@@ -111,6 +151,95 @@ export default function LeadsLeftPanel({ children, leadId }) {
     },
   ];
 
+  // ============================================================
+  // CHECK CONVERTED STATUS
+  // ============================================================
+
+  const isConverted =
+    lead.lead_status?.toLowerCase() === "converted";
+
+  // ============================================================
+  // CLOSE ACTIVE DRAWER
+  // ============================================================
+
+  const closeDrawer = () => {
+    setActiveDrawer(null);
+  };
+
+  // ============================================================
+  // CALL CREATED
+  // ============================================================
+
+  const handleCallCreated = async (createdCall) => {
+    console.log("Lead call created:", createdCall);
+
+    setActiveDrawer(null);
+
+    if (onCallCreated) {
+      await onCallCreated(createdCall);
+    }
+  };
+
+  // ============================================================
+  // NOTE CREATED
+  // ============================================================
+
+  const handleNoteCreated = async (createdNote) => {
+    console.log("Lead note created:", createdNote);
+
+    setActiveDrawer(null);
+
+    if (onNoteCreated) {
+      await onNoteCreated(createdNote);
+    }
+  };
+
+  // ============================================================
+  // EMAIL CREATED
+  // ============================================================
+
+  const handleEmailCreated = async (createdEmail) => {
+    console.log("Lead email created:", createdEmail);
+
+    setActiveDrawer(null);
+
+    if (onEmailCreated) {
+      await onEmailCreated(createdEmail);
+    }
+  };
+
+  // ============================================================
+  // TASK CREATED
+  // ============================================================
+
+  const handleTaskCreated = async (createdTask) => {
+    console.log("Lead task created:", createdTask);
+
+    setActiveDrawer(null);
+
+    if (onTaskCreated) {
+      await onTaskCreated(createdTask);
+    }
+  };
+
+  // ============================================================
+  // MEETING CREATED
+  // ============================================================
+
+  const handleMeetingCreated = async (createdMeeting) => {
+    console.log("Lead meeting created:", createdMeeting);
+
+    setActiveDrawer(null);
+
+    if (onMeetingCreated) {
+      await onMeetingCreated(createdMeeting);
+    }
+  };
+
+  // ============================================================
+  // LEFT PANEL DATA
+  // ============================================================
+
   const leftPanelData = {
     profile: {
       name: leadName,
@@ -132,41 +261,126 @@ export default function LeadsLeftPanel({ children, leadId }) {
       "There are no activities associated with this lead and further details are needed to provide a comprehensive summary.",
   };
 
+  // ============================================================
+  // CONVERT LEAD
+  // ============================================================
+
+  const handleConvert = () => {
+    /*
+      Your existing convert flow currently navigates
+      to the deals list.
+
+      If later you create a dedicated conversion page,
+      change this route here.
+    */
+
+    navigate("/dealslist");
+  };
+
+  // ============================================================
+  // RENDER
+  // ============================================================
+
   return (
     <>
-      {/* <CommonEntityHeader
-        title="Leads"
-        leftPanelData={leftPanelData}
-        action={<CommonButton>Convert</CommonButton>}
-        onCallClick={() => setOpenCreateLogCall(true)}
-      >
-        {children}
-      </CommonEntityHeader> */}
+      {/* ======================================================
+          COMMON ENTITY HEADER
+      ====================================================== */}
 
       <CommonEntityHeader
-  title="Leads"
-  leftPanelData={leftPanelData}
-  action={
-    <CommonButton onClick={() => navigate("/dealslist")}>
-      Convert
-    </CommonButton>
-  }
-  onCallClick={() => setOpenCreateLogCall(true)}
->
-  {children}
-</CommonEntityHeader>
+        title="Leads"
+        leftPanelData={leftPanelData}
 
-      {/* Log Call Drawer */}
+        // ====================================================
+        // CONVERT BUTTON
+        // ====================================================
+
+        action={
+          !isConverted ? (
+            <CommonButton onClick={handleConvert}>
+              Convert
+            </CommonButton>
+          ) : null
+        }
+
+        // ====================================================
+        // QUICK ACTIONS
+        // ====================================================
+
+        onCallClick={() => setActiveDrawer("call")}
+
+        onNoteClick={() => setActiveDrawer("note")}
+
+        onEmailClick={() => setActiveDrawer("email")}
+
+        onTaskClick={() => setActiveDrawer("task")}
+
+        onMeetingClick={() => setActiveDrawer("meeting")}
+      >
+        {children}
+      </CommonEntityHeader>
+
+      {/* ======================================================
+          CREATE / LOG CALL
+      ====================================================== */}
+
       <CreateLogCall
-  open={openCreateLogCall}
-  onClose={() => setOpenCreateLogCall(false)}
-  relatedModule="lead"
-  objectId={leadId}
-  connectedName={leadName}
-  onCallCreated={() => {
-    setOpenCreateLogCall(false);
-  }}
-/>
+        open={activeDrawer === "call"}
+        onClose={closeDrawer}
+        relatedModule="lead"
+        objectId={leadId}
+        connectedName={leadName}
+        onCallCreated={handleCallCreated}
+      />
+
+      {/* ======================================================
+          CREATE NOTE
+      ====================================================== */}
+
+      <Createnote
+        open={activeDrawer === "note"}
+        onClose={closeDrawer}
+        module="lead"
+        moduleId={leadId}
+        onSuccess={handleNoteCreated}
+      />
+
+      {/* ======================================================
+          SEND EMAIL
+      ====================================================== */}
+
+      <NewEmailDialog
+        open={activeDrawer === "email"}
+        onClose={closeDrawer}
+        relatedModule="lead"
+        objectId={leadId}
+        onEmailCreated={handleEmailCreated}
+      />
+
+      {/* ======================================================
+          CREATE TASK
+      ====================================================== */}
+
+      <CreateTaskDrawer
+        open={activeDrawer === "task"}
+        onClose={closeDrawer}
+        module="lead"
+        moduleId={leadId}
+        onTaskCreated={handleTaskCreated}
+      />
+
+      {/* ======================================================
+          SCHEDULE MEETING
+      ====================================================== */}
+
+      <ScheduleMeeting
+        open={activeDrawer === "meeting"}
+        onClose={closeDrawer}
+        relatedModule="lead"
+        objectId={leadId}
+        onMeetingCreated={handleMeetingCreated}
+      />
     </>
   );
 }
+

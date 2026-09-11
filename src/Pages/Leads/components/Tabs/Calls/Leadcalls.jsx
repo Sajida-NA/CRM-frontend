@@ -1,4 +1,6 @@
 
+
+
 import React, { useEffect, useState } from "react";
 
 import {
@@ -12,32 +14,53 @@ import { useParams } from "react-router-dom";
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
 
-import CreateLogCall from "./CreateLogCall";
 import CallCard from "./CallCard";
 
 import LeadsLeftPanel from "../../LeadsLeftPanel";
 import { getLeadTabs } from "../LeadTabs";
 
+import { getLeadById } from "../../../../../services/leads";
 import api from "../../../../../services/api";
 
-
 export default function Leadcalls() {
-
   const { leadId } = useParams();
 
-  const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
   const [calls, setCalls] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [lead, setLead] = useState(null);
+
+  // =====================================================
+  // FETCH LEAD
+  // =====================================================
+
+  const fetchLead = async () => {
+    try {
+      const response = await getLeadById(leadId);
+
+      console.log(
+        "LEAD DETAILS:",
+        response.data
+      );
+
+      setLead(response.data);
+
+    } catch (error) {
+      console.error(
+        "ERROR FETCHING LEAD:",
+        error.response?.data || error.message
+      );
+
+      setLead(null);
+    }
+  };
 
   // =====================================================
   // FETCH CALLS
   // =====================================================
 
   const fetchCalls = async () => {
-
     if (!leadId) {
-
       setCalls([]);
       setLoading(false);
 
@@ -45,7 +68,6 @@ export default function Leadcalls() {
     }
 
     try {
-
       setLoading(true);
 
       const response = await api.get(
@@ -56,7 +78,6 @@ export default function Leadcalls() {
         "LEAD CALLS API RESPONSE:",
         response.data
       );
-
 
       // =================================================
       // BACKEND RETURNS:
@@ -73,17 +94,14 @@ export default function Leadcalls() {
         ? response.data
         : response.data?.activities || [];
 
-
       console.log(
         "CALL DATA FOR CARDS:",
         callData
       );
 
-
       setCalls(callData);
 
     } catch (error) {
-
       console.error(
         "ERROR FETCHING LEAD CALLS:",
         error.response?.data || error.message
@@ -92,49 +110,92 @@ export default function Leadcalls() {
       setCalls([]);
 
     } finally {
-
       setLoading(false);
-
     }
   };
 
-
   // =====================================================
-  // LOAD WHEN LEAD CHANGES
+  // LOAD DATA
   // =====================================================
 
   useEffect(() => {
-
-    fetchCalls();
-
+    if (leadId) {
+      fetchLead();
+      fetchCalls();
+    }
   }, [leadId]);
-
 
   // =====================================================
   // CALL CREATED
   // =====================================================
 
   const handleCallCreated = async () => {
-
     console.log(
       "Call created. Refreshing calls..."
     );
 
-    setOpenCreateLogCall(false);
-
     await fetchCalls();
   };
 
+  // =====================================================
+  // MAKE PHONE CALL
+  // =====================================================
+
+  const handleMakePhoneCall = () => {
+    const phoneNumber =
+      lead?.phone_number ||
+      lead?.phone ||
+      "";
+
+    if (!phoneNumber) {
+      alert(
+        "Phone number is not available for this lead."
+      );
+
+      return;
+    }
+
+    // Remove spaces, brackets, hyphens, etc.
+    const cleanPhoneNumber = String(phoneNumber)
+      .replace(/[^\d+]/g, "");
+
+    // IMPORTANT:
+    // This only makes the actual phone call.
+    // It does NOT open CreateLogCall.
+    window.location.href =
+      `tel:${cleanPhoneNumber}`;
+  };
 
   // =====================================================
   // UI
   // =====================================================
 
   return (
-
     <div>
 
-      <LeadsLeftPanel leadId={leadId}>
+      {/* =================================================
+          LEAD LEFT PANEL
+
+          DO NOT CHANGE THIS.
+
+          The call button inside LeadsLeftPanel will
+          continue to open the CreateLogCall drawer.
+
+          LeadsLeftPanel already handles:
+
+          onCallClick={() => setActiveDrawer("call")}
+
+          and passes:
+
+          relatedModule="lead"
+          objectId={leadId}
+          connectedName={leadName}
+      ================================================= */}
+
+      <LeadsLeftPanel
+        leadId={leadId}
+        onCallCreated={handleCallCreated}
+      >
 
         <Box
           sx={{
@@ -151,7 +212,6 @@ export default function Leadcalls() {
             tabs={getLeadTabs(leadId)}
             activeTab="Calls"
           />
-
 
           {/* ============================================
               HEADER
@@ -171,23 +231,28 @@ export default function Leadcalls() {
               Calls
             </Typography>
 
+            {/* ==========================================
+                MAKE A PHONE CALL
+
+                THIS NO LONGER OPENS THE DRAWER.
+
+                It only calls the lead's phone number.
+            ========================================== */}
 
             <CommonButton
               variant="contained"
-              onClick={() => setOpenCreateLogCall(true)}
+              onClick={handleMakePhoneCall}
             >
               Make a Phone Call
             </CommonButton>
 
           </Box>
 
-
           {/* ============================================
               LOADING
           ============================================ */}
 
           {loading && (
-
             <Box
               sx={{
                 display: "flex",
@@ -195,20 +260,15 @@ export default function Leadcalls() {
                 py: 5,
               }}
             >
-
               <CircularProgress />
-
             </Box>
-
           )}
-
 
           {/* ============================================
               EMPTY
           ============================================ */}
 
           {!loading && calls.length === 0 && (
-
             <Typography
               sx={{
                 py: 5,
@@ -218,54 +278,29 @@ export default function Leadcalls() {
             >
               No calls found for this lead.
             </Typography>
-
           )}
-
 
           {/* ============================================
               CALL LIST
           ============================================ */}
 
           {!loading && calls.length > 0 && (
-
             <Box>
-
               {calls.map((call) => (
-
                 <CallCard
                   key={call.id}
                   call={call}
                 />
-
               ))}
-
             </Box>
-
           )}
 
         </Box>
 
       </LeadsLeftPanel>
 
-
-      {/* ================================================
-          CREATE CALL DRAWER
-      ================================================ */}
-
-      <CreateLogCall
-        open={openCreateLogCall}
-
-        onClose={() =>
-          setOpenCreateLogCall(false)
-        }
-
-        relatedModule="lead"
-
-        objectId={leadId}
-
-        onCallCreated={handleCallCreated}
-      />
-
     </div>
   );
 }
+
+

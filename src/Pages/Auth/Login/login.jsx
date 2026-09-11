@@ -5,12 +5,7 @@ import {
   IconButton,
   InputAdornment,
 } from "@mui/material";
-
-import {
-  Visibility,
-  VisibilityOff,
-} from "@mui/icons-material";
-
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CustomSnackbar from "../../../Components/common/CustomSnackbar";
@@ -19,8 +14,6 @@ import InputField from "../../../Components/common/InputField";
 import CommonButton from "../../../Components/common/CommonButton";
 
 import api from "../../../services/api";
-
-
 
 export default function Login() {
   const navigate = useNavigate();
@@ -38,20 +31,12 @@ export default function Login() {
     password: "",
   });
 
-  // =========================================================
-  // INPUT CHANGE
-  // =========================================================
-
   const handleChange = (e) => {
-    setForm((prev) => ({
-      ...prev,
+    setForm({
+      ...form,
       [e.target.name]: e.target.value,
-    }));
+    });
   };
-
-  // =========================================================
-  // LOGIN
-  // =========================================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,10 +74,6 @@ export default function Login() {
       });
     }
   };
-
-  // =========================================================
-  // UI
-  // =========================================================
 
   return (
     <>
@@ -192,3 +173,5 @@ export default function Login() {
     </>
   );
 }
+
+

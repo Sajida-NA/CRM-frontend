@@ -1,6 +1,5 @@
 
 
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -13,9 +12,7 @@ import {
 import TicketLeftPanel from "../../TicketLeftPanel";
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
-
 import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
-import CreateLogCall from "../../../../Leads/components/Tabs/Calls/CreateLogCall";
 
 import { ticketTabs } from "../TicketTabs";
 import api from "../../../../../services/api";
@@ -24,16 +21,9 @@ export default function TicketCalls() {
   const { ticketId } = useParams();
 
   const [activeTab, setActiveTab] = useState("Calls");
-
   const [ticket, setTicket] = useState(null);
-
   const [calls, setCalls] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
-  const [openCreateLogCall, setOpenCreateLogCall] = useState(false);
-
-
 
   // ============================================================
   // FETCH TICKET
@@ -48,9 +38,6 @@ export default function TicketCalls() {
       const response = await api.get(
         `/tickets/${ticketId}/`
       );
-
-      // api.get(`/activities/activity/ticket/${ticketId}/call/`)
-      // api.get(`/activities/activity/ticket/${ticketId}/call/`)
 
       console.log(
         "TICKET RESPONSE:",
@@ -83,62 +70,19 @@ export default function TicketCalls() {
       setLoading(true);
 
       const response = await api.get(
-        "/activities/call/"
+        `/activities/activity/ticket/${ticketId}/call/`
       );
 
       console.log(
-        "ALL CALLS FROM API:",
+        "TICKET CALLS RESPONSE:",
         response.data
       );
 
-      console.log(
-        "CURRENT TICKET ID:",
-        ticketId
-      );
-
-      // ========================================================
-      // GET ARRAY
-      // ========================================================
-
-      const allCalls = Array.isArray(response.data)
-        ? response.data
-        : response.data?.results || [];
-
-
-
-
-      // ========================================================
-      // FILTER CURRENT TICKET CALLS
-      // ========================================================
-
-      const ticketCalls = allCalls.filter((call) => {
-        const module = String(
-          call.module || ""
-        )
-          .trim()
-          .toLowerCase();
-
-        const currentTicketId =
-          call.ticket?.id;
-
-        console.log(
-          "CHECKING TICKET CALL:",
-          {
-            callId: call.id,
-            module,
-            ticketId: currentTicketId,
-            currentTicketId: ticketId,
-          }
-        );
-
-        return (
-          module === "ticket" &&
-          Number(currentTicketId) === Number(ticketId)
-        );
-      });
+      const ticketCalls =
+        response.data?.activities || [];
 
       console.log(
-        "FILTERED TICKET CALLS:",
+        "TICKET CALLS:",
         ticketCalls
       );
 
@@ -173,13 +117,53 @@ export default function TicketCalls() {
   // ============================================================
 
   const ticketName =
-  ticket?.ticket_name ||
-  ticket?.name ||
-  ticket?.title ||
-  `Ticket #${ticketId}`;
+    ticket?.ticket_name ||
+    ticket?.name ||
+    ticket?.title ||
+    `Ticket #${ticketId}`;
 
-const ticketOwnerName =
-  ticket?.ticket_owner || "";
+  // ============================================================
+  // TICKET PHONE NUMBER
+  // ============================================================
+
+  const ticketPhone =
+    ticket?.phone_number ||
+    ticket?.phone ||
+    ticket?.contact_phone ||
+    ticket?.customer_phone ||
+    "";
+
+  // ============================================================
+  // MAKE PHONE CALL
+  // ============================================================
+
+  const handleMakePhoneCall = () => {
+    if (!ticketPhone) {
+      alert(
+        "Ticket phone number is not available."
+      );
+      return;
+    }
+
+    const cleanPhoneNumber = String(
+      ticketPhone
+    ).replace(/[^\d+]/g, "");
+
+    console.log(
+      "Calling Ticket:",
+      ticketName
+    );
+
+    console.log(
+      "Phone Number:",
+      cleanPhoneNumber
+    );
+
+    // Only make the phone call.
+    // DO NOT open CreateLogCall drawer.
+    window.location.href =
+      `tel:${cleanPhoneNumber}`;
+  };
 
   // ============================================================
   // RENDER
@@ -195,7 +179,6 @@ const ticketOwnerName =
           mx: -2,
         }}
       >
-
         {/* ====================================================
             ACTIVITY TABS
         ==================================================== */}
@@ -225,26 +208,11 @@ const ticketOwnerName =
 
           <CommonButton
             variant="contained"
-            onClick={() =>
-              setOpenCreateLogCall(true)
-            }
+            onClick={handleMakePhoneCall}
           >
             Make a Phone Call
           </CommonButton>
         </Box>
-
-        {/* ====================================================
-            LOG CALL DRAWER
-        ==================================================== */}
-
-        <CreateLogCall
-  open={openCreateLogCall}
-  onClose={() => setOpenCreateLogCall(false)}
-  relatedModule="ticket"
-  objectId={ticketId}
-  connectedName={ticketOwnerName}
-  onCallCreated={fetchCalls}
-/>
 
         {/* ====================================================
             CALLS
@@ -274,31 +242,7 @@ const ticketOwnerName =
           calls.map((call) => (
             <CallCard
               key={call.id}
-              call={{
-                ...call,
-
-                name: ticketOwnerName,
-
-                description:
-                  call.note || "",
-
-                date:
-                  call.date || "",
-
-                time:
-                  call.time || "",
-
-                call_outcome:
-                  call.call_outcome ||
-                  call.outcome ||
-                  "",
-
-                duration:
-                  call.duration !== null &&
-                  call.duration !== undefined
-                    ? Number(call.duration)
-                    : null,
-              }}
+              call={call}
             />
           ))
         )}
@@ -306,5 +250,3 @@ const ticketOwnerName =
     </TicketLeftPanel>
   );
 }
-
-

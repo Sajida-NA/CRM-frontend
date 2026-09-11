@@ -1,3 +1,4 @@
+
 import { Typography, Grid, Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import { useState } from "react";
@@ -146,6 +147,7 @@ export default function Register() {
             <InputField
               name="email"
               type="email"
+               autoComplete="off"
               placeholder="Enter your email"
               value={form.email}
               onChange={handleChange}
@@ -173,6 +175,7 @@ export default function Register() {
             <InputField
               name="password"
               type="password"
+               autoComplete="new-password"
               placeholder="Enter your password"
               value={form.password}
               onChange={handleChange}
@@ -187,6 +190,7 @@ export default function Register() {
             <InputField
               name="confirmPassword"
               type="password"
+               autoComplete="new-password"
               placeholder="Confirm your password"
               value={form.confirmPassword}
               onChange={handleChange}
@@ -250,7 +254,7 @@ export default function Register() {
               name="role"
               value={form.role}
               onChange={handleChange}
-              options={["Admin", "User", "Contact Owner"]}
+              options={["Admin", "User"]}
               placeholder="Choose"
               fullWidth
             />
