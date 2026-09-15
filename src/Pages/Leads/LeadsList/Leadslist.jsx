@@ -26,7 +26,12 @@ import dayjs from "dayjs";
 import CreateLeadsDrawer from "../components/CreateLeadsDrawer";
 import MainLayout from "../../../layout/MainLayout";
 
-import { getLeads, deleteLead, getLeadStatuses } from "../../../services/leads";
+import {
+  getLeads,
+  deleteLead,
+  getLeadStatuses,
+} from "../../../services/leads";
+
 
 export default function Leadslist() {
 
@@ -58,6 +63,41 @@ export default function Leadslist() {
 
 
   // =========================
+  // REMOVE COUNTRY CODE
+  // =========================
+  // UAE:
+  // +971553074374 -> 0553074374
+  //
+  // India:
+  // +919876543210 -> 9876543210
+  //
+  // Other numbers:
+  // Display as received
+  // =========================
+
+  const removeCountryCode = (phone) => {
+
+    if (!phone) {
+      return "-";
+    }
+
+    const phoneString = String(phone).trim();
+
+    // UAE
+    if (phoneString.startsWith("+971")) {
+      return "0" + phoneString.substring(4);
+    }
+
+    // India
+    if (phoneString.startsWith("+91")) {
+      return phoneString.substring(3);
+    }
+
+    return phoneString;
+  };
+
+
+  // =========================
   // FETCH LEADS
   // =========================
 
@@ -82,7 +122,7 @@ export default function Leadslist() {
 
       console.error(
         "Error fetching leads:",
-        error.response?.data || error.message,
+        error.response?.data || error.message
       );
 
     } finally {
@@ -103,7 +143,10 @@ export default function Leadslist() {
 
       const response = await getLeadStatuses();
 
-      console.log("Lead Status API Response:", response.data);
+      console.log(
+        "Lead Status API Response:",
+        response.data
+      );
 
       setLeadStatuses(response.data);
 
@@ -111,7 +154,7 @@ export default function Leadslist() {
 
       console.error(
         "Error fetching lead statuses:",
-        error.response?.data || error.message,
+        error.response?.data || error.message
       );
 
     }
@@ -125,7 +168,7 @@ export default function Leadslist() {
   const handleDelete = async (id) => {
 
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this lead?",
+      "Are you sure you want to delete this lead?"
     );
 
     if (!confirmDelete) {
@@ -145,7 +188,7 @@ export default function Leadslist() {
 
       console.error(
         "Error deleting lead:",
-        error.response?.data || error.message,
+        error.response?.data || error.message
       );
 
       alert("Failed to delete lead.");
@@ -174,25 +217,11 @@ export default function Leadslist() {
     const searchFromUrl = searchParams.get("search");
 
     if (searchFromUrl !== null) {
-
       setSearch(searchFromUrl);
-
     }
 
   }, [searchParams]);
 
-
-  // =========================
-  // GET SEARCH FROM URL
-  // =========================
-
-  useEffect(() => {
-    const searchFromUrl = searchParams.get("search");
-
-    if (searchFromUrl) {
-      setSearch(searchFromUrl);
-    }
-  });
 
   // =========================
   // LOAD LEADS
@@ -241,11 +270,16 @@ export default function Leadslist() {
 
     const matchesPhone =
       String(lead.phone_number || "")
+        .toLowerCase()
         .includes(searchText);
 
 
     const matchesSearch =
-      searchText === "" || matchesName || matchesEmail || matchesPhone;
+      searchText === "" ||
+      matchesName ||
+      matchesEmail ||
+      matchesPhone;
+
 
     // =========================
     // STATUS FILTER
@@ -253,7 +287,9 @@ export default function Leadslist() {
 
     const matchesStatus =
       status === "" ||
-      String(lead.lead_status || "").trim() === String(status || "").trim();
+      String(lead.lead_status || "").trim() ===
+        String(status || "").trim();
+
 
     // =========================
     // CREATED DATE FILTER
@@ -261,8 +297,11 @@ export default function Leadslist() {
 
     const matchesCreatedDate =
       createdDate === "" ||
-      (lead.created_date &&
-        dayjs(lead.created_date).format("YYYY-MM-DD") === createdDate);
+      (
+        lead.created_date &&
+        dayjs(lead.created_date).format("YYYY-MM-DD") ===
+          createdDate
+      );
 
 
     return (
@@ -279,7 +318,9 @@ export default function Leadslist() {
   // =========================
 
   return (
+
     <MainLayout>
+
       {/* =========================================
           MAIN CONTAINER
       ========================================= */}
@@ -295,6 +336,7 @@ export default function Leadslist() {
           boxShadow: "3px",
         }}
       >
+
         {/* =========================================
             HEADER
         ========================================= */}
@@ -304,13 +346,14 @@ export default function Leadslist() {
             p: 2,
             height: "12vh",
             boxShadow: "4px",
-            border: " 1px solid",
+            border: "1px solid",
             borderColor: "divider",
             bgcolor: "background.paper",
             borderTopLeftRadius: "12px",
             borderTopRightRadius: "12px",
           }}
         >
+
           <PageHeader
             title="Leads"
             actions={
@@ -320,9 +363,13 @@ export default function Leadslist() {
                   gap: 2,
                 }}
               >
+
                 {/* IMPORT */}
 
-                <CommonButton variant="outlined">Import</CommonButton>
+                <CommonButton variant="outlined">
+                  Import
+                </CommonButton>
+
 
                 {/* CREATE */}
 
@@ -337,6 +384,7 @@ export default function Leadslist() {
                 >
                   Create
                 </CommonButton>
+
               </Box>
             }
           />
@@ -347,9 +395,7 @@ export default function Leadslist() {
           ========================================= */}
 
           <CreateLeadsDrawer
-
             open={openCreate}
-
             selectedLead={selectedLead}
 
             onClose={() => {
@@ -365,8 +411,8 @@ export default function Leadslist() {
               fetchLeads(status);
 
             }}
-
           />
+
         </Box>
 
 
@@ -386,22 +432,16 @@ export default function Leadslist() {
             transform: "translateY(-5px)",
           }}
         >
+
           <SearchSection
-
             placeholder="Search Phone, Name, Email"
-
             page={page}
-
             totalPages={68}
-
             onPageChange={setPage}
-
             searchValue={search}
-
             onSearchChange={(e) =>
               setSearch(e.target.value)
             }
-
           />
 
         </Box>
@@ -412,14 +452,12 @@ export default function Leadslist() {
         ========================================= */}
 
         <FilterSection>
+
           {/* LEAD STATUS */}
 
           <SelectField
-
             placeholder="Lead Status"
-
             options={leadStatuses}
-
             value={status}
 
             onChange={(e) => {
@@ -432,14 +470,12 @@ export default function Leadslist() {
               setStatus(e.target.value);
 
             }}
-
           />
 
 
           {/* CREATED DATE */}
 
           <CommonDatePicker
-
             label="Created Date"
 
             value={
@@ -457,10 +493,11 @@ export default function Leadslist() {
               );
 
             }}
-
           />
 
+
           <Box sx={{ flexGrow: 1 }} />
+
         </FilterSection>
 
 
@@ -469,7 +506,6 @@ export default function Leadslist() {
         ========================================= */}
 
         <DataTable
-
           columns={[
             <CommonCheckbox size="medium" />,
             "NAME",
@@ -480,12 +516,11 @@ export default function Leadslist() {
             "ACTIONS",
           ]}
         >
-          {/* IMPORTANT:
-              filteredLeads instead of leads
-          */}
 
           {filteredLeads.map((lead) => (
+
             <TableRow key={lead.id}>
+
               {/* CHECKBOX */}
 
               <TableCell>
@@ -508,6 +543,7 @@ export default function Leadslist() {
                     color: "primary.main",
                     cursor: "pointer",
                     fontWeight: 500,
+
                     "&:hover": {
                       textDecoration: "underline",
                     },
@@ -529,18 +565,28 @@ export default function Leadslist() {
 
               {/* EMAIL */}
 
-              <TableCell>{lead.email || "-"}</TableCell>
+              <TableCell>
+                {lead.email || "-"}
+              </TableCell>
+
 
               {/* PHONE */}
 
-              <TableCell>{lead.phone_number || "-"}</TableCell>
+              <TableCell>
+                {removeCountryCode(
+                  lead.phone_number
+                )}
+              </TableCell>
+
 
               {/* CREATED DATE */}
 
               <TableCell>
 
                 {lead.created_date
-                  ? dayjs(lead.created_date).format("MMM D, YYYY h:mm A")
+                  ? dayjs(lead.created_date).format(
+                      "MMM D, YYYY h:mm A"
+                    )
                   : "-"}
 
               </TableCell>
@@ -560,6 +606,7 @@ export default function Leadslist() {
               {/* ACTIONS */}
 
               <TableCell>
+
                 {/* EDIT */}
 
                 <IconButton
@@ -572,7 +619,6 @@ export default function Leadslist() {
                     setOpenCreate(true);
 
                   }}
-
                 >
 
                   <EditIcon />
@@ -588,17 +634,22 @@ export default function Leadslist() {
                   onClick={() =>
                     handleDelete(lead.id)
                   }
-
                 >
 
                   <DeleteIcon />
 
                 </IconButton>
+
               </TableCell>
+
             </TableRow>
+
           ))}
+
         </DataTable>
+
       </Box>
+
     </MainLayout>
 
   );

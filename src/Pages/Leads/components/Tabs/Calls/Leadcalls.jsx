@@ -18,6 +18,12 @@ import LeadsLeftPanel from "../../LeadsLeftPanel";
 import { getLeadTabs } from "../LeadTabs";
 
 import { getLeadById } from "../../../../../services/leads";
+
+import {
+  startDirectCall,
+  startBridgeCall,
+} from "../../../../../services/callService";
+
 import api from "../../../../../services/api";
 
 export default function Leadcalls() {
@@ -30,10 +36,19 @@ export default function Leadcalls() {
   const [calls, setCalls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lead, setLead] = useState(null);
-
-  // NEW:
-  // Used while the Twilio call is being started.
   const [calling, setCalling] = useState(false);
+
+  // =====================================================
+  // CALL MODE
+  //
+  // direct:
+  // CRM → Twilio → Customer
+  //
+  // bridge:
+  // CRM → Twilio → CRM User → Customer
+  // =====================================================
+
+  const [callMode] = useState("direct");
 
   // =====================================================
   // FETCH LEAD
@@ -48,17 +63,57 @@ export default function Leadcalls() {
     try {
       const response = await getLeadById(leadId);
 
-      console.log("LEAD DETAILS:", response.data);
+      console.log(
+        "LEAD DETAILS:",
+        response.data
+      );
 
       setLead(response.data);
     } catch (error) {
       console.error(
         "ERROR FETCHING LEAD:",
-        error.response?.data || error.message
+        error?.response?.data ||
+          error?.message ||
+          error
       );
 
       setLead(null);
     }
+  };
+
+  // =====================================================
+  // SORT CALLS
+  // =====================================================
+
+  const sortCallsLatestFirst = (callList) => {
+    return [...callList].sort((a, b) => {
+      const dateTimeA = new Date(
+        `${a?.date || ""}T${a?.time || "00:00:00"}`
+      ).getTime();
+
+      const dateTimeB = new Date(
+        `${b?.date || ""}T${b?.time || "00:00:00"}`
+      ).getTime();
+
+      // If both dates are valid
+      if (
+        !Number.isNaN(dateTimeA) &&
+        !Number.isNaN(dateTimeB)
+      ) {
+        return dateTimeB - dateTimeA;
+      }
+
+      // Fallback to created_at
+      const createdA = new Date(
+        a?.created_at || 0
+      ).getTime();
+
+      const createdB = new Date(
+        b?.created_at || 0
+      ).getTime();
+
+      return createdB - createdA;
+    });
   };
 
   // =====================================================
@@ -84,7 +139,8 @@ export default function Leadcalls() {
         response.data
       );
 
-      // Backend can return either:
+      // =================================================
+      // BACKEND CAN RETURN:
       //
       // [
       //   {...},
@@ -95,25 +151,61 @@ export default function Leadcalls() {
       //
       // {
       //   module: "lead",
-      //   module_id: 5,
+      //   module_id: 1,
       //   activity_type: "call",
       //   activities: [...]
       // }
+      // =================================================
 
-      const callData = Array.isArray(response.data)
+      const callData = Array.isArray(
+        response.data
+      )
         ? response.data
-        : response.data?.activities || [];
+        : Array.isArray(
+            response.data?.activities
+          )
+        ? response.data.activities
+        : [];
 
       console.log(
-        "CALL DATA FOR CARDS:",
+        "RAW CALL DATA:",
         callData
       );
 
-      setCalls(callData);
+      // =================================================
+      // SORT LATEST CALL FIRST
+      // =================================================
+
+      const sortedCalls =
+        sortCallsLatestFirst(
+          callData
+        );
+
+      console.log(
+        "SORTED CALL DATA:",
+        sortedCalls
+      );
+
+      console.log(
+        "CALL IDS:",
+        sortedCalls.map((call) => ({
+          id: call?.id,
+          date: call?.date,
+          time: call?.time,
+          created_at:
+            call?.created_at,
+          call_outcome:
+            call?.call_outcome,
+        }))
+      );
+
+      setCalls(sortedCalls);
     } catch (error) {
       console.error(
         "ERROR FETCHING LEAD CALLS:",
-        error.response?.data || error.message
+        error?.response?.data ||
+          error?.message ||
+          error
       );
 
       setCalls([]);
@@ -123,11 +215,14 @@ export default function Leadcalls() {
   };
 
   // =====================================================
-  // LOAD DATA
+  // INITIAL LOAD
   // =====================================================
 
   useEffect(() => {
     if (!leadId) {
+      setCalls([]);
+      setLead(null);
+      setLoading(false);
       return;
     }
 
@@ -141,35 +236,33 @@ export default function Leadcalls() {
 
   const handleCallCreated = async () => {
     console.log(
-      "Call created. Refreshing calls..."
+      "CALL CREATED - REFRESHING CALLS..."
     );
 
     await fetchCalls();
+
+    // Twilio may update status/duration
+    // shortly after call creation.
+
+    setTimeout(async () => {
+      console.log(
+        "REFRESHING CALLS AFTER TWILIO UPDATE..."
+      );
+
+      await fetchCalls();
+    }, 3000);
   };
 
   // =====================================================
   // MAKE REAL TWILIO PHONE CALL
-  //
-  // Frontend sends ONLY:
-  //
-  // module
-  // module_id
-  //
-  // Backend gets:
-  //
-  // - logged-in CRM user
-  // - logged-in user's phone
-  // - lead/customer phone
-  // - Twilio credentials
-  //
-  // Backend endpoint:
-  //
-  // POST /api/activities/call/start/
   // =====================================================
 
   const handleMakePhoneCall = async () => {
     if (!leadId) {
-      alert("Lead ID is missing.");
+      alert(
+        "Lead ID is missing."
+      );
+
       return;
     }
 
@@ -177,19 +270,21 @@ export default function Leadcalls() {
       return;
     }
 
-    // -----------------------------------------------------
-    // Optional frontend validation
-    // -----------------------------------------------------
+    // =================================================
+    // CUSTOMER PHONE
+    // =================================================
 
     const customerPhone =
       lead?.phone_number ||
       lead?.phone ||
+      lead?.mobile ||
       "";
 
     if (!customerPhone) {
       alert(
         "Phone number is not available for this lead."
       );
+
       return;
     }
 
@@ -197,54 +292,111 @@ export default function Leadcalls() {
       setCalling(true);
 
       console.log(
-        "Starting Twilio call for lead:",
-        leadId
-      );
-
-      // ---------------------------------------------------
-      // IMPORTANT:
-      //
-      // Do NOT send user phone number.
-      // Do NOT send customer phone number.
-      // Backend gets both.
-      // ---------------------------------------------------
-
-      const response = await api.post(
-        "/activities/call/start/",
-        {
-          module: "lead",
-          module_id: Number(leadId),
-        }
+        "===================================="
       );
 
       console.log(
-        "TWILIO CALL START RESPONSE:",
-        response.data
+        "STARTING TWILIO CALL"
       );
 
-      // ---------------------------------------------------
-      // Refresh calls
+      console.log(
+        "Lead ID:",
+        leadId
+      );
+
+      console.log(
+        "Call Mode:",
+        callMode
+      );
+
+      console.log(
+        "Customer Phone:",
+        customerPhone
+      );
+
+      console.log(
+        "===================================="
+      );
+
+      let response;
+
+      // =================================================
+      // DIRECT CALL
       //
-      // This allows the newly-created CallCard to appear.
-      // ---------------------------------------------------
+      // CRM → Twilio → Customer
+      // =================================================
+
+      if (callMode === "direct") {
+        response = await startDirectCall(
+          "lead",
+          Number(leadId)
+        );
+      }
+
+      // =================================================
+      // BRIDGE CALL
+      //
+      // CRM → Twilio → CRM USER → CUSTOMER
+      // =================================================
+
+      else if (callMode === "bridge") {
+        response = await startBridgeCall(
+          "lead",
+          Number(leadId)
+        );
+      }
+
+      // =================================================
+      // INVALID MODE
+      // =================================================
+
+      else {
+        throw new Error(
+          `Invalid call mode: ${callMode}`
+        );
+      }
+
+      console.log(
+        "TWILIO CALL START RESPONSE:",
+        response
+      );
+
+      // =================================================
+      // IMMEDIATE REFRESH
+      // =================================================
 
       await fetchCalls();
 
+      // =================================================
+      // REFRESH AFTER TWILIO STATUS UPDATE
+      // =================================================
+
+      setTimeout(async () => {
+        console.log(
+          "REFRESHING CALL DETAILS AFTER TWILIO..."
+        );
+
+        await fetchCalls();
+      }, 3000);
+
       alert(
-        response.data?.message ||
+        response?.message ||
+          response?.detail ||
           "Your phone call has been started."
       );
     } catch (error) {
       console.error(
         "ERROR STARTING PHONE CALL:",
-        error.response?.data ||
-          error.message
+        error?.response?.data ||
+          error?.message ||
+          error
       );
 
       const errorMessage =
-        error.response?.data?.detail ||
-        error.response?.data?.message ||
-        error.response?.data?.error ||
+        error?.response?.data?.detail ||
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
         "Unable to start phone call.";
 
       alert(errorMessage);
@@ -259,31 +411,18 @@ export default function Leadcalls() {
 
   return (
     <div>
-
-      {/* =================================================
-          LEAD LEFT PANEL
-
-          Existing drawer functionality remains unchanged.
-
-          LeadsLeftPanel can continue to handle:
-
-          onCallCreated={handleCallCreated}
-
-          and its normal CreateLogCall drawer.
-      ================================================= */}
-
       <LeadsLeftPanel
         leadId={leadId}
-        onCallCreated={handleCallCreated}
+        onCallCreated={
+          handleCallCreated
+        }
       >
-
         <Box
           sx={{
             p: 3,
             mx: -2,
           }}
         >
-
           {/* =============================================
               ACTIVITY TABS
           ============================================== */}
@@ -300,35 +439,28 @@ export default function Leadcalls() {
           <Box
             sx={{
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent:
+                "space-between",
               alignItems: "center",
               mt: 3,
               mb: 2,
             }}
           >
-
             <Typography variant="h6">
               Calls
             </Typography>
 
-            {/* ==========================================
-                MAKE A PHONE CALL
-
-                This button starts the REAL Twilio flow.
-
-                It does NOT open CreateLogCall.
-            ========================================== */}
-
             <CommonButton
               variant="contained"
-              onClick={handleMakePhoneCall}
+              onClick={
+                handleMakePhoneCall
+              }
               disabled={calling}
             >
               {calling
                 ? "Calling..."
                 : "Make a Phone Call"}
             </CommonButton>
-
           </Box>
 
           {/* =============================================
@@ -339,7 +471,8 @@ export default function Leadcalls() {
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "center",
+                justifyContent:
+                  "center",
                 py: 5,
               }}
             >
@@ -351,37 +484,39 @@ export default function Leadcalls() {
               EMPTY STATE
           ============================================== */}
 
-          {!loading && calls.length === 0 && (
-            <Typography
-              sx={{
-                py: 5,
-                textAlign: "center",
-                color: "text.secondary",
-              }}
-            >
-              No calls found for this lead.
-            </Typography>
-          )}
+          {!loading &&
+            calls.length === 0 && (
+              <Typography
+                sx={{
+                  py: 5,
+                  textAlign: "center",
+                  color:
+                    "text.secondary",
+                }}
+              >
+                No calls found for this
+                lead.
+              </Typography>
+            )}
 
           {/* =============================================
               CALL LIST
           ============================================== */}
 
-          {!loading && calls.length > 0 && (
-            <Box>
-              {calls.map((call) => (
-                <CallCard
-                  key={call.id}
-                  call={call}
-                />
-              ))}
-            </Box>
-          )}
-
+          {!loading &&
+            calls.length > 0 && (
+              <Box>
+                {calls.map((call) => (
+                  <CallCard
+                    key={call.id}
+                    call={call}
+                  />
+                ))}
+              </Box>
+            )}
         </Box>
-
       </LeadsLeftPanel>
-
     </div>
   );
 }
+

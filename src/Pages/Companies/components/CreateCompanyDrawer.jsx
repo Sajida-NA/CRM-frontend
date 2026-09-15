@@ -141,7 +141,11 @@ export default function CreateCompanyDrawer({
         const ownerId =
           company.company_owner !== undefined &&
           company.company_owner !== null
-            ? String(company.company_owner)
+            ? String(
+                typeof company.company_owner === "object"
+                  ? company.company_owner.id
+                  : company.company_owner
+              )
             : "";
 
         console.log(
@@ -153,6 +157,15 @@ export default function CreateCompanyDrawer({
           "Company Owner Name:",
           company.company_owner_name
         );
+
+        // =================================================
+        // PHONE NUMBER
+        // =================================================
+
+        const phoneNumber =
+          company.phone_number
+            ? String(company.phone_number).trim()
+            : "";
 
         // =================================================
         // SET FORM DATA
@@ -187,7 +200,7 @@ export default function CreateCompanyDrawer({
             company.annual_revenue ?? "",
 
           phoneNumber:
-            company.phone_number || "",
+            phoneNumber,
 
           email:
             company.email || "",
@@ -204,8 +217,6 @@ export default function CreateCompanyDrawer({
       }
     };
 
-    // IMPORTANT:
-    // Actually call the function
     loadCompanyData();
   }, [company, open]);
 
@@ -218,10 +229,88 @@ export default function CreateCompanyDrawer({
       return "Phone number is required.";
     }
 
-    const digitsOnly = phone.replace(/\D/g, "");
+    const phoneString = String(phone).trim();
 
-    if (digitsOnly.length !== 10) {
-      return "Phone number must contain exactly 10 digits.";
+    // ===================================================
+    // UAE
+    // +971 + 9 digits
+    // Example: +971553074374
+    // ===================================================
+
+    if (phoneString.startsWith("+971")) {
+      const localNumber = phoneString
+        .substring(4)
+        .replace(/\D/g, "");
+
+      if (localNumber.length !== 9) {
+        return "UAE phone number must contain exactly 9 digits.";
+      }
+
+      return "";
+    }
+
+    // ===================================================
+    // INDIA
+    // +91 + 10 digits
+    // Example: +919876543210
+    // ===================================================
+
+    if (phoneString.startsWith("+91")) {
+      const localNumber = phoneString
+        .substring(3)
+        .replace(/\D/g, "");
+
+      if (localNumber.length !== 10) {
+        return "India phone number must contain exactly 10 digits.";
+      }
+
+      return "";
+    }
+
+    // ===================================================
+    // USA
+    // +1 + 10 digits
+    // Example: +11234567890
+    // ===================================================
+
+    if (phoneString.startsWith("+1")) {
+      const localNumber = phoneString
+        .substring(2)
+        .replace(/\D/g, "");
+
+      if (localNumber.length !== 10) {
+        return "US phone number must contain exactly 10 digits.";
+      }
+
+      return "";
+    }
+
+    // ===================================================
+    // UK
+    // +44 + 10 digits
+    // Example: +441234567890
+    // ===================================================
+
+    if (phoneString.startsWith("+44")) {
+      const localNumber = phoneString
+        .substring(3)
+        .replace(/\D/g, "");
+
+      if (localNumber.length !== 10) {
+        return "UK phone number must contain exactly 10 digits.";
+      }
+
+      return "";
+    }
+
+    // ===================================================
+    // UNKNOWN COUNTRY CODE
+    // ===================================================
+
+    const digitsOnly = phoneString.replace(/\D/g, "");
+
+    if (digitsOnly.length < 9) {
+      return "Please enter a valid phone number.";
     }
 
     return "";
@@ -242,12 +331,29 @@ export default function CreateCompanyDrawer({
     // ===================================================
 
     if (name === "phoneNumber") {
-      const digitsOnly = value.replace(/\D/g, "");
+      const phoneString = String(value || "");
 
-      // Don't allow more than 10 digits
-      if (digitsOnly.length > 10) {
-        return;
-      }
+      /*
+       * PhoneInputField already handles:
+       * - country code
+       * - local number length
+       * - numeric input
+       *
+       * So we should NOT limit the complete value to
+       * 10 digits here because +971 contains 3 digits
+       * and UAE local number contains 9 digits.
+       */
+
+      const cleanValue = phoneString.replace(/[^\d+]/g, "");
+
+      setFormData((prev) => ({
+        ...prev,
+        phoneNumber: cleanValue,
+      }));
+
+      setError("");
+
+      return;
     }
 
     // ===================================================
@@ -258,6 +364,8 @@ export default function CreateCompanyDrawer({
       ...prev,
       [name]: value,
     }));
+
+    setError("");
   };
 
   // =====================================================
@@ -292,6 +400,14 @@ export default function CreateCompanyDrawer({
     try {
       setLoading(true);
       setError("");
+
+      // =================================================
+      // CLEAN PHONE NUMBER
+      // =================================================
+
+      const phoneNumber = String(
+        formData.phoneNumber || ""
+      ).trim();
 
       // =================================================
       // PAYLOAD
@@ -329,7 +445,7 @@ export default function CreateCompanyDrawer({
           formData.annualRevenue || null,
 
         phone_number:
-          formData.phoneNumber,
+          phoneNumber,
 
         email:
           formData.email,
@@ -452,7 +568,6 @@ export default function CreateCompanyDrawer({
           bgcolor: "#fff",
         }}
       >
-
         {/* =================================================
             HEADER
         ================================================= */}
@@ -480,7 +595,6 @@ export default function CreateCompanyDrawer({
             overflowY: "auto",
           }}
         >
-
           {/* =================================================
               ERROR
           ================================================= */}
@@ -684,7 +798,6 @@ export default function CreateCompanyDrawer({
             borderTop: "1px solid #E5E7EB",
           }}
         >
-
           {/* =================================================
               CANCEL
           ================================================= */}

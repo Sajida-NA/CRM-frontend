@@ -1,6 +1,3 @@
-
-
-
 import { useState, useEffect } from "react";
 import { Box, IconButton, TableRow, TableCell } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
@@ -32,9 +29,59 @@ function CompaniesList() {
   const [companiesData, setCompaniesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCompany, setSelectedCompany] = useState(null);
+
   const navigate = useNavigate();
 
-  //filter section ---values same as list
+  // =========================================================
+  // REMOVE COUNTRY CODE FROM PHONE NUMBER FOR DISPLAY
+  // =========================================================
+  // UAE:
+  // +971553074355 -> 0555674355
+  //
+  // India:
+  // +919876543210 -> 9876543210
+  //
+  // USA:
+  // +11234567890 -> 1234567890
+  //
+  // UK:
+  // +441234567890 -> 1234567890
+  // =========================================================
+
+  const removeCountryCode = (phone) => {
+    if (!phone) {
+      return "-";
+    }
+
+    const phoneString = String(phone).trim();
+
+    // UAE
+    if (phoneString.startsWith("+971")) {
+      return "0" + phoneString.substring(4);
+    }
+
+    // India
+    if (phoneString.startsWith("+91")) {
+      return phoneString.substring(3);
+    }
+
+    // USA
+    if (phoneString.startsWith("+1")) {
+      return phoneString.substring(2);
+    }
+
+    // UK
+    if (phoneString.startsWith("+44")) {
+      return phoneString.substring(3);
+    }
+
+    return phoneString;
+  };
+
+  // =========================================================
+  // FILTER SECTION - VALUES SAME AS LIST
+  // =========================================================
+
   const industryOptions = [
     ...new Set(
       companiesData.map((company) => company.industry).filter(Boolean),
@@ -42,16 +89,23 @@ function CompaniesList() {
   ];
 
   const cityOptions = [
-    ...new Set(companiesData.map((company) => company.city).filter(Boolean)),
+    ...new Set(
+      companiesData.map((company) => company.city).filter(Boolean),
+    ),
   ];
 
   const countryOptions = [
     ...new Set(
-      companiesData.map((company) => company.country_region).filter(Boolean),
+      companiesData
+        .map((company) => company.country_region)
+        .filter(Boolean),
     ),
   ];
 
-  // by filtering , filtered data will only display
+  // =========================================================
+  // FETCH COMPANIES
+  // =========================================================
+
   const fetchCompanies = async () => {
     try {
       setLoading(true);
@@ -92,10 +146,12 @@ function CompaniesList() {
     }
   };
 
-  //EDIT COMPANY
+  // =========================================================
+  // EDIT COMPANY
+  // =========================================================
+
   const handleEdit = (company) => {
     console.log("Editing company:", company);
-
     console.log("Company Owner ID:", company.company_owner);
     console.log("Company Owner Name:", company.company_owner_name);
 
@@ -103,7 +159,10 @@ function CompaniesList() {
     setOpenDrawer(true);
   };
 
+  // =========================================================
   // DELETE COMPANY
+  // =========================================================
+
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this company?",
@@ -115,13 +174,17 @@ function CompaniesList() {
 
     try {
       await api.delete(`/companies/${id}/`);
+
       await fetchCompanies();
     } catch (error) {
       console.error("Error deleting company:", error);
     }
   };
 
-  //CALLING FETCH COMPANIES WHILE SEARCHING OR FILTERING
+  // =========================================================
+  // CALL FETCH COMPANIES WHILE SEARCHING / FILTERING
+  // =========================================================
+
   useEffect(() => {
     fetchCompanies();
   }, [industry, city, country, search, createdDate]);
@@ -139,7 +202,10 @@ function CompaniesList() {
           boxShadow: "3px",
         }}
       >
-        {/* outer box for pageHeader*/}
+        {/* =====================================================
+            OUTER BOX FOR PAGE HEADER
+        ===================================================== */}
+
         <Box
           sx={{
             p: 2,
@@ -152,14 +218,19 @@ function CompaniesList() {
             borderTopRightRadius: "12px",
           }}
         >
-          {/*⭐ Page Title (Companies) + (Import and Create) buttons  */}
+          {/* PAGE HEADER */}
 
-          {/* Left: Page Title */}
           <PageHeader
             title="Companies"
             actions={
               <Box sx={{ display: "flex", gap: 2 }}>
-                <CommonButton variant="outlined">Import</CommonButton>
+                {/* IMPORT */}
+
+                <CommonButton variant="outlined">
+                  Import
+                </CommonButton>
+
+                {/* CREATE */}
 
                 <CommonButton
                   onClick={() => {
@@ -173,7 +244,10 @@ function CompaniesList() {
             }
           />
 
-          {/* DRAWER */}
+          {/* =====================================================
+              CREATE / EDIT COMPANY DRAWER
+          ===================================================== */}
+
           <CreateCompanyDrawer
             open={openDrawer}
             onClose={() => {
@@ -185,12 +259,15 @@ function CompaniesList() {
           />
         </Box>
 
-        {/* outer box for search & pagination */}
+        {/* =====================================================
+            OUTER BOX FOR SEARCH + PAGINATION
+        ===================================================== */}
+
         <Box
           sx={{
             p: 2,
             boxShadow: "4px",
-            border: " 1px solid",
+            border: "1px solid",
             borderColor: "divider",
             bgcolor: "background.paper",
             height: "12vh",
@@ -198,7 +275,8 @@ function CompaniesList() {
             transform: "translateY(-5px)",
           }}
         >
-          {/* ⭐ SEARCH + PAGINATION*/}
+          {/* SEARCH + PAGINATION */}
+
           <SearchSection
             placeholder="Search Phone, Name, Email"
             page={page}
@@ -209,14 +287,21 @@ function CompaniesList() {
           />
         </Box>
 
-        {/* ⭐ FILTERS */}
+        {/* =====================================================
+            FILTERS
+        ===================================================== */}
+
         <FilterSection>
+          {/* INDUSTRY */}
+
           <SelectField
             placeholder="Industry Type"
             options={industryOptions}
             value={industry}
             onChange={(e) => setIndustry(e.target.value)}
           />
+
+          {/* CITY */}
 
           <SelectField
             placeholder="City"
@@ -225,12 +310,16 @@ function CompaniesList() {
             onChange={(e) => setCity(e.target.value)}
           />
 
+          {/* COUNTRY */}
+
           <SelectField
             placeholder="Country/Region"
             options={countryOptions}
             value={country}
             onChange={(e) => setCountry(e.target.value)}
           />
+
+          {/* LEAD STATUS */}
 
           <SelectField
             placeholder="Lead Status"
@@ -239,13 +328,16 @@ function CompaniesList() {
             onChange={(e) => setLeadStatus(e.target.value)}
           />
 
-          {/* Created Date Filter */}
+          {/* CREATED DATE */}
+
           <CommonDatePicker
             label="Created Date"
             value={createdDate ? dayjs(createdDate) : null}
             onChange={(newValue) =>
               setCreatedDate(
-                newValue ? newValue.format("YYYY-MM-DD") : "",
+                newValue
+                  ? newValue.format("YYYY-MM-DD")
+                  : "",
               )
             }
           />
@@ -253,7 +345,10 @@ function CompaniesList() {
           <Box sx={{ flexGrow: 1 }} />
         </FilterSection>
 
-        {/* ⭐ TABLE */}
+        {/* =====================================================
+            TABLE
+        ===================================================== */}
+
         <DataTable
           columns={[
             <CommonCheckbox size="medium" />,
@@ -269,11 +364,16 @@ function CompaniesList() {
         >
           {companiesData.map((company) => (
             <TableRow key={company.id}>
+              {/* CHECKBOX */}
+
               <TableCell>
                 <CommonCheckbox size="medium" />
               </TableCell>
 
-              {/* COMPANY NAME */}
+              {/* =================================================
+                  COMPANY NAME
+              ================================================= */}
+
               <TableCell>
                 <Box
                   component="span"
@@ -286,39 +386,59 @@ function CompaniesList() {
                     },
                   }}
                   onClick={() =>
-                    navigate(`/company/${company.id}/activities`)
+                    navigate(
+                      `/company/${company.id}/activities`,
+                    )
                   }
                 >
                   {company.company_name}
                 </Box>
               </TableCell>
 
-              {/* COMPANY OWNER */}
+              {/* =================================================
+                  COMPANY OWNER
+              ================================================= */}
+
               <TableCell>
                 {company.company_owner_name || "-"}
               </TableCell>
 
-              {/* PHONE NUMBER */}
+              {/* =================================================
+                  PHONE NUMBER
+              ================================================= */}
+
               <TableCell>
-                {company.phone_number || "-"}
+                {removeCountryCode(company.phone_number)}
               </TableCell>
 
-              {/* INDUSTRY */}
+              {/* =================================================
+                  INDUSTRY
+              ================================================= */}
+
               <TableCell>
                 {company.industry || "-"}
               </TableCell>
 
-              {/* CITY */}
+              {/* =================================================
+                  CITY
+              ================================================= */}
+
               <TableCell>
                 {company.city || "-"}
               </TableCell>
 
-              {/* COUNTRY */}
+              {/* =================================================
+                  COUNTRY
+              ================================================= */}
+
               <TableCell>
                 {company.country_region || "-"}
               </TableCell>
 
-              {/* CREATED DATE */}
+              {/* =================================================
+                  CREATED DATE
+              ================================================= */}
+
               <TableCell>
                 {company.created_date
                   ? dayjs(company.created_date).format(
@@ -327,8 +447,13 @@ function CompaniesList() {
                   : ""}
               </TableCell>
 
-              {/* ACTIONS */}
+              {/* =================================================
+                  ACTIONS
+              ================================================= */}
+
               <TableCell>
+                {/* EDIT */}
+
                 <IconButton
                   color="primary"
                   onClick={() => handleEdit(company)}
@@ -336,9 +461,13 @@ function CompaniesList() {
                   <EditIcon />
                 </IconButton>
 
+                {/* DELETE */}
+
                 <IconButton
                   color="error"
-                  onClick={() => handleDelete(company.id)}
+                  onClick={() =>
+                    handleDelete(company.id)
+                  }
                 >
                   <DeleteIcon />
                 </IconButton>

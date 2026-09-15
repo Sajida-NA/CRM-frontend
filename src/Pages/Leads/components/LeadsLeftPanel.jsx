@@ -58,7 +58,7 @@ export default function LeadsLeftPanel({
       } catch (error) {
         console.error(
           "Error fetching lead:",
-          error.response?.data || error.message,
+          error.response?.data || error.message
         );
 
         setLead(null);
@@ -98,7 +98,9 @@ export default function LeadsLeftPanel({
   if (!lead) {
     return (
       <Box sx={{ p: 3 }}>
-        <Typography variant="h6">Lead not found</Typography>
+        <Typography variant="h6">
+          Lead not found
+        </Typography>
       </Box>
     );
   }
@@ -379,3 +381,5 @@ export default function LeadsLeftPanel({
     </>
   );
 }
+
+

@@ -1,25 +1,62 @@
 
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { Box, Typography, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 
 import TicketLeftPanel from "../../TicketLeftPanel";
+
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
+
 import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
 
 import { ticketTabs } from "../TicketTabs";
+
 import api from "../../../../../services/api";
+
+import {
+  startDirectCall,
+  startBridgeCall,
+} from "../../../../../services/callService";
 
 export default function TicketCalls() {
   const { ticketId } = useParams();
 
+  // ============================================================
+  // STATE
+  // ============================================================
+
   const [activeTab, setActiveTab] = useState("Calls");
+
   const [ticket, setTicket] = useState(null);
+
   const [calls, setCalls] = useState([]);
+
   const [loading, setLoading] = useState(true);
+
+  const [calling, setCalling] = useState(false);
+
+  // ============================================================
+  // CALL MODE
+  //
+  // CURRENT:
+  // direct = CRM → Django → Twilio → Customer
+  //
+  // FUTURE:
+  // bridge = CRM → Django → Twilio → CRM User → Customer
+  //
+  // AFTER TWILIO UPGRADE:
+  // Change to:
+  //
+  // const [callMode] = useState("bridge");
+  // ============================================================
+
+  const [callMode] = useState("direct");
 
   // ============================================================
   // FETCH TICKET
@@ -27,23 +64,82 @@ export default function TicketCalls() {
 
   const fetchTicket = async () => {
     if (!ticketId) {
+      setTicket(null);
       return;
     }
 
     try {
-      const response = await api.get(`/tickets/${ticketId}/`);
+      const response = await api.get(
+        `/tickets/${ticketId}/`
+      );
+
+      console.log(
+        "===================================="
+      );
 
       console.log(
         "TICKET RESPONSE:",
         response.data
       );
 
+      console.log(
+        "TICKET ID:",
+        ticketId
+      );
+
+      console.log(
+        "TICKET ASSOCIATED DEAL:",
+        response.data?.associated_deal
+      );
+
+      console.log(
+        "===================================="
+      );
+
       setTicket(response.data);
     } catch (error) {
-      console.error("ERROR FETCHING TICKET:", error.response?.data || error);
+      console.error(
+        "ERROR FETCHING TICKET:",
+        error?.response?.data ||
+          error?.message ||
+          error
+      );
 
       setTicket(null);
     }
+  };
+
+  // ============================================================
+  // SORT CALLS - LATEST FIRST
+  // ============================================================
+
+  const sortCallsLatestFirst = (callList) => {
+    return [...callList].sort((a, b) => {
+      const dateTimeA = new Date(
+        `${a?.date || ""}T${a?.time || "00:00:00"}`
+      ).getTime();
+
+      const dateTimeB = new Date(
+        `${b?.date || ""}T${b?.time || "00:00:00"}`
+      ).getTime();
+
+      if (
+        !Number.isNaN(dateTimeA) &&
+        !Number.isNaN(dateTimeB)
+      ) {
+        return dateTimeB - dateTimeA;
+      }
+
+      const createdA = new Date(
+        a?.created_at || 0
+      ).getTime();
+
+      const createdB = new Date(
+        b?.created_at || 0
+      ).getTime();
+
+      return createdB - createdA;
+    });
   };
 
   // ============================================================
@@ -60,10 +156,6 @@ export default function TicketCalls() {
     try {
       setLoading(true);
 
-      // ========================================================
-      // CORRECT BACKEND ENDPOINT
-      // ========================================================
-
       const response = await api.get(
         `/activities/activity/ticket/${ticketId}/call/`
       );
@@ -74,18 +166,48 @@ export default function TicketCalls() {
       );
 
       const ticketCalls =
-        response.data?.activities || [];
+        Array.isArray(response.data)
+          ? response.data
+          : Array.isArray(
+              response.data?.activities
+            )
+          ? response.data.activities
+          : [];
 
       console.log(
-        "TICKET CALLS:",
+        "RAW TICKET CALLS:",
         ticketCalls
       );
 
-      setCalls(ticketCalls);
+      const sortedCalls =
+        sortCallsLatestFirst(ticketCalls);
+
+      console.log(
+        "SORTED TICKET CALLS:",
+        sortedCalls
+      );
+
+      console.log(
+        "TICKET CALL IDS:",
+        sortedCalls.map((call) => ({
+          id: call?.id,
+          date: call?.date,
+          time: call?.time,
+          created_at: call?.created_at,
+          call_outcome: call?.call_outcome,
+          twilio_status: call?.twilio_status,
+          call_mode: call?.call_mode,
+          duration: call?.duration,
+        }))
+      );
+
+      setCalls(sortedCalls);
     } catch (error) {
       console.error(
         "ERROR FETCHING TICKET CALLS:",
-        error.response?.data || error,
+        error?.response?.data ||
+          error?.message ||
+          error
       );
 
       setCalls([]);
@@ -100,12 +222,36 @@ export default function TicketCalls() {
 
   useEffect(() => {
     if (!ticketId) {
+      setTicket(null);
+      setCalls([]);
+      setLoading(false);
       return;
     }
 
     fetchTicket();
     fetchCalls();
   }, [ticketId]);
+
+  // ============================================================
+  // CALL CREATED
+  // ============================================================
+
+  const handleCallCreated = async () => {
+    console.log(
+      "TICKET CALL CREATED - REFRESHING CALLS..."
+    );
+
+    await fetchCalls();
+
+    // Give Twilio time to update status/duration.
+    setTimeout(async () => {
+      console.log(
+        "REFRESHING TICKET CALLS AFTER TWILIO UPDATE..."
+      );
+
+      await fetchCalls();
+    }, 3000);
+  };
 
   // ============================================================
   // TICKET NAME
@@ -118,46 +264,158 @@ export default function TicketCalls() {
     `Ticket #${ticketId}`;
 
   // ============================================================
-  // TICKET PHONE NUMBER
-  // ============================================================
-
-  const ticketPhone =
-    ticket?.phone_number ||
-    ticket?.phone ||
-    ticket?.contact_phone ||
-    ticket?.customer_phone ||
-    "";
-
-  // ============================================================
   // MAKE PHONE CALL
+  //
+  // IMPORTANT:
+  //
+  // Ticket does NOT have its own phone field.
+  //
+  // Backend resolves the customer phone through:
+  //
+  // Ticket
+  //   ↓
+  // associated_deal
+  //   ↓
+  // associated_lead
+  //   ↓
+  // phone_number
+  //
+  // Therefore we DO NOT check ticketPhone here.
   // ============================================================
 
-  const handleMakePhoneCall = () => {
-    if (!ticketPhone) {
-      alert(
-        "Ticket phone number is not available."
-      );
+  const handleMakePhoneCall = async () => {
+    if (!ticketId) {
+      alert("Ticket ID is missing.");
       return;
     }
 
-    const cleanPhoneNumber = String(
-      ticketPhone
-    ).replace(/[^\d+]/g, "");
+    if (calling) {
+      return;
+    }
 
-    console.log(
-      "Calling Ticket:",
-      ticketName
-    );
+    try {
+      setCalling(true);
 
-    console.log(
-      "Phone Number:",
-      cleanPhoneNumber
-    );
+      console.log(
+        "===================================="
+      );
 
-    // Only make the phone call.
-    // DO NOT open CreateLogCall drawer.
-    window.location.href =
-      `tel:${cleanPhoneNumber}`;
+      console.log(
+        "STARTING TICKET TWILIO CALL"
+      );
+
+      console.log(
+        "Ticket ID:",
+        ticketId
+      );
+
+      console.log(
+        "Ticket Name:",
+        ticketName
+      );
+
+      console.log(
+        "Call Mode:",
+        callMode
+      );
+
+      console.log(
+        "===================================="
+      );
+
+      let response;
+
+      // ========================================================
+      // DIRECT CALL
+      //
+      // CRM → Django → Twilio → Customer
+      //
+      // CURRENTLY USED FOR TWILIO TRIAL
+      // ========================================================
+
+      if (callMode === "direct") {
+        response = await startDirectCall(
+          "ticket",
+          Number(ticketId)
+        );
+      }
+
+      // ========================================================
+      // BRIDGE CALL
+      //
+      // CRM → Django → Twilio → CRM USER → CUSTOMER
+      //
+      // USE AFTER TWILIO UPGRADE
+      // ========================================================
+
+      else if (callMode === "bridge") {
+        response = await startBridgeCall(
+          "ticket",
+          Number(ticketId)
+        );
+      }
+
+      // ========================================================
+      // INVALID CALL MODE
+      // ========================================================
+
+      else {
+        throw new Error(
+          `Invalid call mode: ${callMode}`
+        );
+      }
+
+      console.log(
+        "TICKET TWILIO CALL RESPONSE:",
+        response
+      );
+
+      // ========================================================
+      // IMMEDIATE REFRESH
+      // ========================================================
+
+      await fetchCalls();
+
+      // ========================================================
+      // REFRESH AFTER TWILIO STATUS UPDATE
+      // ========================================================
+
+      setTimeout(async () => {
+        console.log(
+          "REFRESHING TICKET CALL DETAILS AFTER TWILIO..."
+        );
+
+        await fetchCalls();
+      }, 3000);
+
+      // ========================================================
+      // SUCCESS MESSAGE
+      // ========================================================
+
+      alert(
+        response?.message ||
+          response?.detail ||
+          "Your phone call has been started."
+      );
+    } catch (error) {
+      console.error(
+        "ERROR STARTING TICKET PHONE CALL:",
+        error?.response?.data ||
+          error?.message ||
+          error
+      );
+
+      const errorMessage =
+        error?.response?.data?.detail ||
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Unable to start phone call.";
+
+      alert(errorMessage);
+    } finally {
+      setCalling(false);
+    }
   };
 
   // ============================================================
@@ -165,7 +423,9 @@ export default function TicketCalls() {
   // ============================================================
 
   return (
-    <TicketLeftPanel onCallCreated={fetchCalls}>
+    <TicketLeftPanel
+      onCallCreated={handleCallCreated}
+    >
       <Box
         sx={{
           p: 3,
@@ -195,13 +455,18 @@ export default function TicketCalls() {
             mb: 1,
           }}
         >
-          <Typography variant="h6">Calls</Typography>
+          <Typography variant="h6">
+            Calls
+          </Typography>
 
           <CommonButton
             variant="contained"
             onClick={handleMakePhoneCall}
+            disabled={calling}
           >
-            Make a Phone Call
+            {calling
+              ? "Calling..."
+              : "Make a Phone Call"}
           </CommonButton>
         </Box>
 

@@ -1,54 +1,133 @@
-
-
 import React, { useEffect, useState } from "react";
+
+import {
+  Box,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
+
 import { useParams } from "react-router-dom";
 
-import { Box, Typography, CircularProgress } from "@mui/material";
-
 import DealLeftPanel from "../../DealLeftPanel";
+
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
+
 import CallCard from "../../../../Leads/components/Tabs/Calls/CallCard";
 
 import { getDealTabs } from "../DealTabs";
+
 import api from "../../../../../services/api";
+
+import {
+  startDirectCall,
+  startBridgeCall,
+} from "../../../../../services/callService";
 
 export default function DealCalls() {
   const { dealId } = useParams();
 
+  // =====================================================
+  // STATE
+  // =====================================================
+
   const [activeTab, setActiveTab] = useState("Calls");
+
   const [deal, setDeal] = useState(null);
+
   const [calls, setCalls] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
-  // ============================================================
+  const [calling, setCalling] = useState(false);
+
+  // =====================================================
+  // CALL MODE
+  //
+  // direct:
+  // CRM → Twilio → Customer
+  //
+  // bridge:
+  // CRM → Twilio → CRM User → Customer
+  //
+  // CURRENTLY USING DIRECT BECAUSE TWILIO IS TRIAL.
+  //
+  // AFTER TWILIO UPGRADE:
+  //
+  // const [callMode] = useState("bridge");
+  // =====================================================
+
+  const [callMode] = useState("direct");
+
+  // =====================================================
   // FETCH DEAL
-  // ============================================================
+  // =====================================================
 
   const fetchDeal = async () => {
     if (!dealId) {
+      setDeal(null);
       return;
     }
 
     try {
-      const response = await api.get(`/deals/${dealId}/`);
+      const response = await api.get(
+        `/deals/${dealId}/`
+      );
 
-      console.log("DEAL RESPONSE:", response.data);
+      console.log(
+        "DEAL DETAILS:",
+        response.data
+      );
 
       setDeal(response.data);
     } catch (error) {
       console.error(
         "ERROR FETCHING DEAL:",
-        error.response?.data || error
+        error?.response?.data ||
+          error?.message ||
+          error
       );
 
       setDeal(null);
     }
   };
 
-  // ============================================================
+  // =====================================================
+  // SORT CALLS - LATEST FIRST
+  // =====================================================
+
+  const sortCallsLatestFirst = (callList) => {
+    return [...callList].sort((a, b) => {
+      const dateTimeA = new Date(
+        `${a?.date || ""}T${a?.time || "00:00:00"}`
+      ).getTime();
+
+      const dateTimeB = new Date(
+        `${b?.date || ""}T${b?.time || "00:00:00"}`
+      ).getTime();
+
+      if (
+        !Number.isNaN(dateTimeA) &&
+        !Number.isNaN(dateTimeB)
+      ) {
+        return dateTimeB - dateTimeA;
+      }
+
+      const createdA = new Date(
+        a?.created_at || 0
+      ).getTime();
+
+      const createdB = new Date(
+        b?.created_at || 0
+      ).getTime();
+
+      return createdB - createdA;
+    });
+  };
+
+  // =====================================================
   // FETCH DEAL CALLS
-  // ============================================================
+  // =====================================================
 
   const fetchCalls = async () => {
     if (!dealId) {
@@ -69,20 +148,52 @@ export default function DealCalls() {
         response.data
       );
 
-      const dealCalls = Array.isArray(response.data)
-        ? response.data
-        : response.data?.activities || [];
+      const callData =
+        Array.isArray(response.data)
+          ? response.data
+          : Array.isArray(
+              response.data?.activities
+            )
+          ? response.data.activities
+          : [];
 
       console.log(
-        "DEAL CALL DATA:",
-        dealCalls
+        "RAW DEAL CALL DATA:",
+        callData
       );
 
-      setCalls(dealCalls);
+      const sortedCalls =
+        sortCallsLatestFirst(
+          callData
+        );
+
+      console.log(
+        "SORTED DEAL CALL DATA:",
+        sortedCalls
+      );
+
+      console.log(
+        "DEAL CALL IDS:",
+        sortedCalls.map((call) => ({
+          id: call?.id,
+          date: call?.date,
+          time: call?.time,
+          created_at:
+            call?.created_at,
+          call_outcome:
+            call?.call_outcome,
+          twilio_status:
+            call?.twilio_status,
+        }))
+      );
+
+      setCalls(sortedCalls);
     } catch (error) {
       console.error(
         "ERROR FETCHING DEAL CALLS:",
-        error.response?.data || error
+        error?.response?.data ||
+          error?.message ||
+          error
       );
 
       setCalls([]);
@@ -91,12 +202,15 @@ export default function DealCalls() {
     }
   };
 
-  // ============================================================
+  // =====================================================
   // INITIAL LOAD
-  // ============================================================
+  // =====================================================
 
   useEffect(() => {
     if (!dealId) {
+      setDeal(null);
+      setCalls([]);
+      setLoading(false);
       return;
     }
 
@@ -104,9 +218,30 @@ export default function DealCalls() {
     fetchCalls();
   }, [dealId]);
 
-  // ============================================================
-  // LEAD NAME
-  // ============================================================
+  // =====================================================
+  // CALL CREATED
+  // =====================================================
+
+  const handleCallCreated = async () => {
+    console.log(
+      "DEAL CALL CREATED - REFRESHING CALLS..."
+    );
+
+    await fetchCalls();
+
+    // Give Twilio time to update status/duration.
+    setTimeout(async () => {
+      console.log(
+        "REFRESHING DEAL CALLS AFTER TWILIO UPDATE..."
+      );
+
+      await fetchCalls();
+    }, 3000);
+  };
+
+  // =====================================================
+  // GET ASSOCIATED LEAD NAME
+  // =====================================================
 
   const leadName =
     deal?.lead_name ||
@@ -116,49 +251,178 @@ export default function DealCalls() {
     }`.trim() ||
     "Unknown";
 
-  // ============================================================
-  // LEAD PHONE NUMBER
-  // ============================================================
+  // =====================================================
+  // GET ASSOCIATED LEAD PHONE
+  // =====================================================
 
   const leadPhone =
     deal?.lead_phone ||
     deal?.lead?.phone_number ||
     deal?.lead?.phone ||
+    deal?.lead?.mobile ||
     "";
 
-  // ============================================================
+  // =====================================================
   // MAKE PHONE CALL
-  // ============================================================
+  //
+  // DIRECT:
+  // CRM → Django → Twilio → Customer
+  //
+  // BRIDGE:
+  // CRM → Django → Twilio → CRM User → Customer
+  // =====================================================
 
-  const handleMakePhoneCall = () => {
-    if (!leadPhone) {
-      alert("Lead phone number is not available.");
+  const handleMakePhoneCall = async () => {
+    if (!dealId) {
+      alert("Deal ID is missing.");
       return;
     }
 
-    const phoneNumber = String(leadPhone).trim();
+    if (calling) {
+      return;
+    }
 
-    const cleanPhoneNumber = phoneNumber.replace(
-      /[^\d+]/g,
-      ""
-    );
+    // =================================================
+    // CHECK LEAD PHONE
+    // =================================================
 
-    console.log("Calling Lead:", leadName);
-    console.log("Phone Number:", cleanPhoneNumber);
+    if (!leadPhone) {
+      alert(
+        "Lead phone number is not available for this deal."
+      );
 
-    // IMPORTANT:
-    // This only makes the actual phone call.
-    // It does NOT open CreateLogCall drawer.
-    window.location.href = `tel:${cleanPhoneNumber}`;
+      return;
+    }
+
+    try {
+      setCalling(true);
+
+      console.log(
+        "===================================="
+      );
+
+      console.log(
+        "STARTING DEAL TWILIO CALL"
+      );
+
+      console.log(
+        "Deal ID:",
+        dealId
+      );
+
+      console.log(
+        "Lead Name:",
+        leadName
+      );
+
+      console.log(
+        "Lead Phone:",
+        leadPhone
+      );
+
+      console.log(
+        "Call Mode:",
+        callMode
+      );
+
+      console.log(
+        "===================================="
+      );
+
+      let response;
+
+      // =================================================
+      // DIRECT CALL
+      //
+      // CRM → Twilio → Customer
+      // =================================================
+
+      if (callMode === "direct") {
+        response = await startDirectCall(
+          "deal",
+          Number(dealId)
+        );
+      }
+
+      // =================================================
+      // BRIDGE CALL
+      //
+      // CRM → Twilio → CRM USER → CUSTOMER
+      // =================================================
+
+      else if (callMode === "bridge") {
+        response = await startBridgeCall(
+          "deal",
+          Number(dealId)
+        );
+      }
+
+      // =================================================
+      // INVALID CALL MODE
+      // =================================================
+
+      else {
+        throw new Error(
+          `Invalid call mode: ${callMode}`
+        );
+      }
+
+      console.log(
+        "DEAL TWILIO CALL RESPONSE:",
+        response
+      );
+
+      // =================================================
+      // IMMEDIATE REFRESH
+      // =================================================
+
+      await fetchCalls();
+
+      // =================================================
+      // REFRESH AFTER TWILIO UPDATE
+      // =================================================
+
+      setTimeout(async () => {
+        console.log(
+          "REFRESHING DEAL CALL DETAILS AFTER TWILIO..."
+        );
+
+        await fetchCalls();
+      }, 3000);
+
+      alert(
+        response?.message ||
+          response?.detail ||
+          "Your phone call has been started."
+      );
+    } catch (error) {
+      console.error(
+        "ERROR STARTING DEAL PHONE CALL:",
+        error?.response?.data ||
+          error?.message ||
+          error
+      );
+
+      const errorMessage =
+        error?.response?.data?.detail ||
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Unable to start phone call.";
+
+      alert(errorMessage);
+    } finally {
+      setCalling(false);
+    }
   };
 
-  // ============================================================
+  // =====================================================
   // RENDER
-  // ============================================================
+  // =====================================================
 
   return (
     <DealLeftPanel
-      onCallCreated={fetchCalls}
+      onCallCreated={handleCallCreated}
     >
       <Box
         sx={{
@@ -166,9 +430,9 @@ export default function DealCalls() {
           mx: -2,
         }}
       >
-        {/* ====================================================
+        {/* =================================================
             ACTIVITY TABS
-        ==================================================== */}
+        ================================================= */}
 
         <Box>
           <CommonActivityTabs
@@ -178,9 +442,9 @@ export default function DealCalls() {
           />
         </Box>
 
-        {/* ====================================================
+        {/* =================================================
             CALL HEADER
-        ==================================================== */}
+        ================================================= */}
 
         <Box
           sx={{
@@ -198,22 +462,25 @@ export default function DealCalls() {
           <CommonButton
             variant="contained"
             onClick={handleMakePhoneCall}
+            disabled={calling}
           >
-            Make a Phone Call
+            {calling
+              ? "Calling..."
+              : "Make a Phone Call"}
           </CommonButton>
         </Box>
 
-        {/* ====================================================
+        {/* =================================================
             MONTH
-        ==================================================== */}
+        ================================================= */}
 
         <Typography variant="h6">
           June 2025
         </Typography>
 
-        {/* ====================================================
+        {/* =================================================
             LOADING
-        ==================================================== */}
+        ================================================= */}
 
         {loading ? (
           <Box
@@ -227,6 +494,10 @@ export default function DealCalls() {
             <CircularProgress size={28} />
           </Box>
         ) : calls.length === 0 ? (
+          /* ===============================================
+             EMPTY STATE
+          =============================================== */
+
           <Typography
             color="text.secondary"
             sx={{
@@ -236,6 +507,10 @@ export default function DealCalls() {
             No calls found for this deal.
           </Typography>
         ) : (
+          /* ===============================================
+             CALL LIST
+          =============================================== */
+
           calls.map((call) => (
             <CallCard
               key={call.id}

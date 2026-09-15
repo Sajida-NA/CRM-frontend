@@ -132,3 +132,5 @@ element={<CompanyActivities />}
 ); 
 } 
 export default AppRoutes;
+
+

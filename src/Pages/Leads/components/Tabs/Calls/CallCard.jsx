@@ -1,6 +1,6 @@
-// import { useState } from "react";
 
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 
 import {
   Paper,
@@ -9,6 +9,7 @@ import {
   IconButton,
   Collapse,
   Grid,
+  CircularProgress,
 } from "@mui/material";
 
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -17,19 +18,31 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 import CommonSelect from "../../../../../Components/common/CommonSelect";
 
+import { syncCall } from "../../../../../services/callService";
+import api from "../../../../../services/api";
+
 export default function CallCard({ call }) {
-  // ============================================================
-  // EXPAND / COLLAPSE
-  // ============================================================
-
   const [open, setOpen] = useState(false);
+  const [currentCall, setCurrentCall] = useState(call);
+  const [syncing, setSyncing] = useState(false);
+  const [savingOutcome, setSavingOutcome] = useState(false);
 
-  // ============================================================
-  // CLEAN NOTE HTML
-  // ============================================================
+  // ==========================================================
+  // UPDATE LOCAL CALL WHEN PARENT DATA CHANGES
+  // ==========================================================
+
+  useEffect(() => {
+    setCurrentCall(call);
+  }, [call]);
+
+  // ==========================================================
+  // CLEAN HTML
+  // ==========================================================
 
   const cleanNote = (html) => {
-    if (!html) return "";
+    if (!html) {
+      return "";
+    }
 
     const temp = document.createElement("div");
     temp.innerHTML = html;
@@ -37,9 +50,104 @@ export default function CallCard({ call }) {
     return temp.textContent || temp.innerText || "";
   };
 
-  // ============================================================
-  // CALL OUTCOME OPTIONS
-  // ============================================================
+  // ==========================================================
+  // REMOVE EMAIL FROM DISPLAY NAME
+  // Example:
+  // Saji Jubi (saji@example.com)
+  // becomes:
+  // Saji Jubi
+  // ==========================================================
+
+  const getNameWithoutEmail = (value) => {
+    if (!value) {
+      return "Unknown";
+    }
+
+    return String(value)
+      .replace(/\s*\([^)]*@[^)]*\)\s*/g, "")
+      .trim();
+  };
+
+  // ==========================================================
+  // FORMAT DATE
+  // ==========================================================
+
+  const formatDate = (value) => {
+    if (!value) {
+      return "";
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return String(value);
+    }
+
+    return date.toLocaleDateString("en-CA");
+  };
+
+  // ==========================================================
+  // FORMAT TIME
+  //
+  // Backend may return:
+  // 15:20:21.232715
+  //
+  // Display:
+  // 03:20 PM
+  // ==========================================================
+
+  const formatTime = (value) => {
+    if (!value) {
+      return "";
+    }
+
+    const cleanTime = String(value)
+      .split(".")[0]
+      .trim();
+
+    const parts = cleanTime.split(":");
+
+    if (parts.length < 2) {
+      return cleanTime;
+    }
+
+    const hours = Number(parts[0]);
+    const minutes = Number(parts[1]);
+
+    const seconds =
+      parts.length >= 3
+        ? Number(parts[2])
+        : 0;
+
+    if (
+      Number.isNaN(hours) ||
+      Number.isNaN(minutes) ||
+      Number.isNaN(seconds)
+    ) {
+      return cleanTime;
+    }
+
+    const date = new Date();
+
+    date.setHours(
+      hours,
+      minutes,
+      seconds,
+      0
+    );
+
+    return date.toLocaleTimeString(
+      "en-US",
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    );
+  };
+
+  // ==========================================================
+  // OUTCOME OPTIONS
+  // ==========================================================
 
   const outcomeOptions = [
     {
@@ -76,36 +184,225 @@ export default function CallCard({ call }) {
     },
   ];
 
-  // ============================================================
-  // DURATION OPTIONS
-  // ============================================================
+  // ==========================================================
+  // NORMALIZE OUTCOME
+  // ==========================================================
 
-  const durationOptions = [
-    {
-      label: "5 mins",
-      value: "5",
-    },
-    {
-      label: "10 mins",
-      value: "10",
-    },
-    {
-      label: "15 mins",
-      value: "15",
-    },
-    {
-      label: "30 mins",
-      value: "30",
-    },
-    {
-      label: "45 mins",
-      value: "45",
-    },
-    {
-      label: "60 mins",
-      value: "60",
-    },
-  ];
+  const normalizeOutcome = (value) => {
+    if (!value) {
+      return "";
+    }
+
+    return String(value)
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "_")
+      .replace(/-/g, "_");
+  };
+
+  const normalizedOutcome = normalizeOutcome(
+    currentCall?.call_outcome
+  );
+
+  // ==========================================================
+  // FORMAT DURATION
+  // ==========================================================
+
+  const formatDuration = (seconds) => {
+    if (
+      seconds === null ||
+      seconds === undefined ||
+      seconds === ""
+    ) {
+      return "0 sec";
+    }
+
+    const totalSeconds = Number(seconds);
+
+    if (
+      Number.isNaN(totalSeconds) ||
+      totalSeconds < 0
+    ) {
+      return "0 sec";
+    }
+
+    if (totalSeconds < 60) {
+      return `${totalSeconds} sec`;
+    }
+
+    const minutes = Math.floor(
+      totalSeconds / 60
+    );
+
+    const remainingSeconds =
+      totalSeconds % 60;
+
+    if (remainingSeconds === 0) {
+      return `${minutes} min`;
+    }
+
+    return `${minutes} min ${remainingSeconds} sec`;
+  };
+
+  // ==========================================================
+  // SYNC CALL WITH TWILIO
+  // ==========================================================
+
+  const handleSyncCall = async () => {
+    if (!currentCall?.id) {
+      console.error(
+        "Cannot sync call: Call ID missing."
+      );
+      return;
+    }
+
+    try {
+      setSyncing(true);
+
+      console.log(
+        "Syncing call with Twilio:",
+        currentCall.id
+      );
+
+      const response = await syncCall(
+        currentCall.id
+      );
+
+      console.log(
+        "SYNC CALL RESPONSE:",
+        response
+      );
+
+      if (response?.call) {
+        setCurrentCall(response.call);
+      } else if (response) {
+        setCurrentCall(response);
+      }
+    } catch (error) {
+      console.error(
+        "SYNC CALL ERROR:",
+        error?.response?.data ||
+          error?.message ||
+          error
+      );
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  // ==========================================================
+  // TOGGLE DETAILS
+  // ==========================================================
+
+  const handleToggle = async () => {
+    const nextOpen = !open;
+
+    setOpen(nextOpen);
+
+    if (nextOpen) {
+      await handleSyncCall();
+    }
+  };
+
+  // ==========================================================
+  // UPDATE OUTCOME
+  // ==========================================================
+
+  const handleOutcomeChange = async (event) => {
+    const newOutcome =
+      event?.target?.value ?? event;
+
+    if (
+      !newOutcome ||
+      !currentCall?.id
+    ) {
+      return;
+    }
+
+    const previousCall = currentCall;
+
+    try {
+      setSavingOutcome(true);
+
+      // Optimistic update
+      setCurrentCall((prev) => ({
+        ...prev,
+        call_outcome: newOutcome,
+      }));
+
+      const response = await api.patch(
+        `/activities/call/${currentCall.id}/`,
+        {
+          call_outcome: newOutcome,
+        }
+      );
+
+      console.log(
+        "OUTCOME UPDATED:",
+        response.data
+      );
+
+      setCurrentCall(response.data);
+    } catch (error) {
+      console.error(
+        "UPDATE OUTCOME ERROR:",
+        error?.response?.data ||
+          error?.message ||
+          error
+      );
+
+      setCurrentCall(previousCall);
+    } finally {
+      setSavingOutcome(false);
+    }
+  };
+
+  // ==========================================================
+  // CALLER
+  // CRM USER WHO CREATED THE CALL
+  // ==========================================================
+
+  const callerRawName =
+    currentCall?.created_by?.name ||
+    currentCall?.created_by?.full_name ||
+    "Unknown";
+
+  const callerName =
+    getNameWithoutEmail(
+      callerRawName
+    );
+
+  // ==========================================================
+  // CONNECTED RECORD
+  // LEAD / COMPANY / DEAL / TICKET
+  // ==========================================================
+
+  const connectedRawName =
+    currentCall?.connected?.name ||
+    currentCall?.connected?.company_name ||
+    currentCall?.connected?.title ||
+    "Unknown";
+
+  const connectedName =
+    getNameWithoutEmail(
+      connectedRawName
+    );
+
+  // ==========================================================
+  // FORMATTED DATE / TIME
+  // ==========================================================
+
+  const displayDate = formatDate(
+    currentCall?.date
+  );
+
+  const displayTime = formatTime(
+    currentCall?.time
+  );
+
+  // ==========================================================
+  // UI
+  // ==========================================================
 
   return (
     <Paper
@@ -118,9 +415,9 @@ export default function CallCard({ call }) {
         p: 2,
       }}
     >
-      {/* ========================================================
+      {/* ====================================================
           HEADER
-      ======================================================== */}
+      ===================================================== */}
 
       <Box
         sx={{
@@ -129,8 +426,6 @@ export default function CallCard({ call }) {
           alignItems: "flex-start",
         }}
       >
-        {/* LEFT SIDE */}
-
         <Box
           sx={{
             display: "flex",
@@ -141,8 +436,10 @@ export default function CallCard({ call }) {
         >
           <IconButton
             size="small"
-            onClick={() => setOpen(!open)}
-            sx={{ p: 0 }}
+            onClick={handleToggle}
+            sx={{
+              p: 0,
+            }}
           >
             {open ? (
               <KeyboardArrowDownIcon
@@ -159,89 +456,182 @@ export default function CallCard({ call }) {
 
           <Typography>
             <strong>Call </strong>
-            from {call.connected?.name || "Unknown"}
+            from {callerName}
           </Typography>
         </Box>
 
-        {/* DATE / TIME */}
-
         <Typography color="text.secondary">
-          {call.date || ""}
-          {call.date && call.time ? " at " : ""}
-          {call.time || ""}
+          {displayDate}
+          {displayDate && displayTime
+            ? " at "
+            : ""}
+          {displayTime}
         </Typography>
       </Box>
 
-      {/* ========================================================
-          NOTE
-      ======================================================== */}
+      {/* ====================================================
+          CONNECTED RECORD
+      ===================================================== */}
 
-      {call.note && (
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        sx={{
+          ml: 4,
+          mt: -0.5,
+        }}
+      >
+        To: {connectedName}
+      </Typography>
+
+      {/* ====================================================
+          NOTE
+      ===================================================== */}
+
+      {currentCall?.note && (
         <Typography
           variant="body2"
           color="text.secondary"
           mt={0.5}
         >
-          {cleanNote(call.note)}
+          {cleanNote(
+            currentCall.note
+          )}
         </Typography>
       )}
 
-      {/* ========================================================
-          EXPANDED CONTENT
-      ======================================================== */}
+      {/* ====================================================
+          EXPANDED DETAILS
+      ===================================================== */}
 
       <Collapse in={open}>
-        <Box sx={{ mt: 2.5 }}>
-          <Grid container spacing={2}>
-
-            {/* ==================================================
+        <Box
+          sx={{
+            mt: 2.5,
+          }}
+        >
+          <Grid
+            container
+            spacing={2}
+          >
+            {/* ============================================
                 OUTCOME
-            ================================================== */}
+            ============================================= */}
 
-            <Grid size={{ xs: 12, md: 5 }}>
-              <CommonSelect
-                label="Outcome"
-                required
-                placeholder="Choose"
-                fullWidth
-                value={call.call_outcome || ""}
-                options={outcomeOptions}
-                disabled
-              />
-            </Grid>
+            <Grid
+              size={{
+                xs: 12,
+                md: 5,
+              }}
+            >
+              <Box
+                sx={{
+                  position: "relative",
+                }}
+              >
+                <CommonSelect
+                  label="Outcome"
+                  required
+                  placeholder="Choose"
+                  fullWidth
+                  value={normalizedOutcome}
+                  options={outcomeOptions}
+                  disabled={
+                    savingOutcome ||
+                    syncing
+                  }
+                  onChange={
+                    handleOutcomeChange
+                  }
+                />
 
-            {/* ==================================================
-                DURATION
-            ================================================== */}
-
-            <Grid size={{ xs: 12, md: 3 }}>
-              <CommonSelect
-                label="Duration"
-                required
-                placeholder="Choose"
-                fullWidth
-                value={
-                  call.duration !== null &&
-                  call.duration !== undefined
-                    ? String(call.duration)
-                    : ""
-                }
-                options={durationOptions}
-                disabled
-                endAdornment={
-                  <AccessTimeIcon
+                {savingOutcome && (
+                  <CircularProgress
+                    size={18}
                     sx={{
-                      color: "#98A2B3",
+                      position:
+                        "absolute",
+                      right: 12,
+                      top: 35,
                     }}
                   />
-                }
-              />
+                )}
+              </Box>
             </Grid>
 
+            {/* ============================================
+                DURATION
+            ============================================= */}
+
+            <Grid
+              size={{
+                xs: 12,
+                md: 3,
+              }}
+            >
+              <Box
+                sx={{
+                  position:
+                    "relative",
+                  width: "100%",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mb: 0.7,
+                    color:
+                      "text.primary",
+                  }}
+                >
+                  Duration
+                </Typography>
+
+                <Box
+                  sx={{
+                    minHeight: 40,
+                    border: "1px solid",
+                    borderColor:
+                      "divider",
+                    borderRadius: 1,
+                    display: "flex",
+                    alignItems:
+                      "center",
+                    justifyContent:
+                      "space-between",
+                    px: 1.5,
+                    backgroundColor:
+                      "background.paper",
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                  >
+                    {syncing ? (
+                      <CircularProgress
+                        size={16}
+                      />
+                    ) : (
+                      formatDuration(
+                        currentCall?.duration
+                      )
+                    )}
+                  </Typography>
+
+                  <AccessTimeIcon
+                    sx={{
+                      color:
+                        "#98A2B3",
+                      fontSize: 20,
+                    }}
+                  />
+                </Box>
+              </Box>
+            </Grid>
           </Grid>
         </Box>
       </Collapse>
     </Paper>
   );
 }
-
