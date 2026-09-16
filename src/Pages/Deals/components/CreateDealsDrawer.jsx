@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 
 import { Drawer, Box, Grid } from "@mui/material";
@@ -10,6 +8,7 @@ import DrawerHeader from "../../../Components/common/DrawerHeader";
 import CommonInput from "../../../Components/common/CommonInput";
 import CommonButton from "../../../Components/common/CommonButton";
 import CommonSelect from "../../../Components/common/CommonSelect";
+import CommonMultiSelect from "../../../Components/common/CommonMultiSelect";
 import FormDatePicker from "../../../Components/common/FormDatePicker";
 
 import api from "../../../services/api";
@@ -30,7 +29,7 @@ export default function CreateDealsDrawer({
     dealStage: "",
     associatedLead: "",
     amount: "",
-    dealOwner: "",
+    dealOwner: [],
     closeDate: null,
     priority: "",
   };
@@ -211,13 +210,21 @@ export default function CreateDealsDrawer({
           ? String(deal.amount)
           : "",
 
+      // Multiple Deal Owners
+      //
+      // Backend response:
+      // deal_owner_ids: [1, 5, 8]
+      //
+      // CommonMultiSelect expects
+      // string values.
       dealOwner:
-        deal.deal_owner_id !== null &&
-        deal.deal_owner_id !== undefined
-          ? String(
-              deal.deal_owner_id
+        Array.isArray(
+          deal.deal_owner_ids
+        )
+          ? deal.deal_owner_ids.map(
+              (id) => String(id)
             )
-          : "",
+          : [],
 
       closeDate: deal.close_date
         ? dayjs(deal.close_date)
@@ -290,9 +297,18 @@ export default function CreateDealsDrawer({
         return;
       }
 
-      if (!formData.dealOwner) {
+      // =================================================
+      // DEAL OWNER VALIDATION
+      // =================================================
+
+      if (
+        !Array.isArray(
+          formData.dealOwner
+        ) ||
+        formData.dealOwner.length === 0
+      ) {
         setError(
-          "Please select a deal owner."
+          "Please select at least one deal owner."
         );
 
         setLoading(false);
@@ -319,9 +335,10 @@ export default function CreateDealsDrawer({
         amount:
           formData.amount,
 
-        deal_owner:
-          Number(
-            formData.dealOwner
+        // Multiple Deal Owners
+        deal_owners:
+          formData.dealOwner.map(
+            (id) => Number(id)
           ),
 
         close_date:
@@ -395,7 +412,9 @@ export default function CreateDealsDrawer({
       // CLEAR FORM
       // =================================================
 
-      setFormData(emptyForm);
+      setFormData({
+        ...emptyForm,
+      });
 
       // =================================================
       // CLOSE DRAWER
@@ -612,7 +631,7 @@ export default function CreateDealsDrawer({
 
           {/* DEAL OWNER */}
 
-          <CommonSelect
+          <CommonMultiSelect
             label="Deal Owner"
             required
             placeholder={
