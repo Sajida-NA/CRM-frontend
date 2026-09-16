@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -128,12 +127,17 @@ export default function TicketLeftPanel({
 
   const description = ticket.description || "-";
 
+  // =========================================================
+  // TICKET OWNER
+  // Backend returns:
+  // ticket_owners: ["Owner 1", "Owner 2"]
+  // =========================================================
+
   const ownerName =
-    ticket.ticket_owner ||
-    ticket.owner_name ||
-    ticket.owner?.name ||
-    ticket.owner?.username ||
-    "-";
+    Array.isArray(ticket.ticket_owners) &&
+    ticket.ticket_owners.length > 0
+      ? ticket.ticket_owners.join(", ")
+      : "-";
 
   const priority = ticket.priority || "-";
 
