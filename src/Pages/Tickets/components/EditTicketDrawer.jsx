@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import {
   Drawer,
@@ -9,6 +10,8 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Checkbox,
+  ListItemText,
 } from "@mui/material";
 
 import DrawerHeader from "../../../Components/common/DrawerHeader";
@@ -29,7 +32,7 @@ export default function EditTicketDrawer({
     ticketStatus: "",
     source: "",
     priority: "",
-    ticketOwner: "",
+    ticketOwners: [],
     associatedDeal: "",
   });
 
@@ -50,90 +53,220 @@ export default function EditTicketDrawer({
       try {
         setLoadingData(true);
 
-        const [ticketResponse, usersResponse, dealsResponse] =
-          await Promise.all([
-            api.get(`/tickets/${ticketId}/`),
-            api.get("/accounts/users/"),
-            api.get("/deals/"),
-          ]);
+        const [
+          ticketResponse,
+          usersResponse,
+          dealsResponse,
+        ] = await Promise.all([
+          api.get(`/tickets/${ticketId}/`),
+          api.get("/accounts/users/"),
+          api.get("/deals/"),
+        ]);
 
         const ticketDetail = ticketResponse.data;
 
-        const usersData = Array.isArray(usersResponse.data)
+        const usersData = Array.isArray(
+          usersResponse.data
+        )
           ? usersResponse.data
           : usersResponse.data?.results || [];
 
-        const dealsData = Array.isArray(dealsResponse.data)
+        const dealsData = Array.isArray(
+          dealsResponse.data
+        )
           ? dealsResponse.data
           : dealsResponse.data?.results || [];
 
-        console.log("EDIT TICKET:", ticketDetail);
-        console.log("EDIT USERS:", usersData);
-        console.log("EDIT DEALS:", dealsData);
+        console.log(
+          "EDIT TICKET:",
+          ticketDetail
+        );
+
+        console.log(
+          "EDIT USERS:",
+          usersData
+        );
+
+        console.log(
+          "EDIT DEALS:",
+          dealsData
+        );
 
         setUsers(usersData);
         setDeals(dealsData);
 
         // =================================================
-        // FIND OWNER ID
+        // FIND TICKET OWNER IDS
         // =================================================
 
-        let ownerId = "";
+        let ownerIds = [];
 
-        const ticketOwner = ticketDetail.ticket_owner;
+        // -------------------------------------------------
+        // Preferred backend response:
+        //
+        // ticket_owner_ids: [16, 17]
+        // -------------------------------------------------
 
-        // Backend returns owner ID
         if (
-          ticketOwner !== null &&
-          ticketOwner !== undefined &&
-          typeof ticketOwner === "number"
+          Array.isArray(
+            ticketDetail.ticket_owner_ids
+          )
         ) {
-          ownerId = String(ticketOwner);
-        }
-
-        // Backend returns owner as numeric string
-        if (
-          !ownerId &&
-          typeof ticketOwner === "string" &&
-          !isNaN(ticketOwner)
-        ) {
-          ownerId = String(ticketOwner);
-        }
-
-        // Backend returns owner as email/name
-        if (
-          !ownerId &&
-          typeof ticketOwner === "string"
-        ) {
-          const owner = usersData.find((user) => {
-            const fullName =
-              `${user.first_name || ""} ${
-                user.last_name || ""
-              }`.trim();
-
-            return (
-              String(user.email || "").toLowerCase() ===
-                ticketOwner.toLowerCase() ||
-              fullName.toLowerCase() ===
-                ticketOwner.toLowerCase()
+          ownerIds =
+            ticketDetail.ticket_owner_ids.map(
+              (id) => String(id)
             );
-          });
-
-          if (owner) {
-            ownerId = String(owner.id);
-          }
         }
 
-        // Backend returns owner as object
+        // -------------------------------------------------
+        // Backend may return ticket_owners as IDs
+        //
+        // ticket_owners: [16, 17]
+        // -------------------------------------------------
+
         if (
-          !ownerId &&
-          ticketOwner &&
-          typeof ticketOwner === "object"
+          ownerIds.length === 0 &&
+          Array.isArray(
+            ticketDetail.ticket_owners
+          )
         ) {
-          if (ticketOwner.id) {
-            ownerId = String(ticketOwner.id);
+          ownerIds =
+            ticketDetail.ticket_owners
+              .map((owner) => {
+                // Owner is an ID
+                if (
+                  typeof owner === "number"
+                ) {
+                  return String(owner);
+                }
+
+                // Owner is numeric string
+                if (
+                  typeof owner === "string" &&
+                  !isNaN(owner)
+                ) {
+                  return String(owner);
+                }
+
+                // Owner is object
+                if (
+                  owner &&
+                  typeof owner === "object" &&
+                  owner.id
+                ) {
+                  return String(owner.id);
+                }
+
+                // Owner is name/email
+                if (
+                  typeof owner === "string"
+                ) {
+                  const foundUser =
+                    usersData.find(
+                      (user) => {
+                        const fullName =
+                          `${user.first_name || ""} ${
+                            user.last_name || ""
+                          }`.trim();
+
+                        return (
+                          String(
+                            user.email || ""
+                          ).toLowerCase() ===
+                            owner.toLowerCase() ||
+                          fullName.toLowerCase() ===
+                            owner.toLowerCase()
+                        );
+                      }
+                    );
+
+                  return foundUser
+                    ? String(foundUser.id)
+                    : null;
+                }
+
+                return null;
+              })
+              .filter(Boolean);
+        }
+
+        // -------------------------------------------------
+        // Backward compatibility with old ticket_owner
+        // -------------------------------------------------
+
+        if (
+          ownerIds.length === 0 &&
+          ticketDetail.ticket_owner !==
+            null &&
+          ticketDetail.ticket_owner !==
+            undefined
+        ) {
+          const oldOwner =
+            ticketDetail.ticket_owner;
+
+          // Numeric ID
+          if (
+            typeof oldOwner === "number"
+          ) {
+            ownerIds = [
+              String(oldOwner),
+            ];
+          }
+
+          // Numeric string
+          else if (
+            typeof oldOwner === "string" &&
+            !isNaN(oldOwner)
+          ) {
+            ownerIds = [
+              String(oldOwner),
+            ];
+          }
+
+          // Name/email
+          else if (
+            typeof oldOwner === "string"
+          ) {
+            const foundUser =
+              usersData.find((user) => {
+                const fullName =
+                  `${user.first_name || ""} ${
+                    user.last_name || ""
+                  }`.trim();
+
+                return (
+                  String(
+                    user.email || ""
+                  ).toLowerCase() ===
+                    oldOwner.toLowerCase() ||
+                  fullName.toLowerCase() ===
+                    oldOwner.toLowerCase()
+                );
+              });
+
+            if (foundUser) {
+              ownerIds = [
+                String(foundUser.id),
+              ];
+            }
+          }
+
+          // Object
+          else if (
+            oldOwner &&
+            typeof oldOwner === "object" &&
+            oldOwner.id
+          ) {
+            ownerIds = [
+              String(oldOwner.id),
+            ];
           }
         }
+
+        console.log(
+          "EDIT TICKET OWNER IDS:",
+          ownerIds
+        );
 
         // =================================================
         // FIND DEAL ID
@@ -148,7 +281,9 @@ export default function EditTicketDrawer({
         if (
           typeof associatedDeal === "number"
         ) {
-          dealId = String(associatedDeal);
+          dealId = String(
+            associatedDeal
+          );
         }
 
         // Deal ID as string
@@ -157,7 +292,9 @@ export default function EditTicketDrawer({
           typeof associatedDeal === "string" &&
           !isNaN(associatedDeal)
         ) {
-          dealId = String(associatedDeal);
+          dealId = String(
+            associatedDeal
+          );
         }
 
         // Deal object
@@ -167,7 +304,9 @@ export default function EditTicketDrawer({
           typeof associatedDeal === "object"
         ) {
           if (associatedDeal.id) {
-            dealId = String(associatedDeal.id);
+            dealId = String(
+              associatedDeal.id
+            );
           }
         }
 
@@ -178,15 +317,21 @@ export default function EditTicketDrawer({
             ticketDetail.associated_deal_name;
 
           if (dealName) {
-            const deal = dealsData.find(
-              (item) =>
-                String(item.deal_name || "")
-                  .toLowerCase() ===
-                String(dealName).toLowerCase()
-            );
+            const deal =
+              dealsData.find(
+                (item) =>
+                  String(
+                    item.deal_name || ""
+                  ).toLowerCase() ===
+                  String(
+                    dealName
+                  ).toLowerCase()
+              );
 
             if (deal) {
-              dealId = String(deal.id);
+              dealId = String(
+                deal.id
+              );
             }
           }
         }
@@ -197,22 +342,27 @@ export default function EditTicketDrawer({
 
         setFormData({
           ticketName:
-            ticketDetail.ticket_name || "",
+            ticketDetail.ticket_name ||
+            "",
 
           description:
-            ticketDetail.description || "",
+            ticketDetail.description ||
+            "",
 
           ticketStatus:
-            ticketDetail.ticket_status || "",
+            ticketDetail.ticket_status ||
+            "",
 
           source:
-            ticketDetail.source || "",
+            ticketDetail.source ||
+            "",
 
           priority:
-            ticketDetail.priority || "",
+            ticketDetail.priority ||
+            "",
 
-          ticketOwner:
-            ownerId,
+          ticketOwners:
+            ownerIds,
 
           associatedDeal:
             dealId,
@@ -235,7 +385,10 @@ export default function EditTicketDrawer({
   // =====================================================
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const {
+      name,
+      value,
+    } = e.target;
 
     setFormData((prev) => ({
       ...prev,
@@ -252,17 +405,50 @@ export default function EditTicketDrawer({
 
     if (!ticketId) return;
 
+    // =================================================
+    // VALIDATION
+    // =================================================
+
+    if (
+      !formData.ticketOwners ||
+      formData.ticketOwners.length === 0
+    ) {
+      alert(
+        "Please select at least one Ticket Owner."
+      );
+      return;
+    }
+
     try {
       setLoading(true);
 
       const payload = {
-        ticket_name: formData.ticketName,
-        description: formData.description,
-        ticket_status: formData.ticketStatus,
-        source: formData.source,
-        priority: formData.priority,
-        ticket_owner: Number(formData.ticketOwner),
-        associated_deal: Number(formData.associatedDeal),
+        ticket_name:
+          formData.ticketName,
+
+        description:
+          formData.description,
+
+        ticket_status:
+          formData.ticketStatus,
+
+        source:
+          formData.source,
+
+        priority:
+          formData.priority,
+
+        // IMPORTANT:
+        // ManyToMany field
+        ticket_owners:
+          formData.ticketOwners.map(
+            (id) => Number(id)
+          ),
+
+        associated_deal:
+          Number(
+            formData.associatedDeal
+          ),
       };
 
       console.log(
@@ -270,10 +456,11 @@ export default function EditTicketDrawer({
         payload
       );
 
-      const response = await api.put(
-        `/tickets/${ticketId}/`,
-        payload
-      );
+      const response =
+        await api.put(
+          `/tickets/${ticketId}/`,
+          payload
+        );
 
       console.log(
         "Ticket updated:",
@@ -308,7 +495,7 @@ export default function EditTicketDrawer({
       ticketStatus: "",
       source: "",
       priority: "",
-      ticketOwner: "",
+      ticketOwners: [],
       associatedDeal: "",
     });
 
@@ -363,7 +550,9 @@ export default function EditTicketDrawer({
           <CommonInput
             label="Ticket Name"
             name="ticketName"
-            value={formData.ticketName}
+            value={
+              formData.ticketName
+            }
             onChange={handleChange}
             placeholder="Enter"
             fullWidth
@@ -384,7 +573,14 @@ export default function EditTicketDrawer({
                 }}
               >
                 Description
-                <span style={{ color: "red" }}> *</span>
+                <span
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
               </Typography>
 
               <TextField
@@ -393,14 +589,18 @@ export default function EditTicketDrawer({
                 fullWidth
                 multiline
                 rows={4}
-                value={formData.description}
+                value={
+                  formData.description
+                }
                 onChange={handleChange}
                 required
                 disabled={loadingData}
                 sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "10px",
-                  },
+                  "& .MuiOutlinedInput-root":
+                    {
+                      borderRadius:
+                        "10px",
+                    },
                 }}
               />
             </Grid>
@@ -421,7 +621,14 @@ export default function EditTicketDrawer({
                 }}
               >
                 Ticket Status
-                <span style={{ color: "red" }}> *</span>
+                <span
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
               </Typography>
 
               <FormControl
@@ -435,10 +642,16 @@ export default function EditTicketDrawer({
 
                 <Select
                   name="ticketStatus"
-                  value={formData.ticketStatus}
+                  value={
+                    formData.ticketStatus
+                  }
                   label="Choose"
-                  onChange={handleChange}
-                  disabled={loadingData}
+                  onChange={
+                    handleChange
+                  }
+                  disabled={
+                    loadingData
+                  }
                 >
                   <MenuItem value="NEW">
                     New
@@ -479,7 +692,14 @@ export default function EditTicketDrawer({
                 }}
               >
                 Source
-                <span style={{ color: "red" }}> *</span>
+                <span
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
               </Typography>
 
               <FormControl
@@ -493,10 +713,16 @@ export default function EditTicketDrawer({
 
                 <Select
                   name="source"
-                  value={formData.source}
+                  value={
+                    formData.source
+                  }
                   label="Choose"
-                  onChange={handleChange}
-                  disabled={loadingData}
+                  onChange={
+                    handleChange
+                  }
+                  disabled={
+                    loadingData
+                  }
                 >
                   <MenuItem value="CHAT">
                     Chat
@@ -530,7 +756,14 @@ export default function EditTicketDrawer({
               }}
             >
               Priority
-              <span style={{ color: "red" }}> *</span>
+              <span
+                style={{
+                  color: "red",
+                }}
+              >
+                {" "}
+                *
+              </span>
             </Typography>
 
             <FormControl
@@ -544,10 +777,16 @@ export default function EditTicketDrawer({
 
               <Select
                 name="priority"
-                value={formData.priority}
+                value={
+                  formData.priority
+                }
                 label="Choose"
-                onChange={handleChange}
-                disabled={loadingData}
+                onChange={
+                  handleChange
+                }
+                disabled={
+                  loadingData
+                }
               >
                 <MenuItem value="HIGH">
                   High
@@ -580,7 +819,14 @@ export default function EditTicketDrawer({
               }}
             >
               Ticket Owner
-              <span style={{ color: "red" }}> *</span>
+              <span
+                style={{
+                  color: "red",
+                }}
+              >
+                {" "}
+                *
+              </span>
             </Typography>
 
             <FormControl
@@ -593,22 +839,82 @@ export default function EditTicketDrawer({
               </InputLabel>
 
               <Select
-                name="ticketOwner"
-                value={formData.ticketOwner}
+                multiple
+                name="ticketOwners"
+                value={
+                  formData.ticketOwners
+                }
                 label="Choose"
-                onChange={handleChange}
-                disabled={loadingData}
+                onChange={
+                  handleChange
+                }
+                disabled={
+                  loadingData
+                }
+                renderValue={(
+                  selected
+                ) =>
+                  selected
+                    .map((id) => {
+                      const user =
+                        users.find(
+                          (item) =>
+                            String(
+                              item.id
+                            ) ===
+                            String(id)
+                        );
+
+                      if (!user)
+                        return "";
+
+                      const fullName =
+                        `${user.first_name || ""} ${
+                          user.last_name || ""
+                        }`.trim();
+
+                      return (
+                        fullName ||
+                        user.email ||
+                        ""
+                      );
+                    })
+                    .filter(Boolean)
+                    .join(", ")
+                }
               >
-                {users.map((user) => (
-                  <MenuItem
-                    key={user.id}
-                    value={String(user.id)}
-                  >
-                    {`${user.first_name || ""} ${
-                      user.last_name || ""
-                    }`.trim() || user.email}
-                  </MenuItem>
-                ))}
+                {users.map(
+                  (user) => {
+                    const userName =
+                      `${user.first_name || ""} ${
+                        user.last_name || ""
+                      }`.trim() ||
+                      user.email;
+
+                    return (
+                      <MenuItem
+                        key={user.id}
+                        value={String(
+                          user.id
+                        )}
+                      >
+                        <Checkbox
+                          checked={formData.ticketOwners.includes(
+                            String(
+                              user.id
+                            )
+                          )}
+                        />
+
+                        <ListItemText
+                          primary={
+                            userName
+                          }
+                        />
+                      </MenuItem>
+                    );
+                  }
+                )}
               </Select>
             </FormControl>
           </Box>
@@ -625,7 +931,14 @@ export default function EditTicketDrawer({
               }}
             >
               Associated Deal
-              <span style={{ color: "red" }}> *</span>
+              <span
+                style={{
+                  color: "red",
+                }}
+              >
+                {" "}
+                *
+              </span>
             </Typography>
 
             <FormControl
@@ -639,19 +952,31 @@ export default function EditTicketDrawer({
 
               <Select
                 name="associatedDeal"
-                value={formData.associatedDeal}
+                value={
+                  formData.associatedDeal
+                }
                 label="Choose"
-                onChange={handleChange}
-                disabled={loadingData}
+                onChange={
+                  handleChange
+                }
+                disabled={
+                  loadingData
+                }
               >
-                {deals.map((deal) => (
-                  <MenuItem
-                    key={deal.id}
-                    value={String(deal.id)}
-                  >
-                    {deal.deal_name}
-                  </MenuItem>
-                ))}
+                {deals.map(
+                  (deal) => (
+                    <MenuItem
+                      key={deal.id}
+                      value={String(
+                        deal.id
+                      )}
+                    >
+                      {
+                        deal.deal_name
+                      }
+                    </MenuItem>
+                  )
+                )}
               </Select>
             </FormControl>
           </Box>
@@ -666,7 +991,8 @@ export default function EditTicketDrawer({
             display: "flex",
             gap: 2,
             p: 3,
-            borderTop: "1px solid #E5E7EB",
+            borderTop:
+              "1px solid #E5E7EB",
           }}
         >
           <CommonButton
@@ -682,13 +1008,18 @@ export default function EditTicketDrawer({
             type="submit"
             fullWidth
             disabled={
-              loading || loadingData || !ticketId
+              loading ||
+              loadingData ||
+              !ticketId
             }
           >
-            {loading ? "Saving..." : "Save"}
+            {loading
+              ? "Saving..."
+              : "Save"}
           </CommonButton>
         </Box>
       </Box>
     </Drawer>
   );
 }
+

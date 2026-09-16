@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../../../layout/MainLayout";
@@ -52,7 +53,9 @@ export default function TicketsList() {
   // FILTERS
   // =====================================================
 
-  const [ticketOwner, setTicketOwner] = useState("");
+  // Ticket Owner is MULTI-SELECT
+  const [ticketOwner, setTicketOwner] = useState([]);
+
   const [status, setStatus] = useState("");
   const [source, setSource] = useState("");
   const [priority, setPriority] = useState("");
@@ -90,13 +93,25 @@ export default function TicketsList() {
           api.get("/accounts/users/"),
         ]);
 
-      setTicketsData(ticketsResponse.data);
-      setUsers(usersResponse.data);
+      const tickets = Array.isArray(
+        ticketsResponse.data
+      )
+        ? ticketsResponse.data
+        : ticketsResponse.data.results || [];
+
+      const usersData = Array.isArray(
+        usersResponse.data
+      )
+        ? usersResponse.data
+        : usersResponse.data.results || [];
+
+      setTicketsData(tickets);
+      setUsers(usersData);
 
       // Remove deleted/non-existing tickets from selection
       setSelectedTickets((prev) =>
         prev.filter((id) =>
-          ticketsResponse.data.some(
+          tickets.some(
             (ticket) => ticket.id === id
           )
         )
@@ -125,108 +140,217 @@ export default function TicketsList() {
   // OWNER OPTIONS
   // =====================================================
 
-  const ownerOptions = users
-    .map((user) => {
-      const fullName =
-        `${user.first_name || ""} ${
-          user.last_name || ""
-        }`.trim();
+  const ownerOptions = [
+    ...new Set(
+      users
+        .map((user) => {
+          const fullName =
+            `${user.first_name || ""} ${
+              user.last_name || ""
+            }`.trim();
 
-      return fullName || user.email || "";
-    })
-    .filter(Boolean);
+          return fullName || user.email || "";
+        })
+        .filter(Boolean)
+    ),
+  ];
+
+  // =====================================================
+  // GET TICKET OWNER NAMES
+  // =====================================================
+
+  const getTicketOwnerNames = (ticket) => {
+    // ---------------------------------------------------
+    // CASE 1:
+    // Backend returns:
+    // ticket_owner_ids: [16, 17]
+    // ---------------------------------------------------
+
+    if (Array.isArray(ticket.ticket_owner_ids)) {
+      return ticket.ticket_owner_ids
+        .map((ownerId) => {
+          const user = users.find(
+            (user) =>
+              String(user.id) ===
+              String(ownerId)
+          );
+
+          if (!user) return "";
+
+          const fullName =
+            `${user.first_name || ""} ${
+              user.last_name || ""
+            }`.trim();
+
+          return (
+            fullName ||
+            user.email ||
+            ""
+          );
+        })
+        .filter(Boolean);
+    }
+
+    // ---------------------------------------------------
+    // CASE 2:
+    // Backend returns:
+    // ticket_owners: ["Sajid Jubi", "Riya Mehwish"]
+    // ---------------------------------------------------
+
+    if (Array.isArray(ticket.ticket_owners)) {
+      return ticket.ticket_owners
+        .map((owner) => {
+          // Owner is already a string
+          if (typeof owner === "string") {
+            return owner;
+          }
+
+          // Owner is an object
+          if (
+            typeof owner === "object" &&
+            owner !== null
+          ) {
+            const fullName =
+              `${owner.first_name || ""} ${
+                owner.last_name || ""
+              }`.trim();
+
+            return (
+              fullName ||
+              owner.email ||
+              ""
+            );
+          }
+
+          return "";
+        })
+        .filter(Boolean);
+    }
+
+    // ---------------------------------------------------
+    // CASE 3:
+    // Backward compatibility with old single owner
+    // ---------------------------------------------------
+
+    if (ticket.ticket_owner) {
+      return [ticket.ticket_owner];
+    }
+
+    return [];
+  };
 
   // =====================================================
   // SEARCH + FILTER
   // =====================================================
 
-  const filteredTickets = ticketsData.filter((ticket) => {
-    const searchValue = search.trim().toLowerCase();
+  const filteredTickets = ticketsData.filter(
+    (ticket) => {
+      const searchValue =
+        search.trim().toLowerCase();
 
-    const ticketName =
-      ticket.ticket_name?.toLowerCase() || "";
+      const ticketName =
+        ticket.ticket_name?.toLowerCase() || "";
 
-    const dealName =
-      ticket.deal_name?.toLowerCase() || "";
+      const dealName =
+        ticket.deal_name?.toLowerCase() || "";
 
-    const ticketOwnerValue =
-      ticket.ticket_owner?.toLowerCase() || "";
+      // =================================================
+      // TICKET OWNERS
+      // =================================================
 
-    const matchesSearch =
-      !searchValue ||
-      ticketName.includes(searchValue) ||
-      dealName.includes(searchValue) ||
-      ticketOwnerValue.includes(searchValue);
+      const ticketOwnerValues =
+        getTicketOwnerNames(ticket);
 
-    // -----------------------------------------------------
-    // OWNER
-    // -----------------------------------------------------
+      const ticketOwnerSearchText =
+        ticketOwnerValues
+          .join(" ")
+          .toLowerCase();
 
-    const matchesOwner =
-      !ticketOwner ||
-      ticketOwnerValue.includes(
-        ticketOwner.toLowerCase()
-      ) ||
-      ticketOwner.toLowerCase().includes(
-        ticketOwnerValue
+      // =================================================
+      // SEARCH
+      // =================================================
+
+      const matchesSearch =
+        !searchValue ||
+        ticketName.includes(searchValue) ||
+        dealName.includes(searchValue) ||
+        ticketOwnerSearchText.includes(
+          searchValue
+        );
+
+      // =================================================
+      // OWNER FILTER
+      // =================================================
+
+      const matchesOwner =
+        ticketOwner.length === 0 ||
+        ticketOwner.some((selectedOwner) =>
+          ticketOwnerValues.some(
+            (owner) =>
+              owner?.toLowerCase() ===
+              selectedOwner?.toLowerCase()
+          )
+        );
+
+      // =================================================
+      // STATUS
+      // =================================================
+
+      const normalizedTicketStatus =
+        ticket.ticket_status
+          ?.toLowerCase()
+          .replaceAll("_", " ")
+          .trim();
+
+      const normalizedSelectedStatus =
+        status
+          ?.toLowerCase()
+          .replaceAll("_", " ")
+          .trim();
+
+      const matchesStatus =
+        !status ||
+        normalizedTicketStatus ===
+          normalizedSelectedStatus;
+
+      // =================================================
+      // SOURCE
+      // =================================================
+
+      const matchesSource =
+        !source ||
+        ticket.source?.toLowerCase() ===
+          source.toLowerCase();
+
+      // =================================================
+      // PRIORITY
+      // =================================================
+
+      const matchesPriority =
+        !priority ||
+        ticket.priority?.toLowerCase() ===
+          priority.toLowerCase();
+
+      // =================================================
+      // CREATED DATE
+      // =================================================
+
+      const matchesCreatedDate =
+        !createdDate ||
+        ticket.created_date?.startsWith(
+          createdDate
+        );
+
+      return (
+        matchesSearch &&
+        matchesOwner &&
+        matchesStatus &&
+        matchesSource &&
+        matchesPriority &&
+        matchesCreatedDate
       );
-
-    // -----------------------------------------------------
-    // STATUS
-    // -----------------------------------------------------
-
-    const normalizedTicketStatus =
-      ticket.ticket_status
-        ?.toLowerCase()
-        .replaceAll("_", " ")
-        .trim();
-
-    const normalizedSelectedStatus =
-      status
-        ?.toLowerCase()
-        .replaceAll("_", " ")
-        .trim();
-
-    const matchesStatus =
-      !status ||
-      normalizedTicketStatus ===
-        normalizedSelectedStatus;
-
-    // -----------------------------------------------------
-    // SOURCE
-    // -----------------------------------------------------
-
-    const matchesSource =
-      !source ||
-      ticket.source?.toLowerCase() ===
-        source.toLowerCase();
-
-    // -----------------------------------------------------
-    // PRIORITY
-    // -----------------------------------------------------
-
-    const matchesPriority =
-      !priority ||
-      ticket.priority?.toLowerCase() ===
-        priority.toLowerCase();
-
-    // -----------------------------------------------------
-    // CREATED DATE
-    // -----------------------------------------------------
-
-    const matchesCreatedDate =
-      !createdDate ||
-      ticket.created_date?.startsWith(createdDate);
-
-    return (
-      matchesSearch &&
-      matchesOwner &&
-      matchesStatus &&
-      matchesSource &&
-      matchesPriority &&
-      matchesCreatedDate
-    );
-  });
+    }
+  );
 
   // =====================================================
   // CHECKBOX SELECTION
@@ -235,7 +359,9 @@ export default function TicketsList() {
   const handleSelectTicket = (ticketId) => {
     setSelectedTickets((prev) => {
       if (prev.includes(ticketId)) {
-        return prev.filter((id) => id !== ticketId);
+        return prev.filter(
+          (id) => id !== ticketId
+        );
       }
 
       return [...prev, ticketId];
@@ -254,7 +380,9 @@ export default function TicketsList() {
       setSelectedTickets([]);
     } else {
       setSelectedTickets(
-        filteredTickets.map((ticket) => ticket.id)
+        filteredTickets.map(
+          (ticket) => ticket.id
+        )
       );
     }
   };
@@ -270,14 +398,15 @@ export default function TicketsList() {
     );
 
   const someSelected =
-    selectedTickets.length > 0 && !allSelected;
+    selectedTickets.length > 0 &&
+    !allSelected;
 
   // =====================================================
   // CLEAR FILTERS
   // =====================================================
 
   const clearFilters = () => {
-    setTicketOwner("");
+    setTicketOwner([]);
     setStatus("");
     setSource("");
     setPriority("");
@@ -316,10 +445,14 @@ export default function TicketsList() {
     if (!confirmed) return;
 
     try {
-      await api.delete(`/tickets/${ticket.id}/`);
+      await api.delete(
+        `/tickets/${ticket.id}/`
+      );
 
       setSelectedTickets((prev) =>
-        prev.filter((id) => id !== ticket.id)
+        prev.filter(
+          (id) => id !== ticket.id
+        )
       );
 
       await fetchTickets();
@@ -342,7 +475,8 @@ export default function TicketsList() {
             margin: "0 auto",
             marginTop: "5px",
             padding: "5px",
-            backgroundColor: "background.default",
+            backgroundColor:
+              "background.default",
             borderRadius: "10px",
             boxShadow: "3px",
           }}
@@ -358,9 +492,12 @@ export default function TicketsList() {
               boxShadow: "4px",
               border: "1px solid",
               borderColor: "divider",
-              bgcolor: "background.paper",
-              borderTopLeftRadius: "12px",
-              borderTopRightRadius: "12px",
+              bgcolor:
+                "background.paper",
+              borderTopLeftRadius:
+                "12px",
+              borderTopRightRadius:
+                "12px",
             }}
           >
             <PageHeader
@@ -405,7 +542,9 @@ export default function TicketsList() {
 
             <EditTicketDrawer
               open={openEditDrawer}
-              ticketId={selectedTicket?.id}
+              ticketId={
+                selectedTicket?.id
+              }
               onClose={handleCloseEdit}
               onUpdated={fetchTickets}
             />
@@ -421,10 +560,12 @@ export default function TicketsList() {
               boxShadow: "4px",
               border: "1px solid",
               borderColor: "divider",
-              bgcolor: "background.paper",
+              bgcolor:
+                "background.paper",
               height: "12vh",
               marginTop: "4px",
-              transform: "translateY(-5px)",
+              transform:
+                "translateY(-5px)",
             }}
           >
             <SearchSection
@@ -433,20 +574,19 @@ export default function TicketsList() {
               totalPages={Math.max(
                 1,
                 Math.ceil(
-                  filteredTickets.length / 10
+                  filteredTickets.length /
+                    10
                 )
               )}
               onPageChange={setPage}
               searchValue={search}
               onSearchChange={(e) => {
-                setSearch(e.target.value);
+                setSearch(
+                  e.target.value
+                );
                 setPage(1);
               }}
             />
-
- 
-
-
           </Box>
 
           {/* =====================================================
@@ -460,8 +600,19 @@ export default function TicketsList() {
               placeholder="Ticket Owner"
               options={ownerOptions}
               value={ticketOwner}
+              multiple
               onChange={(e) => {
-                setTicketOwner(e.target.value);
+                const value =
+                  e.target.value;
+
+                setTicketOwner(
+                  Array.isArray(value)
+                    ? value
+                    : value
+                    ? [value]
+                    : []
+                );
+
                 setPage(1);
               }}
             />
@@ -480,7 +631,9 @@ export default function TicketsList() {
               ]}
               value={status}
               onChange={(e) => {
-                setStatus(e.target.value);
+                setStatus(
+                  e.target.value
+                );
                 setPage(1);
               }}
             />
@@ -497,7 +650,9 @@ export default function TicketsList() {
               ]}
               value={source}
               onChange={(e) => {
-                setSource(e.target.value);
+                setSource(
+                  e.target.value
+                );
                 setPage(1);
               }}
             />
@@ -514,7 +669,9 @@ export default function TicketsList() {
               ]}
               value={priority}
               onChange={(e) => {
-                setPriority(e.target.value);
+                setPriority(
+                  e.target.value
+                );
                 setPage(1);
               }}
             />
@@ -525,7 +682,9 @@ export default function TicketsList() {
               type="date"
               value={createdDate}
               onChange={(e) => {
-                setCreatedDate(e.target.value);
+                setCreatedDate(
+                  e.target.value
+                );
                 setPage(1);
               }}
               size="small"
@@ -549,7 +708,8 @@ export default function TicketsList() {
                     <InputAdornment position="start">
                       <CalendarMonthIcon
                         sx={{
-                          color: "#98A2B3",
+                          color:
+                            "#98A2B3",
                           fontSize: 20,
                         }}
                       />
@@ -559,11 +719,15 @@ export default function TicketsList() {
               }}
             />
 
-            <Box sx={{ flexGrow: 1 }} />
+            <Box
+              sx={{
+                flexGrow: 1,
+              }}
+            />
 
             {/* CLEAR FILTERS */}
 
-            {(ticketOwner ||
+            {(ticketOwner.length > 0 ||
               status ||
               source ||
               priority ||
@@ -571,7 +735,9 @@ export default function TicketsList() {
               search) && (
               <CommonButton
                 variant="outlined"
-                onClick={clearFilters}
+                onClick={
+                  clearFilters
+                }
               >
                 Clear
               </CommonButton>
@@ -587,8 +753,12 @@ export default function TicketsList() {
               <Checkbox
                 size="small"
                 checked={allSelected}
-                indeterminate={someSelected}
-                onChange={handleSelectAll}
+                indeterminate={
+                  someSelected
+                }
+                onChange={
+                  handleSelectAll
+                }
               />,
               "TICKET NAME",
               "DEAL NAME",
@@ -614,8 +784,6 @@ export default function TicketsList() {
                 </TableCell>
               </TableRow>
             ) : error ? (
-              /* ERROR */
-
               <TableRow>
                 <TableCell
                   colSpan={9}
@@ -624,9 +792,8 @@ export default function TicketsList() {
                   {error}
                 </TableCell>
               </TableRow>
-            ) : filteredTickets.length === 0 ? (
-              /* EMPTY */
-
+            ) : filteredTickets.length ===
+              0 ? (
               <TableRow>
                 <TableCell
                   colSpan={9}
@@ -636,116 +803,152 @@ export default function TicketsList() {
                 </TableCell>
               </TableRow>
             ) : (
-              /* TICKETS */
+              filteredTickets.map(
+                (ticket) => {
+                  // =================================================
+                  // TICKET OWNER NAMES
+                  // =================================================
 
-              filteredTickets.map((ticket) => (
-                <TableRow key={ticket.id}>
-                  {/* CHECKBOX */}
+                  const ticketOwners =
+                    getTicketOwnerNames(
+                      ticket
+                    );
 
-                  <TableCell>
-                    <Checkbox
-                      size="small"
-                      checked={selectedTickets.includes(
-                        ticket.id
-                      )}
-                      onChange={() =>
-                        handleSelectTicket(
-                          ticket.id
-                        )
-                      }
-                    />
-                  </TableCell>
-
-                  {/* TICKET NAME */}
-
-                  <TableCell>
-                    <Box
-                      component="span"
-                      onClick={() =>
-                        navigate(
-                          `/tickets/${ticket.id}/activities`
-                        )
-                      }
-                      sx={{
-                        color: "#5948DB",
-                        cursor: "pointer",
-                        fontWeight: 500,
-                        "&:hover": {
-                          textDecoration: "underline",
-                        },
-                      }}
+                  return (
+                    <TableRow
+                      key={ticket.id}
                     >
-                      {ticket.ticket_name}
-                    </Box>
-                  </TableCell>
+                      {/* CHECKBOX */}
 
-                  {/* DEAL NAME */}
+                      <TableCell>
+                        <Checkbox
+                          size="small"
+                          checked={selectedTickets.includes(
+                            ticket.id
+                          )}
+                          onChange={() =>
+                            handleSelectTicket(
+                              ticket.id
+                            )
+                          }
+                        />
+                      </TableCell>
 
-                  <TableCell>
-                    {ticket.deal_name || "-"}
-                  </TableCell>
+                      {/* TICKET NAME */}
 
-                  {/* STATUS */}
+                      <TableCell>
+                        <Box
+                          component="span"
+                          onClick={() =>
+                            navigate(
+                              `/tickets/${ticket.id}/activities`
+                            )
+                          }
+                          sx={{
+                            color:
+                              "#5948DB",
+                            cursor:
+                              "pointer",
+                            fontWeight: 500,
+                            "&:hover": {
+                              textDecoration:
+                                "underline",
+                            },
+                          }}
+                        >
+                          {
+                            ticket.ticket_name
+                          }
+                        </Box>
+                      </TableCell>
 
-                  <TableCell>
-                    {ticket.ticket_status}
-                  </TableCell>
+                      {/* DEAL NAME */}
 
-                  {/* PRIORITY */}
+                      <TableCell>
+                        {
+                          ticket.deal_name ||
+                          "-"
+                        }
+                      </TableCell>
 
-                  <TableCell>
-                    {ticket.priority}
-                  </TableCell>
+                      {/* STATUS */}
 
-                  {/* SOURCE */}
+                      <TableCell>
+                        {
+                          ticket.ticket_status
+                        }
+                      </TableCell>
 
-                  <TableCell>
-                    {ticket.source}
-                  </TableCell>
+                      {/* PRIORITY */}
 
-                  {/* OWNER */}
+                      <TableCell>
+                        {
+                          ticket.priority
+                        }
+                      </TableCell>
 
-                  <TableCell>
-                    {ticket.ticket_owner || "-"}
-                  </TableCell>
+                      {/* SOURCE */}
 
-                  {/* CREATED DATE */}
+                      <TableCell>
+                        {
+                          ticket.source
+                        }
+                      </TableCell>
 
-                  <TableCell>
-                    {ticket.created_date
-                      ? new Date(
-                          ticket.created_date
-                        ).toLocaleString()
-                      : "-"}
-                  </TableCell>
+                      {/* OWNER */}
 
-                  {/* ACTIONS */}
+                      <TableCell>
+                        {ticketOwners.length >
+                        0
+                          ? ticketOwners.join(
+                              ", "
+                            )
+                          : "-"}
+                      </TableCell>
 
-                  <TableCell>
-                    {/* EDIT */}
+                      {/* CREATED DATE */}
 
-                    <IconButton
-                      color="primary"
-                      onClick={() =>
-                        handleEdit(ticket)
-                      }
-                    >
-                      <EditIcon />
-                    </IconButton>
+                      <TableCell>
+                        {ticket.created_date
+                          ? new Date(
+                              ticket.created_date
+                            ).toLocaleString()
+                          : "-"}
+                      </TableCell>
 
-                    {/* DELETE */}
+                      {/* ACTIONS */}
 
-                    <IconButton
-                      color="error"
-                      onClick={() =>
-                        handleDelete(ticket)
-                      }
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
+                      <TableCell>
+                        {/* EDIT */}
+
+                        <IconButton
+                          color="primary"
+                          onClick={() =>
+                            handleEdit(
+                              ticket
+                            )
+                          }
+                        >
+                          <EditIcon />
+                        </IconButton>
+
+                        {/* DELETE */}
+
+                        <IconButton
+                          color="error"
+                          onClick={() =>
+                            handleDelete(
+                              ticket
+                            )
+                          }
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
+              )
             )}
           </DataTable>
         </Box>

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   useNavigate,
@@ -54,6 +53,7 @@ function DealsList() {
   const [dealStageOptions, setDealStageOptions] =
     useState([]);
 
+  // Deal Owner filter
   const [dealOwner, setDealOwner] = useState("");
 
   // Close Date
@@ -321,6 +321,13 @@ function DealsList() {
         deal.lead_name
           ?.toLowerCase()
           .includes(searchText) ||
+        (Array.isArray(deal.deal_owners) &&
+          deal.deal_owners.some(
+            (owner) =>
+              owner
+                ?.toLowerCase()
+                .includes(searchText),
+          )) ||
         matchesCloseDateSearch;
 
       // -------------------------------------------------
@@ -335,9 +342,24 @@ function DealsList() {
       // DEAL OWNER
       // -------------------------------------------------
 
+      /*
+       * Backend now returns:
+       *
+       * deal_owners: [
+       *   "Sajid Jubi",
+       *   "Riya Mehwish"
+       * ]
+       *
+       * So the filter checks whether the selected
+       * owner exists inside the deal_owners array.
+       */
+
       const matchesOwner =
         !dealOwner ||
-        deal.deal_owner === dealOwner;
+        (Array.isArray(deal.deal_owners) &&
+          deal.deal_owners.includes(
+            dealOwner,
+          ));
 
       // -------------------------------------------------
       // CLOSE DATE FILTER
@@ -379,14 +401,32 @@ function DealsList() {
   // DEAL OWNER OPTIONS
   // =================================================
 
+  /*
+   * Since a deal can now have multiple owners,
+   * collect all owner names from all deals.
+   *
+   * Example:
+   *
+   * Deal 1:
+   * ["Sajid Jubi", "Riya Mehwish"]
+   *
+   * Deal 2:
+   * ["Hisham", "Sajid Jubi"]
+   *
+   * Result:
+   * ["Sajid Jubi", "Riya Mehwish", "Hisham"]
+   */
+
   const dealOwnerOptions = [
     ...new Set(
-      dealsData
-        .map(
-          (deal) =>
-            deal.deal_owner,
-        )
-        .filter(Boolean),
+      dealsData.flatMap(
+        (deal) =>
+          Array.isArray(
+            deal.deal_owners,
+          )
+            ? deal.deal_owners
+            : [],
+      ),
     ),
   ];
 
@@ -744,9 +784,13 @@ function DealsList() {
                   {/* DEAL OWNER */}
 
                   <TableCell>
-                    {
-                      deal.deal_owner
-                    }
+                    {Array.isArray(
+                      deal.deal_owners,
+                    )
+                      ? deal.deal_owners.join(
+                          ", ",
+                        )
+                      : "-"}
                   </TableCell>
 
                   {/* AMOUNT */}
@@ -797,4 +841,3 @@ function DealsList() {
 }
 
 export default DealsList;
-

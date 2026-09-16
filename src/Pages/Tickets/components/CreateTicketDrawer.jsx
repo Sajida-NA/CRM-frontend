@@ -10,6 +10,8 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Checkbox,
+  ListItemText,
 } from "@mui/material";
 
 import DrawerHeader from "../../../Components/common/DrawerHeader";
@@ -29,7 +31,10 @@ export default function CreateTicketDrawer({ open, onClose }) {
     ticketStatus: "",
     source: "",
     priority: "",
-    ticketOwner: "",
+
+    // MULTIPLE TICKET OWNERS
+    ticketOwners: [],
+
     associatedDeal: "",
   });
 
@@ -60,33 +65,31 @@ export default function CreateTicketDrawer({ open, onClose }) {
         setLoadingOptions(true);
         setError("");
 
-        const [usersResponse, dealsResponse] = await Promise.all([
-          api.get("/accounts/users/"),
-          api.get("/deals/"),
-        ]);
+        const [usersResponse, dealsResponse] =
+          await Promise.all([
+            api.get("/accounts/users/"),
+            api.get("/deals/"),
+          ]);
 
-        console.log("USERS RESPONSE:", usersResponse.data);
-        console.log("DEALS RESPONSE:", dealsResponse.data);
+        console.log(
+          "USERS RESPONSE:",
+          usersResponse.data
+        );
 
-        /*
-         * In case API returns:
-         *
-         * [
-         *   {...}
-         * ]
-         *
-         * or:
-         *
-         * {
-         *   results: [...]
-         * }
-         */
+        console.log(
+          "DEALS RESPONSE:",
+          dealsResponse.data
+        );
 
-        const usersData = Array.isArray(usersResponse.data)
+        const usersData = Array.isArray(
+          usersResponse.data
+        )
           ? usersResponse.data
           : usersResponse.data.results || [];
 
-        const dealsData = Array.isArray(dealsResponse.data)
+        const dealsData = Array.isArray(
+          dealsResponse.data
+        )
           ? dealsResponse.data
           : dealsResponse.data.results || [];
 
@@ -96,7 +99,8 @@ export default function CreateTicketDrawer({ open, onClose }) {
 
         const closedWonDeals = dealsData.filter(
           (deal) =>
-            deal.deal_stage?.toLowerCase() === "closed won"
+            deal.deal_stage?.toLowerCase() ===
+            "closed won"
         );
 
         setUsers(usersData);
@@ -106,7 +110,6 @@ export default function CreateTicketDrawer({ open, onClose }) {
           "CLOSED WON DEALS:",
           closedWonDeals
         );
-
       } catch (err) {
         console.error(
           "Error loading ticket options:",
@@ -148,7 +151,7 @@ export default function CreateTicketDrawer({ open, onClose }) {
       ticketStatus: "",
       source: "",
       priority: "",
-      ticketOwner: "",
+      ticketOwners: [],
       associatedDeal: "",
     });
 
@@ -162,7 +165,9 @@ export default function CreateTicketDrawer({ open, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("========== SAVE CLICKED ==========");
+    console.log(
+      "========== SAVE CLICKED =========="
+    );
 
     setError("");
 
@@ -176,10 +181,13 @@ export default function CreateTicketDrawer({ open, onClose }) {
       !formData.ticketStatus ||
       !formData.source ||
       !formData.priority ||
-      !formData.ticketOwner ||
+      formData.ticketOwners.length === 0 ||
       !formData.associatedDeal
     ) {
-      setError("Please fill all required fields.");
+      setError(
+        "Please fill all required fields."
+      );
+
       return;
     }
 
@@ -197,9 +205,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
         source: formData.source,
         priority: formData.priority,
 
-        // Convert dropdown IDs to numbers
-        ticket_owner: Number(formData.ticketOwner),
-        associated_deal: Number(formData.associatedDeal),
+        // MULTIPLE OWNER IDS
+        ticket_owners:
+          formData.ticketOwners.map(
+            (id) => Number(id)
+          ),
+
+        associated_deal:
+          Number(formData.associatedDeal),
       };
 
       console.log(
@@ -234,7 +247,6 @@ export default function CreateTicketDrawer({ open, onClose }) {
       // ---------------------------------------------------
 
       onClose();
-
     } catch (err) {
       console.error(
         "========== CREATE TICKET ERROR =========="
@@ -266,30 +278,44 @@ export default function CreateTicketDrawer({ open, onClose }) {
         const backendError =
           err.response.data;
 
-        if (typeof backendError === "string") {
-          errorMessage = backendError;
-
-        } else if (backendError.detail) {
+        if (
+          typeof backendError ===
+          "string"
+        ) {
+          errorMessage =
+            backendError;
+        } else if (
+          backendError.detail
+        ) {
           errorMessage =
             backendError.detail;
-
         } else {
           errorMessage =
-            Object.entries(backendError)
-              .map(([field, messages]) => {
-                const message =
-                  Array.isArray(messages)
-                    ? messages.join(", ")
-                    : messages;
+            Object.entries(
+              backendError
+            )
+              .map(
+                ([
+                  field,
+                  messages,
+                ]) => {
+                  const message =
+                    Array.isArray(
+                      messages
+                    )
+                      ? messages.join(
+                          ", "
+                        )
+                      : messages;
 
-                return `${field}: ${message}`;
-              })
+                  return `${field}: ${message}`;
+                }
+              )
               .join("\n");
         }
       }
 
       setError(errorMessage);
-
     } finally {
       setLoading(false);
     }
@@ -365,14 +391,16 @@ export default function CreateTicketDrawer({ open, onClose }) {
                 p: 1.5,
                 borderRadius: "8px",
                 backgroundColor: "#FEF2F2",
-                border: "1px solid #FECACA",
+                border:
+                  "1px solid #FECACA",
               }}
             >
               <Typography
                 sx={{
                   color: "#DC2626",
                   fontSize: "13px",
-                  whiteSpace: "pre-line",
+                  whiteSpace:
+                    "pre-line",
                 }}
               >
                 {error}
@@ -387,8 +415,12 @@ export default function CreateTicketDrawer({ open, onClose }) {
           <CommonInput
             label="Ticket Name"
             name="ticketName"
-            value={formData.ticketName}
-            onChange={handleChange}
+            value={
+              formData.ticketName
+            }
+            onChange={
+              handleChange
+            }
             placeholder="Enter ticket name"
             fullWidth
             required
@@ -408,7 +440,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
               }}
             >
               Description
-              <span style={{ color: "red" }}> *</span>
+              <span
+                style={{
+                  color: "red",
+                }}
+              >
+                {" "}
+                *
+              </span>
             </Typography>
 
             <TextField
@@ -417,13 +456,19 @@ export default function CreateTicketDrawer({ open, onClose }) {
               fullWidth
               multiline
               rows={4}
-              value={formData.description}
-              onChange={handleChange}
+              value={
+                formData.description
+              }
+              onChange={
+                handleChange
+              }
               required
               sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "10px",
-                },
+                "& .MuiOutlinedInput-root":
+                  {
+                    borderRadius:
+                      "10px",
+                  },
               }}
             />
           </Box>
@@ -446,7 +491,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
                 }}
               >
                 Ticket Status
-                <span style={{ color: "red" }}> *</span>
+                <span
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
               </Typography>
 
               <FormControl
@@ -461,9 +513,13 @@ export default function CreateTicketDrawer({ open, onClose }) {
                 <Select
                   labelId="ticket-status-label"
                   name="ticketStatus"
-                  value={formData.ticketStatus}
+                  value={
+                    formData.ticketStatus
+                  }
                   label="Choose"
-                  onChange={handleChange}
+                  onChange={
+                    handleChange
+                  }
                 >
                   <MenuItem value="NEW">
                     New
@@ -504,7 +560,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
                 }}
               >
                 Source
-                <span style={{ color: "red" }}> *</span>
+                <span
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
               </Typography>
 
               <FormControl
@@ -519,9 +582,13 @@ export default function CreateTicketDrawer({ open, onClose }) {
                 <Select
                   labelId="source-label"
                   name="source"
-                  value={formData.source}
+                  value={
+                    formData.source
+                  }
                   label="Choose"
-                  onChange={handleChange}
+                  onChange={
+                    handleChange
+                  }
                 >
                   <MenuItem value="CHAT">
                     Chat
@@ -541,7 +608,6 @@ export default function CreateTicketDrawer({ open, onClose }) {
                 </Select>
               </FormControl>
             </Grid>
-
           </Grid>
 
           {/* =================================================
@@ -558,7 +624,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
               }}
             >
               Priority
-              <span style={{ color: "red" }}> *</span>
+              <span
+                style={{
+                  color: "red",
+                }}
+              >
+                {" "}
+                *
+              </span>
             </Typography>
 
             <FormControl
@@ -573,9 +646,13 @@ export default function CreateTicketDrawer({ open, onClose }) {
               <Select
                 labelId="priority-label"
                 name="priority"
-                value={formData.priority}
+                value={
+                  formData.priority
+                }
                 label="Choose"
-                onChange={handleChange}
+                onChange={
+                  handleChange
+                }
               >
                 <MenuItem value="HIGH">
                   High
@@ -597,7 +674,7 @@ export default function CreateTicketDrawer({ open, onClose }) {
           </Box>
 
           {/* =================================================
-              TICKET OWNER
+              TICKET OWNER - MULTI SELECT
           ================================================= */}
 
           <Box>
@@ -610,7 +687,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
               }}
             >
               Ticket Owner
-              <span style={{ color: "red" }}> *</span>
+              <span
+                style={{
+                  color: "red",
+                }}
+              >
+                {" "}
+                *
+              </span>
             </Typography>
 
             <FormControl
@@ -624,34 +708,86 @@ export default function CreateTicketDrawer({ open, onClose }) {
 
               <Select
                 labelId="ticket-owner-label"
-                name="ticketOwner"
-                value={formData.ticketOwner}
+                multiple
+                name="ticketOwners"
+                value={
+                  formData.ticketOwners
+                }
                 label="Choose"
-                onChange={handleChange}
-                disabled={loadingOptions}
-              >
+                onChange={
+                  handleChange
+                }
+                disabled={
+                  loadingOptions
+                }
+                renderValue={(
+                  selected
+                ) =>
+                  selected
+                    .map((id) => {
+                      const user =
+                        users.find(
+                          (item) =>
+                            String(
+                              item.id
+                            ) ===
+                            String(id)
+                        );
 
+                      if (!user) {
+                        return "";
+                      }
+
+                      return (
+                        `${user.first_name || ""} ${
+                          user.last_name || ""
+                        }`.trim() ||
+                        user.email
+                      );
+                    })
+                    .filter(Boolean)
+                    .join(", ")
+                }
+              >
                 {loadingOptions ? (
                   <MenuItem disabled>
                     Loading users...
                   </MenuItem>
-                ) : users.length === 0 ? (
+                ) : users.length ===
+                  0 ? (
                   <MenuItem disabled>
                     No users available
                   </MenuItem>
                 ) : (
-                  users.map((user) => (
-                    <MenuItem
-                      key={user.id}
-                      value={user.id}
-                    >
-                      {`${user.first_name || ""} ${
+                  users.map((user) => {
+                    const userName =
+                      `${user.first_name || ""} ${
                         user.last_name || ""
-                      }`.trim() || user.email}
-                    </MenuItem>
-                  ))
-                )}
+                      }`.trim() ||
+                      user.email;
 
+                    return (
+                      <MenuItem
+                        key={user.id}
+                        value={
+                          user.id
+                        }
+                      >
+                        <Checkbox
+                          checked={formData.ticketOwners.includes(
+                            user.id
+                          )}
+                        />
+
+                        <ListItemText
+                          primary={
+                            userName
+                          }
+                        />
+                      </MenuItem>
+                    );
+                  })
+                )}
               </Select>
             </FormControl>
           </Box>
@@ -670,7 +806,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
               }}
             >
               Associated Deal
-              <span style={{ color: "red" }}> *</span>
+              <span
+                style={{
+                  color: "red",
+                }}
+              >
+                {" "}
+                *
+              </span>
             </Typography>
 
             <FormControl
@@ -685,17 +828,23 @@ export default function CreateTicketDrawer({ open, onClose }) {
               <Select
                 labelId="associated-deal-label"
                 name="associatedDeal"
-                value={formData.associatedDeal}
+                value={
+                  formData.associatedDeal
+                }
                 label="Choose"
-                onChange={handleChange}
-                disabled={loadingOptions}
+                onChange={
+                  handleChange
+                }
+                disabled={
+                  loadingOptions
+                }
               >
-
                 {loadingOptions ? (
                   <MenuItem disabled>
                     Loading deals...
                   </MenuItem>
-                ) : deals.length === 0 ? (
+                ) : deals.length ===
+                  0 ? (
                   <MenuItem disabled>
                     No Closed Won deals available
                   </MenuItem>
@@ -705,15 +854,15 @@ export default function CreateTicketDrawer({ open, onClose }) {
                       key={deal.id}
                       value={deal.id}
                     >
-                      {deal.deal_name}
+                      {
+                        deal.deal_name
+                      }
                     </MenuItem>
                   ))
                 )}
-
               </Select>
             </FormControl>
           </Box>
-
         </Box>
 
         {/* =================================================
@@ -725,17 +874,19 @@ export default function CreateTicketDrawer({ open, onClose }) {
             display: "flex",
             gap: 2,
             p: 3,
-            borderTop: "1px solid #E5E7EB",
+            borderTop:
+              "1px solid #E5E7EB",
             backgroundColor: "#fff",
           }}
         >
-
           {/* CANCEL */}
 
           <CommonButton
             variant="outlined"
             fullWidth
-            onClick={handleClose}
+            onClick={
+              handleClose
+            }
             disabled={loading}
           >
             Cancel
@@ -746,13 +897,16 @@ export default function CreateTicketDrawer({ open, onClose }) {
           <CommonButton
             type="submit"
             fullWidth
-            disabled={loading || loadingOptions}
+            disabled={
+              loading ||
+              loadingOptions
+            }
           >
-            {loading ? "Saving..." : "Save"}
+            {loading
+              ? "Saving..."
+              : "Save"}
           </CommonButton>
-
         </Box>
-
       </Box>
     </Drawer>
   );
