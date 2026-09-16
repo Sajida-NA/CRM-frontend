@@ -1,4 +1,5 @@
 
+
 import api from "./api";
 
 // =========================================================
@@ -16,18 +17,15 @@ export const startDirectCall = async (module, moduleId) => {
       }
     );
 
-    console.log(
-      "DIRECT CALL RESPONSE:",
-      response.data
-    );
+    console.log("DIRECT CALL RESPONSE:", response.data);
 
     return response.data;
   } catch (error) {
+    console.error("DIRECT CALL ERROR:", error);
+
     console.error(
-      "DIRECT CALL ERROR:",
-      error?.response?.data ||
-        error?.message ||
-        error
+      "DIRECT CALL BACKEND RESPONSE:",
+      error?.response?.data
     );
 
     throw error;
@@ -49,18 +47,15 @@ export const startBridgeCall = async (module, moduleId) => {
       }
     );
 
-    console.log(
-      "BRIDGE CALL RESPONSE:",
-      response.data
-    );
+    console.log("BRIDGE CALL RESPONSE:", response.data);
 
     return response.data;
   } catch (error) {
+    console.error("BRIDGE CALL ERROR:", error);
+
     console.error(
-      "BRIDGE CALL ERROR:",
-      error?.response?.data ||
-        error?.message ||
-        error
+      "BRIDGE CALL BACKEND RESPONSE:",
+      error?.response?.data
     );
 
     throw error;
@@ -83,18 +78,15 @@ export const getCalls = async (module, moduleId) => {
       }
     );
 
-    console.log(
-      "GET CALLS RESPONSE:",
-      response.data
-    );
+    console.log("GET CALLS RESPONSE:", response.data);
 
     return response.data;
   } catch (error) {
+    console.error("GET CALLS ERROR:", error);
+
     console.error(
-      "GET CALLS ERROR:",
-      error?.response?.data ||
-        error?.message ||
-        error
+      "GET CALLS BACKEND RESPONSE:",
+      error?.response?.data
     );
 
     throw error;
@@ -111,18 +103,15 @@ export const getCall = async (callId) => {
       `/activities/call/${callId}/`
     );
 
-    console.log(
-      "GET CALL RESPONSE:",
-      response.data
-    );
+    console.log("GET CALL RESPONSE:", response.data);
 
     return response.data;
   } catch (error) {
+    console.error("GET CALL ERROR:", error);
+
     console.error(
-      "GET CALL ERROR:",
-      error?.response?.data ||
-        error?.message ||
-        error
+      "GET CALL BACKEND RESPONSE:",
+      error?.response?.data
     );
 
     throw error;
@@ -139,18 +128,15 @@ export const syncCall = async (callId) => {
       `/activities/call/${callId}/sync/`
     );
 
-    console.log(
-      "SYNC CALL RESPONSE:",
-      response.data
-    );
+    console.log("SYNC CALL RESPONSE:", response.data);
 
     return response.data;
   } catch (error) {
+    console.error("SYNC CALL ERROR:", error);
+
     console.error(
-      "SYNC CALL ERROR:",
-      error?.response?.data ||
-        error?.message ||
-        error
+      "SYNC CALL BACKEND RESPONSE:",
+      error?.response?.data
     );
 
     throw error;
@@ -167,21 +153,17 @@ export const deleteCall = async (callId) => {
       `/activities/call/${callId}/`
     );
 
-    console.log(
-      "DELETE CALL RESPONSE:",
-      response.data
-    );
+    console.log("DELETE CALL RESPONSE:", response.data);
 
     return response.data;
   } catch (error) {
+    console.error("DELETE CALL ERROR:", error);
+
     console.error(
-      "DELETE CALL ERROR:",
-      error?.response?.data ||
-        error?.message ||
-        error
+      "DELETE CALL BACKEND RESPONSE:",
+      error?.response?.data
     );
 
     throw error;
   }
 };
-

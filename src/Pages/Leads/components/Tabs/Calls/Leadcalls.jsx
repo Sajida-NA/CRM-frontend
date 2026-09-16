@@ -48,7 +48,7 @@ export default function Leadcalls() {
   // CRM → Twilio → CRM User → Customer
   // =====================================================
 
-  const [callMode] = useState("direct");
+  const [callMode] = useState("bridge");
 
   // =====================================================
   // FETCH LEAD

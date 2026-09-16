@@ -1,5 +1,4 @@
 
-
 import { useEffect, useState } from "react";
 
 import {
@@ -27,22 +26,20 @@ export default function CallCard({ call }) {
   const [syncing, setSyncing] = useState(false);
   const [savingOutcome, setSavingOutcome] = useState(false);
 
-  // ==========================================================
-  // UPDATE LOCAL CALL WHEN PARENT DATA CHANGES
-  // ==========================================================
+  // =========================================================
+  // KEEP CURRENT CALL IN SYNC WITH PARENT
+  // =========================================================
 
   useEffect(() => {
     setCurrentCall(call);
   }, [call]);
 
-  // ==========================================================
-  // CLEAN HTML
-  // ==========================================================
+  // =========================================================
+  // CLEAN HTML NOTE
+  // =========================================================
 
   const cleanNote = (html) => {
-    if (!html) {
-      return "";
-    }
+    if (!html) return "";
 
     const temp = document.createElement("div");
     temp.innerHTML = html;
@@ -50,56 +47,52 @@ export default function CallCard({ call }) {
     return temp.textContent || temp.innerText || "";
   };
 
-  // ==========================================================
+  // =========================================================
   // REMOVE EMAIL FROM DISPLAY NAME
-  // Example:
-  // Saji Jubi (saji@example.com)
-  // becomes:
-  // Saji Jubi
-  // ==========================================================
+  // =========================================================
 
   const getNameWithoutEmail = (value) => {
-    if (!value) {
-      return "Unknown";
-    }
+    if (!value) return "Unknown";
 
     return String(value)
       .replace(/\s*\([^)]*@[^)]*\)\s*/g, "")
       .trim();
   };
 
-  // ==========================================================
+  // =========================================================
   // FORMAT DATE
-  // ==========================================================
+  //
+  // IMPORTANT:
+  // Backend already saves the date in UAE local time.
+  // Do NOT use new Date() here.
+  // =========================================================
 
   const formatDate = (value) => {
-    if (!value) {
-      return "";
+    if (!value) return "";
+
+    const dateString = String(value).trim();
+
+    const parts = dateString.split("-");
+
+    if (parts.length === 3) {
+      const [year, month, day] = parts;
+
+      return `${year}-${month}-${day}`;
     }
 
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-      return String(value);
-    }
-
-    return date.toLocaleDateString("en-CA");
+    return dateString;
   };
 
-  // ==========================================================
+  // =========================================================
   // FORMAT TIME
   //
-  // Backend may return:
-  // 15:20:21.232715
-  //
-  // Display:
-  // 03:20 PM
-  // ==========================================================
+  // IMPORTANT:
+  // Backend already saves the time in UAE local time.
+  // Do NOT use new Date() here.
+  // =========================================================
 
   const formatTime = (value) => {
-    if (!value) {
-      return "";
-    }
+    if (!value) return "";
 
     const cleanTime = String(value)
       .split(".")[0]
@@ -114,40 +107,29 @@ export default function CallCard({ call }) {
     const hours = Number(parts[0]);
     const minutes = Number(parts[1]);
 
-    const seconds =
-      parts.length >= 3
-        ? Number(parts[2])
-        : 0;
-
     if (
       Number.isNaN(hours) ||
-      Number.isNaN(minutes) ||
-      Number.isNaN(seconds)
+      Number.isNaN(minutes)
     ) {
       return cleanTime;
     }
 
-    const date = new Date();
+    const period = hours >= 12 ? "PM" : "AM";
 
-    date.setHours(
-      hours,
-      minutes,
-      seconds,
-      0
-    );
+    const displayHour =
+      hours % 12 === 0
+        ? 12
+        : hours % 12;
 
-    return date.toLocaleTimeString(
-      "en-US",
-      {
-        hour: "2-digit",
-        minute: "2-digit",
-      }
-    );
+    return `${displayHour}:${String(minutes).padStart(
+      2,
+      "0"
+    )} ${period}`;
   };
 
-  // ==========================================================
+  // =========================================================
   // OUTCOME OPTIONS
-  // ==========================================================
+  // =========================================================
 
   const outcomeOptions = [
     {
@@ -184,14 +166,12 @@ export default function CallCard({ call }) {
     },
   ];
 
-  // ==========================================================
+  // =========================================================
   // NORMALIZE OUTCOME
-  // ==========================================================
+  // =========================================================
 
   const normalizeOutcome = (value) => {
-    if (!value) {
-      return "";
-    }
+    if (!value) return "";
 
     return String(value)
       .trim()
@@ -204,9 +184,9 @@ export default function CallCard({ call }) {
     currentCall?.call_outcome
   );
 
-  // ==========================================================
+  // =========================================================
   // FORMAT DURATION
-  // ==========================================================
+  // =========================================================
 
   const formatDuration = (seconds) => {
     if (
@@ -244,15 +224,16 @@ export default function CallCard({ call }) {
     return `${minutes} min ${remainingSeconds} sec`;
   };
 
-  // ==========================================================
+  // =========================================================
   // SYNC CALL WITH TWILIO
-  // ==========================================================
+  // =========================================================
 
   const handleSyncCall = async () => {
     if (!currentCall?.id) {
       console.error(
         "Cannot sync call: Call ID missing."
       );
+
       return;
     }
 
@@ -273,10 +254,32 @@ export default function CallCard({ call }) {
         response
       );
 
-      if (response?.call) {
-        setCurrentCall(response.call);
-      } else if (response) {
-        setCurrentCall(response);
+      // IMPORTANT:
+      // Do NOT replace currentCall with response.
+      //
+      // The sync endpoint only returns Twilio fields.
+      // Keep created_by, connected, date, time, note, etc.
+
+      if (response?.success) {
+        setCurrentCall((prev) => ({
+          ...prev,
+
+          call_outcome:
+            response.call_outcome ??
+            prev.call_outcome,
+
+          duration:
+            response.duration ??
+            prev.duration,
+
+          twilio_status:
+            response.twilio_status ??
+            prev.twilio_status,
+
+          twilio_call_sid:
+            response.twilio_call_sid ??
+            prev.twilio_call_sid,
+        }));
       }
     } catch (error) {
       console.error(
@@ -290,9 +293,9 @@ export default function CallCard({ call }) {
     }
   };
 
-  // ==========================================================
+  // =========================================================
   // TOGGLE DETAILS
-  // ==========================================================
+  // =========================================================
 
   const handleToggle = async () => {
     const nextOpen = !open;
@@ -304,9 +307,9 @@ export default function CallCard({ call }) {
     }
   };
 
-  // ==========================================================
+  // =========================================================
   // UPDATE OUTCOME
-  // ==========================================================
+  // =========================================================
 
   const handleOutcomeChange = async (event) => {
     const newOutcome =
@@ -324,11 +327,18 @@ export default function CallCard({ call }) {
     try {
       setSavingOutcome(true);
 
-      // Optimistic update
+      // -----------------------------------------------------
+      // Optimistic UI update
+      // -----------------------------------------------------
+
       setCurrentCall((prev) => ({
         ...prev,
         call_outcome: newOutcome,
       }));
+
+      // -----------------------------------------------------
+      // Update backend
+      // -----------------------------------------------------
 
       const response = await api.patch(
         `/activities/call/${currentCall.id}/`,
@@ -342,7 +352,40 @@ export default function CallCard({ call }) {
         response.data
       );
 
-      setCurrentCall(response.data);
+      // -----------------------------------------------------
+      // Merge backend response
+      // -----------------------------------------------------
+
+      if (response?.data) {
+        setCurrentCall((prev) => ({
+          ...prev,
+          ...response.data,
+
+          created_by:
+            response.data.created_by ??
+            prev.created_by,
+
+          connected:
+            response.data.connected ??
+            prev.connected,
+
+          date:
+            response.data.date ??
+            prev.date,
+
+          time:
+            response.data.time ??
+            prev.time,
+
+          duration:
+            response.data.duration ??
+            prev.duration,
+
+          call_outcome:
+            response.data.call_outcome ??
+            prev.call_outcome,
+        }));
+      }
     } catch (error) {
       console.error(
         "UPDATE OUTCOME ERROR:",
@@ -351,16 +394,16 @@ export default function CallCard({ call }) {
           error
       );
 
+      // Restore previous state
       setCurrentCall(previousCall);
     } finally {
       setSavingOutcome(false);
     }
   };
 
-  // ==========================================================
+  // =========================================================
   // CALLER
-  // CRM USER WHO CREATED THE CALL
-  // ==========================================================
+  // =========================================================
 
   const callerRawName =
     currentCall?.created_by?.name ||
@@ -372,15 +415,17 @@ export default function CallCard({ call }) {
       callerRawName
     );
 
-  // ==========================================================
-  // CONNECTED RECORD
-  // LEAD / COMPANY / DEAL / TICKET
-  // ==========================================================
+  // =========================================================
+  // CONNECTED CRM RECORD
+  // =========================================================
 
   const connectedRawName =
     currentCall?.connected?.name ||
     currentCall?.connected?.company_name ||
     currentCall?.connected?.title ||
+    currentCall?.connected?.deal_name ||
+    currentCall?.connected?.ticket_name ||
+    currentCall?.connected?.subject ||
     "Unknown";
 
   const connectedName =
@@ -388,9 +433,9 @@ export default function CallCard({ call }) {
       connectedRawName
     );
 
-  // ==========================================================
-  // FORMATTED DATE / TIME
-  // ==========================================================
+  // =========================================================
+  // DATE / TIME
+  // =========================================================
 
   const displayDate = formatDate(
     currentCall?.date
@@ -400,9 +445,9 @@ export default function CallCard({ call }) {
     currentCall?.time
   );
 
-  // ==========================================================
+  // =========================================================
   // UI
-  // ==========================================================
+  // =========================================================
 
   return (
     <Paper
@@ -415,10 +460,6 @@ export default function CallCard({ call }) {
         p: 2,
       }}
     >
-      {/* ====================================================
-          HEADER
-      ===================================================== */}
-
       <Box
         sx={{
           display: "flex",
@@ -437,9 +478,7 @@ export default function CallCard({ call }) {
           <IconButton
             size="small"
             onClick={handleToggle}
-            sx={{
-              p: 0,
-            }}
+            sx={{ p: 0 }}
           >
             {open ? (
               <KeyboardArrowDownIcon
@@ -462,16 +501,14 @@ export default function CallCard({ call }) {
 
         <Typography color="text.secondary">
           {displayDate}
+
           {displayDate && displayTime
             ? " at "
             : ""}
+
           {displayTime}
         </Typography>
       </Box>
-
-      {/* ====================================================
-          CONNECTED RECORD
-      ===================================================== */}
 
       <Typography
         variant="body2"
@@ -483,10 +520,6 @@ export default function CallCard({ call }) {
       >
         To: {connectedName}
       </Typography>
-
-      {/* ====================================================
-          NOTE
-      ===================================================== */}
 
       {currentCall?.note && (
         <Typography
@@ -500,24 +533,12 @@ export default function CallCard({ call }) {
         </Typography>
       )}
 
-      {/* ====================================================
-          EXPANDED DETAILS
-      ===================================================== */}
-
       <Collapse in={open}>
-        <Box
-          sx={{
-            mt: 2.5,
-          }}
-        >
+        <Box sx={{ mt: 2.5 }}>
           <Grid
             container
             spacing={2}
           >
-            {/* ============================================
-                OUTCOME
-            ============================================= */}
-
             <Grid
               size={{
                 xs: 12,
@@ -534,8 +555,12 @@ export default function CallCard({ call }) {
                   required
                   placeholder="Choose"
                   fullWidth
-                  value={normalizedOutcome}
-                  options={outcomeOptions}
+                  value={
+                    normalizedOutcome
+                  }
+                  options={
+                    outcomeOptions
+                  }
                   disabled={
                     savingOutcome ||
                     syncing
@@ -558,10 +583,6 @@ export default function CallCard({ call }) {
                 )}
               </Box>
             </Grid>
-
-            {/* ============================================
-                DURATION
-            ============================================= */}
 
             <Grid
               size={{
@@ -621,8 +642,7 @@ export default function CallCard({ call }) {
 
                   <AccessTimeIcon
                     sx={{
-                      color:
-                        "#98A2B3",
+                      color: "#98A2B3",
                       fontSize: 20,
                     }}
                   />
