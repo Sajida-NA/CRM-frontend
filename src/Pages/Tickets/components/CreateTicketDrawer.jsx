@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import {
   Drawer,
@@ -48,7 +49,7 @@ export default function CreateTicketDrawer({ open, onClose }) {
   const [error, setError] = useState("");
 
   // =====================================================
-  // LOAD USERS + DEALS
+  // LOAD USERS + CLOSED WON DEALS
   // =====================================================
 
   useEffect(() => {
@@ -89,8 +90,22 @@ export default function CreateTicketDrawer({ open, onClose }) {
           ? dealsResponse.data
           : dealsResponse.data.results || [];
 
+        // -------------------------------------------------
+        // ONLY CLOSED WON DEALS
+        // -------------------------------------------------
+
+        const closedWonDeals = dealsData.filter(
+          (deal) =>
+            deal.deal_stage?.toLowerCase() === "closed won"
+        );
+
         setUsers(usersData);
-        setDeals(dealsData);
+        setDeals(closedWonDeals);
+
+        console.log(
+          "CLOSED WON DEALS:",
+          closedWonDeals
+        );
 
       } catch (err) {
         console.error(
@@ -187,7 +202,10 @@ export default function CreateTicketDrawer({ open, onClose }) {
         associated_deal: Number(formData.associatedDeal),
       };
 
-      console.log("========== CREATE TICKET PAYLOAD ==========");
+      console.log(
+        "========== CREATE TICKET PAYLOAD =========="
+      );
+
       console.log(payload);
 
       // ---------------------------------------------------
@@ -199,7 +217,10 @@ export default function CreateTicketDrawer({ open, onClose }) {
         payload
       );
 
-      console.log("========== TICKET CREATED ==========");
+      console.log(
+        "========== TICKET CREATED =========="
+      );
+
       console.log(response.data);
 
       // ---------------------------------------------------
@@ -238,25 +259,32 @@ export default function CreateTicketDrawer({ open, onClose }) {
       // SHOW BACKEND ERROR
       // ---------------------------------------------------
 
-      let errorMessage = "Failed to create ticket.";
+      let errorMessage =
+        "Failed to create ticket.";
 
       if (err.response?.data) {
-        const backendError = err.response.data;
+        const backendError =
+          err.response.data;
 
         if (typeof backendError === "string") {
           errorMessage = backendError;
-        } else if (backendError.detail) {
-          errorMessage = backendError.detail;
-        } else {
-          errorMessage = Object.entries(backendError)
-            .map(([field, messages]) => {
-              const message = Array.isArray(messages)
-                ? messages.join(", ")
-                : messages;
 
-              return `${field}: ${message}`;
-            })
-            .join("\n");
+        } else if (backendError.detail) {
+          errorMessage =
+            backendError.detail;
+
+        } else {
+          errorMessage =
+            Object.entries(backendError)
+              .map(([field, messages]) => {
+                const message =
+                  Array.isArray(messages)
+                    ? messages.join(", ")
+                    : messages;
+
+                return `${field}: ${message}`;
+              })
+              .join("\n");
         }
       }
 
@@ -669,7 +697,7 @@ export default function CreateTicketDrawer({ open, onClose }) {
                   </MenuItem>
                 ) : deals.length === 0 ? (
                   <MenuItem disabled>
-                    No deals available
+                    No Closed Won deals available
                   </MenuItem>
                 ) : (
                   deals.map((deal) => (
@@ -729,3 +757,4 @@ export default function CreateTicketDrawer({ open, onClose }) {
     </Drawer>
   );
 }
+

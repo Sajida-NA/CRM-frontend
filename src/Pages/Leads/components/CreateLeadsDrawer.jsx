@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Drawer, Box } from "@mui/material";
 
@@ -32,7 +33,7 @@ export default function CreateLeadsDrawer({
     lastName: "",
     phoneNumber: "",
     jobTitle: "",
-    contactOwner: "",
+    contactOwner: [],
     leadStatus: "",
     products: [],
     company: "",
@@ -202,9 +203,36 @@ export default function CreateLeadsDrawer({
 
         const lead = response.data;
 
+        console.log("Lead details:", lead);
+
+        // =================================================
+        // CONTACT OWNERS
+        // Supports the new contact_owners field.
+        // Also supports old contact_owner response
+        // temporarily for backward compatibility.
+        // =================================================
+
+        let selectedContactOwners = [];
+
+        if (Array.isArray(lead.contact_owners)) {
+          selectedContactOwners = lead.contact_owners.map((id) =>
+            String(id)
+          );
+        } else if (
+          lead.contact_owner !== null &&
+          lead.contact_owner !== undefined &&
+          lead.contact_owner !== ""
+        ) {
+          selectedContactOwners = [
+            String(lead.contact_owner),
+          ];
+        }
+
         setFormData({
           email: lead.email || "",
+
           firstName: lead.first_name || "",
+
           lastName: lead.last_name || "",
 
           // Keep the complete phone number.
@@ -214,19 +242,19 @@ export default function CreateLeadsDrawer({
 
           jobTitle: lead.job_title || "",
 
-          contactOwner: lead.contact_owner
-            ? String(lead.contact_owner)
-            : "",
+          contactOwner: selectedContactOwners,
 
           leadStatus: lead.lead_status || "",
 
-          products: lead.products
+          products: Array.isArray(lead.products)
             ? lead.products.map((id) => String(id))
             : [],
 
-          company: lead.company
-            ? String(lead.company)
-            : "",
+          company:
+            lead.company !== null &&
+            lead.company !== undefined
+              ? String(lead.company)
+              : "",
 
           city: lead.city || "",
         });
@@ -339,19 +367,55 @@ export default function CreateLeadsDrawer({
     const { name, value } = e.target;
 
     // ---------------------------------------------------
-    // CONTACT OWNER
+    // CONTACT OWNER - MULTIPLE
     // ---------------------------------------------------
 
     if (name === "contactOwner") {
-      const selectedUser = users.find(
-        (user) => String(user.value) === String(value)
+      const selectedOwnerIds = Array.isArray(value)
+        ? value.map((id) => String(id))
+        : [];
+
+      console.log(
+        "Selected Contact Owner IDs:",
+        selectedOwnerIds
       );
+
+      // Find all selected users
+      const selectedUsers = users.filter((user) =>
+        selectedOwnerIds.includes(String(user.value))
+      );
+
+      console.log(
+        "Selected Contact Owners:",
+        selectedUsers
+      );
+
+      // -------------------------------------------------
+      // COMPANY
+      //
+      // If multiple owners are selected, use the first
+      // available company.
+      // -------------------------------------------------
+
+      const selectedCompanies = [
+        ...new Set(
+          selectedUsers
+            .map((user) => user.company)
+            .filter(Boolean)
+        ),
+      ];
 
       setFormData((prev) => ({
         ...prev,
-        contactOwner: value,
-        company: selectedUser?.company || "",
+
+        contactOwner: selectedOwnerIds,
+
+        company: selectedCompanies[0] || "",
       }));
+
+      if (error) {
+        setError("");
+      }
 
       return;
     }
@@ -406,8 +470,11 @@ export default function CreateLeadsDrawer({
     // CONTACT OWNER VALIDATION
     // ---------------------------------------------------
 
-    if (!formData.contactOwner) {
-      setError("Please select a contact owner.");
+    if (
+      !Array.isArray(formData.contactOwner) ||
+      formData.contactOwner.length === 0
+    ) {
+      setError("Please select at least one contact owner.");
       return;
     }
 
@@ -428,15 +495,19 @@ export default function CreateLeadsDrawer({
 
         // Complete number from PhoneInputField.
         // Example:
-        // UAE  -> +971553074371
+        // UAE   -> +971553074371
         // India -> +919876543210
         phone_number: formData.phoneNumber,
 
         job_title: formData.jobTitle,
 
-        contact_owner: formData.contactOwner
-          ? Number(formData.contactOwner)
-          : null,
+        // =================================================
+        // MULTIPLE CONTACT OWNERS
+        // =================================================
+
+        contact_owners: formData.contactOwner.length
+          ? formData.contactOwner.map((id) => Number(id))
+          : [],
 
         lead_status: formData.leadStatus || "New",
 
@@ -484,7 +555,11 @@ export default function CreateLeadsDrawer({
       // RESET FORM
       // =================================================
 
-      setFormData(emptyForm);
+      setFormData({
+        ...emptyForm,
+        contactOwner: [],
+        products: [],
+      });
 
       // =================================================
       // CLOSE DRAWER
@@ -642,10 +717,10 @@ export default function CreateLeadsDrawer({
           />
 
           {/* =================================================
-              CONTACT OWNER
+              CONTACT OWNER - MULTI SELECT
           ================================================= */}
 
-          <CommonSelect
+          <CommonMultiSelect
             label="Contact Owner"
             name="contactOwner"
             value={formData.contactOwner}
