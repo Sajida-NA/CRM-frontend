@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useState } from "react";
 import { Drawer, Box, Grid } from "@mui/material";
 
@@ -6,6 +7,7 @@ import CommonButton from "../../../../../Components/common/CommonButton";
 import DrawerHeader from "../../../../../Components/common/DrawerHeader";
 import CommonInput from "../../../../../Components/common/CommonInput";
 import CommonSelect from "../../../../../Components/common/CommonSelect";
+import CommonMultiSelect from "../../../../../Components/common/CommonMultiSelect";
 import CommonEditor from "../../../../../Components/common/CommonEditor";
 import CommonTimePicker from "../../../../../Components/common/CommonTimePicker";
 import FormDatePicker from "../../../../../Components/common/FormDatePicker";
@@ -23,49 +25,81 @@ export default function CreateTaskDrawer({
   // FORM DATA
   // ========================================
 
-  const [formData, setFormData] = useState({
+  const emptyForm = {
     task_name: "",
     due_date: null,
     time: null,
     task_type: "",
     priority: "",
-    assigned_to: "",
+    assigned_to: [],
     note: "",
-  });
+  };
+
+  const [formData, setFormData] =
+    useState(emptyForm);
 
   // ========================================
   // OPTIONS
   // ========================================
 
-  const [taskTypes, setTaskTypes] = useState([]);
-  const [priorities, setPriorities] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [taskTypes, setTaskTypes] =
+    useState([]);
+
+  const [priorities, setPriorities] =
+    useState([]);
+
+  const [users, setUsers] =
+    useState([]);
 
   // ========================================
   // LOADING
   // ========================================
 
-  const [loadingOptions, setLoadingOptions] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loadingOptions, setLoadingOptions] =
+    useState(false);
+
+  const [loading, setLoading] =
+    useState(false);
 
   // ========================================
   // ERROR
   // ========================================
 
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] =
+    useState("");
+
+  // ========================================
+  // NORMALIZE MODULE
+  // ========================================
+
+  const normalizedModule =
+    String(module || "")
+      .trim()
+      .toLowerCase();
+
+  const normalizedModuleId =
+    moduleId !== null &&
+    moduleId !== undefined &&
+    moduleId !== ""
+      ? Number(moduleId)
+      : null;
 
   // ========================================
   // GET TASK OPTIONS
   // ========================================
 
   const fetchTaskOptions = async () => {
-
-    if (!module || !moduleId) {
+    if (
+      !normalizedModule ||
+      !normalizedModuleId
+    ) {
       console.log(
-        "Missing module or moduleId:",
+        "TASK OPTIONS - Missing module information:",
         {
           module,
           moduleId,
+          normalizedModule,
+          normalizedModuleId,
         }
       );
 
@@ -77,66 +111,67 @@ export default function CreateTaskDrawer({
     }
 
     try {
-
       setLoadingOptions(true);
       setErrorMessage("");
 
-      // ====================================
-      // BUILD QUERY PARAMETERS
-      // ====================================
-
-      const params = new URLSearchParams();
+      const params =
+        new URLSearchParams();
 
       params.append(
         "module",
-        String(module).toLowerCase()
+        normalizedModule
       );
 
       params.append(
         "module_id",
-        String(moduleId)
+        String(normalizedModuleId)
       );
 
       const optionsUrl =
         `/activities/task/options/?${params.toString()}`;
 
       console.log(
-        "TASK OPTIONS URL:",
+        "========================================"
+      );
+
+      console.log(
+        "TASK OPTIONS REQUEST"
+      );
+
+      console.log(
+        "MODULE:",
+        normalizedModule
+      );
+
+      console.log(
+        "MODULE ID:",
+        normalizedModuleId
+      );
+
+      console.log(
+        "URL:",
         optionsUrl
       );
 
-      // ====================================
-      // GET OPTIONS
-      // ====================================
-
-      const response = await api.get(
-        optionsUrl
+      console.log(
+        "========================================"
       );
+
+      const response =
+        await api.get(optionsUrl);
 
       console.log(
         "TASK OPTIONS RESPONSE:",
         response.data
       );
 
-      // ====================================
-      // TASK TYPES
-      // ====================================
-
       setTaskTypes(
         response.data?.task_types || []
       );
 
-      // ====================================
-      // PRIORITIES
-      // ====================================
-
       setPriorities(
         response.data?.priorities || []
       );
-
-      // ====================================
-      // ASSIGNED USERS
-      // ====================================
 
       const assignedUsers =
         response.data?.assigned_users || [];
@@ -145,38 +180,42 @@ export default function CreateTaskDrawer({
         assignedUsers
       );
 
-      // ====================================
-      // CLEAR INVALID ASSIGNED USER
-      // ====================================
+      // ========================================
+      // REMOVE INVALID CURRENT USERS
+      // ========================================
 
       setFormData((prev) => {
-
-        if (!prev.assigned_to) {
+        if (
+          !Array.isArray(
+            prev.assigned_to
+          ) ||
+          prev.assigned_to.length === 0
+        ) {
           return prev;
         }
 
-        const exists =
-          assignedUsers.some(
-            (user) =>
-              String(user.id) ===
-              String(
-                prev.assigned_to
-              )
+        const validUserIds =
+          new Set(
+            assignedUsers.map(
+              (user) =>
+                String(user.id)
+            )
           );
 
-        if (!exists) {
+        return {
+          ...prev,
 
-          return {
-            ...prev,
-            assigned_to: "",
-          };
-        }
-
-        return prev;
+          assigned_to:
+            prev.assigned_to.filter(
+              (id) =>
+                validUserIds.has(
+                  String(id)
+                )
+            ),
+        };
       });
 
     } catch (error) {
-
       console.error(
         "TASK OPTIONS ERROR:",
         error.response?.data ||
@@ -192,7 +231,6 @@ export default function CreateTaskDrawer({
       );
 
     } finally {
-
       setLoadingOptions(false);
     }
   };
@@ -202,15 +240,34 @@ export default function CreateTaskDrawer({
   // ========================================
 
   useEffect(() => {
-
-    if (open) {
-      fetchTaskOptions();
+    if (!open) {
+      return;
     }
 
+    fetchTaskOptions();
   }, [
     open,
-    module,
-    moduleId,
+    normalizedModule,
+    normalizedModuleId,
+  ]);
+
+  // ========================================
+  // RESET WHEN DRAWER OPENS FOR
+  // DIFFERENT CRM RECORD
+  // ========================================
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    setErrorMessage("");
+
+    setFormData(emptyForm);
+  }, [
+    open,
+    normalizedModule,
+    normalizedModuleId,
   ]);
 
   // ========================================
@@ -218,14 +275,39 @@ export default function CreateTaskDrawer({
   // ========================================
 
   const handleChange = (e) => {
-
     const {
       name,
       value,
     } = e.target;
 
+    if (
+      name === "assigned_to"
+    ) {
+      const selectedIds =
+        Array.isArray(value)
+          ? value
+          : value
+            ? [value]
+            : [];
+
+      setFormData((prev) => ({
+        ...prev,
+
+        assigned_to:
+          selectedIds.map(
+            (id) =>
+              String(id)
+          ),
+      }));
+
+      setErrorMessage("");
+
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
+
       [name]: value,
     }));
 
@@ -237,21 +319,24 @@ export default function CreateTaskDrawer({
   // ========================================
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     console.log(
-      "========== CREATE TASK =========="
+      "========================================"
+    );
+
+    console.log(
+      "CREATE TASK START"
     );
 
     console.log(
       "MODULE:",
-      module
+      normalizedModule
     );
 
     console.log(
       "MODULE ID:",
-      moduleId
+      normalizedModuleId
     );
 
     console.log(
@@ -259,12 +344,18 @@ export default function CreateTaskDrawer({
       formData
     );
 
-    // ====================================
+    console.log(
+      "========================================"
+    );
+
+    // ========================================
     // MODULE VALIDATION
-    // ====================================
+    // ========================================
 
-    if (!module || !moduleId) {
-
+    if (
+      !normalizedModule ||
+      !normalizedModuleId
+    ) {
       setErrorMessage(
         "Module information is missing."
       );
@@ -272,12 +363,13 @@ export default function CreateTaskDrawer({
       return;
     }
 
-    // ====================================
+    // ========================================
     // REQUIRED FIELDS
-    // ====================================
+    // ========================================
 
-    if (!formData.task_name?.trim()) {
-
+    if (
+      !formData.task_name?.trim()
+    ) {
       setErrorMessage(
         "Please enter Task Name."
       );
@@ -286,7 +378,6 @@ export default function CreateTaskDrawer({
     }
 
     if (!formData.due_date) {
-
       setErrorMessage(
         "Please select Due Date."
       );
@@ -295,7 +386,6 @@ export default function CreateTaskDrawer({
     }
 
     if (!formData.time) {
-
       setErrorMessage(
         "Please select Time."
       );
@@ -304,7 +394,6 @@ export default function CreateTaskDrawer({
     }
 
     if (!formData.task_type) {
-
       setErrorMessage(
         "Please select Task Type."
       );
@@ -313,7 +402,6 @@ export default function CreateTaskDrawer({
     }
 
     if (!formData.priority) {
-
       setErrorMessage(
         "Please select Priority."
       );
@@ -321,45 +409,28 @@ export default function CreateTaskDrawer({
       return;
     }
 
-    if (!formData.assigned_to) {
+    // ========================================
+    // ASSIGNED TO
+    // ========================================
 
+    if (
+      !Array.isArray(
+        formData.assigned_to
+      ) ||
+      formData.assigned_to.length === 0
+    ) {
       setErrorMessage(
-        "Please select Assigned To."
+        "Please select at least one Assigned To user."
       );
 
       return;
     }
 
-    // ====================================
-    // LEAD OWNER VALIDATION
-    // ====================================
-
-    if (
-      String(module).toLowerCase() ===
-      "lead"
-    ) {
-
-      const selectedOwner =
-        users.some(
-          (user) =>
-            String(user.id) ===
-            String(
-              formData.assigned_to
-            )
-        );
-
-      if (!selectedOwner) {
-
-        setErrorMessage(
-          "Please select one of the Lead's Contact Owners."
-        );
-
-        return;
-      }
-    }
+    // ========================================
+    // NOTE
+    // ========================================
 
     if (!formData.note?.trim()) {
-
       setErrorMessage(
         "Please enter Note."
       );
@@ -368,13 +439,12 @@ export default function CreateTaskDrawer({
     }
 
     try {
-
       setLoading(true);
       setErrorMessage("");
 
-      // ====================================
+      // ========================================
       // DATE
-      // ====================================
+      // ========================================
 
       const formattedDate =
         typeof formData.due_date?.format ===
@@ -384,9 +454,9 @@ export default function CreateTaskDrawer({
             )
           : formData.due_date;
 
-      // ====================================
+      // ========================================
       // TIME
-      // ====================================
+      // ========================================
 
       const formattedTime =
         typeof formData.time?.format ===
@@ -396,17 +466,16 @@ export default function CreateTaskDrawer({
             )
           : formData.time;
 
-      // ====================================
+      // ========================================
       // PAYLOAD
-      // ====================================
+      // ========================================
 
       const payload = {
-
         module:
-          String(module).toLowerCase(),
+          normalizedModule,
 
         module_id:
-          Number(moduleId),
+          normalizedModuleId,
 
         task_name:
           formData.task_name.trim(),
@@ -423,10 +492,10 @@ export default function CreateTaskDrawer({
         priority:
           formData.priority,
 
-        // Single-select
         assigned_to:
-          Number(
-            formData.assigned_to
+          formData.assigned_to.map(
+            (id) =>
+              Number(id)
           ),
 
         note:
@@ -434,13 +503,28 @@ export default function CreateTaskDrawer({
       };
 
       console.log(
-        "CREATE TASK PAYLOAD:",
-        payload
+        "========================================"
       );
 
-      // ====================================
+      console.log(
+        "CREATE TASK PAYLOAD:"
+      );
+
+      console.log(
+        JSON.stringify(
+          payload,
+          null,
+          2
+        )
+      );
+
+      console.log(
+        "========================================"
+      );
+
+      // ========================================
       // CREATE TASK
-      // ====================================
+      // ========================================
 
       const response =
         await api.post(
@@ -449,45 +533,52 @@ export default function CreateTaskDrawer({
         );
 
       console.log(
-        "TASK CREATED:",
+        "========================================"
+      );
+
+      console.log(
+        "TASK CREATED SUCCESSFULLY:"
+      );
+
+      console.log(
         response.data
       );
 
-      // ====================================
+      console.log(
+        "========================================"
+      );
+
+      // ========================================
       // RESET
-      // ====================================
+      // ========================================
 
       setFormData({
-        task_name: "",
-        due_date: null,
-        time: null,
-        task_type: "",
-        priority: "",
-        assigned_to: "",
-        note: "",
+        ...emptyForm,
       });
 
-      // ====================================
-      // REFRESH
-      // ====================================
+      // ========================================
+      // REFRESH PARENT ACTIVITY
+      // ========================================
 
       if (onTaskCreated) {
-
-        onTaskCreated(
+        await onTaskCreated(
           response.data
         );
       }
 
-      // ====================================
+      // ========================================
       // CLOSE
-      // ====================================
+      // ========================================
 
       onClose();
 
     } catch (error) {
+      console.error(
+        "========================================"
+      );
 
       console.error(
-        "========== CREATE TASK ERROR =========="
+        "CREATE TASK ERROR"
       );
 
       console.error(
@@ -505,6 +596,10 @@ export default function CreateTaskDrawer({
         error.message
       );
 
+      console.error(
+        "========================================"
+      );
+
       const backendError =
         error.response?.data;
 
@@ -513,7 +608,6 @@ export default function CreateTaskDrawer({
         typeof backendError ===
           "object"
       ) {
-
         const messages =
           Object.entries(
             backendError
@@ -533,14 +627,12 @@ export default function CreateTaskDrawer({
         );
 
       } else {
-
         setErrorMessage(
           "Failed to create task."
         );
       }
 
     } finally {
-
       setLoading(false);
     }
   };
@@ -550,7 +642,6 @@ export default function CreateTaskDrawer({
   // ========================================
 
   const handleClose = () => {
-
     if (loading) {
       return;
     }
@@ -570,7 +661,6 @@ export default function CreateTaskDrawer({
       open={open}
       onClose={handleClose}
     >
-
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -607,22 +697,15 @@ export default function CreateTaskDrawer({
           }}
         >
 
-          {/* ==================================
-              ERROR
-          ================================== */}
+          {/* ERROR */}
 
           {errorMessage && (
-
             <Box
               sx={{
-                whiteSpace:
-                  "pre-line",
-                color:
-                  "#d32f2f",
-                backgroundColor:
-                  "#fdecea",
-                border:
-                  "1px solid #f5c2c0",
+                whiteSpace: "pre-line",
+                color: "#d32f2f",
+                backgroundColor: "#fdecea",
+                border: "1px solid #f5c2c0",
                 borderRadius: 1,
                 p: 1.5,
                 fontSize: 13,
@@ -632,9 +715,7 @@ export default function CreateTaskDrawer({
             </Box>
           )}
 
-          {/* ==================================
-              TASK NAME
-          ================================== */}
+          {/* TASK NAME */}
 
           <CommonInput
             label="Task Name"
@@ -650,9 +731,7 @@ export default function CreateTaskDrawer({
             required
           />
 
-          {/* ==================================
-              DATE + TIME
-          ================================== */}
+          {/* DATE + TIME */}
 
           <Grid
             container
@@ -665,7 +744,6 @@ export default function CreateTaskDrawer({
                 md: 6,
               }}
             >
-
               <FormDatePicker
                 label="Due Date"
                 required
@@ -684,7 +762,6 @@ export default function CreateTaskDrawer({
                   )
                 }
               />
-
             </Grid>
 
             <Grid
@@ -693,7 +770,6 @@ export default function CreateTaskDrawer({
                 md: 6,
               }}
             >
-
               <CommonTimePicker
                 label="Time"
                 required
@@ -712,14 +788,11 @@ export default function CreateTaskDrawer({
                   )
                 }
               />
-
             </Grid>
 
           </Grid>
 
-          {/* ==================================
-              TASK TYPE + PRIORITY
-          ================================== */}
+          {/* TASK TYPE + PRIORITY */}
 
           <Grid
             container
@@ -732,7 +805,6 @@ export default function CreateTaskDrawer({
                 md: 6,
               }}
             >
-
               <CommonSelect
                 label="Task Type"
                 required
@@ -752,7 +824,6 @@ export default function CreateTaskDrawer({
                   handleChange
                 }
               />
-
             </Grid>
 
             <Grid
@@ -761,7 +832,6 @@ export default function CreateTaskDrawer({
                 md: 6,
               }}
             >
-
               <CommonSelect
                 label="Priority"
                 required
@@ -781,24 +851,25 @@ export default function CreateTaskDrawer({
                   handleChange
                 }
               />
-
             </Grid>
 
           </Grid>
 
-          {/* ==================================
-              ASSIGNED TO
-          ================================== */}
+          {/* ASSIGNED TO */}
 
-          <CommonSelect
+          <CommonMultiSelect
             label="Assigned to"
             required
             placeholder={
               loadingOptions
                 ? "Loading..."
                 : users.length === 0
-                ? "No contact owners"
-                : "Choose"
+                  ? "No contact owners"
+                  : formData
+                      .assigned_to
+                      .length === 0
+                    ? "Choose"
+                    : ""
             }
             options={
               users.map(
@@ -821,9 +892,7 @@ export default function CreateTaskDrawer({
             }
           />
 
-          {/* ==================================
-              NOTE
-          ================================== */}
+          {/* NOTE */}
 
           <CommonEditor
             label="Note"
@@ -857,8 +926,6 @@ export default function CreateTaskDrawer({
           }}
         >
 
-          {/* CANCEL */}
-
           <CommonButton
             variant="outlined"
             fullWidth
@@ -871,8 +938,6 @@ export default function CreateTaskDrawer({
           >
             Cancel
           </CommonButton>
-
-          {/* SAVE */}
 
           <CommonButton
             type="submit"
@@ -891,7 +956,6 @@ export default function CreateTaskDrawer({
         </Box>
 
       </Box>
-
     </Drawer>
   );
 }

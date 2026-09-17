@@ -19,16 +19,57 @@ export default function TaskCard({ task }) {
   const [open, setOpen] = useState(false);
 
   // ========================================
-  // ASSIGNED USER
+  // ASSIGNED USERS
   // ========================================
 
-  const assignedToName =
-    typeof task.assigned_to === "object"
-      ? task.assigned_to?.name ||
-        task.assigned_to?.email ||
+  const getAssignedToNames = () => {
+    // New format:
+    // assigned_to: [
+    //   { id: 1, name: "User 1" },
+    //   { id: 2, name: "User 2" }
+    // ]
+
+    if (Array.isArray(task.assigned_to)) {
+      if (task.assigned_to.length === 0) {
+        return "Unassigned";
+      }
+
+      return task.assigned_to
+        .map(
+          (user) =>
+            user?.name ||
+            user?.email ||
+            `User ${user?.id || ""}`
+        )
+        .filter(Boolean)
+        .join(", ");
+    }
+
+    // Backward compatibility:
+    // assigned_to: { id: 1, name: "User" }
+
+    if (
+      task.assigned_to &&
+      typeof task.assigned_to === "object"
+    ) {
+      return (
+        task.assigned_to.name ||
+        task.assigned_to.email ||
         "Unassigned"
-      : task.assigned_to_name ||
-        "Unassigned";
+      );
+    }
+
+    // Old API format:
+    // assigned_to_name: "User"
+
+    if (task.assigned_to_name) {
+      return task.assigned_to_name;
+    }
+
+    return "Unassigned";
+  };
+
+  const assignedToName = getAssignedToNames();
 
   // ========================================
   // REMOVE HTML TAGS FROM NOTE
@@ -122,6 +163,10 @@ export default function TaskCard({ task }) {
     task.task_type ||
     "-";
 
+  // ========================================
+  // UI
+  // ========================================
+
   return (
     <Paper
       elevation={0}
@@ -188,20 +233,6 @@ export default function TaskCard({ task }) {
                 Task assigned to {assignedToName}
               </strong>
             </Typography>
-
-            {/* 
-              REMOVED THE DUPLICATE TASK NAME HERE.
-
-              Previously this was:
-
-              <Typography>
-                {noteText}
-              </Typography>
-
-              Since task.note already contains
-              "Task assigned to Aron Paul", it caused
-              the same text to appear twice.
-            */}
           </Box>
         </Box>
 
@@ -254,24 +285,24 @@ export default function TaskCard({ task }) {
       ======================================== */}
 
       <Box
-  sx={{
-    display: "flex",
-    alignItems: "flex-start",
-    mx: 1,
-  }}
->
-  <Radio />
+        sx={{
+          display: "flex",
+          alignItems: "flex-start",
+          mx: 1,
+        }}
+      >
+        <Radio />
 
-  <Typography
-    variant="body2"
-    sx={{
-      color: "text.secondary",
-      mt: 1.8,
-    }}
-  >
-    {task.task_name || "-"}
-  </Typography>
-</Box>
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            mt: 1.8,
+          }}
+        >
+          {task.task_name || "-"}
+        </Typography>
+      </Box>
 
       {/* ========================================
           INFO BOX

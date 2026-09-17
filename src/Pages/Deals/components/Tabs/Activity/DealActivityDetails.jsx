@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 
@@ -29,6 +30,14 @@ export default function DealActivityDetails({ dealId }) {
       try {
         setLoading(true);
 
+        console.log("=================================");
+        console.log("DEAL ACTIVITY FETCH");
+        console.log("DEAL ID:", dealId);
+        console.log(
+          "URL:",
+          `/activities/activity/deal/${dealId}/`
+        );
+
         const response = await api.get(
           `/activities/activity/deal/${dealId}/`
         );
@@ -38,11 +47,20 @@ export default function DealActivityDetails({ dealId }) {
           response.data
         );
 
-        setActivities(
-          Array.isArray(response.data)
-            ? response.data
-            : []
+        // =================================================
+        // SUPPORT BOTH ARRAY AND PAGINATED RESPONSE
+        // =================================================
+
+        const data = Array.isArray(response.data)
+          ? response.data
+          : response.data?.results || [];
+
+        console.log(
+          "DEAL ACTIVITY DATA:",
+          data
         );
+
+        setActivities(data);
       } catch (error) {
         console.error(
           "Fetch Deal Activities Error:",
@@ -216,70 +234,64 @@ export default function DealActivityDetails({ dealId }) {
           </Typography>
 
           {data.note && (
-                      <Typography
-                        sx={{
-                          fontSize: "13px",
-                          color: "text.secondary",
-                          mb: 0.5,
-                        }}
-                      >
-                        {data.note}
-                      </Typography>
-                    )}
+            <Typography
+              sx={{
+                fontSize: "13px",
+                color: "text.secondary",
+                mb: 0.5,
+              }}
+            >
+              {data.note}
+            </Typography>
+          )}
         </>
       );
     }
 
-
-
     // ===================================================
-// TASK
-// ===================================================
+    // TASK
+    // ===================================================
 
-if (
-  activity.activity_type === "task" &&
-  data
-) {
-  return (
-    <>
-      {/* CREATED BY */}
+    if (
+      activity.activity_type === "task" &&
+      data
+    ) {
+      return (
+        <>
+          <Typography sx={{ fontSize: 14 }}>
+            <Box
+              component="span"
+              sx={{
+                color: "text.secondary",
+                fontWeight: 600,
+              }}
+            >
+              {createdBy}
+            </Box>{" "}
+            <Box
+              component="span"
+              sx={{
+                color: "text.secondary",
+              }}
+            >
+              created a task
+            </Box>
+          </Typography>
 
-      <Typography sx={{ fontSize: 14 }}>
-        <Box
-          component="span"
-          sx={{
-            color: "text.secondary",
-            fontWeight: 600,
-          }}
-        >
-          {createdBy}
-        </Box>{" "}
-        <Box
-          component="span"
-          sx={{
-            color: "text.secondary",
-          }}
-        >
-          created a task
-        </Box>
-      </Typography>
-
-      {/* TASK NAME ONLY */}
-
-      {data.task_name && (
-        <Typography
-          sx={{
-            mt: 1,
-            fontSize: 14,
-            color: "text.secondary",
-          }}
-        >
-          {data.task_name}
-        </Typography>
-      )}
-    </>
-  );
-}
+          {data.task_name && (
+            <Typography
+              sx={{
+                mt: 1,
+                fontSize: 14,
+                color: "text.secondary",
+              }}
+            >
+              {data.task_name}
+            </Typography>
+          )}
+        </>
+      );
+    }
 
     // ===================================================
     // MEETING
@@ -291,7 +303,6 @@ if (
     ) {
       return (
         <>
-          {/* Meeting title only */}
           {data.title && (
             <Typography
               sx={{
@@ -304,7 +315,6 @@ if (
             </Typography>
           )}
 
-          {/* Date */}
           {data.start_date && (
             <Typography
               sx={{
@@ -317,7 +327,6 @@ if (
             </Typography>
           )}
 
-          {/* Time */}
           {data.start_time && (
             <Typography
               sx={{
@@ -333,7 +342,6 @@ if (
             </Typography>
           )}
 
-          {/* Location */}
           {data.location && (
             <Typography
               sx={{
@@ -346,7 +354,6 @@ if (
             </Typography>
           )}
 
-          {/* Reminder */}
           {data.reminder && (
             <Typography
               sx={{
@@ -359,7 +366,6 @@ if (
             </Typography>
           )}
 
-          {/* Note */}
           {data.note && (
             <Typography
               component="div"
@@ -374,7 +380,6 @@ if (
             />
           )}
 
-          {/* Attendees */}
           {data.attendees &&
             Array.isArray(data.attendees) &&
             data.attendees.length > 0 && (
@@ -562,4 +567,6 @@ if (
     </Box>
   );
 }
+
+
 

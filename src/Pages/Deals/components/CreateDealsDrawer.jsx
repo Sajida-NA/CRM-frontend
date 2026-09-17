@@ -1,6 +1,12 @@
+
+
 import React, { useEffect, useState } from "react";
 
-import { Drawer, Box, Grid } from "@mui/material";
+import {
+  Drawer,
+  Box,
+  Grid,
+} from "@mui/material";
 
 import dayjs from "dayjs";
 
@@ -38,8 +44,7 @@ export default function CreateDealsDrawer({
   // STATES
   // =================================================
 
-  const [formData, setFormData] =
-    useState(emptyForm);
+  const [formData, setFormData] = useState(emptyForm);
 
   const [leads, setLeads] = useState([]);
 
@@ -61,9 +66,8 @@ export default function CreateDealsDrawer({
 
   const fetchLeads = async () => {
     try {
-      const response = await api.get(
-        "/leads/leadslist/"
-      );
+      const response =
+        await api.get("/leads/leadslist/");
 
       console.log(
         "LEADS RESPONSE:",
@@ -74,7 +78,7 @@ export default function CreateDealsDrawer({
         response.data
       )
         ? response.data
-        : response.data.results || [];
+        : response.data?.results || [];
 
       setLeads(data);
 
@@ -85,19 +89,21 @@ export default function CreateDealsDrawer({
         error.response?.data || error
       );
 
+      setLeads([]);
+
       return [];
     }
   };
 
   // =================================================
   // FETCH USERS
+  // Kept for compatibility / fallback logic
   // =================================================
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get(
-        "/accounts/users/"
-      );
+      const response =
+        await api.get("/accounts/users/");
 
       console.log(
         "USERS RESPONSE:",
@@ -108,7 +114,7 @@ export default function CreateDealsDrawer({
         response.data
       )
         ? response.data
-        : response.data.results || [];
+        : response.data?.results || [];
 
       setUsers(data);
 
@@ -119,12 +125,14 @@ export default function CreateDealsDrawer({
         error.response?.data || error
       );
 
+      setUsers([]);
+
       return [];
     }
   };
 
   // =================================================
-  // LOAD LEADS + USERS WHEN DRAWER OPENS
+  // LOAD LEADS + USERS
   // =================================================
 
   useEffect(() => {
@@ -145,7 +153,144 @@ export default function CreateDealsDrawer({
   }, [open]);
 
   // =================================================
-  // LOAD DEAL DATA WHEN EDITING
+  // GET LEAD CONTACT OWNER IDS
+  //
+  // Supports:
+  //
+  // 1. contact_owner_ids: [16, 17]
+  //
+  // 2. contact_owners: [16, 17]
+  //
+  // 3. contact_owners:
+  //    [{ id: 16 }, { id: 17 }]
+  //
+  // 4. old contact_owner
+  // =================================================
+
+  const getContactOwnerIds = (lead) => {
+    if (!lead) {
+      return [];
+    }
+
+    // -------------------------------------------------
+    // contact_owner_ids
+    // -------------------------------------------------
+
+    if (
+      Array.isArray(
+        lead.contact_owner_ids
+      )
+    ) {
+      return lead.contact_owner_ids
+        .filter(
+          (id) =>
+            id !== null &&
+            id !== undefined &&
+            id !== ""
+        )
+        .map((id) =>
+          String(id)
+        );
+    }
+
+    // -------------------------------------------------
+    // contact_owners
+    // -------------------------------------------------
+
+    if (
+      Array.isArray(
+        lead.contact_owners
+      )
+    ) {
+      return lead.contact_owners
+        .map((owner) => {
+          if (
+            owner &&
+            typeof owner === "object"
+          ) {
+            return owner.id;
+          }
+
+          return owner;
+        })
+        .filter(
+          (id) =>
+            id !== null &&
+            id !== undefined &&
+            id !== ""
+        )
+        .map((id) =>
+          String(id)
+        );
+    }
+
+    // -------------------------------------------------
+    // OLD SINGLE contact_owner OBJECT
+    // -------------------------------------------------
+
+    if (
+      lead.contact_owner &&
+      typeof lead.contact_owner ===
+        "object"
+    ) {
+      return lead.contact_owner.id
+        ? [
+            String(
+              lead.contact_owner.id
+            ),
+          ]
+        : [];
+    }
+
+    // -------------------------------------------------
+    // OLD SINGLE contact_owner ID
+    // -------------------------------------------------
+
+    if (
+      lead.contact_owner !== null &&
+      lead.contact_owner !== undefined &&
+      lead.contact_owner !== ""
+    ) {
+      return [
+        String(
+          lead.contact_owner
+        ),
+      ];
+    }
+
+    // -------------------------------------------------
+    // OLD contact_owner_id
+    // -------------------------------------------------
+
+    if (
+      lead.contact_owner_id !== null &&
+      lead.contact_owner_id !== undefined &&
+      lead.contact_owner_id !== ""
+    ) {
+      return [
+        String(
+          lead.contact_owner_id
+        ),
+      ];
+    }
+
+    return [];
+  };
+
+  // =================================================
+  // LOAD DEAL DATA
+  //
+  // IMPORTANT:
+  // In EDIT MODE the Deal Owner is taken from
+  // the Associated Lead's Contact Owners.
+  //
+  // This ensures:
+  //
+  // Lead
+  //   ↓
+  // Contact Owners [16, 17]
+  //   ↓
+  // Deal Owner [16, 17]
   // =================================================
 
   useEffect(() => {
@@ -154,86 +299,217 @@ export default function CreateDealsDrawer({
     }
 
     // =================================================
-    // CREATE MODE
-    // =================================================
-
-    if (!deal) {
-      setFormData({
-        ...emptyForm,
-
-        // Automatically select converted lead
-        associatedLead:
-          leadId !== null &&
-          leadId !== undefined &&
-          leadId !== ""
-            ? String(leadId)
-            : "",
-      });
-
-      setError("");
-
-      console.log(
-        "CREATE DEAL - ASSOCIATED LEAD:",
-        leadId
-      );
-
-      return;
-    }
-
-    // =================================================
     // EDIT MODE
     // =================================================
 
-    console.log(
-      "DEAL FOR EDIT:",
-      deal
-    );
+    if (deal) {
+      console.log(
+        "DEAL FOR EDIT:",
+        deal
+      );
 
-    setFormData({
-      dealName:
-        deal.deal_name || "",
-
-      dealStage:
-        deal.deal_stage || "",
-
-      associatedLead:
+      const associatedLeadId =
         deal.associated_lead !== null &&
         deal.associated_lead !== undefined
           ? String(
               deal.associated_lead
             )
+          : "";
+
+      // -------------------------------------------------
+      // FIND ASSOCIATED LEAD
+      // -------------------------------------------------
+
+      const selectedLead =
+        leads.find(
+          (lead) =>
+            String(lead.id) ===
+            associatedLeadId
+        );
+
+      // -------------------------------------------------
+      // GET ALL CONTACT OWNERS
+      // FROM ASSOCIATED LEAD
+      // -------------------------------------------------
+
+      const contactOwnerIds =
+        getContactOwnerIds(
+          selectedLead
+        );
+
+      console.log(
+        "EDIT ASSOCIATED LEAD:",
+        selectedLead
+      );
+
+      console.log(
+        "EDIT LEAD CONTACT OWNER IDS:",
+        contactOwnerIds
+      );
+
+      // -------------------------------------------------
+      // SET FORM DATA
+      // -------------------------------------------------
+
+      setFormData({
+        dealName:
+          deal.deal_name || "",
+
+        dealStage:
+          deal.deal_stage || "",
+
+        associatedLead:
+          associatedLeadId,
+
+        amount:
+          deal.amount !== null &&
+          deal.amount !== undefined
+            ? String(deal.amount)
+            : "",
+
+        // =================================================
+        // IMPORTANT
+        //
+        // First priority:
+        // Associated Lead Contact Owners
+        //
+        // Fallback:
+        // Existing Deal Owners
+        // =================================================
+
+        dealOwner:
+          contactOwnerIds.length > 0
+            ? contactOwnerIds
+            : Array.isArray(
+                deal.deal_owner_ids
+              )
+              ? deal.deal_owner_ids.map(
+                  (id) =>
+                    String(id)
+                )
+              : Array.isArray(
+                  deal.deal_owners
+                )
+                ? deal.deal_owners.map(
+                    (owner) =>
+                      String(
+                        typeof owner ===
+                          "object"
+                          ? owner.id
+                          : owner
+                      )
+                  )
+                : [],
+
+        closeDate:
+          deal.close_date
+            ? dayjs(
+                deal.close_date
+              )
+            : null,
+
+        priority:
+          deal.priority || "",
+      });
+
+      setError("");
+
+      return;
+    }
+
+    // =================================================
+    // CREATE MODE
+    // =================================================
+
+    setFormData({
+      ...emptyForm,
+
+      associatedLead:
+        leadId !== null &&
+        leadId !== undefined &&
+        leadId !== ""
+          ? String(leadId)
           : "",
-
-      amount:
-        deal.amount !== null &&
-        deal.amount !== undefined
-          ? String(deal.amount)
-          : "",
-
-      // Multiple Deal Owners
-      //
-      // Backend response:
-      // deal_owner_ids: [1, 5, 8]
-      //
-      // CommonMultiSelect expects
-      // string values.
-      dealOwner:
-        Array.isArray(
-          deal.deal_owner_ids
-        )
-          ? deal.deal_owner_ids.map(
-              (id) => String(id)
-            )
-          : [],
-
-      closeDate: deal.close_date
-        ? dayjs(deal.close_date)
-        : null,
-
-      priority:
-        deal.priority || "",
     });
-  }, [deal, open, leadId]);
+
+    setError("");
+  }, [
+    deal,
+    open,
+    leadId,
+    leads,
+  ]);
+
+  // =================================================
+  // AUTO SELECT DEAL OWNER
+  //
+  // CREATE / CONVERT LEAD
+  //
+  // leadId
+  //   ↓
+  // selected Lead
+  //   ↓
+  // contact_owner_ids
+  //   ↓
+  // ALL Contact Owners
+  //   ↓
+  // Deal Owner
+  // =================================================
+
+  useEffect(() => {
+    if (
+      !open ||
+      deal ||
+      !leadId ||
+      !leads.length
+    ) {
+      return;
+    }
+
+    const selectedLead =
+      leads.find(
+        (lead) =>
+          String(lead.id) ===
+          String(leadId)
+      );
+
+    if (!selectedLead) {
+      return;
+    }
+
+    const contactOwnerIds =
+      getContactOwnerIds(
+        selectedLead
+      );
+
+    console.log(
+      "CONVERT LEAD:",
+      selectedLead
+    );
+
+    console.log(
+      "LEAD CONTACT OWNER IDS:",
+      contactOwnerIds
+    );
+
+    setFormData((prev) => ({
+      ...prev,
+
+      associatedLead:
+        String(
+          selectedLead.id
+        ),
+
+      // Select ALL Contact Owners
+      dealOwner:
+        contactOwnerIds,
+    }));
+  }, [
+    open,
+    deal,
+    leadId,
+    leads,
+  ]);
 
   // =================================================
   // HANDLE INPUT CHANGE
@@ -245,17 +521,224 @@ export default function CreateDealsDrawer({
       value,
     } = e.target;
 
+    // =================================================
+    // ASSOCIATED LEAD CHANGED
+    // =================================================
+
+    if (
+      name ===
+      "associatedLead"
+    ) {
+      const selectedLead =
+        leads.find(
+          (lead) =>
+            String(lead.id) ===
+            String(value)
+        );
+
+      const contactOwnerIds =
+        getContactOwnerIds(
+          selectedLead
+        );
+
+      console.log(
+        "SELECTED LEAD:",
+        selectedLead
+      );
+
+      console.log(
+        "LEAD CONTACT OWNER IDS:",
+        contactOwnerIds
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+
+        associatedLead:
+          value,
+
+        // Automatically select ALL
+        // Contact Owners
+        dealOwner:
+          contactOwnerIds,
+      }));
+
+      return;
+    }
+
+    // =================================================
+    // NORMAL FIELD CHANGE
+    // =================================================
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+
+      [name]:
+        value,
     }));
   };
+
+  // =================================================
+  // LEAD OPTIONS
+  // =================================================
+
+  const leadOptions =
+    leads.map((lead) => ({
+      value: String(
+        lead.id
+      ),
+
+      label:
+        `${lead.first_name || ""} ${
+          lead.last_name || ""
+        }`.trim() ||
+        lead.name ||
+        lead.email ||
+        `Lead ${lead.id}`,
+    }));
+
+  // =================================================
+  // SELECTED LEAD
+  // =================================================
+
+  const selectedLead =
+    leads.find(
+      (lead) =>
+        String(lead.id) ===
+        String(
+          formData.associatedLead
+        )
+    );
+
+  // =================================================
+  // SELECTED LEAD CONTACT OWNER IDS
+  // =================================================
+
+  const selectedLeadOwnerIds =
+    getContactOwnerIds(
+      selectedLead
+    );
+
+  // =================================================
+  // DEAL OWNER OPTIONS
+  //
+  // IMPORTANT:
+  // Build directly from the selected Lead.
+  //
+  // Example:
+  //
+  // contact_owner_ids:
+  // [16, 17]
+  //
+  // contact_owner_names:
+  // ["Riya Mehwish", "Ahmed Ali"]
+  //
+  // Both will appear.
+  // =================================================
+
+  const dealOwnerOptions =
+    selectedLead
+      ? selectedLeadOwnerIds.map(
+          (id, index) => ({
+            value: String(
+              id
+            ),
+
+            label:
+              selectedLead
+                .contact_owner_names?.[
+                index
+              ] ||
+              `User ${id}`,
+          })
+        )
+      : [];
+
+  // =================================================
+  // FALLBACK FOR contact_owners OBJECT ARRAY
+  // =================================================
+
+  const finalDealOwnerOptions =
+    dealOwnerOptions.length > 0
+      ? dealOwnerOptions
+      : selectedLead &&
+          Array.isArray(
+            selectedLead.contact_owners
+          )
+        ? selectedLead.contact_owners.map(
+            (owner) => {
+              // ---------------------------------------
+              // OBJECT OWNER
+              // ---------------------------------------
+
+              if (
+                owner &&
+                typeof owner ===
+                  "object"
+              ) {
+                return {
+                  value: String(
+                    owner.id
+                  ),
+
+                  label:
+                    `${
+                      owner.first_name ||
+                      ""
+                    } ${
+                      owner.last_name ||
+                      ""
+                    }`.trim() ||
+                    owner.name ||
+                    owner.email ||
+                    `User ${owner.id}`,
+                };
+              }
+
+              // ---------------------------------------
+              // OWNER ID
+              // ---------------------------------------
+
+              const user =
+                users.find(
+                  (item) =>
+                    String(
+                      item.id
+                    ) ===
+                    String(
+                      owner
+                    )
+                );
+
+              return {
+                value: String(
+                  owner
+                ),
+
+                label: user
+                  ? `${
+                      user.first_name ||
+                      ""
+                    } ${
+                      user.last_name ||
+                      ""
+                    }`.trim() ||
+                    user.username ||
+                    user.email ||
+                    `User ${owner}`
+                  : `User ${owner}`,
+              };
+            }
+          )
+        : [];
 
   // =================================================
   // CREATE / UPDATE DEAL
   // =================================================
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (
+    e
+  ) => {
     e.preventDefault();
 
     try {
@@ -287,7 +770,9 @@ export default function CreateDealsDrawer({
         return;
       }
 
-      if (!formData.associatedLead) {
+      if (
+        !formData.associatedLead
+      ) {
         setError(
           "Please select an associated lead."
         );
@@ -305,10 +790,11 @@ export default function CreateDealsDrawer({
         !Array.isArray(
           formData.dealOwner
         ) ||
-        formData.dealOwner.length === 0
+        formData.dealOwner
+          .length === 0
       ) {
         setError(
-          "Please select at least one deal owner."
+          "The selected Lead does not have a Contact Owner."
         );
 
         setLoading(false);
@@ -335,10 +821,14 @@ export default function CreateDealsDrawer({
         amount:
           formData.amount,
 
-        // Multiple Deal Owners
+        // =================================================
+        // ALL CONTACT OWNERS
+        // =================================================
+
         deal_owners:
           formData.dealOwner.map(
-            (id) => Number(id)
+            (id) =>
+              Number(id)
           ),
 
         close_date:
@@ -449,44 +939,6 @@ export default function CreateDealsDrawer({
   };
 
   // =================================================
-  // LEAD OPTIONS
-  // =================================================
-
-  const leadOptions =
-    leads.map((lead) => ({
-      value: String(
-        lead.id
-      ),
-
-      label:
-        `${lead.first_name || ""} ${
-          lead.last_name || ""
-        }`.trim() ||
-        lead.name ||
-        lead.email ||
-        `Lead ${lead.id}`,
-    }));
-
-  // =================================================
-  // USER OPTIONS
-  // =================================================
-
-  const userOptions =
-    users.map((user) => ({
-      value: String(
-        user.id
-      ),
-
-      label:
-        `${user.first_name || ""} ${
-          user.last_name || ""
-        }`.trim() ||
-        user.username ||
-        user.email ||
-        `User ${user.id}`,
-    }));
-
-  // =================================================
   // UI
   // =================================================
 
@@ -498,14 +950,13 @@ export default function CreateDealsDrawer({
     >
       <Box
         component="form"
-        onSubmit={
-          handleSubmit
-        }
+        onSubmit={handleSubmit}
         sx={{
           width: 520,
           height: "100%",
           display: "flex",
-          flexDirection: "column",
+          flexDirection:
+            "column",
           bgcolor: "#fff",
         }}
       >
@@ -531,7 +982,8 @@ export default function CreateDealsDrawer({
             flex: 1,
             p: 3,
             display: "flex",
-            flexDirection: "column",
+            flexDirection:
+              "column",
             gap: 2,
             overflowY: "auto",
           }}
@@ -629,18 +1081,22 @@ export default function CreateDealsDrawer({
             placeholder="Enter"
           />
 
-          {/* DEAL OWNER */}
+          {/* =================================================
+              DEAL OWNER
+              ONLY SELECTED LEAD'S CONTACT OWNERS
+          ================================================= */}
 
           <CommonMultiSelect
             label="Deal Owner"
             required
             placeholder={
-              users.length
-                ? "Choose"
-                : "No users available"
+              formData.dealOwner
+                .length
+                ? ""
+                : "No Contact Owners"
             }
             options={
-              userOptions
+              finalDealOwnerOptions
             }
             name="dealOwner"
             value={
@@ -649,9 +1105,12 @@ export default function CreateDealsDrawer({
             onChange={
               handleChange
             }
+            disabled
           />
 
-          {/* CLOSE DATE + PRIORITY */}
+          {/* =================================================
+              CLOSE DATE + PRIORITY
+          ================================================= */}
 
           <Grid
             container
@@ -752,4 +1211,3 @@ export default function CreateDealsDrawer({
     </Drawer>
   );
 }
-

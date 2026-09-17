@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+
+
+import React, { useState, useEffect, useCallback } from "react";
 
 import {
   Drawer,
@@ -60,35 +62,99 @@ export default function CreateCompanyDrawer({
   // FETCH USERS
   // =====================================================
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const response = await api.get("/accounts/users/");
 
-      console.log("Users:", response.data);
+      console.log("========== USERS API RESPONSE ==========");
+      console.log("Users response:", response.data);
 
-      const userOptions = response.data.map((user) => {
-        const fullName =
-          `${user.first_name || ""} ${user.last_name || ""}`.trim();
+      // =================================================
+      // SAFE API RESPONSE
+      // =================================================
 
-        return {
-          value: String(user.id),
-          label: fullName || user.email,
-        };
-      });
+      let userData = [];
 
-      console.log("User options:", userOptions);
+      if (Array.isArray(response.data)) {
+        userData = response.data;
+      } else if (Array.isArray(response.data?.data)) {
+        userData = response.data.data;
+      } else {
+        console.warn(
+          "Unexpected users API response format:",
+          response.data
+        );
+      }
+
+      console.log("Users array:", userData);
+
+      // =================================================
+      // FILTER ACTIVE USERS + MAP OPTIONS
+      // =================================================
+
+      const userOptions = userData
+        .filter((user) => user?.is_active !== false)
+        .map((user) => {
+          const fullName =
+            `${user?.first_name || ""} ${
+              user?.last_name || ""
+            }`.trim();
+
+          return {
+            value: String(user.id),
+            label: fullName || user.email || `User ${user.id}`,
+          };
+        });
+
+      console.log(
+        "========== COMPANY OWNER OPTIONS =========="
+      );
+
+      console.log(
+        "Company owner options:",
+        userOptions
+      );
+
+      // =================================================
+      // CHECK ESHaan
+      // =================================================
+
+      const eshaan = userOptions.find(
+        (user) => String(user.value) === "20"
+      );
+
+      console.log(
+        "Eshaan Muhammed option:",
+        eshaan
+      );
+
+      // =================================================
+      // SAVE USERS
+      // =================================================
 
       setUsers(userOptions);
 
       return userOptions;
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error(
+        "Error fetching users:",
+        error
+      );
 
-      setError("Failed to load company owners.");
+      console.error(
+        "Users API error response:",
+        error?.response?.data
+      );
+
+      setUsers([]);
+
+      setError(
+        "Failed to load company owners."
+      );
 
       return [];
     }
-  };
+  }, []);
 
   // =====================================================
   // LOAD USERS WHEN DRAWER OPENS
@@ -100,7 +166,7 @@ export default function CreateCompanyDrawer({
     }
 
     fetchUsers();
-  }, [open]);
+  }, [open, fetchUsers]);
 
   // =====================================================
   // LOAD COMPANY DATA FOR EDIT
@@ -130,6 +196,10 @@ export default function CreateCompanyDrawer({
         setError("");
 
         console.log(
+          "========== EDIT COMPANY =========="
+        );
+
+        console.log(
           "Loading company into edit form:",
           company
         );
@@ -138,15 +208,28 @@ export default function CreateCompanyDrawer({
         // COMPANY OWNER ID
         // =================================================
 
-        const ownerId =
+        let ownerId = "";
+
+        if (
           company.company_owner !== undefined &&
           company.company_owner !== null
-            ? String(
-                typeof company.company_owner === "object"
-                  ? company.company_owner.id
-                  : company.company_owner
-              )
-            : "";
+        ) {
+          if (
+            typeof company.company_owner === "object"
+          ) {
+            ownerId =
+              company.company_owner?.id !== undefined &&
+              company.company_owner?.id !== null
+                ? String(
+                    company.company_owner.id
+                  )
+                : "";
+          } else {
+            ownerId = String(
+              company.company_owner
+            );
+          }
+        }
 
         console.log(
           "Company Owner ID:",
@@ -164,7 +247,9 @@ export default function CreateCompanyDrawer({
 
         const phoneNumber =
           company.phone_number
-            ? String(company.phone_number).trim()
+            ? String(
+                company.phone_number
+              ).trim()
             : "";
 
         // =================================================
@@ -234,7 +319,6 @@ export default function CreateCompanyDrawer({
     // ===================================================
     // UAE
     // +971 + 9 digits
-    // Example: +971553074374
     // ===================================================
 
     if (phoneString.startsWith("+971")) {
@@ -252,7 +336,6 @@ export default function CreateCompanyDrawer({
     // ===================================================
     // INDIA
     // +91 + 10 digits
-    // Example: +919876543210
     // ===================================================
 
     if (phoneString.startsWith("+91")) {
@@ -270,7 +353,6 @@ export default function CreateCompanyDrawer({
     // ===================================================
     // USA
     // +1 + 10 digits
-    // Example: +11234567890
     // ===================================================
 
     if (phoneString.startsWith("+1")) {
@@ -288,7 +370,6 @@ export default function CreateCompanyDrawer({
     // ===================================================
     // UK
     // +44 + 10 digits
-    // Example: +441234567890
     // ===================================================
 
     if (phoneString.startsWith("+44")) {
@@ -307,7 +388,8 @@ export default function CreateCompanyDrawer({
     // UNKNOWN COUNTRY CODE
     // ===================================================
 
-    const digitsOnly = phoneString.replace(/\D/g, "");
+    const digitsOnly =
+      phoneString.replace(/\D/g, "");
 
     if (digitsOnly.length < 9) {
       return "Please enter a valid phone number.";
@@ -331,24 +413,56 @@ export default function CreateCompanyDrawer({
     // ===================================================
 
     if (name === "phoneNumber") {
-      const phoneString = String(value || "");
+      const phoneString =
+        String(value || "");
 
-      /*
-       * PhoneInputField already handles:
-       * - country code
-       * - local number length
-       * - numeric input
-       *
-       * So we should NOT limit the complete value to
-       * 10 digits here because +971 contains 3 digits
-       * and UAE local number contains 9 digits.
-       */
-
-      const cleanValue = phoneString.replace(/[^\d+]/g, "");
+      const cleanValue =
+        phoneString.replace(
+          /[^\d+]/g,
+          ""
+        );
 
       setFormData((prev) => ({
         ...prev,
         phoneNumber: cleanValue,
+      }));
+
+      setError("");
+
+      return;
+    }
+
+    // ===================================================
+    // COMPANY OWNER
+    // ===================================================
+
+    if (name === "companyOwner") {
+      const ownerValue =
+        value === null ||
+        value === undefined
+          ? ""
+          : String(value);
+
+      console.log(
+        "Selected Company Owner:",
+        ownerValue
+      );
+
+      const selectedOwner =
+        users.find(
+          (user) =>
+            String(user.value) ===
+            ownerValue
+        );
+
+      console.log(
+        "Selected Owner Details:",
+        selectedOwner
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        companyOwner: ownerValue,
       }));
 
       setError("");
@@ -379,9 +493,10 @@ export default function CreateCompanyDrawer({
     // PHONE VALIDATION
     // ===================================================
 
-    const phoneError = validatePhoneNumber(
-      formData.phoneNumber
-    );
+    const phoneError =
+      validatePhoneNumber(
+        formData.phoneNumber
+      );
 
     if (phoneError) {
       setError(phoneError);
@@ -393,7 +508,9 @@ export default function CreateCompanyDrawer({
     // ===================================================
 
     if (!formData.companyOwner) {
-      setError("Please select a company owner.");
+      setError(
+        "Please select a company owner."
+      );
       return;
     }
 
@@ -405,9 +522,10 @@ export default function CreateCompanyDrawer({
       // CLEAN PHONE NUMBER
       // =================================================
 
-      const phoneNumber = String(
-        formData.phoneNumber || ""
-      ).trim();
+      const phoneNumber =
+        String(
+          formData.phoneNumber || ""
+        ).trim();
 
       // =================================================
       // PAYLOAD
@@ -420,9 +538,10 @@ export default function CreateCompanyDrawer({
         company_name:
           formData.companyName,
 
-        // Database receives USER ID
         company_owner:
-          Number(formData.companyOwner),
+          Number(
+            formData.companyOwner
+          ),
 
         industry:
           formData.industry,
@@ -438,7 +557,9 @@ export default function CreateCompanyDrawer({
 
         no_of_employees:
           formData.noOfEmployees
-            ? Number(formData.noOfEmployees)
+            ? Number(
+                formData.noOfEmployees
+              )
             : null,
 
         annual_revenue:
@@ -450,6 +571,10 @@ export default function CreateCompanyDrawer({
         email:
           formData.email,
       };
+
+      console.log(
+        "========== COMPANY PAYLOAD =========="
+      );
 
       console.log(
         "Company payload:",
@@ -466,10 +591,11 @@ export default function CreateCompanyDrawer({
           company.id
         );
 
-        const response = await api.put(
-          `/companies/${company.id}/`,
-          payload
-        );
+        const response =
+          await api.put(
+            `/companies/${company.id}/`,
+            payload
+          );
 
         console.log(
           "Company updated:",
@@ -486,10 +612,11 @@ export default function CreateCompanyDrawer({
           "Creating company"
         );
 
-        const response = await api.post(
-          "/companies/",
-          payload
-        );
+        const response =
+          await api.post(
+            "/companies/",
+            payload
+          );
 
         console.log(
           "Company created:",
@@ -524,12 +651,12 @@ export default function CreateCompanyDrawer({
         error
       );
 
-      console.log(
+      console.error(
         "Backend error:",
-        error.response?.data
+        error?.response?.data
       );
 
-      if (error.response?.data) {
+      if (error?.response?.data) {
         setError(
           JSON.stringify(
             error.response.data
@@ -604,7 +731,8 @@ export default function CreateCompanyDrawer({
               sx={{
                 color: "red",
                 fontSize: "14px",
-                wordBreak: "break-word",
+                wordBreak:
+                  "break-word",
               }}
             >
               {error}
@@ -618,7 +746,9 @@ export default function CreateCompanyDrawer({
           <CommonInput
             label="Domain Name"
             name="domainName"
-            value={formData.domainName}
+            value={
+              formData.domainName
+            }
             onChange={handleChange}
             placeholder="Enter"
             fullWidth
@@ -632,7 +762,9 @@ export default function CreateCompanyDrawer({
           <CommonInput
             label="Company Name"
             name="companyName"
-            value={formData.companyName}
+            value={
+              formData.companyName
+            }
             onChange={handleChange}
             placeholder="Enter"
             fullWidth
@@ -646,7 +778,9 @@ export default function CreateCompanyDrawer({
           <CommonSelect
             label="Company Owner"
             name="companyOwner"
-            value={formData.companyOwner}
+            value={
+              formData.companyOwner
+            }
             onChange={handleChange}
             placeholder="Choose Owner"
             options={users}
@@ -678,7 +812,9 @@ export default function CreateCompanyDrawer({
                   "Marketing",
                 ]}
                 name="industry"
-                value={formData.industry}
+                value={
+                  formData.industry
+                }
                 onChange={handleChange}
               />
             </Grid>
@@ -700,7 +836,9 @@ export default function CreateCompanyDrawer({
                   "Enterprise",
                 ]}
                 name="type"
-                value={formData.type}
+                value={
+                  formData.type
+                }
                 onChange={handleChange}
               />
             </Grid>
@@ -720,16 +858,24 @@ export default function CreateCompanyDrawer({
               label="City"
               placeholder="Enter"
               name="city"
-              value={formData.city}
-              onChange={handleChange}
+              value={
+                formData.city
+              }
+              onChange={
+                handleChange
+              }
             />
 
             <CommonInput
               label="Country/Region"
               placeholder="Enter"
               name="country"
-              value={formData.country}
-              onChange={handleChange}
+              value={
+                formData.country
+              }
+              onChange={
+                handleChange
+              }
             />
           </Box>
 
@@ -747,16 +893,24 @@ export default function CreateCompanyDrawer({
               label="No of Employees"
               placeholder="Enter"
               name="noOfEmployees"
-              value={formData.noOfEmployees}
-              onChange={handleChange}
+              value={
+                formData.noOfEmployees
+              }
+              onChange={
+                handleChange
+              }
             />
 
             <CommonInput
               label="Annual Revenue"
               placeholder="Enter"
               name="annualRevenue"
-              value={formData.annualRevenue}
-              onChange={handleChange}
+              value={
+                formData.annualRevenue
+              }
+              onChange={
+                handleChange
+              }
             />
           </Box>
 
@@ -768,8 +922,12 @@ export default function CreateCompanyDrawer({
             label="Phone Number"
             required
             name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
+            value={
+              formData.phoneNumber
+            }
+            onChange={
+              handleChange
+            }
           />
 
           {/* =================================================
@@ -781,8 +939,12 @@ export default function CreateCompanyDrawer({
             required
             placeholder="Enter"
             name="email"
-            value={formData.email}
-            onChange={handleChange}
+            value={
+              formData.email
+            }
+            onChange={
+              handleChange
+            }
           />
         </Box>
 
@@ -795,7 +957,8 @@ export default function CreateCompanyDrawer({
             display: "flex",
             gap: 2,
             p: 3,
-            borderTop: "1px solid #E5E7EB",
+            borderTop:
+              "1px solid #E5E7EB",
           }}
         >
           {/* =================================================

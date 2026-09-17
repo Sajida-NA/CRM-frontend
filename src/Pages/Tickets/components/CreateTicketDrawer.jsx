@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   Drawer,
@@ -42,8 +41,8 @@ export default function CreateTicketDrawer({ open, onClose }) {
   // OPTIONS
   // =====================================================
 
-  const [users, setUsers] = useState([]);
   const [deals, setDeals] = useState([]);
+  const [dealOwners, setDealOwners] = useState([]);
 
   // =====================================================
   // LOADING / ERROR
@@ -51,47 +50,28 @@ export default function CreateTicketDrawer({ open, onClose }) {
 
   const [loading, setLoading] = useState(false);
   const [loadingOptions, setLoadingOptions] = useState(false);
+  const [loadingDealOwners, setLoadingDealOwners] = useState(false);
   const [error, setError] = useState("");
 
   // =====================================================
-  // LOAD USERS + CLOSED WON DEALS
+  // LOAD CLOSED WON DEALS
   // =====================================================
 
   useEffect(() => {
     if (!open) return;
 
-    const fetchOptions = async () => {
+    const fetchDeals = async () => {
       try {
         setLoadingOptions(true);
         setError("");
 
-        const [usersResponse, dealsResponse] =
-          await Promise.all([
-            api.get("/accounts/users/"),
-            api.get("/deals/"),
-          ]);
+        const response = await api.get("/deals/");
 
-        console.log(
-          "USERS RESPONSE:",
-          usersResponse.data
-        );
+        console.log("DEALS RESPONSE:", response.data);
 
-        console.log(
-          "DEALS RESPONSE:",
-          dealsResponse.data
-        );
-
-        const usersData = Array.isArray(
-          usersResponse.data
-        )
-          ? usersResponse.data
-          : usersResponse.data.results || [];
-
-        const dealsData = Array.isArray(
-          dealsResponse.data
-        )
-          ? dealsResponse.data
-          : dealsResponse.data.results || [];
+        const dealsData = Array.isArray(response.data)
+          ? response.data
+          : response.data?.results || response.data?.data || [];
 
         // -------------------------------------------------
         // ONLY CLOSED WON DEALS
@@ -99,11 +79,9 @@ export default function CreateTicketDrawer({ open, onClose }) {
 
         const closedWonDeals = dealsData.filter(
           (deal) =>
-            deal.deal_stage?.toLowerCase() ===
-            "closed won"
+            deal.deal_stage?.toLowerCase() === "closed won"
         );
 
-        setUsers(usersData);
         setDeals(closedWonDeals);
 
         console.log(
@@ -112,20 +90,109 @@ export default function CreateTicketDrawer({ open, onClose }) {
         );
       } catch (err) {
         console.error(
-          "Error loading ticket options:",
+          "Error loading deals:",
           err.response?.data || err
         );
 
-        setError(
-          "Failed to load Ticket Owners or Deals."
-        );
+        setError("Failed to load Closed Won deals.");
       } finally {
         setLoadingOptions(false);
       }
     };
 
-    fetchOptions();
+    fetchDeals();
   }, [open]);
+
+  // =====================================================
+  // LOAD DEAL OWNERS
+  // =====================================================
+
+  const loadDealOwners = async (dealId) => {
+    if (!dealId) {
+      setDealOwners([]);
+
+      setFormData((prev) => ({
+        ...prev,
+        ticketOwners: [],
+      }));
+
+      return;
+    }
+
+    try {
+      setLoadingDealOwners(true);
+      setError("");
+
+      console.log(
+        "========== LOADING DEAL OWNERS =========="
+      );
+
+      console.log("DEAL ID:", dealId);
+
+      const response = await api.get(
+        `/deals/${dealId}/`
+      );
+
+      console.log(
+        "DEAL DETAILS RESPONSE:",
+        response.data
+      );
+
+      const dealData =
+        response.data?.data || response.data;
+
+      // -------------------------------------------------
+      // GET DEAL OWNER DETAILS
+      // -------------------------------------------------
+
+      const owners =
+        dealData?.deal_owner_details || [];
+
+      console.log(
+        "DEAL OWNERS:",
+        owners
+      );
+
+      setDealOwners(owners);
+
+      // -------------------------------------------------
+      // AUTOMATICALLY SELECT ALL DEAL OWNERS
+      // -------------------------------------------------
+
+      const ownerIds = owners.map(
+        (owner) => Number(owner.id)
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        ticketOwners: ownerIds,
+      }));
+
+      if (owners.length === 0) {
+        setError(
+          "No Deal Owners are available for the selected Deal."
+        );
+      }
+    } catch (err) {
+      console.error(
+        "Error loading Deal Owners:",
+        err.response?.data || err
+      );
+
+      setDealOwners([]);
+
+      setFormData((prev) => ({
+        ...prev,
+        ticketOwners: [],
+      }));
+
+      setError(
+        "Failed to load Deal Owners."
+      );
+    } finally {
+      setLoadingDealOwners(false);
+    }
+  };
 
   // =====================================================
   // HANDLE INPUT CHANGE
@@ -133,6 +200,43 @@ export default function CreateTicketDrawer({ open, onClose }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // ---------------------------------------------------
+    // ASSOCIATED DEAL
+    // ---------------------------------------------------
+
+    if (name === "associatedDeal") {
+      setFormData((prev) => ({
+        ...prev,
+        associatedDeal: value,
+        ticketOwners: [],
+      }));
+
+      setDealOwners([]);
+
+      loadDealOwners(value);
+
+      return;
+    }
+
+    // ---------------------------------------------------
+    // TICKET OWNERS
+    // ---------------------------------------------------
+
+    if (name === "ticketOwners") {
+      setFormData((prev) => ({
+        ...prev,
+        ticketOwners: Array.isArray(value)
+          ? value.map((id) => Number(id))
+          : [],
+      }));
+
+      return;
+    }
+
+    // ---------------------------------------------------
+    // NORMAL FIELDS
+    // ---------------------------------------------------
 
     setFormData((prev) => ({
       ...prev,
@@ -155,7 +259,24 @@ export default function CreateTicketDrawer({ open, onClose }) {
       associatedDeal: "",
     });
 
+    setDealOwners([]);
     setError("");
+  };
+
+  // =====================================================
+  // GET OWNER NAME
+  // =====================================================
+
+  const getOwnerName = (owner) => {
+    if (!owner) {
+      return "";
+    }
+
+    return (
+      `${owner.first_name || ""} ${
+        owner.last_name || ""
+      }`.trim() || owner.email
+    );
   };
 
   // =====================================================
@@ -191,6 +312,33 @@ export default function CreateTicketDrawer({ open, onClose }) {
       return;
     }
 
+    // -----------------------------------------------------
+    // VALIDATE TICKET OWNERS AGAINST DEAL OWNERS
+    // -----------------------------------------------------
+
+    const allowedOwnerIds = dealOwners.map(
+      (owner) => Number(owner.id)
+    );
+
+    const selectedOwnerIds =
+      formData.ticketOwners.map(
+        (id) => Number(id)
+      );
+
+    const invalidOwnerIds =
+      selectedOwnerIds.filter(
+        (id) =>
+          !allowedOwnerIds.includes(id)
+      );
+
+    if (invalidOwnerIds.length > 0) {
+      setError(
+        "Ticket Owners must be selected from the associated Deal Owners."
+      );
+
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -207,9 +355,7 @@ export default function CreateTicketDrawer({ open, onClose }) {
 
         // MULTIPLE OWNER IDS
         ticket_owners:
-          formData.ticketOwners.map(
-            (id) => Number(id)
-          ),
+          selectedOwnerIds,
 
         associated_deal:
           Number(formData.associatedDeal),
@@ -718,70 +864,80 @@ export default function CreateTicketDrawer({ open, onClose }) {
                   handleChange
                 }
                 disabled={
-                  loadingOptions
+                  !formData.associatedDeal ||
+                  loadingDealOwners ||
+                  dealOwners.length === 0
                 }
                 renderValue={(
                   selected
-                ) =>
-                  selected
+                ) => {
+                  if (
+                    !formData.associatedDeal
+                  ) {
+                    return "Choose";
+                  }
+
+                  if (
+                    loadingDealOwners
+                  ) {
+                    return "Loading...";
+                  }
+
+                  if (
+                    !selected ||
+                    selected.length === 0
+                  ) {
+                    return "Choose";
+                  }
+
+                  return selected
                     .map((id) => {
-                      const user =
-                        users.find(
+                      const owner =
+                        dealOwners.find(
                           (item) =>
-                            String(
-                              item.id
-                            ) ===
-                            String(id)
+                            Number(item.id) ===
+                            Number(id)
                         );
 
-                      if (!user) {
-                        return "";
-                      }
-
-                      return (
-                        `${user.first_name || ""} ${
-                          user.last_name || ""
-                        }`.trim() ||
-                        user.email
-                      );
+                      return owner
+                        ? getOwnerName(owner)
+                        : "";
                     })
                     .filter(Boolean)
-                    .join(", ")
-                }
+                    .join(", ");
+                }}
               >
-                {loadingOptions ? (
+                {!formData.associatedDeal ? (
                   <MenuItem disabled>
-                    Loading users...
+                    Select Associated Deal first
                   </MenuItem>
-                ) : users.length ===
-                  0 ? (
+                ) : loadingDealOwners ? (
                   <MenuItem disabled>
-                    No users available
+                    Loading Deal Owners...
+                  </MenuItem>
+                ) : dealOwners.length === 0 ? (
+                  <MenuItem disabled>
+                    No Deal Owners available
                   </MenuItem>
                 ) : (
-                  users.map((user) => {
-                    const userName =
-                      `${user.first_name || ""} ${
-                        user.last_name || ""
-                      }`.trim() ||
-                      user.email;
+                  dealOwners.map((owner) => {
+                    const ownerName =
+                      getOwnerName(owner);
 
                     return (
                       <MenuItem
-                        key={user.id}
-                        value={
-                          user.id
-                        }
+                        key={owner.id}
+                        value={Number(owner.id)}
                       >
                         <Checkbox
                           checked={formData.ticketOwners.includes(
-                            user.id
+                            Number(owner.id)
                           )}
                         />
 
                         <ListItemText
                           primary={
-                            userName
+                            ownerName
                           }
                         />
                       </MenuItem>

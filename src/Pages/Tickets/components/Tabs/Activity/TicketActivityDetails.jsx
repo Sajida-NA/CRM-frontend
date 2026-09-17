@@ -1,6 +1,5 @@
 
-import React, { useEffect, useState } from "react";
-// import { useParams } from "react-router-dom";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -13,12 +12,10 @@ import { ticketTabs } from "../TicketTabs";
 import api from "../../../../../services/api";
 
 export default function TicketActivityDetails({ ticketId }) {
-  // const { ticketId } = useParams();
-
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchActivities = async () => {
+  const fetchActivities = useCallback(async () => {
     if (!ticketId) {
       setActivities([]);
       setLoading(false);
@@ -26,48 +23,43 @@ export default function TicketActivityDetails({ ticketId }) {
     }
 
     try {
-  setLoading(true);
+      setLoading(true);
 
-  console.log("1. TICKET ACTIVITY START");
-  console.log("2. TICKET ID:", ticketId);
-  console.log(
-    "3. CALLING URL:",
-    `/activities/activity/ticket/${ticketId}/`
-  );
+      console.log("1. TICKET ACTIVITY START");
+      console.log("2. TICKET ID:", ticketId);
+      console.log(
+        "3. CALLING URL:",
+        `/activities/activity/ticket/${ticketId}/`
+      );
 
-  const response = await api.get(
-    `/activities/activity/ticket/${ticketId}/`
-  );
+      const response = await api.get(
+        `/activities/activity/ticket/${ticketId}/`
+      );
 
-  console.log("4. TICKET ACTIVITY RESPONSE:", response);
-  console.log("5. TICKET ACTIVITY DATA:", response.data);
+      console.log("4. TICKET ACTIVITY RESPONSE:", response);
+      console.log("5. TICKET ACTIVITY DATA:", response.data);
 
-  const data = Array.isArray(response.data)
-    ? response.data
-    : response.data?.results || [];
+      const data = Array.isArray(response.data)
+        ? response.data
+        : response.data?.results || [];
 
-  setActivities(data);
+      setActivities(data);
+    } catch (error) {
+      console.error("6. TICKET ACTIVITY ERROR");
+      console.error("STATUS:", error.response?.status);
+      console.error("DATA:", error.response?.data);
+      console.error("MESSAGE:", error.message);
+      console.error("FULL ERROR:", error);
 
-} catch (error) {
-
-  console.error("6. TICKET ACTIVITY ERROR");
-  console.error("STATUS:", error.response?.status);
-  console.error("DATA:", error.response?.data);
-  console.error("MESSAGE:", error.message);
-  console.error("FULL ERROR:", error);
-
-  setActivities([]);
-
-} finally {
-  setLoading(false);
-}
-
-
-  };
+      setActivities([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [ticketId]);
 
   useEffect(() => {
     fetchActivities();
-  }, [ticketId]);
+  }, [fetchActivities]);
 
   return (
     <Box
