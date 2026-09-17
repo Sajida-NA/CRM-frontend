@@ -397,25 +397,8 @@ function DealsList() {
     },
   );
 
-  // =================================================
-  // DEAL OWNER OPTIONS
-  // =================================================
-
-  /*
-   * Since a deal can now have multiple owners,
-   * collect all owner names from all deals.
-   *
-   * Example:
-   *
-   * Deal 1:
-   * ["Sajid Jubi", "Riya Mehwish"]
-   *
-   * Deal 2:
-   * ["Hisham", "Sajid Jubi"]
-   *
-   * Result:
-   * ["Sajid Jubi", "Riya Mehwish", "Hisham"]
-   */
+ 
+  
 
   const dealOwnerOptions = [
     ...new Set(

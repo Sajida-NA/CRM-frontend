@@ -108,13 +108,6 @@ element={<CompanyActivities />}
 <Route path="/tickets/:ticketId/calls" element={<TicketCalls />} /> 
 <Route path="/tickets/:ticketId/task" element={<TicketTask />} /> 
 <Route path="/tickets/:ticketId/email" element={<TicketEmail />} /> 
-{/* Legacy Ticket routes */} 
-{/* <Route path="/ticketactivities" element={<TicketActivities />} /> 
-<Route path="/ticketmeeting" element={<TicketMeeting />} /> 
-<Route path="/ticketnote" element={<TicketNote />} /> 
-<Route path="/ticketcalls" element={<TicketCalls />} /> 
-<Route path="/tickettask" element={<TicketTask />} /> 
-<Route path="/ticketemail" element={<TicketEmail />} />  */} 
 <Route path="/ticketleftpanel" element={<TicketLeftPanel />} /> 
 {/* ================= Deal Routes ================= */} 
 <Route path="/dealslist" element={<DealsList />} /> 
