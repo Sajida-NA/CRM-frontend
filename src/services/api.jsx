@@ -35,7 +35,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://crm-backend-udur.onrender.com/api",
+  baseURL: "https://crm-backend-8qts.onrender.com/api",
 });
 
 api.interceptors.request.use(
@@ -55,7 +55,7 @@ api.interceptors.request.use(
 
 // Public API - does not send JWT token
 export const publicApi = axios.create({
-  baseURL: "https://crm-backend-udur.onrender.com/api",
+  baseURL: "https://crm-backend-8qts.onrender.com/api",
 });
 
 export default api;
