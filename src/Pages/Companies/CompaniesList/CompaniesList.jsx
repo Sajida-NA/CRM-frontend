@@ -6,7 +6,6 @@ import PageHeader from "../../../Components/common/PageHeader";
 import FilterSection from "../../../Components/common/FilterSection";
 import SelectField from "../../../Components/common/SelectField";
 import DataTable from "../../../Components/common/DataTable";
-import MainLayout from "../../../layout/MainLayout";
 import CreateCompanyDrawer from "../components/CreateCompanyDrawer";
 import SearchSection from "../../../Components/common/SearchSection";
 import CommonButton from "../../../Components/common/CommonButton";
@@ -190,7 +189,6 @@ function CompaniesList() {
   }, [industry, city, country, search, createdDate]);
 
   return (
-    <MainLayout>
       <Box
         sx={{
           maxWidth: "1000",
@@ -476,7 +474,6 @@ function CompaniesList() {
           ))}
         </DataTable>
       </Box>
-    </MainLayout>
   );
 }
 

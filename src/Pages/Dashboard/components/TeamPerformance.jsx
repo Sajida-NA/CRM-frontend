@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 
 import {
@@ -177,10 +176,10 @@ const TeamPerformance = () => {
     ).trim();
 
     if (changeString.startsWith("-")) {
-      return "red";
+      return "error.main";
     }
 
-    return "green";
+    return "success.main";
   };
 
   // ===================================================
@@ -211,7 +210,7 @@ const TeamPerformance = () => {
           sx={{
             fontSize: 19,
             fontWeight: "bold",
-            color: "#191b1e",
+            color: "text.primary",
           }}
         >
           Team Performance
@@ -264,10 +263,10 @@ const TeamPerformance = () => {
                   textAlign: "left",
                   p: 2,
                   fontSize: 13,
-                  color: "#6B7280",
+                  color: "text.secondary",
                   fontWeight: 600,
-                  borderBottom:
-                    "1px solid #E5E7EB",
+                  borderBottom: "1px solid",
+                  borderColor: "divider",
                 }}
               >
                 Name
@@ -281,10 +280,10 @@ const TeamPerformance = () => {
                   textAlign: "center",
                   p: 2,
                   fontSize: 13,
-                  color: "#6B7280",
+                  color: "text.secondary",
                   fontWeight: 600,
-                  borderBottom:
-                    "1px solid #E5E7EB",
+                  borderBottom: "1px solid",
+                  borderColor: "divider",
                 }}
               >
                 Active Deals
@@ -298,10 +297,10 @@ const TeamPerformance = () => {
                   textAlign: "center",
                   p: 2,
                   fontSize: 13,
-                  color: "#6B7280",
+                  color: "text.secondary",
                   fontWeight: 600,
-                  borderBottom:
-                    "1px solid #E5E7EB",
+                  borderBottom: "1px solid",
+                  borderColor: "divider",
                 }}
               >
                 Closed Deals
@@ -315,30 +314,13 @@ const TeamPerformance = () => {
                   textAlign: "right",
                   p: 2,
                   fontSize: 13,
-                  color: "#6B7280",
+                  color: "text.secondary",
                   fontWeight: 600,
-                  borderBottom:
-                    "1px solid #E5E7EB",
+                  borderBottom: "1px solid",
+                  borderColor: "divider",
                 }}
               >
-                Revenue Amount
-              </Box>
-
-              {/* REVENUE CHANGE */}
-
-              <Box
-                component="th"
-                sx={{
-                  textAlign: "right",
-                  p: 2,
-                  fontSize: 13,
-                  color: "#6B7280",
-                  fontWeight: 600,
-                  borderBottom:
-                    "1px solid #E5E7EB",
-                }}
-              >
-                Revenue % Change
+                Revenue
               </Box>
 
             </Box>
@@ -350,20 +332,18 @@ const TeamPerformance = () => {
 
           <Box component="tbody">
 
-            {/* =================================================
-                LOADING
-            ================================================= */}
+            {/* LOADING */}
 
             {loading && (
               <Box component="tr">
                 <Box
                   component="td"
-                  colSpan={5}
+                  colSpan={4}
                   sx={{
                     textAlign: "center",
                     p: 3,
                     fontSize: 13,
-                    color: "#6B7280",
+                    color: "text.secondary",
                   }}
                 >
                   Loading team performance...
@@ -371,21 +351,19 @@ const TeamPerformance = () => {
               </Box>
             )}
 
-            {/* =================================================
-                EMPTY
-            ================================================= */}
+            {/* EMPTY */}
 
             {!loading &&
               rows.length === 0 && (
                 <Box component="tr">
                   <Box
                     component="td"
-                    colSpan={5}
+                    colSpan={4}
                     sx={{
                       textAlign: "center",
                       p: 3,
                       fontSize: 13,
-                      color: "#6B7280",
+                      color: "text.secondary",
                     }}
                   >
                     No team performance data
@@ -394,9 +372,7 @@ const TeamPerformance = () => {
                 </Box>
               )}
 
-            {/* =================================================
-                DATA
-            ================================================= */}
+            {/* DATA */}
 
             {!loading &&
               rows.length > 0 &&
@@ -405,6 +381,7 @@ const TeamPerformance = () => {
                   component="tr"
                   key={row.id}
                 >
+
                   {/* NAME */}
 
                   <Box
@@ -412,9 +389,9 @@ const TeamPerformance = () => {
                     sx={{
                       p: 2,
                       fontSize: 14,
-                      color: "#1F2937",
-                      borderBottom:
-                        "1px solid #F3F4F6",
+                      color: "text.primary",
+                      borderBottom: "1px solid",
+                      borderColor: "#F3F4F6",
                     }}
                   >
                     {row.name}
@@ -428,9 +405,9 @@ const TeamPerformance = () => {
                       textAlign: "center",
                       p: 2,
                       fontSize: 14,
-                      color: "#1F2937",
-                      borderBottom:
-                        "1px solid #F3F4F6",
+                      color: "text.primary",
+                      borderBottom: "1px solid",
+                      borderColor: "#F3F4F6",
                     }}
                   >
                     {row.active}
@@ -444,15 +421,15 @@ const TeamPerformance = () => {
                       textAlign: "center",
                       p: 2,
                       fontSize: 14,
-                      color: "#1F2937",
-                      borderBottom:
-                        "1px solid #F3F4F6",
+                      color: "text.primary",
+                      borderBottom: "1px solid",
+                      borderColor: "#F3F4F6",
                     }}
                   >
                     {row.closed}
                   </Box>
 
-                  {/* REVENUE */}
+                  {/* REVENUE - SINGLE COLUMN */}
 
                   <Box
                     component="td"
@@ -460,37 +437,52 @@ const TeamPerformance = () => {
                       textAlign: "right",
                       p: 2,
                       fontSize: 14,
-                      color: "#1F2937",
-                      borderBottom:
-                        "1px solid #F3F4F6",
+                      color: "text.primary",
+                      borderBottom: "1px solid",
+                      borderColor: "#F3F4F6",
                     }}
                   >
-                    $
-                    {row.revenue.toLocaleString(
-                      undefined,
-                      {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2,
-                      }
-                    )}
-                  </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        alignItems: "center",
+                        gap: 2,
+                      }}
+                    >
+                      {/* Revenue Amount */}
 
-                  {/* REVENUE CHANGE */}
+                      <Typography
+                        component="span"
+                        sx={{
+                          fontSize: 14,
+                          color: "text.primary",
+                        }}
+                      >
+                        $
+                        {row.revenue.toLocaleString(
+                          undefined,
+                          {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 2,
+                          }
+                        )}
+                      </Typography>
 
-                  <Box
-                    component="td"
-                    sx={{
-                      textAlign: "right",
-                      p: 2,
-                      fontSize: 14,
-                      color: getChangeColor(
-                        row.change
-                      ),
-                      borderBottom:
-                        "1px solid #F3F4F6",
-                    }}
-                  >
-                    {String(row.change)}
+                      {/* Revenue Change */}
+
+                      <Typography
+                        component="span"
+                        sx={{
+                          fontSize: 14,
+                          color: getChangeColor(
+                            row.change
+                          ),
+                        }}
+                      >
+                        {String(row.change)}
+                      </Typography>
+                    </Box>
                   </Box>
 
                 </Box>

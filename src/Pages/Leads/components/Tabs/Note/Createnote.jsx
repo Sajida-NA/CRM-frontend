@@ -30,13 +30,24 @@ export default function Createnote({
 
     setError("");
 
-    // Validate note
-    if (!formData.note.trim()) {
+    // =================================================
+    // VALIDATE NOTE
+    // =================================================
+
+    const plainTextNote = formData.note
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .trim();
+
+    if (!plainTextNote) {
       setError("Note is required.");
       return;
     }
 
-    // Validate module and module ID
+    // =================================================
+    // VALIDATE MODULE AND MODULE ID
+    // =================================================
+
     if (!module || !moduleId) {
       setError("Related record information is missing.");
       return;
@@ -51,16 +62,12 @@ export default function Createnote({
     let user = null;
 
     try {
-      user = storedUser
-        ? JSON.parse(storedUser)
-        : null;
+      user = storedUser ? JSON.parse(storedUser) : null;
     } catch (error) {
       console.error("Invalid user data:", error);
     }
 
-    const senderId =
-      user?.id ||
-      user?.user_id;
+    const senderId = user?.id || user?.user_id;
 
     if (!senderId) {
       setError("Logged-in user information is missing.");
@@ -78,6 +85,11 @@ export default function Createnote({
         sender_id: senderId,
         module: String(module).toLowerCase().trim(),
         module_id: Number(moduleId),
+
+        // IMPORTANT:
+        // Send the original HTML from CommonEditor.
+        // This preserves bold, italic, underline,
+        // lists, links, etc.
         note: formData.note,
       };
 
@@ -85,45 +97,44 @@ export default function Createnote({
 
       const response = await createNote(payload);
 
-      console.log(
-        "Note created successfully:",
-        response
-      );
+      console.log("Note created successfully:", response);
 
-      // Reset form
+      // =================================================
+      // RESET FORM
+      // =================================================
+
       setFormData({
         note: "",
       });
 
-      // Notify parent
+      // =================================================
+      // NOTIFY PARENT
+      // =================================================
+
       if (onSuccess) {
         onSuccess(response);
       }
 
-      // Close drawer
+      // =================================================
+      // CLOSE DRAWER
+      // =================================================
+
       onClose();
     } catch (error) {
-      console.error(
-        "Failed to create note:",
-        error
-      );
+      console.error("Failed to create note:", error);
 
-      const responseData =
-        error?.response?.data;
+      const responseData = error?.response?.data;
 
       if (
         responseData &&
         typeof responseData === "object"
       ) {
-        const firstError = Object.values(
-          responseData
-        )
+        const firstError = Object.values(responseData)
           .flat()
           .find(Boolean);
 
         setError(
-          firstError ||
-          "Failed to create note."
+          firstError || "Failed to create note."
         );
       } else {
         setError(
@@ -172,14 +183,18 @@ export default function Createnote({
           bgcolor: "#fff",
         }}
       >
-        {/* Header */}
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
         <DrawerHeader
           title="Create Note"
           onClose={handleClose}
         />
 
-        {/* Form Body */}
+        {/* =================================================
+            FORM BODY
+        ================================================= */}
 
         <Box
           sx={{
@@ -203,6 +218,10 @@ export default function Createnote({
             }
           />
 
+          {/* =================================================
+              ERROR
+          ================================================= */}
+
           {error && (
             <Box
               sx={{
@@ -215,7 +234,9 @@ export default function Createnote({
           )}
         </Box>
 
-        {/* Footer */}
+        {/* =================================================
+            FOOTER
+        ================================================= */}
 
         <Box
           sx={{

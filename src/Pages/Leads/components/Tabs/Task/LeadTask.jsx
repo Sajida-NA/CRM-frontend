@@ -1,9 +1,8 @@
-
 import React from "react";
 import { useParams } from "react-router-dom";
 
 import TaskDetails from "./TaskDetails";
-import LeadsLeftPanel from "../../LeadsLeftPanel";
+
 import { getLeadTabs } from "../LeadTabs";
 
 export default function LeadTask() {
@@ -13,14 +12,7 @@ export default function LeadTask() {
 
   return (
     <div>
-      <LeadsLeftPanel leadId={leadId}>
-        <TaskDetails
-          tabs={getLeadTabs(leadId)}
-          module="lead"
-          moduleId={leadId}
-        />
-      </LeadsLeftPanel>
+      <TaskDetails tabs={getLeadTabs(leadId)} module="lead" moduleId={leadId} />
     </div>
   );
 }
-

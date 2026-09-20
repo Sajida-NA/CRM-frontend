@@ -319,7 +319,7 @@ export default function Leadslist() {
 
   return (
 
-    <MainLayout>
+  <>
 
       {/* =========================================
           MAIN CONTAINER
@@ -650,7 +650,7 @@ export default function Leadslist() {
 
       </Box>
 
-    </MainLayout>
+      </>
 
   );
 }

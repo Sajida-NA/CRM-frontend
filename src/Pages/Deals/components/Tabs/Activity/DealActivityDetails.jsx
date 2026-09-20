@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 
@@ -189,15 +187,123 @@ export default function DealActivityDetails({ dealId }) {
           </Typography>
 
           {data.note && (
-            <Typography
+            <Box
               sx={{
                 mt: 1,
                 fontSize: 14,
-                color: "text.secondary",
+                color: "text.primary",
+
+                // =====================================
+                // PARAGRAPHS
+                // =====================================
+
+                "& p": {
+                  margin: 0,
+                  marginBottom: "8px",
+                },
+
+                // =====================================
+                // BOLD
+                // =====================================
+
+                "& strong, & b": {
+                  fontWeight: 700,
+                },
+
+                // =====================================
+                // ITALIC
+                // =====================================
+
+                "& em, & i": {
+                  fontStyle: "italic",
+                },
+
+                // =====================================
+                // UNDERLINE
+                // =====================================
+
+                "& u": {
+                  textDecoration: "underline",
+                },
+
+                // =====================================
+                // STRIKETHROUGH
+                // =====================================
+
+                "& s, & strike": {
+                  textDecoration: "line-through",
+                },
+
+                // =====================================
+                // UNORDERED LIST
+                // =====================================
+
+                "& ul": {
+                  display: "block",
+                  paddingLeft: "24px",
+                  margin: "8px 0",
+                  listStyleType: "disc",
+                },
+
+                // =====================================
+                // ORDERED LIST
+                // =====================================
+
+                "& ol": {
+                  display: "block",
+                  paddingLeft: "24px",
+                  margin: "8px 0",
+                  listStyleType: "decimal",
+                },
+
+                // =====================================
+                // LIST ITEMS
+                // =====================================
+
+                "& li": {
+                  display: "list-item",
+                  marginBottom: "4px",
+                },
+
+                // =====================================
+                // QUILL BULLET LIST
+                // =====================================
+
+                "& li[data-list='bullet']": {
+                  display: "list-item",
+                  listStyleType: "disc",
+                },
+
+                // =====================================
+                // QUILL ORDERED LIST
+                // =====================================
+
+                "& li[data-list='ordered']": {
+                  display: "list-item",
+                  listStyleType: "decimal",
+                },
+
+                // =====================================
+                // LINKS
+                // =====================================
+
+                "& a": {
+                  textDecoration: "underline",
+                },
+
+                // =====================================
+                // IMAGES
+                // =====================================
+
+                "& img": {
+                  maxWidth: "100%",
+                  height: "auto",
+                },
               }}
-            >
-              {data.note}
-            </Typography>
+              dangerouslySetInnerHTML={{
+                __html: data.note || "",
+              }}
+            />
           )}
         </>
       );

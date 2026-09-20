@@ -2,7 +2,21 @@ import React from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 
-const CommonEditor = ({ label, value, onChange, required = false }) => {
+const editorModules = {
+  toolbar: [
+    [{ header: [1, 2, false] }],
+    ["bold", "italic", "underline"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["image"],
+  ],
+};
+
+const CommonEditor = ({
+  label,
+  value,
+  onChange,
+  required = false,
+}) => {
   return (
     <div>
       <label
@@ -16,7 +30,9 @@ const CommonEditor = ({ label, value, onChange, required = false }) => {
         }}
       >
         {label}
-        {required && <span style={{ color: "red" }}> *</span>}
+        {required && (
+          <span style={{ color: "red" }}> *</span>
+        )}
       </label>
 
       <ReactQuill
@@ -24,14 +40,7 @@ const CommonEditor = ({ label, value, onChange, required = false }) => {
         value={value}
         onChange={onChange}
         placeholder="Enter"
-        modules={{
-          toolbar: [
-            [{ header: [1, 2, false] }],
-            ["bold", "italic", "underline"],
-            [{ list: "ordered" }, { list: "bullet" }],
-            ["image"],
-          ],
-        }}
+        modules={editorModules}
         style={{
           height: "150px",
           marginBottom: "50px",

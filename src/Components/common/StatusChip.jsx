@@ -5,8 +5,8 @@ export default function StatusChip({ status }) {
     Open: "success",
     New: "info",
     "In Progress": "warning",
-    Contacted: "primary",
-    Qualified: "secondary",
+    Converted: "secondary",
+    
   };
 
   return (

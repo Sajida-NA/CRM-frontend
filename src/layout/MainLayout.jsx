@@ -1,8 +1,10 @@
 import { Box } from "@mui/material";
+import { Outlet } from "react-router-dom";
+
 import Header from "../Components/common/Header";
 import Sidebar from "../Components/common/Sidebar";
 
-function MainLayout({ children, title }) {
+function MainLayout() {
   return (
     <>
       <Header />
@@ -16,9 +18,10 @@ function MainLayout({ children, title }) {
             flex: 1,
             p: 3,
             backgroundColor: "#f5f7fb",
+            minHeight: "calc(100vh - 70px)",
           }}
         >
-          {children}
+          <Outlet />
         </Box>
       </Box>
     </>

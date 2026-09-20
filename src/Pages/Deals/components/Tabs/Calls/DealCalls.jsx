@@ -4,11 +4,11 @@ import {
   Box,
   Typography,
   CircularProgress,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import { useParams } from "react-router-dom";
-
-import DealLeftPanel from "../../DealLeftPanel";
 
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
@@ -40,6 +40,16 @@ export default function DealCalls() {
   const [loading, setLoading] = useState(true);
 
   const [calling, setCalling] = useState(false);
+
+  // =====================================================
+  // SNACKBAR
+  // =====================================================
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   // =====================================================
   // CALL MODE
@@ -178,12 +188,11 @@ export default function DealCalls() {
           id: call?.id,
           date: call?.date,
           time: call?.time,
-          created_at:
-            call?.created_at,
-          call_outcome:
-            call?.call_outcome,
-          twilio_status:
-            call?.twilio_status,
+          created_at: call?.created_at,
+          call_outcome: call?.call_outcome,
+          twilio_status: call?.twilio_status,
+          call_mode: call?.call_mode,
+          duration: call?.duration,
         }))
       );
 
@@ -217,27 +226,6 @@ export default function DealCalls() {
     fetchDeal();
     fetchCalls();
   }, [dealId]);
-
-  // =====================================================
-  // CALL CREATED
-  // =====================================================
-
-  const handleCallCreated = async () => {
-    console.log(
-      "DEAL CALL CREATED - REFRESHING CALLS..."
-    );
-
-    await fetchCalls();
-
-    // Give Twilio time to update status/duration.
-    setTimeout(async () => {
-      console.log(
-        "REFRESHING DEAL CALLS AFTER TWILIO UPDATE..."
-      );
-
-      await fetchCalls();
-    }, 3000);
-  };
 
   // =====================================================
   // GET ASSOCIATED LEAD NAME
@@ -274,7 +262,12 @@ export default function DealCalls() {
 
   const handleMakePhoneCall = async () => {
     if (!dealId) {
-      alert("Deal ID is missing.");
+      setSnackbar({
+        open: true,
+        message: "Deal ID is missing.",
+        severity: "error",
+      });
+
       return;
     }
 
@@ -287,15 +280,25 @@ export default function DealCalls() {
     // =================================================
 
     if (!leadPhone) {
-      alert(
-        "Lead phone number is not available for this deal."
-      );
+      setSnackbar({
+        open: true,
+        message:
+          "Lead phone number is not available for this deal.",
+        severity: "error",
+      });
 
       return;
     }
 
     try {
       setCalling(true);
+
+      // Show calling status
+      setSnackbar({
+        open: true,
+        message: "Calling...",
+        severity: "info",
+      });
 
       console.log(
         "===================================="
@@ -390,11 +393,19 @@ export default function DealCalls() {
         await fetchCalls();
       }, 3000);
 
-      alert(
-        response?.message ||
+      // =================================================
+      // SUCCESS MESSAGE
+      // =================================================
+
+      setSnackbar({
+        open: true,
+        message:
+          response?.message ||
           response?.detail ||
-          "Your phone call has been started."
-      );
+          "Your phone call has been started.",
+        severity: "success",
+      });
+
     } catch (error) {
       console.error(
         "ERROR STARTING DEAL PHONE CALL:",
@@ -410,10 +421,26 @@ export default function DealCalls() {
         error?.message ||
         "Unable to start phone call.";
 
-      alert(errorMessage);
+      setSnackbar({
+        open: true,
+        message: errorMessage,
+        severity: "error",
+      });
+
     } finally {
       setCalling(false);
     }
+  };
+
+  // =====================================================
+  // CLOSE SNACKBAR
+  // =====================================================
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({
+      ...prev,
+      open: false,
+    }));
   };
 
   // =====================================================
@@ -421,104 +448,126 @@ export default function DealCalls() {
   // =====================================================
 
   return (
-    <DealLeftPanel
-      onCallCreated={handleCallCreated}
+    <Box
+      sx={{
+        p: 3,
+        mx: -2,
+      }}
     >
+      {/* =================================================
+          ACTIVITY TABS
+      ================================================= */}
+
+      <Box>
+        <CommonActivityTabs
+          tabs={getDealTabs(dealId)}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+      </Box>
+
+      {/* =================================================
+          CALL HEADER
+      ================================================= */}
+
       <Box
         sx={{
-          p: 3,
-          mx: -2,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mt: 3,
+          mb: 1,
         }}
       >
-        {/* =================================================
-            ACTIVITY TABS
-        ================================================= */}
+        <Typography variant="h6">
+          Calls
+        </Typography>
 
-        <Box>
-          <CommonActivityTabs
-            tabs={getDealTabs(dealId)}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
-        </Box>
+        <CommonButton
+          variant="contained"
+          onClick={handleMakePhoneCall}
+          disabled={calling}
+        >
+          {calling
+            ? "Calling..."
+            : "Make a Phone Call"}
+        </CommonButton>
+      </Box>
 
-        {/* =================================================
-            CALL HEADER
-        ================================================= */}
+      {/* =================================================
+          MONTH
+      ================================================= */}
 
+      <Typography variant="h6">
+        June 2025
+      </Typography>
+
+      {/* =================================================
+          LOADING
+      ================================================= */}
+
+      {loading ? (
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "center",
             alignItems: "center",
-            mt: 3,
-            mb: 1,
+            py: 4,
           }}
         >
-          <Typography variant="h6">
-            Calls
-          </Typography>
-
-          <CommonButton
-            variant="contained"
-            onClick={handleMakePhoneCall}
-            disabled={calling}
-          >
-            {calling
-              ? "Calling..."
-              : "Make a Phone Call"}
-          </CommonButton>
+          <CircularProgress size={28} />
         </Box>
+      ) : calls.length === 0 ? (
+        /* ===============================================
+           EMPTY STATE
+        =============================================== */
 
-        {/* =================================================
-            MONTH
-        ================================================= */}
-
-        <Typography variant="h6">
-          June 2025
+        <Typography
+          color="text.secondary"
+          sx={{
+            mt: 2,
+          }}
+        >
+          No calls found for this deal.
         </Typography>
+      ) : (
+        /* ===============================================
+           CALL LIST
+        =============================================== */
 
-        {/* =================================================
-            LOADING
-        ================================================= */}
+        calls.map((call) => (
+          <CallCard
+            key={call.id}
+            call={call}
+          />
+        ))
+      )}
 
-        {loading ? (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              py: 4,
-            }}
-          >
-            <CircularProgress size={28} />
-          </Box>
-        ) : calls.length === 0 ? (
-          /* ===============================================
-             EMPTY STATE
-          =============================================== */
+      {/* =================================================
+          SNACKBAR
+      ================================================= */}
 
-          <Typography
-            color="text.secondary"
-            sx={{
-              mt: 2,
-            }}
-          >
-            No calls found for this deal.
-          </Typography>
-        ) : (
-          /* ===============================================
-             CALL LIST
-          =============================================== */
-
-          calls.map((call) => (
-            <CallCard
-              key={call.id}
-              call={call}
-            />
-          ))
-        )}
-      </Box>
-    </DealLeftPanel>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <Alert
+          severity={snackbar.severity}
+          variant="filled"
+          onClose={handleCloseSnackbar}
+          sx={{
+            width: "100%",
+            minWidth: "280px",
+          }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 }

@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 
 import {
@@ -32,7 +30,7 @@ export default function NoteDetails({
   const [loading, setLoading] = useState(true);
 
   // =========================================================
-  // GET NOTES
+  // FETCH NOTES
   // =========================================================
 
   const fetchNotes = async () => {
@@ -59,13 +57,6 @@ export default function NoteDetails({
 
       const currentModuleId = Number(moduleId);
 
-      console.log("CURRENT MODULE:", currentModule);
-      console.log("CURRENT MODULE ID:", currentModuleId);
-
-      // =====================================================
-      // FILTER NOTES FOR CURRENT MODULE + ID
-      // =====================================================
-
       const filteredNotes = allNotes.filter((note) => {
         const noteModule = String(note?.module || "")
           .toLowerCase()
@@ -74,17 +65,6 @@ export default function NoteDetails({
         if (noteModule !== currentModule) {
           return false;
         }
-
-        /*
-         * Support different possible backend response formats:
-         *
-         * 1. module_id
-         * 2. object_id
-         * 3. note.company.id
-         * 4. note.deal.id
-         * 5. note.ticket.id
-         * 6. note.lead.id
-         */
 
         const relatedId =
           note?.module_id ??
@@ -95,14 +75,6 @@ export default function NoteDetails({
           note?.ticket?.id ??
           note?.lead?.id;
 
-        console.log("Checking note:", {
-          noteId: note?.id,
-          noteModule,
-          relatedId,
-          currentModule,
-          currentModuleId,
-        });
-
         return Number(relatedId) === currentModuleId;
       });
 
@@ -110,7 +82,6 @@ export default function NoteDetails({
 
       setNotes(filteredNotes);
 
-      // Keep opened note only if it still exists
       setOpenNote((currentOpenNote) => {
         if (
           currentOpenNote &&
@@ -126,7 +97,7 @@ export default function NoteDetails({
     } catch (error) {
       console.error(
         "Failed to fetch notes:",
-        error.response?.data || error.message
+        error?.response?.data || error?.message
       );
 
       setNotes([]);
@@ -136,16 +107,12 @@ export default function NoteDetails({
     }
   };
 
-  // =========================================================
-  // FETCH WHEN MODULE / MODULE ID CHANGES
-  // =========================================================
-
   useEffect(() => {
     fetchNotes();
   }, [module, moduleId]);
 
   // =========================================================
-  // AFTER CREATE NOTE
+  // NOTE CREATED
   // =========================================================
 
   const handleNoteCreated = async () => {
@@ -154,7 +121,7 @@ export default function NoteDetails({
   };
 
   // =========================================================
-  // FORMAT DATE + TIME
+  // DATE FORMAT
   // =========================================================
 
   const formatDateTime = (dateString) => {
@@ -217,10 +184,6 @@ export default function NoteDetails({
     {}
   );
 
-  // =========================================================
-  // SORT NOTES - NEWEST FIRST
-  // =========================================================
-
   Object.keys(groupedNotes).forEach((month) => {
     groupedNotes[month].sort((a, b) => {
       const dateA = new Date(
@@ -231,15 +194,12 @@ export default function NoteDetails({
         b?.created_at || 0
       );
 
-      return (
-        dateB.getTime() -
-        dateA.getTime()
-      );
+      return dateB.getTime() - dateA.getTime();
     });
   });
 
   // =========================================================
-  // OPEN / CLOSE NOTE
+  // TOGGLE NOTE
   // =========================================================
 
   const handleToggleNote = (noteId) => {
@@ -249,7 +209,7 @@ export default function NoteDetails({
   };
 
   // =========================================================
-  // GET RELATED OBJECT
+  // RELATED OBJECT
   // =========================================================
 
   const getRelatedObject = (note) => {
@@ -257,14 +217,11 @@ export default function NoteDetails({
       .toLowerCase()
       .trim();
 
-    return (
-      note?.[currentModule] ||
-      null
-    );
+    return note?.[currentModule] || null;
   };
 
   // =========================================================
-  // GET RELATED OBJECT NAME
+  // RELATED OBJECT NAME
   // =========================================================
 
   const getRelatedObjectName = (note) => {
@@ -287,7 +244,6 @@ export default function NoteDetails({
 
   return (
     <Box sx={{ p: 3, mx: -2 }}>
-
       {/* =====================================================
           ACTIVITY TABS
       ===================================================== */}
@@ -375,13 +331,16 @@ export default function NoteDetails({
       )}
 
       {/* =====================================================
-          NOTES BY MONTH
+          GROUPED NOTES
       ===================================================== */}
 
       {!loading &&
         Object.entries(groupedNotes).map(
           ([month, monthNotes]) => (
             <Box key={month}>
+              {/* =================================================
+                  MONTH TITLE
+              ================================================= */}
 
               <Typography
                 variant="h6"
@@ -394,7 +353,7 @@ export default function NoteDetails({
               </Typography>
 
               {/* =================================================
-                  NOTE CARDS
+                  NOTES
               ================================================= */}
 
               {monthNotes.map((note) => {
@@ -415,10 +374,9 @@ export default function NoteDetails({
                       overflow: "hidden",
                     }}
                   >
-
-                    {/* =========================================
+                    {/* =================================================
                         NOTE HEADER
-                    ========================================= */}
+                    ================================================= */}
 
                     <Box
                       sx={{
@@ -426,13 +384,11 @@ export default function NoteDetails({
                         py: 1.5,
                       }}
                     >
-
                       <Stack
                         direction="row"
                         spacing={1}
                         alignItems="center"
                       >
-
                         <IconButton
                           size="small"
                           onClick={() =>
@@ -477,12 +433,11 @@ export default function NoteDetails({
                             {relatedObjectName}
                           </Box>
                         </Typography>
-
                       </Stack>
 
-                      {/* =======================================
-                          NOTE CONTENT + DATE
-                      ======================================= */}
+                      {/* =================================================
+                          CONTENT + DATE
+                      ================================================= */}
 
                       <Box
                         sx={{
@@ -496,51 +451,225 @@ export default function NoteDetails({
                           mt: 0.5,
                         }}
                       >
+                        {/* =================================================
+                            COLLAPSED CONTENT
+                        ================================================= */}
 
                         <Box
                           sx={{
                             flex: 1,
                             minWidth: 0,
-                            color:
-                              "text.secondary",
-                            display:
-                              "-webkit-box",
-                            WebkitLineClamp:
-                              isOpen
-                                ? "unset"
-                                : 1,
-                            WebkitBoxOrient:
-                              "vertical",
-                            overflow:
-                              isOpen
-                                ? "visible"
-                                : "hidden",
-                            wordBreak:
-                              "break-word",
-
-                            "& p": {
-                              margin: 0,
-                            },
-
-                            "& ul": {
-                              margin: 0,
-                              paddingLeft: 2,
-                            },
-
-                            "& ol": {
-                              margin: 0,
-                              paddingLeft: 2,
-                            },
-
-                            "& li": {
-                              margin: 0,
-                            },
                           }}
-                          dangerouslySetInnerHTML={{
-                            __html:
-                              note?.note || "",
-                          }}
-                        />
+                        >
+                          {!isOpen && (
+                            <Box
+                              sx={{
+                                color:
+                                  "text.primary",
+                                fontSize: 14,
+                                lineHeight: 1.5,
+                                overflow: "hidden",
+                                wordBreak:
+                                  "break-word",
+
+                                // -----------------------------
+                                // PARAGRAPH
+                                // -----------------------------
+
+                                "& p": {
+                                  margin: 0,
+                                },
+
+                                // -----------------------------
+                                // BOLD
+                                // -----------------------------
+
+                                "& strong": {
+                                  fontWeight: 700,
+                                  color:
+                                    "text.primary",
+                                },
+
+                                "& b": {
+                                  fontWeight: 700,
+                                  color:
+                                    "text.primary",
+                                },
+
+                                // -----------------------------
+                                // ITALIC
+                                // -----------------------------
+
+                                "& em": {
+                                  fontStyle:
+                                    "italic",
+                                },
+
+                                "& i": {
+                                  fontStyle:
+                                    "italic",
+                                },
+
+                                // -----------------------------
+                                // UNDERLINE
+                                // -----------------------------
+
+                                "& u": {
+                                  textDecoration:
+                                    "underline",
+                                },
+
+                                // -----------------------------
+                                // STRIKETHROUGH
+                                // -----------------------------
+
+                                "& s": {
+                                  textDecoration:
+                                    "line-through",
+                                },
+
+                                "& strike": {
+                                  textDecoration:
+                                    "line-through",
+                                },
+
+                                // -----------------------------
+                                // BULLET LIST
+                                // -----------------------------
+
+                                "& ul": {
+                                  margin: 0,
+                                  paddingLeft:
+                                    "20px",
+                                  display:
+                                    "block",
+                                  listStyleType:
+                                    "disc",
+                                },
+
+                                // -----------------------------
+                                // ORDERED LIST
+                                // -----------------------------
+
+                                "& ol": {
+                                  margin: 0,
+                                  paddingLeft:
+                                    "20px",
+                                  display:
+                                    "block",
+                                  listStyleType:
+                                    "decimal",
+                                },
+
+                                // -----------------------------
+                                // LIST ITEM
+                                // -----------------------------
+
+                                "& li": {
+                                  margin: 0,
+                                  display:
+                                    "list-item",
+                                },
+
+                                // -----------------------------
+                                // QUILL BULLET
+                                // -----------------------------
+
+                                "& li[data-list='bullet']": {
+                                  listStyleType:
+                                    "none",
+                                  position:
+                                    "relative",
+                                  paddingLeft:
+                                    "20px",
+                                  display:
+                                    "list-item",
+                                },
+
+                                "& li[data-list='bullet']::before": {
+                                  content:
+                                    '"\\2022"',
+                                  position:
+                                    "absolute",
+                                  left: 0,
+                                  top: 0,
+                                  color:
+                                    "text.primary",
+                                  fontSize:
+                                    "14px",
+                                  lineHeight:
+                                    1.5,
+                                },
+
+                                // -----------------------------
+                                // QUILL ORDERED
+                                // -----------------------------
+
+                                "& li[data-list='ordered']": {
+                                  listStyleType:
+                                    "decimal",
+                                  display:
+                                    "list-item",
+                                },
+
+                                // -----------------------------
+                                // MARKER
+                                // -----------------------------
+
+                                "& li::marker": {
+                                  color:
+                                    "text.primary",
+                                },
+
+                                // -----------------------------
+                                // HEADINGS
+                                // -----------------------------
+
+                                "& h1, & h2, & h3, & h4, & h5, & h6":
+                                  {
+                                    margin: 0,
+                                  },
+
+                                // -----------------------------
+                                // BLOCKQUOTE
+                                // -----------------------------
+
+                                "& blockquote": {
+                                  margin: 0,
+                                },
+
+                                // -----------------------------
+                                // LINKS
+                                // -----------------------------
+
+                                "& a": {
+                                  color:
+                                    "inherit",
+                                  textDecoration:
+                                    "underline",
+                                },
+
+                                // -----------------------------
+                                // IMAGE
+                                // -----------------------------
+
+                                "& img": {
+                                  maxWidth:
+                                    "100%",
+                                  height: "auto",
+                                },
+                              }}
+                              dangerouslySetInnerHTML={{
+                                __html:
+                                  note?.note || "",
+                              }}
+                            />
+                          )}
+                        </Box>
+
+                        {/* =================================================
+                            DATE
+                        ================================================= */}
 
                         <Typography
                           sx={{
@@ -556,13 +685,12 @@ export default function NoteDetails({
                             note?.created_at
                           )}
                         </Typography>
-
                       </Box>
                     </Box>
 
-                    {/* =========================================
-                        EXPANDED NOTE
-                    ========================================= */}
+                    {/* =====================================================
+                        EXPANDED CONTENT
+                    ===================================================== */}
 
                     {isOpen && (
                       <Box
@@ -576,39 +704,200 @@ export default function NoteDetails({
                             "divider",
                         }}
                       >
-
                         <Box
                           sx={{
+                            color:
+                              "text.primary",
                             fontSize: 14,
                             lineHeight: 1.7,
                             wordBreak:
                               "break-word",
+
+                            // -----------------------------
+                            // PARAGRAPH
+                            // -----------------------------
 
                             "& p": {
                               marginTop: 0,
                               marginBottom: 1,
                             },
 
-                            "& ul": {
-                              paddingLeft: 3,
+                            // -----------------------------
+                            // BOLD
+                            // -----------------------------
+
+                            "& strong": {
+                              fontWeight: 700,
+                              color:
+                                "text.primary",
                             },
+
+                            "& b": {
+                              fontWeight: 700,
+                              color:
+                                "text.primary",
+                            },
+
+                            // -----------------------------
+                            // ITALIC
+                            // -----------------------------
+
+                            "& em": {
+                              fontStyle:
+                                "italic",
+                            },
+
+                            "& i": {
+                              fontStyle:
+                                "italic",
+                            },
+
+                            // -----------------------------
+                            // UNDERLINE
+                            // -----------------------------
+
+                            "& u": {
+                              textDecoration:
+                                "underline",
+                            },
+
+                            // -----------------------------
+                            // STRIKETHROUGH
+                            // -----------------------------
+
+                            "& s": {
+                              textDecoration:
+                                "line-through",
+                            },
+
+                            // -----------------------------
+                            // BULLET LIST
+                            // -----------------------------
+
+                            "& ul": {
+                              paddingLeft:
+                                "20px",
+                              marginTop: 0,
+                              marginBottom: 1,
+                              listStyleType:
+                                "disc",
+                            },
+
+                            // -----------------------------
+                            // ORDERED LIST
+                            // -----------------------------
 
                             "& ol": {
-                              paddingLeft: 3,
+                              paddingLeft:
+                                "20px",
+                              marginTop: 0,
+                              marginBottom: 1,
+                              listStyleType:
+                                "decimal",
                             },
 
+                            // -----------------------------
+                            // LIST ITEM
+                            // -----------------------------
+
                             "& li": {
-                              marginBottom: 0.5,
+                              marginBottom:
+                                0.5,
                             },
+
+                            // -----------------------------
+                            // QUILL BULLET
+                            // -----------------------------
+
+                            "& li[data-list='bullet']": {
+                              listStyleType:
+                                "none",
+                              position:
+                                "relative",
+                              paddingLeft:
+                                "22px",
+                            },
+
+                            "& li[data-list='bullet']::before": {
+                              content:
+                                '"\\2022"',
+                              position:
+                                "absolute",
+                              left: 0,
+                              top: 0,
+                              color:
+                                "text.primary",
+                              fontSize:
+                                "14px",
+                              lineHeight:
+                                1.7,
+                            },
+
+                            // -----------------------------
+                            // QUILL ORDERED
+                            // -----------------------------
+
+                            "& li[data-list='ordered']": {
+                              listStyleType:
+                                "decimal",
+                            },
+
+                            "& li::marker": {
+                              color:
+                                "text.primary",
+                            },
+
+                            // -----------------------------
+                            // LINKS
+                            // -----------------------------
 
                             "& a": {
                               color:
                                 "primary.main",
+                              textDecoration:
+                                "underline",
                             },
+
+                            // -----------------------------
+                            // IMAGE
+                            // -----------------------------
 
                             "& img": {
                               maxWidth:
                                 "100%",
+                              height: "auto",
+                            },
+
+                            // -----------------------------
+                            // BLOCKQUOTE
+                            // -----------------------------
+
+                            "& blockquote": {
+                              margin: 1,
+                              paddingLeft: 2,
+                              borderLeft:
+                                "3px solid",
+                              borderColor:
+                                "divider",
+                            },
+
+                            // -----------------------------
+                            // HEADINGS
+                            // -----------------------------
+
+                            "& h1": {
+                              fontSize:
+                                "24px",
+                            },
+
+                            "& h2": {
+                              fontSize:
+                                "20px",
+                            },
+
+                            "& h3": {
+                              fontSize:
+                                "18px",
                             },
                           }}
                           dangerouslySetInnerHTML={{
@@ -616,10 +905,8 @@ export default function NoteDetails({
                               note?.note || "",
                           }}
                         />
-
                       </Box>
                     )}
-
                   </Box>
                 );
               })}
@@ -629,4 +916,3 @@ export default function NoteDetails({
     </Box>
   );
 }
-

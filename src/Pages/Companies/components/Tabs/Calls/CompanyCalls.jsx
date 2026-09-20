@@ -1,14 +1,17 @@
-
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+
+import {
+  useParams,
+  useOutletContext,
+} from "react-router-dom";
 
 import {
   Box,
   Typography,
   CircularProgress,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-
-import CompanyLeftPanel from "../../CompanyLeftPanel";
 
 import CommonActivityTabs from "../../../../../Components/common/CommonActivityTab";
 import CommonButton from "../../../../../Components/common/CommonButton";
@@ -28,10 +31,14 @@ export default function CompanyCalls() {
   const { companyId } = useParams();
 
   // ============================================================
-  // STATE
+  // REFRESH KEY FROM COMPANY LEFT PANEL
   // ============================================================
 
-  const [activeTab, setActiveTab] = useState("Calls");
+  const { refreshKey } = useOutletContext();
+
+  // ============================================================
+  // STATE
+  // ============================================================
 
   const [company, setCompany] = useState(null);
 
@@ -42,17 +49,25 @@ export default function CompanyCalls() {
   const [calling, setCalling] = useState(false);
 
   // ============================================================
+  // SNACKBAR
+  // ============================================================
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  // ============================================================
   // CALL MODE
   //
-  // CURRENT:
-  // direct = CRM → Django → Twilio → Customer
+  // direct:
+  // CRM → Django → Twilio → Customer
   //
-  // FUTURE:
-  // bridge = CRM → Django → Twilio → CRM User → Customer
+  // bridge:
+  // CRM → Django → Twilio → CRM User → Customer
   //
-  // AFTER TWILIO UPGRADE:
-  //
-  // const [callMode] = useState("bridge");
+  // CURRENTLY USING DIRECT BECAUSE TWILIO IS TRIAL.
   // ============================================================
 
   const [callMode] = useState("direct");
@@ -73,6 +88,11 @@ export default function CompanyCalls() {
   console.log(
     "Current URL:",
     window.location.pathname
+  );
+
+  console.log(
+    "Refresh Key:",
+    refreshKey
   );
 
   // ============================================================
@@ -221,6 +241,10 @@ export default function CompanyCalls() {
             call?.call_outcome,
           twilio_status:
             call?.twilio_status,
+          call_mode:
+            call?.call_mode,
+          duration:
+            call?.duration,
         }))
       );
 
@@ -240,7 +264,7 @@ export default function CompanyCalls() {
   };
 
   // ============================================================
-  // INITIAL LOAD
+  // INITIAL LOAD / REFRESH
   // ============================================================
 
   useEffect(() => {
@@ -254,28 +278,7 @@ export default function CompanyCalls() {
 
     fetchCompany();
     fetchCalls();
-  }, [companyId]);
-
-  // ============================================================
-  // CALL CREATED
-  // ============================================================
-
-  const handleCallCreated = async () => {
-    console.log(
-      "COMPANY CALL CREATED - REFRESHING CALLS..."
-    );
-
-    await fetchCalls();
-
-    // Give Twilio time to update status/duration.
-    setTimeout(async () => {
-      console.log(
-        "REFRESHING COMPANY CALLS AFTER TWILIO UPDATE..."
-      );
-
-      await fetchCalls();
-    }, 3000);
-  };
+  }, [companyId, refreshKey]);
 
   // ============================================================
   // COMPANY NAME
@@ -302,13 +305,23 @@ export default function CompanyCalls() {
   // ============================================================
 
   const handleMakePhoneCall = async () => {
+    // ========================================================
+    // CHECK COMPANY ID
+    // ========================================================
+
     if (!companyId) {
-      alert(
-        "Company ID is missing."
-      );
+      setSnackbar({
+        open: true,
+        message: "Company ID is missing.",
+        severity: "error",
+      });
 
       return;
     }
+
+    // ========================================================
+    // PREVENT MULTIPLE CALL REQUESTS
+    // ========================================================
 
     if (calling) {
       return;
@@ -319,15 +332,28 @@ export default function CompanyCalls() {
     // ========================================================
 
     if (!companyPhone) {
-      alert(
-        "Company phone number is not available."
-      );
+      setSnackbar({
+        open: true,
+        message:
+          "Company phone number is not available.",
+        severity: "error",
+      });
 
       return;
     }
 
     try {
       setCalling(true);
+
+      // ======================================================
+      // SHOW CALLING MESSAGE
+      // ======================================================
+
+      setSnackbar({
+        open: true,
+        message: "Calling...",
+        severity: "info",
+      });
 
       console.log(
         "===================================="
@@ -423,14 +449,18 @@ export default function CompanyCalls() {
       }, 3000);
 
       // ========================================================
-      // SUCCESS
+      // SUCCESS MESSAGE
       // ========================================================
 
-      alert(
-        response?.message ||
+      setSnackbar({
+        open: true,
+        message:
+          response?.message ||
           response?.detail ||
-          "Your phone call has been started."
-      );
+          "Your phone call has been started.",
+        severity: "success",
+      });
+
     } catch (error) {
       console.error(
         "ERROR STARTING COMPANY PHONE CALL:",
@@ -439,6 +469,10 @@ export default function CompanyCalls() {
           error
       );
 
+      // ========================================================
+      // ERROR MESSAGE
+      // ========================================================
+
       const errorMessage =
         error?.response?.data?.detail ||
         error?.response?.data?.message ||
@@ -446,10 +480,26 @@ export default function CompanyCalls() {
         error?.message ||
         "Unable to start phone call.";
 
-      alert(errorMessage);
+      setSnackbar({
+        open: true,
+        message: errorMessage,
+        severity: "error",
+      });
+
     } finally {
       setCalling(false);
     }
+  };
+
+  // ============================================================
+  // CLOSE SNACKBAR
+  // ============================================================
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({
+      ...prev,
+      open: false,
+    }));
   };
 
   // ============================================================
@@ -457,87 +507,106 @@ export default function CompanyCalls() {
   // ============================================================
 
   return (
-    <CompanyLeftPanel
-      onCallCreated={handleCallCreated}
+    <Box
+      sx={{
+        p: 3,
+        mx: -2,
+      }}
     >
+      {/* ====================================================
+          ACTIVITY TABS
+      ==================================================== */}
+
+      <CommonActivityTabs
+        tabs={getCompanyTabs(companyId)}
+      />
+
+      {/* ====================================================
+          CALL HEADER
+      ==================================================== */}
+
       <Box
         sx={{
-          p: 3,
-          mx: -2,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mt: 3,
+          mb: 1,
         }}
       >
-        {/* ====================================================
-            ACTIVITY TABS
-        ==================================================== */}
+        <Typography variant="h6">
+          Calls
+        </Typography>
 
-        <CommonActivityTabs
-          tabs={getCompanyTabs(companyId)}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
+        <CommonButton
+          variant="contained"
+          onClick={handleMakePhoneCall}
+          disabled={calling}
+        >
+          {calling
+            ? "Calling..."
+            : "Make a Phone Call"}
+        </CommonButton>
+      </Box>
 
-        {/* ====================================================
-            CALL HEADER
-        ==================================================== */}
+      {/* ====================================================
+          CALLS
+      ==================================================== */}
 
+      {loading ? (
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "center",
             alignItems: "center",
-            mt: 3,
-            mb: 1,
+            py: 4,
           }}
         >
-          <Typography variant="h6">
-            Calls
-          </Typography>
-
-          <CommonButton
-            variant="contained"
-            onClick={handleMakePhoneCall}
-            disabled={calling}
-          >
-            {calling
-              ? "Calling..."
-              : "Make a Phone Call"}
-          </CommonButton>
+          <CircularProgress size={28} />
         </Box>
+      ) : calls.length === 0 ? (
+        <Typography
+          color="text.secondary"
+          sx={{
+            mt: 2,
+          }}
+        >
+          No calls found for this company.
+        </Typography>
+      ) : (
+        calls.map((call) => (
+          <CallCard
+            key={call.id}
+            call={call}
+          />
+        ))
+      )}
 
-        {/* ====================================================
-            CALLS
-        ==================================================== */}
+      {/* ====================================================
+          SNACKBAR
+      ==================================================== */}
 
-        {loading ? (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              py: 4,
-            }}
-          >
-            <CircularProgress size={28} />
-          </Box>
-        ) : calls.length === 0 ? (
-          <Typography
-            color="text.secondary"
-            sx={{
-              mt: 2,
-            }}
-          >
-            No calls found for this company.
-          </Typography>
-        ) : (
-          calls.map((call) => (
-            <CallCard
-              key={call.id}
-              call={call}
-            />
-          ))
-        )}
-      </Box>
-    </CompanyLeftPanel>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <Alert
+          severity={snackbar.severity}
+          variant="filled"
+          onClose={handleCloseSnackbar}
+          sx={{
+            width: "100%",
+            minWidth: "280px",
+          }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 }
-

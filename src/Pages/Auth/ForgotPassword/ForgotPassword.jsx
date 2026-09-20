@@ -1,9 +1,6 @@
-
 import { useState } from "react";
 import { Box, Typography, Link } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import axios from "axios";
-
 import AuthLayout from "../../../Components/common/AuthLayout";
 import InputField from "../../../Components/common/InputField";
 import CommonButton from "../../../Components/common/CommonButton";
@@ -54,28 +51,20 @@ export default function ForgotPassword() {
     }
   };
 
-  
   return (
     <AuthLayout
       title="Forgot Password"
       footer={
         <>
-          <Link
-            component={RouterLink}
-            to="/"
-            underline="hover"
-          >
+          <Link component={RouterLink} to="/" underline="hover">
             Back to Login
           </Link>
         </>
       }
     >
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ mb: 3 }}
-      >
-        Enter your email address and we'll send you a link to reset your password.
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Enter your email address and we'll send you a link to reset your
+        password.
       </Typography>
 
       <Box
@@ -101,11 +90,7 @@ export default function ForgotPassword() {
         />
 
         {submitted && (
-          <Typography
-            color="success.main"
-            variant="body2"
-            sx={{ mt: 2 }}
-          >
+          <Typography color="success.main" variant="body2" sx={{ mt: 2 }}>
             Reset link has been sent to your email.
           </Typography>
         )}
@@ -119,13 +104,20 @@ export default function ForgotPassword() {
             height: 46,
           }}
         >
-          {loading
-            ? "Sending..."
-            : submitted
-            ? "Link Sent"
-            : "Send Reset Link"}
+          {loading ? "Sending..." : submitted ? "Link Sent" : "Send Reset Link"}
         </CommonButton>
       </Box>
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() =>
+          setSnackbar((prev) => ({
+            ...prev,
+            open: false,
+          }))
+        }
+      />
     </AuthLayout>
   );
 }

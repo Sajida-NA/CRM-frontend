@@ -1,7 +1,7 @@
 
-
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useParams, Outlet } from "react-router-dom";
+
 import {
   Box,
   CircularProgress,
@@ -19,17 +19,28 @@ import CreateTaskDrawer from "./Tabs/Task/CreateTaskDrawer";
 
 import { getLeadById } from "../../../services/leads";
 
-export default function LeadsLeftPanel({
-  children,
-  leadId,
+export default function LeadsLeftPanel(
+//   {
+//    children,
+//   leadId,
 
-  // Activity callbacks
-  onCallCreated,
-  onNoteCreated,
-  onEmailCreated,
-  onTaskCreated,
-  onMeetingCreated,
-}) {
+//   // Activity callbacks
+//   onCallCreated,
+//   onNoteCreated,
+//   onEmailCreated,
+//   onTaskCreated,
+//   onMeetingCreated,
+// }
+) {
+
+   // ============================================================
+  // GET LEAD ID FROM URL
+  // ============================================================
+
+  const { leadId } = useParams();
+
+  const navigate = useNavigate();
+
   // ============================================================
   // STATE
   // ============================================================
@@ -39,9 +50,11 @@ export default function LeadsLeftPanel({
   const [lead, setLead] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate();
+  // Used to tell the current tab to refresh after
+  // creating a call/note/email/task/meeting
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // ============================================================
+ // ============================================================
   // FETCH LEAD
   // ============================================================
 
@@ -167,17 +180,33 @@ export default function LeadsLeftPanel({
   };
 
   // ============================================================
+  // REFRESH CURRENT TAB
+  // ============================================================
+
+  const refreshCurrentTab = () => {
+
+    setActiveDrawer(null);
+
+    setRefreshKey((prev) => prev + 1);
+
+  };
+
+  // ============================================================
   // CALL CREATED
   // ============================================================
 
   const handleCallCreated = async (createdCall) => {
     console.log("Lead call created:", createdCall);
 
-    setActiveDrawer(null);
+    refreshCurrentTab();
 
-    if (onCallCreated) {
-      await onCallCreated(createdCall);
-    }
+    // setActiveDrawer(null);
+
+    // if (onCallCreated) {
+    //   await onCallCreated(createdCall);
+    // }
+
+
   };
 
   // ============================================================
@@ -187,11 +216,13 @@ export default function LeadsLeftPanel({
   const handleNoteCreated = async (createdNote) => {
     console.log("Lead note created:", createdNote);
 
-    setActiveDrawer(null);
+     refreshCurrentTab();
 
-    if (onNoteCreated) {
-      await onNoteCreated(createdNote);
-    }
+    // setActiveDrawer(null);
+
+    // if (onNoteCreated) {
+    //   await onNoteCreated(createdNote);
+    // }
   };
 
   // ============================================================
@@ -201,11 +232,13 @@ export default function LeadsLeftPanel({
   const handleEmailCreated = async (createdEmail) => {
     console.log("Lead email created:", createdEmail);
 
-    setActiveDrawer(null);
+     refreshCurrentTab();
 
-    if (onEmailCreated) {
-      await onEmailCreated(createdEmail);
-    }
+    // setActiveDrawer(null);
+
+    // if (onEmailCreated) {
+    //   await onEmailCreated(createdEmail);
+    // }
   };
 
   // ============================================================
@@ -214,12 +247,13 @@ export default function LeadsLeftPanel({
 
   const handleTaskCreated = async (createdTask) => {
     console.log("Lead task created:", createdTask);
+     refreshCurrentTab();
 
-    setActiveDrawer(null);
+    // setActiveDrawer(null);
 
-    if (onTaskCreated) {
-      await onTaskCreated(createdTask);
-    }
+    // if (onTaskCreated) {
+    //   await onTaskCreated(createdTask);
+    // }
   };
 
   // ============================================================
@@ -229,11 +263,13 @@ export default function LeadsLeftPanel({
   const handleMeetingCreated = async (createdMeeting) => {
     console.log("Lead meeting created:", createdMeeting);
 
-    setActiveDrawer(null);
+    refreshCurrentTab();
 
-    if (onMeetingCreated) {
-      await onMeetingCreated(createdMeeting);
-    }
+    // setActiveDrawer(null);
+
+    // if (onMeetingCreated) {
+    //   await onMeetingCreated(createdMeeting);
+    // }
   };
 
   // ============================================================
@@ -318,7 +354,17 @@ export default function LeadsLeftPanel({
 
         onMeetingClick={() => setActiveDrawer("meeting")}
       >
-        {children}
+        {/* {children} */}
+
+        {/* ==================================================
+            CURRENT LEAD TAB
+        ================================================== */}
+
+        <Outlet
+          context={{
+            refreshKey,
+          }}
+        />
       </CommonEntityHeader>
 
       {/* ======================================================
@@ -384,5 +430,7 @@ export default function LeadsLeftPanel({
     </>
   );
 }
+
+
 
 

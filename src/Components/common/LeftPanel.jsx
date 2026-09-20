@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Select, MenuItem, } from "@mui/material";
+import { Box, Typography, Select, MenuItem } from "@mui/material";
 
 // Material UI Icons
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
@@ -28,12 +28,10 @@ export default function LeftPanel({
   // About section heading
   sectionTitle = "About this lead",
 
-  //Square Button
-
+  // Square Button
   showProfileEdit = false,
 
-  //profile image
-
+  // Profile image
   showProfileImage = false,
 }) {
   return (
@@ -57,14 +55,6 @@ export default function LeftPanel({
       </Typography>
 
       {/* ================= Profile Section ================= */}
-      {/* <Box
-        sx={{
-          display: "flex",
-          gap: 2,
-          mb: 2,
-        }}
-      > */}
-
       <Box
         sx={{
           display: "flex",
@@ -72,18 +62,14 @@ export default function LeftPanel({
           mb: 2,
         }}
       >
-
-
         {/* Profile Image Placeholder */}
         {showProfileImage && (
-
           <Box
             sx={{
               width: 72,
               height: 72,
               backgroundColor: "#D9D9D9",
               borderRadius: "12px",
-
             }}
           />
         )}
@@ -101,8 +87,6 @@ export default function LeftPanel({
           </Typography>
 
           {/* Subtitle / Job Title */}
-
-
           {title === "Tickets" ? (
             <Box
               sx={{
@@ -159,12 +143,7 @@ export default function LeftPanel({
             </Typography>
           )}
 
-
-
-
-
-          {/* Email / Deal Stage */}
-          {/* Deal Stage - Only for Deals */}
+          {/* ================= Deal Stage ================= */}
           {title === "Deals" && (
             <Box
               sx={{
@@ -185,7 +164,7 @@ export default function LeftPanel({
               </Typography>
 
               <Select
-                value={profile.stage}
+                value={profile.stage || ""}
                 onChange={(e) => profile.setStage(e.target.value)}
                 variant="standard"
                 disableUnderline
@@ -193,6 +172,7 @@ export default function LeftPanel({
                 sx={{
                   fontSize: "14px",
                   minWidth: 40,
+
                   "& .MuiSelect-select": {
                     padding: 0,
                   },
@@ -201,21 +181,31 @@ export default function LeftPanel({
                 <MenuItem value="Appointment Scheduled">
                   Appointment Scheduled
                 </MenuItem>
+
                 <MenuItem value="Qualified to Buy">
                   Qualified to Buy
                 </MenuItem>
+
                 <MenuItem value="Presentation Scheduled">
                   Presentation Scheduled
                 </MenuItem>
-                <MenuItem value="Decision Maker Bought-In">
-                  Decision Maker Bought-In
+
+                {/* IMPORTANT:
+                    Backend value is "Decision Maker Bought In"
+                    without a hyphen.
+                */}
+                <MenuItem value="Decision Maker Bought In">
+                  Decision Maker Bought In
                 </MenuItem>
+
                 <MenuItem value="Contract Sent">
                   Contract Sent
                 </MenuItem>
+
                 <MenuItem value="Closed Won">
                   Closed Won
                 </MenuItem>
+
                 <MenuItem value="Closed Lost">
                   Closed Lost
                 </MenuItem>
@@ -223,7 +213,7 @@ export default function LeftPanel({
             </Box>
           )}
 
-          {/* Email - Only for Leads and Companies */}
+          {/* ================= Email - Leads and Companies ================= */}
           {title !== "Deals" && title !== "Tickets" && (
             <Box
               sx={{
@@ -252,7 +242,6 @@ export default function LeftPanel({
               )}
             </Box>
           )}
-
         </Box>
       </Box>
 
