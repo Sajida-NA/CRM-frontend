@@ -1,3 +1,770 @@
+
+// import React, { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import PageHeader from "../../../Components/common/PageHeader";
+
+// import {
+//   Box,
+//   IconButton,
+//   TableRow,
+//   TableCell,
+//   Checkbox,
+//   TextField,
+//   InputAdornment,
+// } from "@mui/material";
+
+// import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+// import EditIcon from "@mui/icons-material/Edit";
+// import DeleteIcon from "@mui/icons-material/Delete";
+
+// import CommonButton from "../../../Components/common/CommonButton";
+// import SelectField from "../../../Components/common/SelectField";
+// import FilterSection from "../../../Components/common/FilterSection";
+// import DataTable from "../../../Components/common/DataTable";
+// import SearchSection from "../../../Components/common/SearchSection";
+// import CreateTicketDrawer from "../components/CreateTicketDrawer";
+// import EditTicketDrawer from "../components/EditTicketDrawer";
+
+// import api from "../../../services/api";
+
+// export default function TicketsList() {
+//   // =====================================================
+//   // NAVIGATION
+//   // =====================================================
+
+//   const navigate = useNavigate();
+
+//   // =====================================================
+//   // DRAWERS
+//   // =====================================================
+
+//   const [openDrawer, setOpenDrawer] = useState(false);
+//   const [openEditDrawer, setOpenEditDrawer] = useState(false);
+//   const [selectedTicket, setSelectedTicket] = useState(null);
+
+//   // =====================================================
+//   // PAGINATION
+//   // =====================================================
+
+//   const [page, setPage] = useState(1);
+
+//   // =====================================================
+//   // FILTERS
+//   // =====================================================
+
+//   // Ticket Owner is MULTI-SELECT
+//   const [ticketOwner, setTicketOwner] = useState([]);
+
+//   const [status, setStatus] = useState("");
+//   const [source, setSource] = useState("");
+//   const [priority, setPriority] = useState("");
+//   const [createdDate, setCreatedDate] = useState("");
+//   const [search, setSearch] = useState("");
+
+//   // =====================================================
+//   // TICKETS
+//   // =====================================================
+
+//   const [ticketsData, setTicketsData] = useState([]);
+//   const [users, setUsers] = useState([]);
+
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState("");
+
+//   // =====================================================
+//   // SELECTED TICKETS
+//   // =====================================================
+
+//   const [selectedTickets, setSelectedTickets] = useState([]);
+
+//   // =====================================================
+//   // GET TICKETS + USERS
+//   // =====================================================
+
+//   const fetchTickets = async () => {
+//     try {
+//       setLoading(true);
+//       setError("");
+
+//       const [ticketsResponse, usersResponse] = await Promise.all([
+//         api.get("/tickets/"),
+//         api.get("/accounts/users/"),
+//       ]);
+
+//       const tickets = Array.isArray(ticketsResponse.data)
+//         ? ticketsResponse.data
+//         : ticketsResponse.data.results || [];
+
+//       const usersData = Array.isArray(usersResponse.data)
+//         ? usersResponse.data
+//         : usersResponse.data.results || [];
+
+//       setTicketsData(tickets);
+//       setUsers(usersData);
+
+//       // Remove deleted/non-existing tickets from selection
+//       setSelectedTickets((prev) =>
+//         prev.filter((id) => tickets.some((ticket) => ticket.id === id)),
+//       );
+//     } catch (error) {
+//       console.error(
+//         "Error fetching tickets/users:",
+//         error.response?.data || error,
+//       );
+
+//       setError("Failed to load tickets.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // =====================================================
+//   // FETCH DATA WHEN PAGE LOADS
+//   // =====================================================
+
+//   useEffect(() => {
+//     fetchTickets();
+//   }, []);
+
+//   // =====================================================
+//   // OWNER OPTIONS
+//   // =====================================================
+
+//   const ownerOptions = [
+//     ...new Set(
+//       users
+//         .map((user) => {
+//           const fullName = `${user.first_name || ""} ${
+//             user.last_name || ""
+//           }`.trim();
+
+//           return fullName || user.email || "";
+//         })
+//         .filter(Boolean),
+//     ),
+//   ];
+
+//   // =====================================================
+//   // GET TICKET OWNER NAMES
+//   // =====================================================
+
+//   const getTicketOwnerNames = (ticket) => {
+//     // ---------------------------------------------------
+//     // CASE 1:
+//     // Backend returns:
+//     // ticket_owner_ids: [16, 17]
+//     // ---------------------------------------------------
+
+//     if (Array.isArray(ticket.ticket_owner_ids)) {
+//       return ticket.ticket_owner_ids
+//         .map((ownerId) => {
+//           const user = users.find(
+//             (user) => String(user.id) === String(ownerId),
+//           );
+
+//           if (!user) return "";
+
+//           const fullName = `${user.first_name || ""} ${
+//             user.last_name || ""
+//           }`.trim();
+
+//           return fullName || user.email || "";
+//         })
+//         .filter(Boolean);
+//     }
+
+//     // ---------------------------------------------------
+//     // CASE 2:
+//     // Backend returns:
+//     // ticket_owners: ["Sajid Jubi", "Riya Mehwish"]
+//     // ---------------------------------------------------
+
+//     if (Array.isArray(ticket.ticket_owners)) {
+//       return ticket.ticket_owners
+//         .map((owner) => {
+//           // Owner is already a string
+//           if (typeof owner === "string") {
+//             return owner;
+//           }
+
+//           // Owner is an object
+//           if (typeof owner === "object" && owner !== null) {
+//             const fullName = `${owner.first_name || ""} ${
+//               owner.last_name || ""
+//             }`.trim();
+
+//             return fullName || owner.email || "";
+//           }
+
+//           return "";
+//         })
+//         .filter(Boolean);
+//     }
+
+//     // ---------------------------------------------------
+//     // CASE 3:
+//     // Backward compatibility with old single owner
+//     // ---------------------------------------------------
+
+//     if (ticket.ticket_owner) {
+//       return [ticket.ticket_owner];
+//     }
+
+//     return [];
+//   };
+
+//   // =====================================================
+//   // SEARCH + FILTER
+//   // =====================================================
+
+//   const filteredTickets = ticketsData.filter((ticket) => {
+//     const searchValue = search.trim().toLowerCase();
+
+//     const ticketName = ticket.ticket_name?.toLowerCase() || "";
+
+//     const dealName = ticket.deal_name?.toLowerCase() || "";
+
+//     // =================================================
+//     // TICKET OWNERS
+//     // =================================================
+
+//     const ticketOwnerValues = getTicketOwnerNames(ticket);
+
+//     const ticketOwnerSearchText = ticketOwnerValues.join(" ").toLowerCase();
+
+//     // =================================================
+//     // SEARCH
+//     // =================================================
+
+//     const matchesSearch =
+//       !searchValue ||
+//       ticketName.includes(searchValue) ||
+//       dealName.includes(searchValue) ||
+//       ticketOwnerSearchText.includes(searchValue);
+
+//     // =================================================
+//     // OWNER FILTER
+//     // =================================================
+
+//     const matchesOwner =
+//       ticketOwner.length === 0 ||
+//       ticketOwner.some((selectedOwner) =>
+//         ticketOwnerValues.some(
+//           (owner) => owner?.toLowerCase() === selectedOwner?.toLowerCase(),
+//         ),
+//       );
+
+//     // =================================================
+//     // STATUS
+//     // =================================================
+
+//     const normalizedTicketStatus = ticket.ticket_status
+//       ?.toLowerCase()
+//       .replaceAll("_", " ")
+//       .trim();
+
+//     const normalizedSelectedStatus = status
+//       ?.toLowerCase()
+//       .replaceAll("_", " ")
+//       .trim();
+
+//     const matchesStatus =
+//       !status || normalizedTicketStatus === normalizedSelectedStatus;
+
+//     // =================================================
+//     // SOURCE
+//     // =================================================
+
+//     const matchesSource =
+//       !source || ticket.source?.toLowerCase() === source.toLowerCase();
+
+//     // =================================================
+//     // PRIORITY
+//     // =================================================
+
+//     const matchesPriority =
+//       !priority || ticket.priority?.toLowerCase() === priority.toLowerCase();
+
+//     // =================================================
+//     // CREATED DATE
+//     // =================================================
+
+//     const matchesCreatedDate =
+//       !createdDate || ticket.created_date?.startsWith(createdDate);
+
+//     return (
+//       matchesSearch &&
+//       matchesOwner &&
+//       matchesStatus &&
+//       matchesSource &&
+//       matchesPriority &&
+//       matchesCreatedDate
+//     );
+//   });
+
+//   // =====================================================
+//   // CHECKBOX SELECTION
+//   // =====================================================
+
+//   const handleSelectTicket = (ticketId) => {
+//     setSelectedTickets((prev) => {
+//       if (prev.includes(ticketId)) {
+//         return prev.filter((id) => id !== ticketId);
+//       }
+
+//       return [...prev, ticketId];
+//     });
+//   };
+
+//   // =====================================================
+//   // SELECT / UNSELECT ALL
+//   // =====================================================
+
+//   const handleSelectAll = () => {
+//     if (selectedTickets.length === filteredTickets.length) {
+//       setSelectedTickets([]);
+//     } else {
+//       setSelectedTickets(filteredTickets.map((ticket) => ticket.id));
+//     }
+//   };
+
+//   // =====================================================
+//   // CHECKBOX STATES
+//   // =====================================================
+
+//   const allSelected =
+//     filteredTickets.length > 0 &&
+//     filteredTickets.every((ticket) => selectedTickets.includes(ticket.id));
+
+//   const someSelected = selectedTickets.length > 0 && !allSelected;
+
+//   // =====================================================
+//   // CLEAR FILTERS
+//   // =====================================================
+
+//   const clearFilters = () => {
+//     setTicketOwner([]);
+//     setStatus("");
+//     setSource("");
+//     setPriority("");
+//     setCreatedDate("");
+//     setSearch("");
+//     setPage(1);
+//   };
+
+//   // =====================================================
+//   // OPEN EDIT DRAWER
+//   // =====================================================
+
+//   const handleEdit = (ticket) => {
+//     setSelectedTicket(ticket);
+//     setOpenEditDrawer(true);
+//   };
+
+//   // =====================================================
+//   // CLOSE EDIT DRAWER
+//   // =====================================================
+
+//   const handleCloseEdit = () => {
+//     setOpenEditDrawer(false);
+//     setSelectedTicket(null);
+//   };
+
+//   // =====================================================
+//   // DELETE TICKET
+//   // =====================================================
+
+//   const handleDelete = async (ticket) => {
+//     const confirmed = window.confirm(
+//       `Are you sure you want to delete "${ticket.ticket_name}"?`,
+//     );
+
+//     if (!confirmed) return;
+
+//     try {
+//       await api.delete(`/tickets/${ticket.id}/`);
+
+//       setSelectedTickets((prev) => prev.filter((id) => id !== ticket.id));
+
+//       await fetchTickets();
+//     } catch (error) {
+//       console.error("Error deleting ticket:", error.response?.data || error);
+
+//       alert("Failed to delete ticket.");
+//     }
+//   };
+
+//   return (
+//     <div>
+//       <Box
+//         sx={{
+//           maxWidth: "1000",
+//           margin: "0 auto",
+//           marginTop: "5px",
+//           padding: "5px",
+//           backgroundColor: "background.default",
+//           borderRadius: "10px",
+//           boxShadow: "3px",
+//         }}
+//       >
+//         {/* =====================================================
+//               TICKET HEADER
+//           ===================================================== */}
+
+//         <Box
+//           sx={{
+//             p: 2,
+//             height: "12vh",
+//             boxShadow: "4px",
+//             border: "1px solid",
+//             borderColor: "divider",
+//             bgcolor: "background.paper",
+//             borderTopLeftRadius: "12px",
+//             borderTopRightRadius: "12px",
+//           }}
+//         >
+//           <PageHeader
+//             title="Tickets"
+//             actions={
+//               <Box
+//                 sx={{
+//                   display: "flex",
+//                   gap: 2,
+//                 }}
+//               >
+//                 <CommonButton variant="outlined">Import</CommonButton>
+
+//                 <CommonButton onClick={() => setOpenDrawer(true)}>
+//                   Create
+//                 </CommonButton>
+//               </Box>
+//             }
+//           />
+
+//           {/* =====================================================
+//                 CREATE TICKET DRAWER
+//             ===================================================== */}
+
+//           <CreateTicketDrawer
+//             open={openDrawer}
+//             onClose={() => {
+//               setOpenDrawer(false);
+//               fetchTickets();
+//             }}
+//           />
+
+//           {/* =====================================================
+//                 EDIT TICKET DRAWER
+//             ===================================================== */}
+
+//           <EditTicketDrawer
+//             open={openEditDrawer}
+//             ticketId={selectedTicket?.id}
+//             onClose={handleCloseEdit}
+//             onUpdated={fetchTickets}
+//           />
+//         </Box>
+
+//         {/* =====================================================
+//               SEARCH + PAGINATION
+//           ===================================================== */}
+
+//         <Box
+//           sx={{
+//             p: 2,
+//             boxShadow: "4px",
+//             border: "1px solid",
+//             borderColor: "divider",
+//             bgcolor: "background.paper",
+//             height: "12vh",
+//             marginTop: "4px",
+//             transform: "translateY(-5px)",
+//           }}
+//         >
+//           <SearchSection
+//             placeholder="Search Phone, Name, Email"
+//             page={page}
+//             totalPages={Math.max(1, Math.ceil(filteredTickets.length / 10))}
+//             onPageChange={setPage}
+//             searchValue={search}
+//             onSearchChange={(e) => {
+//               setSearch(e.target.value);
+//               setPage(1);
+//             }}
+//           />
+//         </Box>
+
+//         {/* =====================================================
+//               FILTERS
+//           ===================================================== */}
+
+//         <FilterSection>
+//           {/* TICKET OWNER */}
+
+//           <SelectField
+//             placeholder="Ticket Owner"
+//             options={ownerOptions}
+//             value={ticketOwner}
+//             multiple
+//             onChange={(e) => {
+//               const value = e.target.value;
+
+//               setTicketOwner(
+//                 Array.isArray(value) ? value : value ? [value] : [],
+//               );
+
+//               setPage(1);
+//             }}
+//           />
+
+//           {/* TICKET STATUS */}
+
+//           <SelectField
+//             placeholder="Ticket Status"
+//             options={[
+//               "New",
+//               "Open",
+//               "In Progress",
+//               "Waiting on Contact",
+//               "Waiting on Us",
+//               "Closed",
+//             ]}
+//             value={status}
+//             onChange={(e) => {
+//               setStatus(e.target.value);
+//               setPage(1);
+//             }}
+//           />
+
+//           {/* SOURCE */}
+
+//           <SelectField
+//             placeholder="Source"
+//             options={["Chat", "Email", "Phone", "Web"]}
+//             value={source}
+//             onChange={(e) => {
+//               setSource(e.target.value);
+//               setPage(1);
+//             }}
+//           />
+
+//           {/* PRIORITY */}
+
+//           <SelectField
+//             placeholder="Priority"
+//             options={["High", "Medium", "Low", "Critical"]}
+//             value={priority}
+//             onChange={(e) => {
+//               setPriority(e.target.value);
+//               setPage(1);
+//             }}
+//           />
+
+//           {/* CREATED DATE */}
+
+//           <TextField
+//             type="date"
+//             value={createdDate}
+//             onChange={(e) => {
+//               setCreatedDate(e.target.value);
+//               setPage(1);
+//             }}
+//             size="small"
+//             sx={{
+//               width: 180,
+
+//               "& .MuiOutlinedInput-root": {
+//                 borderRadius: "10px",
+//                 backgroundColor: "#fff",
+//               },
+
+//               "& input": {
+//                 color: createdDate ? "#344054" : "#667085",
+//               },
+//             }}
+//             slotProps={{
+//               input: {
+//                 startAdornment: (
+//                   <InputAdornment position="start">
+//                     <CalendarMonthIcon
+//                       sx={{
+//                         color: "#98A2B3",
+//                         fontSize: 20,
+//                       }}
+//                     />
+//                   </InputAdornment>
+//                 ),
+//               },
+//             }}
+//           />
+
+//           <Box
+//             sx={{
+//               flexGrow: 1,
+//             }}
+//           />
+
+//           {/* CLEAR FILTERS */}
+
+//           {(ticketOwner.length > 0 ||
+//             status ||
+//             source ||
+//             priority ||
+//             createdDate ||
+//             search) && (
+//             <CommonButton variant="outlined" onClick={clearFilters}>
+//               Clear
+//             </CommonButton>
+//           )}
+//         </FilterSection>
+
+//         {/* =====================================================
+//               TICKET TABLE
+//           ===================================================== */}
+
+//         <DataTable
+//           columns={[
+//             <Checkbox
+//               size="small"
+//               checked={allSelected}
+//               indeterminate={someSelected}
+//               onChange={handleSelectAll}
+//             />,
+//             "TICKET NAME",
+//             "DEAL NAME",
+//             "TICKET STATUS",
+//             "PRIORITY",
+//             "SOURCE",
+//             "TICKET OWNER",
+//             "CREATED DATE",
+//             "ACTIONS",
+//           ]}
+//         >
+//           {/* =====================================================
+//                 LOADING
+//             ===================================================== */}
+
+//           {loading ? (
+//             <TableRow>
+//               <TableCell colSpan={9} align="center">
+//                 Loading tickets...
+//               </TableCell>
+//             </TableRow>
+//           ) : error ? (
+//             <TableRow>
+//               <TableCell colSpan={9} align="center">
+//                 {error}
+//               </TableCell>
+//             </TableRow>
+//           ) : filteredTickets.length === 0 ? (
+//             <TableRow>
+//               <TableCell colSpan={9} align="center">
+//                 No tickets found.
+//               </TableCell>
+//             </TableRow>
+//           ) : (
+//             filteredTickets.map((ticket) => {
+//               // =================================================
+//               // TICKET OWNER NAMES
+//               // =================================================
+
+//               const ticketOwners = getTicketOwnerNames(ticket);
+
+//               return (
+//                 <TableRow key={ticket.id}>
+//                   {/* CHECKBOX */}
+
+//                   <TableCell>
+//                     <Checkbox
+//                       size="small"
+//                       checked={selectedTickets.includes(ticket.id)}
+//                       onChange={() => handleSelectTicket(ticket.id)}
+//                     />
+//                   </TableCell>
+
+//                   {/* TICKET NAME */}
+
+//                   <TableCell>
+//                     <Box
+//                       component="span"
+//                       onClick={() =>
+//                         navigate(`/tickets/${ticket.id}/activities`)
+//                       }
+//                       sx={{
+//                         color: "#5948DB",
+//                         cursor: "pointer",
+//                         fontWeight: 500,
+//                         "&:hover": {
+//                           textDecoration: "underline",
+//                         },
+//                       }}
+//                     >
+//                       {ticket.ticket_name}
+//                     </Box>
+//                   </TableCell>
+
+//                   {/* DEAL NAME */}
+
+//                   <TableCell>{ticket.deal_name || "-"}</TableCell>
+
+//                   {/* STATUS */}
+
+//                   <TableCell>{ticket.ticket_status}</TableCell>
+
+//                   {/* PRIORITY */}
+
+//                   <TableCell>{ticket.priority}</TableCell>
+
+//                   {/* SOURCE */}
+
+//                   <TableCell>{ticket.source}</TableCell>
+
+//                   {/* OWNER */}
+
+//                   <TableCell>
+//                     {ticketOwners.length > 0 ? ticketOwners.join(", ") : "-"}
+//                   </TableCell>
+
+//                   {/* CREATED DATE */}
+
+//                   <TableCell>
+//                     {ticket.created_date
+//                       ? new Date(ticket.created_date).toLocaleString()
+//                       : "-"}
+//                   </TableCell>
+
+//                   {/* ACTIONS */}
+
+//                   <TableCell>
+//                     {/* EDIT */}
+
+//                     <IconButton
+//                       color="primary"
+//                       onClick={() => handleEdit(ticket)}
+//                     >
+//                       <EditIcon />
+//                     </IconButton>
+
+//                     {/* DELETE */}
+
+//                     <IconButton
+//                       color="error"
+//                       onClick={() => handleDelete(ticket)}
+//                     >
+//                       <DeleteIcon />
+//                     </IconButton>
+//                   </TableCell>
+//                 </TableRow>
+//               );
+//             })
+//           )}
+//         </DataTable>
+//       </Box>
+//     </div>
+//   );
+// }
+
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../../../Components/common/PageHeader";
@@ -27,13 +794,29 @@ import EditTicketDrawer from "../components/EditTicketDrawer";
 import api from "../../../services/api";
 
 export default function TicketsList() {
+  // =====================================================
+  // NAVIGATION
+  // =====================================================
+
   const navigate = useNavigate();
+
+  // =====================================================
+  // DRAWERS
+  // =====================================================
 
   const [openDrawer, setOpenDrawer] = useState(false);
   const [openEditDrawer, setOpenEditDrawer] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
 
+  // =====================================================
+  // PAGINATION
+  // =====================================================
+
   const [page, setPage] = useState(1);
+
+  // =====================================================
+  // FILTERS
+  // =====================================================
 
   const [ticketOwner, setTicketOwner] = useState([]);
   const [status, setStatus] = useState("");
@@ -42,63 +825,101 @@ export default function TicketsList() {
   const [createdDate, setCreatedDate] = useState("");
   const [search, setSearch] = useState("");
 
+  // =====================================================
+  // TICKETS
+  // =====================================================
+
   const [ticketsData, setTicketsData] = useState([]);
   const [users, setUsers] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // =====================================================
+  // SELECTED TICKETS
+  // =====================================================
+
   const [selectedTickets, setSelectedTickets] = useState([]);
 
-  // =========================================================
-  // FETCH TICKETS + USERS
-  // =========================================================
+  // =====================================================
+  // GET TICKETS + USERS
+  // =====================================================
 
   const fetchTickets = async () => {
     try {
       setLoading(true);
       setError("");
 
-      // -----------------------------------------------------
+      // =================================================
       // FETCH TICKETS
-      // -----------------------------------------------------
+      // =================================================
 
       const ticketsResponse = await api.get("/tickets/");
 
-      const tickets = Array.isArray(ticketsResponse.data)
-        ? ticketsResponse.data
-        : ticketsResponse.data?.results || [];
+      console.log("====================================");
+      console.log("TICKETS STATUS:", ticketsResponse.status);
+      console.log("TICKETS RESPONSE:", ticketsResponse.data);
+      console.log("====================================");
 
-      console.log("TICKETS API RESPONSE:", tickets);
+      let tickets = [];
 
-      // IMPORTANT:
-      // Set tickets immediately.
-      // Users API failure should NOT prevent tickets from showing.
+      // Backend returns direct array
+      if (Array.isArray(ticketsResponse.data)) {
+        tickets = ticketsResponse.data;
+      }
+
+      // Backend returns { results: [...] }
+      else if (Array.isArray(ticketsResponse.data?.results)) {
+        tickets = ticketsResponse.data.results;
+      }
+
+      // Backend returns { data: [...] }
+      else if (Array.isArray(ticketsResponse.data?.data)) {
+        tickets = ticketsResponse.data.data;
+      }
+
+      console.log("FINAL TICKETS:", tickets);
+      console.log("FINAL TICKETS COUNT:", tickets.length);
+
       setTicketsData(tickets);
 
+      // Remove deleted/non-existing tickets from selection
       setSelectedTickets((prev) =>
         prev.filter((id) =>
           tickets.some((ticket) => ticket.id === id)
         )
       );
 
-      // -----------------------------------------------------
-      // FETCH USERS
-      // -----------------------------------------------------
+      // =================================================
+      // FETCH USERS SEPARATELY
+      // =================================================
 
       try {
         const usersResponse = await api.get("/accounts/users/");
 
-        const usersData = Array.isArray(usersResponse.data)
-          ? usersResponse.data
-          : usersResponse.data?.results || [];
+        console.log("USERS RESPONSE:", usersResponse.data);
 
-        console.log("USERS API RESPONSE:", usersData);
+        let usersData = [];
+
+        // Direct array
+        if (Array.isArray(usersResponse.data)) {
+          usersData = usersResponse.data;
+        }
+
+        // { results: [...] }
+        else if (Array.isArray(usersResponse.data?.results)) {
+          usersData = usersResponse.data.results;
+        }
+
+        // { data: [...] }
+        else if (Array.isArray(usersResponse.data?.data)) {
+          usersData = usersResponse.data.data;
+        }
 
         setUsers(usersData);
       } catch (userError) {
         console.error(
-          "Error fetching users:",
+          "USERS API ERROR:",
           userError.response?.data ||
             userError.message ||
             userError
@@ -108,12 +929,12 @@ export default function TicketsList() {
         // Tickets should still be displayed.
         setUsers([]);
       }
-    } catch (error) {
+    } catch (ticketError) {
       console.error(
-        "Error fetching tickets:",
-        error.response?.data ||
-          error.message ||
-          error
+        "TICKETS API ERROR:",
+        ticketError.response?.data ||
+          ticketError.message ||
+          ticketError
       );
 
       setTicketsData([]);
@@ -123,13 +944,17 @@ export default function TicketsList() {
     }
   };
 
+  // =====================================================
+  // FETCH DATA WHEN PAGE LOADS
+  // =====================================================
+
   useEffect(() => {
     fetchTickets();
   }, []);
 
-  // =========================================================
+  // =====================================================
   // OWNER OPTIONS
-  // =========================================================
+  // =====================================================
 
   const ownerOptions = [
     ...new Set(
@@ -145,20 +970,22 @@ export default function TicketsList() {
     ),
   ];
 
-  // =========================================================
+  // =====================================================
   // GET TICKET OWNER NAMES
-  // =========================================================
+  // =====================================================
 
   const getTicketOwnerNames = (ticket) => {
+    // ---------------------------------------------------
+    // CASE 1:
     // Backend returns:
-    // ticket_owner_ids: [17, 18]
+    // ticket_owner_ids: [16, 17]
+    // ---------------------------------------------------
 
     if (Array.isArray(ticket.ticket_owner_ids)) {
       return ticket.ticket_owner_ids
         .map((ownerId) => {
           const user = users.find(
-            (user) =>
-              String(user.id) === String(ownerId)
+            (user) => String(user.id) === String(ownerId)
           );
 
           if (!user) return "";
@@ -172,7 +999,12 @@ export default function TicketsList() {
         .filter(Boolean);
     }
 
-    // Fallback if backend returns ticket_owners
+    // ---------------------------------------------------
+    // CASE 2:
+    // Backend returns:
+    // ticket_owners: ["Sajid Jubi", "Riya Mehwish"]
+    // ---------------------------------------------------
+
     if (Array.isArray(ticket.ticket_owners)) {
       return ticket.ticket_owners
         .map((owner) => {
@@ -196,7 +1028,11 @@ export default function TicketsList() {
         .filter(Boolean);
     }
 
-    // Fallback for single owner
+    // ---------------------------------------------------
+    // CASE 3:
+    // Backward compatibility with old single owner
+    // ---------------------------------------------------
+
     if (ticket.ticket_owner) {
       return [ticket.ticket_owner];
     }
@@ -204,9 +1040,9 @@ export default function TicketsList() {
     return [];
   };
 
-  // =========================================================
-  // FILTER TICKETS
-  // =========================================================
+  // =====================================================
+  // SEARCH + FILTER
+  // =====================================================
 
   const filteredTickets = ticketsData.filter((ticket) => {
     const searchValue = search.trim().toLowerCase();
@@ -217,20 +1053,30 @@ export default function TicketsList() {
     const dealName =
       ticket.deal_name?.toLowerCase() || "";
 
+    // =================================================
+    // TICKET OWNERS
+    // =================================================
+
     const ticketOwnerValues =
       getTicketOwnerNames(ticket);
 
     const ticketOwnerSearchText =
       ticketOwnerValues.join(" ").toLowerCase();
 
+    // =================================================
     // SEARCH
+    // =================================================
+
     const matchesSearch =
       !searchValue ||
       ticketName.includes(searchValue) ||
       dealName.includes(searchValue) ||
       ticketOwnerSearchText.includes(searchValue);
 
-    // OWNER
+    // =================================================
+    // OWNER FILTER
+    // =================================================
+
     const matchesOwner =
       ticketOwner.length === 0 ||
       ticketOwner.some((selectedOwner) =>
@@ -241,7 +1087,10 @@ export default function TicketsList() {
         )
       );
 
+    // =================================================
     // STATUS
+    // =================================================
+
     const normalizedTicketStatus =
       ticket.ticket_status
         ?.toLowerCase()
@@ -259,19 +1108,28 @@ export default function TicketsList() {
       normalizedTicketStatus ===
         normalizedSelectedStatus;
 
+    // =================================================
     // SOURCE
+    // =================================================
+
     const matchesSource =
       !source ||
       ticket.source?.toLowerCase() ===
         source.toLowerCase();
 
+    // =================================================
     // PRIORITY
+    // =================================================
+
     const matchesPriority =
       !priority ||
       ticket.priority?.toLowerCase() ===
         priority.toLowerCase();
 
+    // =================================================
     // CREATED DATE
+    // =================================================
+
     const matchesCreatedDate =
       !createdDate ||
       ticket.created_date?.startsWith(createdDate);
@@ -286,489 +1144,531 @@ export default function TicketsList() {
     );
   });
 
-  // =========================================================
-  // PAGINATION
-  // =========================================================
-
-  const rowsPerPage = 10;
-
-  const totalPages = Math.ceil(
-    filteredTickets.length / rowsPerPage
-  );
-
-  const paginatedTickets = filteredTickets.slice(
-    (page - 1) * rowsPerPage,
-    page * rowsPerPage
-  );
-
-  // =========================================================
-  // RESET PAGE WHEN FILTER CHANGES
-  // =========================================================
-
-  useEffect(() => {
-    setPage(1);
-  }, [
-    search,
-    ticketOwner,
-    status,
-    source,
-    priority,
-    createdDate,
-  ]);
-
-  // =========================================================
-  // SELECT ALL
-  // =========================================================
-
-  const handleSelectAll = (event) => {
-    if (event.target.checked) {
-      setSelectedTickets(
-        paginatedTickets.map((ticket) => ticket.id)
-      );
-    } else {
-      setSelectedTickets([]);
-    }
-  };
-
-  // =========================================================
-  // SELECT SINGLE TICKET
-  // =========================================================
+  // =====================================================
+  // CHECKBOX SELECTION
+  // =====================================================
 
   const handleSelectTicket = (ticketId) => {
-    setSelectedTickets((prev) =>
-      prev.includes(ticketId)
-        ? prev.filter((id) => id !== ticketId)
-        : [...prev, ticketId]
-    );
+    setSelectedTickets((prev) => {
+      if (prev.includes(ticketId)) {
+        return prev.filter((id) => id !== ticketId);
+      }
+
+      return [...prev, ticketId];
+    });
   };
 
-  // =========================================================
-  // DELETE TICKET
-  // =========================================================
+  // =====================================================
+  // SELECT / UNSELECT ALL
+  // =====================================================
 
-  const handleDeleteTicket = async (ticketId) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this ticket?"
-    );
-
-    if (!confirmDelete) return;
-
-    try {
-      await api.delete(`/tickets/${ticketId}/`);
-
-      setTicketsData((prev) =>
-        prev.filter(
-          (ticket) => ticket.id !== ticketId
-        )
+  const handleSelectAll = () => {
+    if (
+      selectedTickets.length ===
+      filteredTickets.length
+    ) {
+      setSelectedTickets([]);
+    } else {
+      setSelectedTickets(
+        filteredTickets.map((ticket) => ticket.id)
       );
-
-      setSelectedTickets((prev) =>
-        prev.filter((id) => id !== ticketId)
-      );
-    } catch (error) {
-      console.error(
-        "Error deleting ticket:",
-        error.response?.data ||
-          error.message ||
-          error
-      );
-
-      setError("Failed to delete ticket.");
     }
   };
 
-  // =========================================================
-  // EDIT TICKET
-  // =========================================================
+  // =====================================================
+  // CHECKBOX STATES
+  // =====================================================
 
-  const handleEditTicket = (ticket) => {
+  const allSelected =
+    filteredTickets.length > 0 &&
+    filteredTickets.every((ticket) =>
+      selectedTickets.includes(ticket.id)
+    );
+
+  const someSelected =
+    selectedTickets.length > 0 && !allSelected;
+
+  // =====================================================
+  // CLEAR FILTERS
+  // =====================================================
+
+  const clearFilters = () => {
+    setTicketOwner([]);
+    setStatus("");
+    setSource("");
+    setPriority("");
+    setCreatedDate("");
+    setSearch("");
+    setPage(1);
+  };
+
+  // =====================================================
+  // OPEN EDIT DRAWER
+  // =====================================================
+
+  const handleEdit = (ticket) => {
     setSelectedTicket(ticket);
     setOpenEditDrawer(true);
   };
 
-  // =========================================================
-  // AFTER CREATE / UPDATE
-  // =========================================================
+  // =====================================================
+  // CLOSE EDIT DRAWER
+  // =====================================================
 
-  const handleTicketSaved = () => {
-    setOpenDrawer(false);
+  const handleCloseEdit = () => {
     setOpenEditDrawer(false);
     setSelectedTicket(null);
-    fetchTickets();
   };
 
-  // =========================================================
-  // STATUS OPTIONS
-  // =========================================================
+  // =====================================================
+  // DELETE TICKET
+  // =====================================================
 
-  const statusOptions = [
-    { label: "New", value: "NEW" },
-    { label: "Open", value: "OPEN" },
-    {
-      label: "Waiting on Contact",
-      value: "WAITING_ON_CONTACT",
-    },
-    {
-      label: "Waiting on Internal",
-      value: "WAITING_ON_INTERNAL",
-    },
-    { label: "Closed", value: "CLOSED" },
-  ];
+  const handleDelete = async (ticket) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${ticket.ticket_name}"?`
+    );
 
-  // =========================================================
-  // SOURCE OPTIONS
-  // =========================================================
+    if (!confirmed) return;
 
-  const sourceOptions = [
-    { label: "Email", value: "EMAIL" },
-    { label: "Phone", value: "PHONE" },
-    { label: "Web", value: "WEB" },
-    { label: "Chat", value: "CHAT" },
-  ];
+    try {
+      await api.delete(`/tickets/${ticket.id}/`);
 
-  // =========================================================
-  // PRIORITY OPTIONS
-  // =========================================================
+      setSelectedTickets((prev) =>
+        prev.filter((id) => id !== ticket.id)
+      );
 
-  const priorityOptions = [
-    { label: "Low", value: "LOW" },
-    { label: "Medium", value: "MEDIUM" },
-    { label: "High", value: "HIGH" },
-    { label: "Urgent", value: "URGENT" },
-  ];
+      await fetchTickets();
+    } catch (error) {
+      console.error(
+        "Error deleting ticket:",
+        error.response?.data || error
+      );
 
-  // =========================================================
-  // RENDER
-  // =========================================================
+      alert("Failed to delete ticket.");
+    }
+  };
 
   return (
-    <Box>
-      <PageHeader
-        title="Tickets"
-        subtitle="Manage customer support tickets"
-      />
-
-      {/* =====================================================
-          SEARCH + CREATE
-      ===================================================== */}
-
+    <div>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
+        sx={{
+          maxWidth: "1000",
+          margin: "0 auto",
+          marginTop: "5px",
+          padding: "5px",
+          backgroundColor: "background.default",
+          borderRadius: "10px",
+          boxShadow: "3px",
+        }}
       >
-        <SearchSection
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search tickets..."
-        />
+        {/* =====================================================
+              TICKET HEADER
+          ===================================================== */}
 
-        <CommonButton
-          onClick={() => setOpenDrawer(true)}
+        <Box
+          sx={{
+            p: 2,
+            height: "12vh",
+            boxShadow: "4px",
+            border: "1px solid",
+            borderColor: "divider",
+            bgcolor: "background.paper",
+            borderTopLeftRadius: "12px",
+            borderTopRightRadius: "12px",
+          }}
         >
-          Create Ticket
-        </CommonButton>
-      </Box>
+          <PageHeader
+            title="Tickets"
+            actions={
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                }}
+              >
+                <CommonButton variant="outlined">
+                  Import
+                </CommonButton>
 
-      {/* =====================================================
-          FILTER SECTION
-      ===================================================== */}
+                <CommonButton
+                  onClick={() => setOpenDrawer(true)}
+                >
+                  Create
+                </CommonButton>
+              </Box>
+            }
+          />
 
-      <FilterSection>
-        <SelectField
-          label="Ticket Owner"
-          value={ticketOwner}
-          onChange={(e) =>
-            setTicketOwner(e.target.value)
-          }
-          options={ownerOptions.map((owner) => ({
-            label: owner,
-            value: owner,
-          }))}
-          multiple
-        />
+          {/* =====================================================
+                CREATE TICKET DRAWER
+            ===================================================== */}
 
-        <SelectField
-          label="Status"
-          value={status}
-          onChange={(e) =>
-            setStatus(e.target.value)
-          }
-          options={statusOptions}
-        />
+          <CreateTicketDrawer
+            open={openDrawer}
+            onClose={() => {
+              setOpenDrawer(false);
+              fetchTickets();
+            }}
+          />
 
-        <SelectField
-          label="Source"
-          value={source}
-          onChange={(e) =>
-            setSource(e.target.value)
-          }
-          options={sourceOptions}
-        />
+          {/* =====================================================
+                EDIT TICKET DRAWER
+            ===================================================== */}
 
-        <SelectField
-          label="Priority"
-          value={priority}
-          onChange={(e) =>
-            setPriority(e.target.value)
-          }
-          options={priorityOptions}
-        />
+          <EditTicketDrawer
+            open={openEditDrawer}
+            ticketId={selectedTicket?.id}
+            onClose={handleCloseEdit}
+            onUpdated={fetchTickets}
+          />
+        </Box>
 
-        <TextField
-          type="date"
-          label="Created Date"
-          value={createdDate}
-          onChange={(e) =>
-            setCreatedDate(e.target.value)
-          }
-          InputLabelProps={{
-            shrink: true,
+        {/* =====================================================
+              SEARCH + PAGINATION
+          ===================================================== */}
+
+        <Box
+          sx={{
+            p: 2,
+            boxShadow: "4px",
+            border: "1px solid",
+            borderColor: "divider",
+            bgcolor: "background.paper",
+            height: "12vh",
+            marginTop: "4px",
+            transform: "translateY(-5px)",
           }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <CalendarMonthIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-      </FilterSection>
+        >
+          <SearchSection
+            placeholder="Search Phone, Name, Email"
+            page={page}
+            totalPages={Math.max(
+              1,
+              Math.ceil(filteredTickets.length / 10)
+            )}
+            onPageChange={setPage}
+            searchValue={search}
+            onSearchChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+          />
+        </Box>
 
-      {/* =====================================================
-          TABLE
-      ===================================================== */}
+        {/* =====================================================
+              FILTERS
+          ===================================================== */}
 
-      <DataTable
-        columns={[
-          {
-            label: (
-              <Checkbox
-                checked={
-                  paginatedTickets.length > 0 &&
-                  paginatedTickets.every((ticket) =>
-                    selectedTickets.includes(ticket.id)
-                  )
-                }
-                indeterminate={
-                  selectedTickets.length > 0 &&
-                  !paginatedTickets.every((ticket) =>
-                    selectedTickets.includes(ticket.id)
-                  )
-                }
-                onChange={handleSelectAll}
-              />
-            ),
-          },
-          { label: "TICKET NAME" },
-          { label: "DEAL NAME" },
-          { label: "TICKET STATUS" },
-          { label: "PRIORITY" },
-          { label: "SOURCE" },
-          { label: "TICKET OWNER" },
-          { label: "CREATED DATE" },
-          { label: "ACTIONS" },
-        ]}
-        page={page}
-        setPage={setPage}
-        totalPages={totalPages}
-      >
-        {/* ===================================================
-            LOADING
-        =================================================== */}
+        <FilterSection>
+          {/* TICKET OWNER */}
 
-        {loading && (
-          <TableRow>
-            <TableCell
-              colSpan={9}
-              align="center"
+          <SelectField
+            placeholder="Ticket Owner"
+            options={ownerOptions}
+            value={ticketOwner}
+            multiple
+            onChange={(e) => {
+              const value = e.target.value;
+
+              setTicketOwner(
+                Array.isArray(value)
+                  ? value
+                  : value
+                    ? [value]
+                    : []
+              );
+
+              setPage(1);
+            }}
+          />
+
+          {/* TICKET STATUS */}
+
+          <SelectField
+            placeholder="Ticket Status"
+            options={[
+              "New",
+              "Open",
+              "In Progress",
+              "Waiting on Contact",
+              "Waiting on Us",
+              "Closed",
+            ]}
+            value={status}
+            onChange={(e) => {
+              setStatus(e.target.value);
+              setPage(1);
+            }}
+          />
+
+          {/* SOURCE */}
+
+          <SelectField
+            placeholder="Source"
+            options={[
+              "Chat",
+              "Email",
+              "Phone",
+              "Web",
+            ]}
+            value={source}
+            onChange={(e) => {
+              setSource(e.target.value);
+              setPage(1);
+            }}
+          />
+
+          {/* PRIORITY */}
+
+          <SelectField
+            placeholder="Priority"
+            options={[
+              "High",
+              "Medium",
+              "Low",
+              "Critical",
+            ]}
+            value={priority}
+            onChange={(e) => {
+              setPriority(e.target.value);
+              setPage(1);
+            }}
+          />
+
+          {/* CREATED DATE */}
+
+          <TextField
+            type="date"
+            value={createdDate}
+            onChange={(e) => {
+              setCreatedDate(e.target.value);
+              setPage(1);
+            }}
+            size="small"
+            sx={{
+              width: 180,
+
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "10px",
+                backgroundColor: "#fff",
+              },
+
+              "& input": {
+                color: createdDate
+                  ? "#344054"
+                  : "#667085",
+              },
+            }}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <CalendarMonthIcon
+                      sx={{
+                        color: "#98A2B3",
+                        fontSize: 20,
+                      }}
+                    />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+
+          <Box
+            sx={{
+              flexGrow: 1,
+            }}
+          />
+
+          {/* CLEAR FILTERS */}
+
+          {(ticketOwner.length > 0 ||
+            status ||
+            source ||
+            priority ||
+            createdDate ||
+            search) && (
+            <CommonButton
+              variant="outlined"
+              onClick={clearFilters}
             >
-              Loading tickets...
-            </TableCell>
-          </TableRow>
-        )}
+              Clear
+            </CommonButton>
+          )}
+        </FilterSection>
 
-        {/* ===================================================
-            ERROR
-        =================================================== */}
+        {/* =====================================================
+              TICKET TABLE
+          ===================================================== */}
 
-        {!loading && error && (
-          <TableRow>
-            <TableCell
-              colSpan={9}
-              align="center"
-            >
-              {error}
-            </TableCell>
-          </TableRow>
-        )}
+        <DataTable
+          columns={[
+            <Checkbox
+              size="small"
+              checked={allSelected}
+              indeterminate={someSelected}
+              onChange={handleSelectAll}
+            />,
+            "TICKET NAME",
+            "DEAL NAME",
+            "TICKET STATUS",
+            "PRIORITY",
+            "SOURCE",
+            "TICKET OWNER",
+            "CREATED DATE",
+            "ACTIONS",
+          ]}
+        >
+          {/* =====================================================
+                LOADING
+            ===================================================== */}
 
-        {/* ===================================================
-            EMPTY
-        =================================================== */}
-
-        {!loading &&
-          !error &&
-          paginatedTickets.length === 0 && (
+          {loading ? (
             <TableRow>
               <TableCell
                 colSpan={9}
                 align="center"
               >
-                No tickets found
+                Loading tickets...
               </TableCell>
             </TableRow>
+          ) : error ? (
+            <TableRow>
+              <TableCell
+                colSpan={9}
+                align="center"
+              >
+                {error}
+              </TableCell>
+            </TableRow>
+          ) : filteredTickets.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={9}
+                align="center"
+              >
+                No tickets found.
+              </TableCell>
+            </TableRow>
+          ) : (
+            filteredTickets.map((ticket) => {
+              const ticketOwners =
+                getTicketOwnerNames(ticket);
+
+              return (
+                <TableRow key={ticket.id}>
+                  {/* CHECKBOX */}
+
+                  <TableCell>
+                    <Checkbox
+                      size="small"
+                      checked={selectedTickets.includes(
+                        ticket.id
+                      )}
+                      onChange={() =>
+                        handleSelectTicket(ticket.id)
+                      }
+                    />
+                  </TableCell>
+
+                  {/* TICKET NAME */}
+
+                  <TableCell>
+                    <Box
+                      component="span"
+                      onClick={() =>
+                        navigate(
+                          `/tickets/${ticket.id}/activities`
+                        )
+                      }
+                      sx={{
+                        color: "#5948DB",
+                        cursor: "pointer",
+                        fontWeight: 500,
+                        "&:hover": {
+                          textDecoration: "underline",
+                        },
+                      }}
+                    >
+                      {ticket.ticket_name}
+                    </Box>
+                  </TableCell>
+
+                  {/* DEAL NAME */}
+
+                  <TableCell>
+                    {ticket.deal_name || "-"}
+                  </TableCell>
+
+                  {/* STATUS */}
+
+                  <TableCell>
+                    {ticket.ticket_status}
+                  </TableCell>
+
+                  {/* PRIORITY */}
+
+                  <TableCell>
+                    {ticket.priority}
+                  </TableCell>
+
+                  {/* SOURCE */}
+
+                  <TableCell>
+                    {ticket.source}
+                  </TableCell>
+
+                  {/* OWNER */}
+
+                  <TableCell>
+                    {ticketOwners.length > 0
+                      ? ticketOwners.join(", ")
+                      : "-"}
+                  </TableCell>
+
+                  {/* CREATED DATE */}
+
+                  <TableCell>
+                    {ticket.created_date
+                      ? new Date(
+                          ticket.created_date
+                        ).toLocaleString()
+                      : "-"}
+                  </TableCell>
+
+                  {/* ACTIONS */}
+
+                  <TableCell>
+                    {/* EDIT */}
+
+                    <IconButton
+                      color="primary"
+                      onClick={() =>
+                        handleEdit(ticket)
+                      }
+                    >
+                      <EditIcon />
+                    </IconButton>
+
+                    {/* DELETE */}
+
+                    <IconButton
+                      color="error"
+                      onClick={() =>
+                        handleDelete(ticket)
+                      }
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })
           )}
-
-        {/* ===================================================
-            TICKET ROWS
-        =================================================== */}
-
-        {!loading &&
-          !error &&
-          paginatedTickets.map((ticket) => {
-            const ticketOwners =
-              getTicketOwnerNames(ticket);
-
-            return (
-              <TableRow key={ticket.id}>
-                {/* CHECKBOX */}
-                <TableCell>
-                  <Checkbox
-                    checked={selectedTickets.includes(
-                      ticket.id
-                    )}
-                    onChange={() =>
-                      handleSelectTicket(ticket.id)
-                    }
-                  />
-                </TableCell>
-
-                {/* TICKET NAME */}
-                <TableCell>
-                  <Box
-                    component="span"
-                    sx={{
-                      cursor: "pointer",
-                      fontWeight: 500,
-                    }}
-                    onClick={() =>
-                      navigate(
-                        `/tickets/${ticket.id}/activities`
-                      )
-                    }
-                  >
-                    {ticket.ticket_name || "-"}
-                  </Box>
-                </TableCell>
-
-                {/* DEAL NAME */}
-                <TableCell>
-                  {ticket.deal_name || "-"}
-                </TableCell>
-
-                {/* STATUS */}
-                <TableCell>
-                  {ticket.ticket_status
-                    ?.replaceAll("_", " ")
-                    ?.replace(/\b\w/g, (char) =>
-                      char.toUpperCase()
-                    ) || "-"}
-                </TableCell>
-
-                {/* PRIORITY */}
-                <TableCell>
-                  {ticket.priority
-                    ? ticket.priority
-                        .replaceAll("_", " ")
-                        .replace(/\b\w/g, (char) =>
-                          char.toUpperCase()
-                        )
-                    : "-"}
-                </TableCell>
-
-                {/* SOURCE */}
-                <TableCell>
-                  {ticket.source
-                    ? ticket.source
-                        .replaceAll("_", " ")
-                        .replace(/\b\w/g, (char) =>
-                          char.toUpperCase()
-                        )
-                    : "-"}
-                </TableCell>
-
-                {/* OWNER */}
-                <TableCell>
-                  {ticketOwners.length > 0
-                    ? ticketOwners.join(", ")
-                    : "-"}
-                </TableCell>
-
-                {/* CREATED DATE */}
-                <TableCell>
-                  {ticket.created_date
-                    ? new Date(
-                        ticket.created_date
-                      ).toLocaleDateString()
-                    : "-"}
-                </TableCell>
-
-                {/* ACTIONS */}
-                <TableCell>
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    gap={0.5}
-                  >
-                    <IconButton
-                      size="small"
-                      onClick={() =>
-                        handleEditTicket(ticket)
-                      }
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-
-                    <IconButton
-                      size="small"
-                      onClick={() =>
-                        handleDeleteTicket(ticket.id)
-                      }
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-      </DataTable>
-
-      {/* =====================================================
-          CREATE TICKET DRAWER
-      ===================================================== */}
-
-      <CreateTicketDrawer
-        open={openDrawer}
-        onClose={() => setOpenDrawer(false)}
-        onSuccess={handleTicketSaved}
-      />
-
-      {/* =====================================================
-          EDIT TICKET DRAWER
-      ===================================================== */}
-
-      <EditTicketDrawer
-        open={openEditDrawer}
-        onClose={() => {
-          setOpenEditDrawer(false);
-          setSelectedTicket(null);
-        }}
-        ticket={selectedTicket}
-        onSuccess={handleTicketSaved}
-      />
-    </Box>
+        </DataTable>
+      </Box>
+    </div>
   );
 }
