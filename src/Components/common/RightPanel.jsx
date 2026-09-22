@@ -1,16 +1,87 @@
-import React from "react";
-import { Box, Typography } from "@mui/material";
-
-// AI Summary Icon
+import React, { useCallback, useEffect, useState } from "react";
+import { Box, Typography, CircularProgress } from "@mui/material";
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
+import api from "../../services/api";
 
 export default function RightPanel({
-  // Dynamic AI Summary Title
+  module = "lead",
+  objectId,
+
   summaryTitle = "AI Lead Summary",
 
-  // Default message is displayed if no summary is provided
-  summaryText = "There are no activities associated with this lead and further details are needed to provide a comprehensive summary.",
+  summaryText =
+    "There are no activities associated with this record and further details are needed to provide a comprehensive summary.",
 }) {
+  const [aiSummary, setAiSummary] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const generateAISummary = useCallback(async () => {
+    if (!module || !objectId) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await api.post(
+        "/ai/summary/",
+        {
+          module,
+          object_id: Number(objectId),
+        }
+      );
+
+      console.log(
+        "AI SUMMARY RESPONSE:",
+        response.data
+      );
+
+      setAiSummary(
+        response.data?.summary || ""
+      );
+
+    } catch (error) {
+
+      console.error(
+        "ERROR GENERATING AI SUMMARY:",
+        error.response?.data ||
+          error.message
+      );
+
+      setAiSummary("");
+
+      setError(
+        error.response?.data?.detail ||
+          error.response?.data?.error ||
+          "Failed to generate AI summary."
+      );
+
+    } finally {
+      setLoading(false);
+    }
+  }, [module, objectId]);
+
+  useEffect(() => {
+
+    if (!module || !objectId) {
+      setAiSummary("");
+      setError("");
+      return;
+    }
+
+    generateAISummary();
+
+  }, [
+    module,
+    objectId,
+    generateAISummary,
+  ]);
+
+  const displaySummary =
+    aiSummary || summaryText;
+
   return (
     <Box
       sx={{
@@ -20,7 +91,6 @@ export default function RightPanel({
         p: 2,
       }}
     >
-      {/* ================= AI Summary Section ================= */}
       <Box
         sx={{
           border: "1px solid #5948DB",
@@ -30,7 +100,6 @@ export default function RightPanel({
           mb: 3,
         }}
       >
-        {/* AI Summary Title */}
         <Typography
           sx={{
             fontWeight: 700,
@@ -42,29 +111,63 @@ export default function RightPanel({
         >
           <AutoAwesomeOutlinedIcon
             color="primary"
-            sx={{
-              mr: 1,
-            }}
+            sx={{ mr: 1 }}
           />
 
           {summaryTitle}
         </Typography>
 
-        {/* AI Summary Description */}
-        <Typography
-          sx={{
-            fontSize: "14px",
-            color: "#33475B",
-            lineHeight: 1.6,
-          }}
-        >
-          {summaryText}
-        </Typography>
+        {loading && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              py: 1,
+            }}
+          >
+            <CircularProgress
+              size={18}
+              color="primary"
+            />
+
+            <Typography
+              sx={{
+                fontSize: "13px",
+                color: "#516F90",
+              }}
+            >
+              Generating summary...
+            </Typography>
+          </Box>
+        )}
+
+        {!loading && error && (
+          <Typography
+            sx={{
+              fontSize: "13px",
+              color: "error.main",
+              lineHeight: 1.6,
+            }}
+          >
+            {error}
+          </Typography>
+        )}
+
+        {!loading && !error && (
+          <Typography
+            sx={{
+              fontSize: "14px",
+              color: "#33475B",
+              lineHeight: 1.6,
+            }}
+          >
+            {displaySummary}
+          </Typography>
+        )}
       </Box>
 
-      {/* ================= Attachments Section ================= */}
       <Box>
-        {/* Section Header */}
         <Box
           sx={{
             display: "flex",
@@ -81,7 +184,6 @@ export default function RightPanel({
             Attachments
           </Typography>
 
-          {/* Add Attachment Action */}
           <Typography
             sx={{
               fontWeight: 600,
@@ -93,7 +195,6 @@ export default function RightPanel({
           </Typography>
         </Box>
 
-        {/* Attachments Description */}
         <Typography
           sx={{
             fontSize: "14px",
