@@ -1,4 +1,3 @@
-
 import React, {
   useCallback,
   useEffect,
@@ -48,7 +47,6 @@ export default function ActivityDetails() {
           ? response.data
           : response.data?.results || []
       );
-
     } catch (error) {
       console.error(
         "ERROR FETCHING LEAD ACTIVITIES:",
@@ -56,7 +54,6 @@ export default function ActivityDetails() {
       );
 
       setActivities([]);
-
     } finally {
       setLoading(false);
     }
@@ -74,18 +71,43 @@ export default function ActivityDetails() {
     <Box
       sx={{
         p: 3,
-        fontFamily: "Roboto, sans-serif",
         mx: -2,
+
+        // ====================================
+        // WIDTH / OVERFLOW FIX
+        // ====================================
+
+        width: "100%",
+        maxWidth: "100%",
+        minWidth: 0,
+
+        boxSizing: "border-box",
+
+        overflowX: "hidden",
       }}
     >
-      {/* ACTIVITY TABS */}
+      {/* ========================================
+          ACTIVITY TABS
+      ======================================== */}
 
-      <CommonActivityTabs
-        tabs={getLeadTabs(leadId)}
-        activeTab="Activity"
-      />
+      <Box
+        sx={{
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          boxSizing: "border-box",
+          overflowX: "hidden",
+        }}
+      >
+        <CommonActivityTabs
+          tabs={getLeadTabs(leadId)}
+          activeTab="Activity"
+        />
+      </Box>
 
-      {/* LOADING */}
+      {/* ========================================
+          LOADING
+      ======================================== */}
 
       {loading && (
         <Box
@@ -93,36 +115,81 @@ export default function ActivityDetails() {
             display: "flex",
             justifyContent: "center",
             py: 5,
+            width: "100%",
+            maxWidth: "100%",
+            minWidth: 0,
+            boxSizing: "border-box",
           }}
         >
           <CircularProgress />
         </Box>
       )}
 
-      {/* NO ACTIVITIES */}
+      {/* ========================================
+          NO ACTIVITIES
+      ======================================== */}
 
       {!loading &&
         activities.length === 0 && (
-          <Box sx={{ py: 5 }}>
+          <Box
+            sx={{
+              py: 5,
+              width: "100%",
+              maxWidth: "100%",
+              minWidth: 0,
+              boxSizing: "border-box",
+            }}
+          >
             <Typography
               color="text.secondary"
               textAlign="center"
+              sx={{
+                maxWidth: "100%",
+                overflowWrap: "anywhere",
+                wordBreak: "break-word",
+              }}
             >
               No activities found for this lead.
             </Typography>
           </Box>
         )}
 
-      {/* ACTIVITY LIST */}
+      {/* ========================================
+          ACTIVITY LIST
+      ======================================== */}
 
       {!loading &&
         activities.length > 0 && (
-          <Box sx={{ mt: 3 }}>
+          <Box
+            sx={{
+              mt: 3,
+
+              width: "100%",
+              maxWidth: "100%",
+              minWidth: 0,
+
+              boxSizing: "border-box",
+
+              overflowX: "hidden",
+            }}
+          >
             {activities.map((activity) => (
-              <ActivityTimeline
+              <Box
                 key={activity.id}
-                activity={activity}
-              />
+                sx={{
+                  width: "100%",
+                  maxWidth: "100%",
+                  minWidth: 0,
+
+                  boxSizing: "border-box",
+
+                  overflowX: "hidden",
+                }}
+              >
+                <ActivityTimeline
+                  activity={activity}
+                />
+              </Box>
             ))}
           </Box>
         )}
