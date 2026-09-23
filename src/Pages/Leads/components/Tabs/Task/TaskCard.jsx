@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 import {
   Paper,
@@ -72,24 +70,15 @@ export default function TaskCard({ task }) {
   const assignedToName = getAssignedToNames();
 
   // ========================================
-  // REMOVE HTML TAGS FROM NOTE
+  // CHECK NOTE
   // ========================================
 
-  const getPlainText = (html) => {
-    if (!html) return "";
-
-    const temp = document.createElement("div");
-    temp.innerHTML = html;
-
-    return (
-      temp.textContent ||
-      temp.innerText ||
-      ""
-    ).trim();
-  };
-
-  const noteText =
-    getPlainText(task.note) || "No description";
+  const hasNote =
+    task.note &&
+    task.note !== "<p><br></p>" &&
+    task.note
+      .replace(/<[^>]*>/g, "")
+      .trim() !== "";
 
   // ========================================
   // DATE
@@ -281,7 +270,7 @@ export default function TaskCard({ task }) {
       </Box>
 
       {/* ========================================
-          NOTE / RADIO
+          TASK NAME / RADIO
       ======================================== */}
 
       <Box
@@ -305,10 +294,14 @@ export default function TaskCard({ task }) {
       </Box>
 
       {/* ========================================
-          INFO BOX
+          EXPANDED CONTENT
       ======================================== */}
 
       <Collapse in={open}>
+        {/* ========================================
+            INFO BOX
+        ======================================== */}
+
         <Box
           sx={{
             bgcolor: "#eef3f8",
@@ -377,18 +370,150 @@ export default function TaskCard({ task }) {
           </Grid>
         </Box>
 
-        {/* DESCRIPTION */}
+        {/* ========================================
+            DESCRIPTION / NOTE
+        ======================================== */}
 
-        <Typography
+        <Box
           sx={{
-            fontSize: 14,
-            color: "text.secondary",
             mt: 2,
+
+            // Main Note Color
+            color: "#1F2937",
+
+            fontSize: 14,
+
+            // ====================================
+            // PARAGRAPHS
+            // ====================================
+
+            "& p": {
+              margin: "0 0 8px",
+            },
+
+            // ====================================
+            // BOLD
+            // ====================================
+
+            "& strong": {
+              fontWeight: 700,
+            },
+
+            // ====================================
+            // ITALIC
+            // ====================================
+
+            "& em": {
+              fontStyle: "italic",
+            },
+
+            // ====================================
+            // UNDERLINE
+            // ====================================
+
+            "& u": {
+              textDecoration: "underline",
+            },
+
+            // ====================================
+            // STRIKETHROUGH
+            // ====================================
+
+            "& s": {
+              textDecoration: "line-through",
+            },
+
+            // ====================================
+            // ORDERED LIST
+            // ====================================
+
+            "& ol": {
+              paddingLeft: "24px",
+              marginTop: "8px",
+              marginBottom: "8px",
+            },
+
+            // ====================================
+            // BULLET LIST
+            // ====================================
+
+            "& ul": {
+              paddingLeft: "24px",
+              marginTop: "8px",
+              marginBottom: "8px",
+            },
+
+            // ====================================
+            // LIST ITEMS
+            // ====================================
+
+            "& li": {
+              marginBottom: "4px",
+            },
+
+            // ====================================
+            // HEADINGS
+            // ====================================
+
+            "& h1": {
+              fontSize: "24px",
+              fontWeight: 700,
+              margin: "8px 0",
+            },
+
+            "& h2": {
+              fontSize: "20px",
+              fontWeight: 700,
+              margin: "8px 0",
+            },
+
+            "& h3": {
+              fontSize: "17px",
+              fontWeight: 700,
+              margin: "8px 0",
+            },
+
+            // ====================================
+            // BLOCKQUOTE
+            // ====================================
+
+            "& blockquote": {
+              borderLeft:
+                "4px solid #D1D5DB",
+              paddingLeft: "12px",
+              margin: "8px 0",
+              color: "#4B5563",
+            },
+
+            // ====================================
+            // LINKS
+            // ====================================
+
+            "& a": {
+              color: "#1976D2",
+              textDecoration: "underline",
+            },
           }}
         >
-          {noteText}
-        </Typography>
+          {hasNote ? (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: task.note,
+              }}
+            />
+          ) : (
+            <Typography
+              sx={{
+                fontSize: 14,
+                color: "#1F2937",
+              }}
+            >
+              No description
+            </Typography>
+          )}
+        </Box>
       </Collapse>
     </Paper>
   );
 }
+
