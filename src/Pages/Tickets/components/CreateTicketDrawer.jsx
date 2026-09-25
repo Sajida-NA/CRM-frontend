@@ -1,3 +1,1988 @@
+// // import React, { useEffect, useState } from "react";
+// // import {
+// //   Drawer,
+// //   Box,
+// //   Grid,
+// //   TextField,
+// //   Typography,
+// //   FormControl,
+// //   InputLabel,
+// //   MenuItem,
+// //   Select,
+// //   Checkbox,
+// //   ListItemText,
+// // } from "@mui/material";
+
+// // import DrawerHeader from "../../../Components/common/DrawerHeader";
+// // import CommonInput from "../../../Components/common/CommonInput";
+// // import CommonButton from "../../../Components/common/CommonButton";
+
+// // import api from "../../../services/api";
+
+// // export default function CreateTicketDrawer({ open, onClose }) {
+// //   // =====================================================
+// //   // FORM DATA
+// //   // =====================================================
+
+// //   const [formData, setFormData] = useState({
+// //     ticketName: "",
+// //     description: "",
+// //     ticketStatus: "",
+// //     source: "",
+// //     priority: "",
+
+// //     // MULTIPLE TICKET OWNERS
+// //     ticketOwners: [],
+
+// //     associatedDeal: "",
+// //   });
+
+// //   // =====================================================
+// //   // OPTIONS
+// //   // =====================================================
+
+// //   const [deals, setDeals] = useState([]);
+// //   const [dealOwners, setDealOwners] = useState([]);
+
+// //   // =====================================================
+// //   // LOADING / ERROR
+// //   // =====================================================
+
+// //   const [loading, setLoading] = useState(false);
+// //   const [loadingOptions, setLoadingOptions] = useState(false);
+// //   const [loadingDealOwners, setLoadingDealOwners] = useState(false);
+// //   const [error, setError] = useState("");
+
+// //   // =====================================================
+// //   // LOAD CLOSED WON DEALS
+// //   // =====================================================
+
+// //   useEffect(() => {
+// //     if (!open) return;
+
+// //     const fetchDeals = async () => {
+// //       try {
+// //         setLoadingOptions(true);
+// //         setError("");
+
+// //         const response = await api.get("/deals/");
+
+// //         console.log("DEALS RESPONSE:", response.data);
+
+// //         const dealsData = Array.isArray(response.data)
+// //           ? response.data
+// //           : response.data?.results || response.data?.data || [];
+
+// //         // -------------------------------------------------
+// //         // ONLY CLOSED WON DEALS
+// //         // -------------------------------------------------
+
+// //         const closedWonDeals = dealsData.filter(
+// //           (deal) =>
+// //             deal.deal_stage?.toLowerCase() === "closed won"
+// //         );
+
+// //         setDeals(closedWonDeals);
+
+// //         console.log(
+// //           "CLOSED WON DEALS:",
+// //           closedWonDeals
+// //         );
+// //       } catch (err) {
+// //         console.error(
+// //           "Error loading deals:",
+// //           err.response?.data || err
+// //         );
+
+// //         setError("Failed to load Closed Won deals.");
+// //       } finally {
+// //         setLoadingOptions(false);
+// //       }
+// //     };
+
+// //     fetchDeals();
+// //   }, [open]);
+
+// //   // =====================================================
+// //   // LOAD DEAL OWNERS
+// //   // =====================================================
+
+// //   const loadDealOwners = async (dealId) => {
+// //     if (!dealId) {
+// //       setDealOwners([]);
+
+// //       setFormData((prev) => ({
+// //         ...prev,
+// //         ticketOwners: [],
+// //       }));
+
+// //       return;
+// //     }
+
+// //     try {
+// //       setLoadingDealOwners(true);
+// //       setError("");
+
+// //       console.log(
+// //         "========== LOADING DEAL OWNERS =========="
+// //       );
+
+// //       console.log("DEAL ID:", dealId);
+
+// //       const response = await api.get(
+// //         `/deals/${dealId}/`
+// //       );
+
+// //       console.log(
+// //         "DEAL DETAILS RESPONSE:",
+// //         response.data
+// //       );
+
+// //       const dealData =
+// //         response.data?.data || response.data;
+
+// //       // -------------------------------------------------
+// //       // GET DEAL OWNER DETAILS
+// //       // -------------------------------------------------
+
+// //       const owners =
+// //         dealData?.deal_owner_details || [];
+
+// //       console.log(
+// //         "DEAL OWNERS:",
+// //         owners
+// //       );
+
+// //       setDealOwners(owners);
+
+// //       // -------------------------------------------------
+// //       // AUTOMATICALLY SELECT ALL DEAL OWNERS
+// //       // -------------------------------------------------
+
+// //       const ownerIds = owners.map(
+// //         (owner) => Number(owner.id)
+// //       );
+
+// //       setFormData((prev) => ({
+// //         ...prev,
+// //         ticketOwners: ownerIds,
+// //       }));
+
+// //       if (owners.length === 0) {
+// //         setError(
+// //           "No Deal Owners are available for the selected Deal."
+// //         );
+// //       }
+// //     } catch (err) {
+// //       console.error(
+// //         "Error loading Deal Owners:",
+// //         err.response?.data || err
+// //       );
+
+// //       setDealOwners([]);
+
+// //       setFormData((prev) => ({
+// //         ...prev,
+// //         ticketOwners: [],
+// //       }));
+
+// //       setError(
+// //         "Failed to load Deal Owners."
+// //       );
+// //     } finally {
+// //       setLoadingDealOwners(false);
+// //     }
+// //   };
+
+// //   // =====================================================
+// //   // HANDLE INPUT CHANGE
+// //   // =====================================================
+
+// //   const handleChange = (e) => {
+// //     const { name, value } = e.target;
+
+// //     // ---------------------------------------------------
+// //     // ASSOCIATED DEAL
+// //     // ---------------------------------------------------
+
+// //     if (name === "associatedDeal") {
+// //       setFormData((prev) => ({
+// //         ...prev,
+// //         associatedDeal: value,
+// //         ticketOwners: [],
+// //       }));
+
+// //       setDealOwners([]);
+
+// //       loadDealOwners(value);
+
+// //       return;
+// //     }
+
+// //     // ---------------------------------------------------
+// //     // TICKET OWNERS
+// //     // ---------------------------------------------------
+
+// //     if (name === "ticketOwners") {
+// //       setFormData((prev) => ({
+// //         ...prev,
+// //         ticketOwners: Array.isArray(value)
+// //           ? value.map((id) => Number(id))
+// //           : [],
+// //       }));
+
+// //       return;
+// //     }
+
+// //     // ---------------------------------------------------
+// //     // NORMAL FIELDS
+// //     // ---------------------------------------------------
+
+// //     setFormData((prev) => ({
+// //       ...prev,
+// //       [name]: value,
+// //     }));
+// //   };
+
+// //   // =====================================================
+// //   // RESET FORM
+// //   // =====================================================
+
+// //   const resetForm = () => {
+// //     setFormData({
+// //       ticketName: "",
+// //       description: "",
+// //       ticketStatus: "",
+// //       source: "",
+// //       priority: "",
+// //       ticketOwners: [],
+// //       associatedDeal: "",
+// //     });
+
+// //     setDealOwners([]);
+// //     setError("");
+// //   };
+
+// //   // =====================================================
+// //   // GET OWNER NAME
+// //   // =====================================================
+
+// //   const getOwnerName = (owner) => {
+// //     if (!owner) {
+// //       return "";
+// //     }
+
+// //     return (
+// //       `${owner.first_name || ""} ${
+// //         owner.last_name || ""
+// //       }`.trim() || owner.email
+// //     );
+// //   };
+
+// //   // =====================================================
+// //   // CREATE TICKET
+// //   // =====================================================
+
+// //   const handleSubmit = async (e) => {
+// //     e.preventDefault();
+
+// //     console.log(
+// //       "========== SAVE CLICKED =========="
+// //     );
+
+// //     setError("");
+
+// //     // -----------------------------------------------------
+// //     // FRONTEND VALIDATION
+// //     // -----------------------------------------------------
+
+// //     if (
+// //       !formData.ticketName ||
+// //       !formData.description ||
+// //       !formData.ticketStatus ||
+// //       !formData.source ||
+// //       !formData.priority ||
+// //       formData.ticketOwners.length === 0 ||
+// //       !formData.associatedDeal
+// //     ) {
+// //       setError(
+// //         "Please fill all required fields."
+// //       );
+
+// //       return;
+// //     }
+
+// //     // -----------------------------------------------------
+// //     // VALIDATE TICKET OWNERS AGAINST DEAL OWNERS
+// //     // -----------------------------------------------------
+
+// //     const allowedOwnerIds = dealOwners.map(
+// //       (owner) => Number(owner.id)
+// //     );
+
+// //     const selectedOwnerIds =
+// //       formData.ticketOwners.map(
+// //         (id) => Number(id)
+// //       );
+
+// //     const invalidOwnerIds =
+// //       selectedOwnerIds.filter(
+// //         (id) =>
+// //           !allowedOwnerIds.includes(id)
+// //       );
+
+// //     if (invalidOwnerIds.length > 0) {
+// //       setError(
+// //         "Ticket Owners must be selected from the associated Deal Owners."
+// //       );
+
+// //       return;
+// //     }
+
+// //     try {
+// //       setLoading(true);
+
+// //       // ---------------------------------------------------
+// //       // PAYLOAD
+// //       // ---------------------------------------------------
+
+// //       const payload = {
+// //         ticket_name: formData.ticketName,
+// //         description: formData.description,
+// //         ticket_status: formData.ticketStatus,
+// //         source: formData.source,
+// //         priority: formData.priority,
+
+// //         // MULTIPLE OWNER IDS
+// //         ticket_owners:
+// //           selectedOwnerIds,
+
+// //         associated_deal:
+// //           Number(formData.associatedDeal),
+// //       };
+
+// //       console.log(
+// //         "========== CREATE TICKET PAYLOAD =========="
+// //       );
+
+// //       console.log(payload);
+
+// //       // ---------------------------------------------------
+// //       // POST REQUEST
+// //       // ---------------------------------------------------
+
+// //       const response = await api.post(
+// //         "/tickets/",
+// //         payload
+// //       );
+
+// //       console.log(
+// //         "========== TICKET CREATED =========="
+// //       );
+
+// //       console.log(response.data);
+
+// //       // ---------------------------------------------------
+// //       // RESET
+// //       // ---------------------------------------------------
+
+// //       resetForm();
+
+// //       // ---------------------------------------------------
+// //       // CLOSE DRAWER
+// //       // ---------------------------------------------------
+
+// //       onClose();
+// //     } catch (err) {
+// //       console.error(
+// //         "========== CREATE TICKET ERROR =========="
+// //       );
+
+// //       console.error(
+// //         "STATUS:",
+// //         err.response?.status
+// //       );
+
+// //       console.error(
+// //         "DATA:",
+// //         err.response?.data
+// //       );
+
+// //       console.error(
+// //         "MESSAGE:",
+// //         err.message
+// //       );
+
+// //       // ---------------------------------------------------
+// //       // SHOW BACKEND ERROR
+// //       // ---------------------------------------------------
+
+// //       let errorMessage =
+// //         "Failed to create ticket.";
+
+// //       if (err.response?.data) {
+// //         const backendError =
+// //           err.response.data;
+
+// //         if (
+// //           typeof backendError ===
+// //           "string"
+// //         ) {
+// //           errorMessage =
+// //             backendError;
+// //         } else if (
+// //           backendError.detail
+// //         ) {
+// //           errorMessage =
+// //             backendError.detail;
+// //         } else {
+// //           errorMessage =
+// //             Object.entries(
+// //               backendError
+// //             )
+// //               .map(
+// //                 ([
+// //                   field,
+// //                   messages,
+// //                 ]) => {
+// //                   const message =
+// //                     Array.isArray(
+// //                       messages
+// //                     )
+// //                       ? messages.join(
+// //                           ", "
+// //                         )
+// //                       : messages;
+
+// //                   return `${field}: ${message}`;
+// //                 }
+// //               )
+// //               .join("\n");
+// //         }
+// //       }
+
+// //       setError(errorMessage);
+// //     } finally {
+// //       setLoading(false);
+// //     }
+// //   };
+
+// //   // =====================================================
+// //   // CLOSE DRAWER
+// //   // =====================================================
+
+// //   const handleClose = () => {
+// //     if (loading) return;
+
+// //     resetForm();
+// //     onClose();
+// //   };
+
+// //   // =====================================================
+// //   // RENDER
+// //   // =====================================================
+
+// //   return (
+// //     <Drawer
+// //       anchor="right"
+// //       open={open}
+// //       onClose={handleClose}
+// //     >
+// //       <Box
+// //         component="form"
+// //         onSubmit={handleSubmit}
+// //         sx={{
+// //           width: {
+// //             xs: "100vw",
+// //             sm: 500,
+// //           },
+// //           height: "100%",
+// //           display: "flex",
+// //           flexDirection: "column",
+// //           bgcolor: "#fff",
+// //         }}
+// //       >
+
+// //         {/* =================================================
+// //             HEADER
+// //         ================================================= */}
+
+// //         <DrawerHeader
+// //           title="Create Ticket"
+// //           onClose={handleClose}
+// //         />
+
+// //         {/* =================================================
+// //             FORM CONTENT
+// //         ================================================= */}
+
+// //         <Box
+// //           sx={{
+// //             flex: 1,
+// //             p: 3,
+// //             display: "flex",
+// //             flexDirection: "column",
+// //             gap: 2,
+// //             overflowY: "auto",
+// //           }}
+// //         >
+
+// //           {/* =================================================
+// //               ERROR
+// //           ================================================= */}
+
+// //           {error && (
+// //             <Box
+// //               sx={{
+// //                 p: 1.5,
+// //                 borderRadius: "8px",
+// //                 backgroundColor: "#FEF2F2",
+// //                 border:
+// //                   "1px solid #FECACA",
+// //               }}
+// //             >
+// //               <Typography
+// //                 sx={{
+// //                   color: "#DC2626",
+// //                   fontSize: "13px",
+// //                   whiteSpace:
+// //                     "pre-line",
+// //                 }}
+// //               >
+// //                 {error}
+// //               </Typography>
+// //             </Box>
+// //           )}
+
+// //           {/* =================================================
+// //               TICKET NAME
+// //           ================================================= */}
+
+// //           <CommonInput
+// //             label="Ticket Name"
+// //             name="ticketName"
+// //             value={
+// //               formData.ticketName
+// //             }
+// //             onChange={
+// //               handleChange
+// //             }
+// //             placeholder="Enter ticket name"
+// //             fullWidth
+// //             required
+// //           />
+
+// //           {/* =================================================
+// //               DESCRIPTION
+// //           ================================================= */}
+
+// //           <Box>
+// //             <Typography
+// //               sx={{
+// //                 mb: 1,
+// //                 fontSize: "14px",
+// //                 fontWeight: 600,
+// //                 color: "#344054",
+// //               }}
+// //             >
+// //               Description
+// //               <span
+// //                 style={{
+// //                   color: "red",
+// //                 }}
+// //               >
+// //                 {" "}
+// //                 *
+// //               </span>
+// //             </Typography>
+
+// //             <TextField
+// //               name="description"
+// //               placeholder="Enter description"
+// //               fullWidth
+// //               multiline
+// //               rows={4}
+// //               value={
+// //                 formData.description
+// //               }
+// //               onChange={
+// //                 handleChange
+// //               }
+// //               required
+// //               sx={{
+// //                 "& .MuiOutlinedInput-root":
+// //                   {
+// //                     borderRadius:
+// //                       "10px",
+// //                   },
+// //               }}
+// //             />
+// //           </Box>
+
+// //           {/* =================================================
+// //               STATUS + SOURCE
+// //           ================================================= */}
+
+// //           <Grid container spacing={2}>
+
+// //             {/* STATUS */}
+
+// //             <Grid size={6}>
+// //               <Typography
+// //                 sx={{
+// //                   mb: 1,
+// //                   fontSize: "14px",
+// //                   fontWeight: 600,
+// //                   color: "#344054",
+// //                 }}
+// //               >
+// //                 Ticket Status
+// //                 <span
+// //                   style={{
+// //                     color: "red",
+// //                   }}
+// //                 >
+// //                   {" "}
+// //                   *
+// //                 </span>
+// //               </Typography>
+
+// //               <FormControl
+// //                 fullWidth
+// //                 size="small"
+// //                 required
+// //               >
+// //                 <InputLabel id="ticket-status-label">
+// //                   Choose
+// //                 </InputLabel>
+
+// //                 <Select
+// //                   labelId="ticket-status-label"
+// //                   name="ticketStatus"
+// //                   value={
+// //                     formData.ticketStatus
+// //                   }
+// //                   label="Choose"
+// //                   onChange={
+// //                     handleChange
+// //                   }
+// //                 >
+// //                   <MenuItem value="NEW">
+// //                     New
+// //                   </MenuItem>
+
+// //                   <MenuItem value="OPEN">
+// //                     Open
+// //                   </MenuItem>
+
+// //                   <MenuItem value="IN_PROGRESS">
+// //                     In Progress
+// //                   </MenuItem>
+
+// //                   <MenuItem value="WAITING_ON_CONTACT">
+// //                     Waiting on Contact
+// //                   </MenuItem>
+
+// //                   <MenuItem value="WAITING_ON_US">
+// //                     Waiting on Us
+// //                   </MenuItem>
+
+// //                   <MenuItem value="CLOSED">
+// //                     Closed
+// //                   </MenuItem>
+// //                 </Select>
+// //               </FormControl>
+// //             </Grid>
+
+// //             {/* SOURCE */}
+
+// //             <Grid size={6}>
+// //               <Typography
+// //                 sx={{
+// //                   mb: 1,
+// //                   fontSize: "14px",
+// //                   fontWeight: 600,
+// //                   color: "#344054",
+// //                 }}
+// //               >
+// //                 Source
+// //                 <span
+// //                   style={{
+// //                     color: "red",
+// //                   }}
+// //                 >
+// //                   {" "}
+// //                   *
+// //                 </span>
+// //               </Typography>
+
+// //               <FormControl
+// //                 fullWidth
+// //                 size="small"
+// //                 required
+// //               >
+// //                 <InputLabel id="source-label">
+// //                   Choose
+// //                 </InputLabel>
+
+// //                 <Select
+// //                   labelId="source-label"
+// //                   name="source"
+// //                   value={
+// //                     formData.source
+// //                   }
+// //                   label="Choose"
+// //                   onChange={
+// //                     handleChange
+// //                   }
+// //                 >
+// //                   <MenuItem value="CHAT">
+// //                     Chat
+// //                   </MenuItem>
+
+// //                   <MenuItem value="EMAIL">
+// //                     Email
+// //                   </MenuItem>
+
+// //                   <MenuItem value="PHONE">
+// //                     Phone
+// //                   </MenuItem>
+
+// //                   <MenuItem value="WEB">
+// //                     Web
+// //                   </MenuItem>
+// //                 </Select>
+// //               </FormControl>
+// //             </Grid>
+// //           </Grid>
+
+// //           {/* =================================================
+// //               PRIORITY
+// //           ================================================= */}
+
+// //           <Box>
+// //             <Typography
+// //               sx={{
+// //                 mb: 1,
+// //                 fontSize: "14px",
+// //                 fontWeight: 600,
+// //                 color: "#344054",
+// //               }}
+// //             >
+// //               Priority
+// //               <span
+// //                 style={{
+// //                   color: "red",
+// //                 }}
+// //               >
+// //                 {" "}
+// //                 *
+// //               </span>
+// //             </Typography>
+
+// //             <FormControl
+// //               fullWidth
+// //               size="small"
+// //               required
+// //             >
+// //               <InputLabel id="priority-label">
+// //                 Choose
+// //               </InputLabel>
+
+// //               <Select
+// //                 labelId="priority-label"
+// //                 name="priority"
+// //                 value={
+// //                   formData.priority
+// //                 }
+// //                 label="Choose"
+// //                 onChange={
+// //                   handleChange
+// //                 }
+// //               >
+// //                 <MenuItem value="HIGH">
+// //                   High
+// //                 </MenuItem>
+
+// //                 <MenuItem value="MEDIUM">
+// //                   Medium
+// //                 </MenuItem>
+
+// //                 <MenuItem value="LOW">
+// //                   Low
+// //                 </MenuItem>
+
+// //                 <MenuItem value="CRITICAL">
+// //                   Critical
+// //                 </MenuItem>
+// //               </Select>
+// //             </FormControl>
+// //           </Box>
+
+// //           {/* =================================================
+// //               TICKET OWNER - MULTI SELECT
+// //           ================================================= */}
+
+// //           <Box>
+// //             <Typography
+// //               sx={{
+// //                 mb: 1,
+// //                 fontSize: "14px",
+// //                 fontWeight: 600,
+// //                 color: "#344054",
+// //               }}
+// //             >
+// //               Ticket Owner
+// //               <span
+// //                 style={{
+// //                   color: "red",
+// //                 }}
+// //               >
+// //                 {" "}
+// //                 *
+// //               </span>
+// //             </Typography>
+
+// //             <FormControl
+// //               fullWidth
+// //               size="small"
+// //               required
+// //             >
+// //               <InputLabel id="ticket-owner-label">
+// //                 Choose
+// //               </InputLabel>
+
+// //               <Select
+// //                 labelId="ticket-owner-label"
+// //                 multiple
+// //                 name="ticketOwners"
+// //                 value={
+// //                   formData.ticketOwners
+// //                 }
+// //                 label="Choose"
+// //                 onChange={
+// //                   handleChange
+// //                 }
+// //                 disabled={
+// //                   !formData.associatedDeal ||
+// //                   loadingDealOwners ||
+// //                   dealOwners.length === 0
+// //                 }
+// //                 renderValue={(
+// //                   selected
+// //                 ) => {
+// //                   if (
+// //                     !formData.associatedDeal
+// //                   ) {
+// //                     return "Choose";
+// //                   }
+
+// //                   if (
+// //                     loadingDealOwners
+// //                   ) {
+// //                     return "Loading...";
+// //                   }
+
+// //                   if (
+// //                     !selected ||
+// //                     selected.length === 0
+// //                   ) {
+// //                     return "Choose";
+// //                   }
+
+// //                   return selected
+// //                     .map((id) => {
+// //                       const owner =
+// //                         dealOwners.find(
+// //                           (item) =>
+// //                             Number(item.id) ===
+// //                             Number(id)
+// //                         );
+
+// //                       return owner
+// //                         ? getOwnerName(owner)
+// //                         : "";
+// //                     })
+// //                     .filter(Boolean)
+// //                     .join(", ");
+// //                 }}
+// //               >
+// //                 {!formData.associatedDeal ? (
+// //                   <MenuItem disabled>
+// //                     Select Associated Deal first
+// //                   </MenuItem>
+// //                 ) : loadingDealOwners ? (
+// //                   <MenuItem disabled>
+// //                     Loading Deal Owners...
+// //                   </MenuItem>
+// //                 ) : dealOwners.length === 0 ? (
+// //                   <MenuItem disabled>
+// //                     No Deal Owners available
+// //                   </MenuItem>
+// //                 ) : (
+// //                   dealOwners.map((owner) => {
+// //                     const ownerName =
+// //                       getOwnerName(owner);
+
+// //                     return (
+// //                       <MenuItem
+// //                         key={owner.id}
+// //                         value={Number(owner.id)}
+// //                       >
+// //                         <Checkbox
+// //                           checked={formData.ticketOwners.includes(
+// //                             Number(owner.id)
+// //                           )}
+// //                         />
+
+// //                         <ListItemText
+// //                           primary={
+// //                             ownerName
+// //                           }
+// //                         />
+// //                       </MenuItem>
+// //                     );
+// //                   })
+// //                 )}
+// //               </Select>
+// //             </FormControl>
+// //           </Box>
+
+// //           {/* =================================================
+// //               ASSOCIATED DEAL
+// //           ================================================= */}
+
+// //           <Box>
+// //             <Typography
+// //               sx={{
+// //                 mb: 1,
+// //                 fontSize: "14px",
+// //                 fontWeight: 600,
+// //                 color: "#344054",
+// //               }}
+// //             >
+// //               Associated Deal
+// //               <span
+// //                 style={{
+// //                   color: "red",
+// //                 }}
+// //               >
+// //                 {" "}
+// //                 *
+// //               </span>
+// //             </Typography>
+
+// //             <FormControl
+// //               fullWidth
+// //               size="small"
+// //               required
+// //             >
+// //               <InputLabel id="associated-deal-label">
+// //                 Choose
+// //               </InputLabel>
+
+// //               <Select
+// //                 labelId="associated-deal-label"
+// //                 name="associatedDeal"
+// //                 value={
+// //                   formData.associatedDeal
+// //                 }
+// //                 label="Choose"
+// //                 onChange={
+// //                   handleChange
+// //                 }
+// //                 disabled={
+// //                   loadingOptions
+// //                 }
+// //               >
+// //                 {loadingOptions ? (
+// //                   <MenuItem disabled>
+// //                     Loading deals...
+// //                   </MenuItem>
+// //                 ) : deals.length ===
+// //                   0 ? (
+// //                   <MenuItem disabled>
+// //                     No Closed Won deals available
+// //                   </MenuItem>
+// //                 ) : (
+// //                   deals.map((deal) => (
+// //                     <MenuItem
+// //                       key={deal.id}
+// //                       value={deal.id}
+// //                     >
+// //                       {
+// //                         deal.deal_name
+// //                       }
+// //                     </MenuItem>
+// //                   ))
+// //                 )}
+// //               </Select>
+// //             </FormControl>
+// //           </Box>
+// //         </Box>
+
+// //         {/* =================================================
+// //             FOOTER
+// //         ================================================= */}
+
+// //         <Box
+// //           sx={{
+// //             display: "flex",
+// //             gap: 2,
+// //             p: 3,
+// //             borderTop:
+// //               "1px solid #E5E7EB",
+// //             backgroundColor: "#fff",
+// //           }}
+// //         >
+// //           {/* CANCEL */}
+
+// //           <CommonButton
+// //             variant="outlined"
+// //             fullWidth
+// //             onClick={
+// //               handleClose
+// //             }
+// //             disabled={loading}
+// //           >
+// //             Cancel
+// //           </CommonButton>
+
+// //           {/* SAVE */}
+
+// //           <CommonButton
+// //             type="submit"
+// //             fullWidth
+// //             disabled={
+// //               loading ||
+// //               loadingOptions
+// //             }
+// //           >
+// //             {loading
+// //               ? "Saving..."
+// //               : "Save"}
+// //           </CommonButton>
+// //         </Box>
+// //       </Box>
+// //     </Drawer>
+// //   );
+// // }
+
+// // import React, { useEffect, useState } from "react";
+// // import {
+// //   Drawer,
+// //   Box,
+// //   Grid,
+// //   TextField,
+// //   Typography,
+// //   FormControl,
+// //   InputLabel,
+// //   MenuItem,
+// //   Select,
+// //   Checkbox,
+// //   ListItemText,
+// // } from "@mui/material";
+
+// // import DrawerHeader from "../../../Components/common/DrawerHeader";
+// // import CommonInput from "../../../Components/common/CommonInput";
+// // import CommonButton from "../../../Components/common/CommonButton";
+
+// // import api from "../../../services/api";
+
+// // export default function CreateTicketDrawer({ open, onClose }) {
+// //   // =====================================================
+// //   // FORM DATA
+// //   // =====================================================
+
+// //   const [formData, setFormData] = useState({
+// //     ticketName: "",
+// //     description: "",
+// //     ticketStatus: "",
+// //     source: "",
+// //     priority: "",
+
+// //     // MULTIPLE TICKET OWNERS
+// //     ticketOwners: [],
+
+// //     associatedDeal: "",
+// //   });
+
+// //   // =====================================================
+// //   // OPTIONS
+// //   // =====================================================
+
+// //   const [users, setUsers] = useState([]);
+// //   const [deals, setDeals] = useState([]);
+
+// //   // =====================================================
+// //   // LOADING / ERROR
+// //   // =====================================================
+
+// //   const [loading, setLoading] = useState(false);
+// //   const [loadingOptions, setLoadingOptions] = useState(false);
+// //   const [error, setError] = useState("");
+
+// //   // =====================================================
+// //   // LOAD USERS + CLOSED WON DEALS
+// //   // =====================================================
+
+// //   useEffect(() => {
+// //     if (!open) return;
+
+// //     const fetchOptions = async () => {
+// //       try {
+// //         setLoadingOptions(true);
+// //         setError("");
+
+// //         const [usersResponse, dealsResponse] =
+// //           await Promise.all([
+// //             api.get("/accounts/users/"),
+// //             api.get("/deals/"),
+// //           ]);
+
+// //         console.log(
+// //           "USERS RESPONSE:",
+// //           usersResponse.data
+// //         );
+
+// //         console.log(
+// //           "DEALS RESPONSE:",
+// //           dealsResponse.data
+// //         );
+
+// //         const usersData = Array.isArray(
+// //           usersResponse.data
+// //         )
+// //           ? usersResponse.data
+// //           : usersResponse.data.results || [];
+
+// //         const dealsData = Array.isArray(
+// //           dealsResponse.data
+// //         )
+// //           ? dealsResponse.data
+// //           : dealsResponse.data.results || [];
+
+// //         // -------------------------------------------------
+// //         // ONLY CLOSED WON DEALS
+// //         // -------------------------------------------------
+
+// //         const closedWonDeals = dealsData.filter(
+// //           (deal) =>
+// //             deal.deal_stage?.toLowerCase() ===
+// //             "closed won"
+// //         );
+
+// //         setUsers(usersData);
+// //         setDeals(closedWonDeals);
+
+// //         console.log(
+// //           "CLOSED WON DEALS:",
+// //           closedWonDeals
+// //         );
+// //       } catch (err) {
+// //         console.error(
+// //           "Error loading ticket options:",
+// //           err.response?.data || err
+// //         );
+
+// //         setError(
+// //           "Failed to load Ticket Owners or Deals."
+// //         );
+// //       } finally {
+// //         setLoadingOptions(false);
+// //       }
+// //     };
+
+// //     fetchOptions();
+// //   }, [open]);
+
+// //   // =====================================================
+// //   // HANDLE INPUT CHANGE
+// //   // =====================================================
+
+// //   const handleChange = (e) => {
+// //     const { name, value } = e.target;
+
+// //     setFormData((prev) => ({
+// //       ...prev,
+// //       [name]: value,
+// //     }));
+// //   };
+
+// //   // =====================================================
+// //   // RESET FORM
+// //   // =====================================================
+
+// //   const resetForm = () => {
+// //     setFormData({
+// //       ticketName: "",
+// //       description: "",
+// //       ticketStatus: "",
+// //       source: "",
+// //       priority: "",
+// //       ticketOwners: [],
+// //       associatedDeal: "",
+// //     });
+
+// //     setError("");
+// //   };
+
+// //   // =====================================================
+// //   // CREATE TICKET
+// //   // =====================================================
+
+// //   const handleSubmit = async (e) => {
+// //     e.preventDefault();
+
+// //     console.log(
+// //       "========== SAVE CLICKED =========="
+// //     );
+
+// //     setError("");
+
+// //     // -----------------------------------------------------
+// //     // FRONTEND VALIDATION
+// //     // -----------------------------------------------------
+
+// //     if (
+// //       !formData.ticketName ||
+// //       !formData.description ||
+// //       !formData.ticketStatus ||
+// //       !formData.source ||
+// //       !formData.priority ||
+// //       formData.ticketOwners.length === 0 ||
+// //       !formData.associatedDeal
+// //     ) {
+// //       setError(
+// //         "Please fill all required fields."
+// //       );
+
+// //       return;
+// //     }
+
+// //     try {
+// //       setLoading(true);
+
+// //       // ---------------------------------------------------
+// //       // PAYLOAD
+// //       // ---------------------------------------------------
+
+// //       const payload = {
+// //         ticket_name: formData.ticketName,
+// //         description: formData.description,
+// //         ticket_status: formData.ticketStatus,
+// //         source: formData.source,
+// //         priority: formData.priority,
+
+// //         // MULTIPLE OWNER IDS
+// //         ticket_owners:
+// //           formData.ticketOwners.map(
+// //             (id) => Number(id)
+// //           ),
+
+// //         associated_deal:
+// //           Number(formData.associatedDeal),
+// //       };
+
+// //       console.log(
+// //         "========== CREATE TICKET PAYLOAD =========="
+// //       );
+
+// //       console.log(payload);
+
+// //       // ---------------------------------------------------
+// //       // POST REQUEST
+// //       // ---------------------------------------------------
+
+// //       const response = await api.post(
+// //         "/tickets/",
+// //         payload
+// //       );
+
+// //       console.log(
+// //         "========== TICKET CREATED =========="
+// //       );
+
+// //       console.log(response.data);
+
+// //       // ---------------------------------------------------
+// //       // RESET
+// //       // ---------------------------------------------------
+
+// //       resetForm();
+
+// //       // ---------------------------------------------------
+// //       // CLOSE DRAWER
+// //       // ---------------------------------------------------
+
+// //       onClose();
+// //     } catch (err) {
+// //       console.error(
+// //         "========== CREATE TICKET ERROR =========="
+// //       );
+
+// //       console.error(
+// //         "STATUS:",
+// //         err.response?.status
+// //       );
+
+// //       console.error(
+// //         "DATA:",
+// //         err.response?.data
+// //       );
+
+// //       console.error(
+// //         "MESSAGE:",
+// //         err.message
+// //       );
+
+// //       // ---------------------------------------------------
+// //       // SHOW BACKEND ERROR
+// //       // ---------------------------------------------------
+
+// //       let errorMessage =
+// //         "Failed to create ticket.";
+
+// //       if (err.response?.data) {
+// //         const backendError =
+// //           err.response.data;
+
+// //         if (
+// //           typeof backendError ===
+// //           "string"
+// //         ) {
+// //           errorMessage =
+// //             backendError;
+// //         } else if (
+// //           backendError.detail
+// //         ) {
+// //           errorMessage =
+// //             backendError.detail;
+// //         } else {
+// //           errorMessage =
+// //             Object.entries(
+// //               backendError
+// //             )
+// //               .map(
+// //                 ([
+// //                   field,
+// //                   messages,
+// //                 ]) => {
+// //                   const message =
+// //                     Array.isArray(
+// //                       messages
+// //                     )
+// //                       ? messages.join(
+// //                           ", "
+// //                         )
+// //                       : messages;
+
+// //                   return `${field}: ${message}`;
+// //                 }
+// //               )
+// //               .join("\n");
+// //         }
+// //       }
+
+// //       setError(errorMessage);
+// //     } finally {
+// //       setLoading(false);
+// //     }
+// //   };
+
+// //   // =====================================================
+// //   // CLOSE DRAWER
+// //   // =====================================================
+
+// //   const handleClose = () => {
+// //     if (loading) return;
+
+// //     resetForm();
+// //     onClose();
+// //   };
+
+// //   // =====================================================
+// //   // RENDER
+// //   // =====================================================
+
+// //   return (
+// //     <Drawer
+// //       anchor="right"
+// //       open={open}
+// //       onClose={handleClose}
+// //     >
+// //       <Box
+// //         component="form"
+// //         onSubmit={handleSubmit}
+// //         sx={{
+// //           width: {
+// //             xs: "100vw",
+// //             sm: 500,
+// //           },
+// //           height: "100%",
+// //           display: "flex",
+// //           flexDirection: "column",
+// //           bgcolor: "#fff",
+// //         }}
+// //       >
+
+// //         {/* =================================================
+// //             HEADER
+// //         ================================================= */}
+
+// //         <DrawerHeader
+// //           title="Create Ticket"
+// //           onClose={handleClose}
+// //         />
+
+// //         {/* =================================================
+// //             FORM CONTENT
+// //         ================================================= */}
+
+// //         <Box
+// //           sx={{
+// //             flex: 1,
+// //             p: 3,
+// //             display: "flex",
+// //             flexDirection: "column",
+// //             gap: 2,
+// //             overflowY: "auto",
+// //           }}
+// //         >
+
+// //           {/* =================================================
+// //               ERROR
+// //           ================================================= */}
+
+// //           {error && (
+// //             <Box
+// //               sx={{
+// //                 p: 1.5,
+// //                 borderRadius: "8px",
+// //                 backgroundColor: "#FEF2F2",
+// //                 border:
+// //                   "1px solid #FECACA",
+// //               }}
+// //             >
+// //               <Typography
+// //                 sx={{
+// //                   color: "#DC2626",
+// //                   fontSize: "13px",
+// //                   whiteSpace:
+// //                     "pre-line",
+// //                 }}
+// //               >
+// //                 {error}
+// //               </Typography>
+// //             </Box>
+// //           )}
+
+// //           {/* =================================================
+// //               TICKET NAME
+// //           ================================================= */}
+
+// //           <CommonInput
+// //             label="Ticket Name"
+// //             name="ticketName"
+// //             value={
+// //               formData.ticketName
+// //             }
+// //             onChange={
+// //               handleChange
+// //             }
+// //             placeholder="Enter ticket name"
+// //             fullWidth
+// //             required
+// //           />
+
+// //           {/* =================================================
+// //               DESCRIPTION
+// //           ================================================= */}
+
+// //           <Box>
+// //             <Typography
+// //               sx={{
+// //                 mb: 1,
+// //                 fontSize: "14px",
+// //                 fontWeight: 600,
+// //                 color: "#344054",
+// //               }}
+// //             >
+// //               Description
+// //               <span
+// //                 style={{
+// //                   color: "red",
+// //                 }}
+// //               >
+// //                 {" "}
+// //                 *
+// //               </span>
+// //             </Typography>
+
+// //             <TextField
+// //               name="description"
+// //               placeholder="Enter description"
+// //               fullWidth
+// //               multiline
+// //               rows={4}
+// //               value={
+// //                 formData.description
+// //               }
+// //               onChange={
+// //                 handleChange
+// //               }
+// //               required
+// //               sx={{
+// //                 "& .MuiOutlinedInput-root":
+// //                   {
+// //                     borderRadius:
+// //                       "10px",
+// //                   },
+// //               }}
+// //             />
+// //           </Box>
+
+// //           {/* =================================================
+// //               STATUS + SOURCE
+// //           ================================================= */}
+
+// //           <Grid container spacing={2}>
+
+// //             {/* STATUS */}
+
+// //             <Grid size={6}>
+// //               <Typography
+// //                 sx={{
+// //                   mb: 1,
+// //                   fontSize: "14px",
+// //                   fontWeight: 600,
+// //                   color: "#344054",
+// //                 }}
+// //               >
+// //                 Ticket Status
+// //                 <span
+// //                   style={{
+// //                     color: "red",
+// //                   }}
+// //                 >
+// //                   {" "}
+// //                   *
+// //                 </span>
+// //               </Typography>
+
+// //               <FormControl
+// //                 fullWidth
+// //                 size="small"
+// //                 required
+// //               >
+// //                 <InputLabel id="ticket-status-label">
+// //                   Choose
+// //                 </InputLabel>
+
+// //                 <Select
+// //                   labelId="ticket-status-label"
+// //                   name="ticketStatus"
+// //                   value={
+// //                     formData.ticketStatus
+// //                   }
+// //                   label="Choose"
+// //                   onChange={
+// //                     handleChange
+// //                   }
+// //                 >
+// //                   <MenuItem value="NEW">
+// //                     New
+// //                   </MenuItem>
+
+// //                   <MenuItem value="OPEN">
+// //                     Open
+// //                   </MenuItem>
+
+// //                   <MenuItem value="IN_PROGRESS">
+// //                     In Progress
+// //                   </MenuItem>
+
+// //                   <MenuItem value="WAITING_ON_CONTACT">
+// //                     Waiting on Contact
+// //                   </MenuItem>
+
+// //                   <MenuItem value="WAITING_ON_US">
+// //                     Waiting on Us
+// //                   </MenuItem>
+
+// //                   <MenuItem value="CLOSED">
+// //                     Closed
+// //                   </MenuItem>
+// //                 </Select>
+// //               </FormControl>
+// //             </Grid>
+
+// //             {/* SOURCE */}
+
+// //             <Grid size={6}>
+// //               <Typography
+// //                 sx={{
+// //                   mb: 1,
+// //                   fontSize: "14px",
+// //                   fontWeight: 600,
+// //                   color: "#344054",
+// //                 }}
+// //               >
+// //                 Source
+// //                 <span
+// //                   style={{
+// //                     color: "red",
+// //                   }}
+// //                 >
+// //                   {" "}
+// //                   *
+// //                 </span>
+// //               </Typography>
+
+// //               <FormControl
+// //                 fullWidth
+// //                 size="small"
+// //                 required
+// //               >
+// //                 <InputLabel id="source-label">
+// //                   Choose
+// //                 </InputLabel>
+
+// //                 <Select
+// //                   labelId="source-label"
+// //                   name="source"
+// //                   value={
+// //                     formData.source
+// //                   }
+// //                   label="Choose"
+// //                   onChange={
+// //                     handleChange
+// //                   }
+// //                 >
+// //                   <MenuItem value="CHAT">
+// //                     Chat
+// //                   </MenuItem>
+
+// //                   <MenuItem value="EMAIL">
+// //                     Email
+// //                   </MenuItem>
+
+// //                   <MenuItem value="PHONE">
+// //                     Phone
+// //                   </MenuItem>
+
+// //                   <MenuItem value="WEB">
+// //                     Web
+// //                   </MenuItem>
+// //                 </Select>
+// //               </FormControl>
+// //             </Grid>
+// //           </Grid>
+
+// //           {/* =================================================
+// //               PRIORITY
+// //           ================================================= */}
+
+// //           <Box>
+// //             <Typography
+// //               sx={{
+// //                 mb: 1,
+// //                 fontSize: "14px",
+// //                 fontWeight: 600,
+// //                 color: "#344054",
+// //               }}
+// //             >
+// //               Priority
+// //               <span
+// //                 style={{
+// //                   color: "red",
+// //                 }}
+// //               >
+// //                 {" "}
+// //                 *
+// //               </span>
+// //             </Typography>
+
+// //             <FormControl
+// //               fullWidth
+// //               size="small"
+// //               required
+// //             >
+// //               <InputLabel id="priority-label">
+// //                 Choose
+// //               </InputLabel>
+
+// //               <Select
+// //                 labelId="priority-label"
+// //                 name="priority"
+// //                 value={
+// //                   formData.priority
+// //                 }
+// //                 label="Choose"
+// //                 onChange={
+// //                   handleChange
+// //                 }
+// //               >
+// //                 <MenuItem value="HIGH">
+// //                   High
+// //                 </MenuItem>
+
+// //                 <MenuItem value="MEDIUM">
+// //                   Medium
+// //                 </MenuItem>
+
+// //                 <MenuItem value="LOW">
+// //                   Low
+// //                 </MenuItem>
+
+// //                 <MenuItem value="CRITICAL">
+// //                   Critical
+// //                 </MenuItem>
+// //               </Select>
+// //             </FormControl>
+// //           </Box>
+
+// //           {/* =================================================
+// //               TICKET OWNER - MULTI SELECT
+// //           ================================================= */}
+
+// //           <Box>
+// //             <Typography
+// //               sx={{
+// //                 mb: 1,
+// //                 fontSize: "14px",
+// //                 fontWeight: 600,
+// //                 color: "#344054",
+// //               }}
+// //             >
+// //               Ticket Owner
+// //               <span
+// //                 style={{
+// //                   color: "red",
+// //                 }}
+// //               >
+// //                 {" "}
+// //                 *
+// //               </span>
+// //             </Typography>
+
+// //             <FormControl
+// //               fullWidth
+// //               size="small"
+// //               required
+// //             >
+// //               <InputLabel id="ticket-owner-label">
+// //                 Choose
+// //               </InputLabel>
+
+// //               <Select
+// //                 labelId="ticket-owner-label"
+// //                 multiple
+// //                 name="ticketOwners"
+// //                 value={
+// //                   formData.ticketOwners
+// //                 }
+// //                 label="Choose"
+// //                 onChange={
+// //                   handleChange
+// //                 }
+// //                 disabled={
+// //                   loadingOptions
+// //                 }
+// //                 renderValue={(
+// //                   selected
+// //                 ) =>
+// //                   selected
+// //                     .map((id) => {
+// //                       const user =
+// //                         users.find(
+// //                           (item) =>
+// //                             String(
+// //                               item.id
+// //                             ) ===
+// //                             String(id)
+// //                         );
+
+// //                       if (!user) {
+// //                         return "";
+// //                       }
+
+// //                       return (
+// //                         `${user.first_name || ""} ${
+// //                           user.last_name || ""
+// //                         }`.trim() ||
+// //                         user.email
+// //                       );
+// //                     })
+// //                     .filter(Boolean)
+// //                     .join(", ")
+// //                 }
+// //               >
+// //                 {loadingOptions ? (
+// //                   <MenuItem disabled>
+// //                     Loading users...
+// //                   </MenuItem>
+// //                 ) : users.length ===
+// //                   0 ? (
+// //                   <MenuItem disabled>
+// //                     No users available
+// //                   </MenuItem>
+// //                 ) : (
+// //                   users.map((user) => {
+// //                     const userName =
+// //                       `${user.first_name || ""} ${
+// //                         user.last_name || ""
+// //                       }`.trim() ||
+// //                       user.email;
+
+// //                     return (
+// //                       <MenuItem
+// //                         key={user.id}
+// //                         value={
+// //                           user.id
+// //                         }
+// //                       >
+// //                         <Checkbox
+// //                           checked={formData.ticketOwners.includes(
+// //                             user.id
+// //                           )}
+// //                         />
+
+// //                         <ListItemText
+// //                           primary={
+// //                             userName
+// //                           }
+// //                         />
+// //                       </MenuItem>
+// //                     );
+// //                   })
+// //                 )}
+// //               </Select>
+// //             </FormControl>
+// //           </Box>
+
+// //           {/* =================================================
+// //               ASSOCIATED DEAL
+// //           ================================================= */}
+
+// //           <Box>
+// //             <Typography
+// //               sx={{
+// //                 mb: 1,
+// //                 fontSize: "14px",
+// //                 fontWeight: 600,
+// //                 color: "#344054",
+// //               }}
+// //             >
+// //               Associated Deal
+// //               <span
+// //                 style={{
+// //                   color: "red",
+// //                 }}
+// //               >
+// //                 {" "}
+// //                 *
+// //               </span>
+// //             </Typography>
+
+// //             <FormControl
+// //               fullWidth
+// //               size="small"
+// //               required
+// //             >
+// //               <InputLabel id="associated-deal-label">
+// //                 Choose
+// //               </InputLabel>
+
+// //               <Select
+// //                 labelId="associated-deal-label"
+// //                 name="associatedDeal"
+// //                 value={
+// //                   formData.associatedDeal
+// //                 }
+// //                 label="Choose"
+// //                 onChange={
+// //                   handleChange
+// //                 }
+// //                 disabled={
+// //                   loadingOptions
+// //                 }
+// //               >
+// //                 {loadingOptions ? (
+// //                   <MenuItem disabled>
+// //                     Loading deals...
+// //                   </MenuItem>
+// //                 ) : deals.length ===
+// //                   0 ? (
+// //                   <MenuItem disabled>
+// //                     No Closed Won deals available
+// //                   </MenuItem>
+// //                 ) : (
+// //                   deals.map((deal) => (
+// //                     <MenuItem
+// //                       key={deal.id}
+// //                       value={deal.id}
+// //                     >
+// //                       {
+// //                         deal.deal_name
+// //                       }
+// //                     </MenuItem>
+// //                   ))
+// //                 )}
+// //               </Select>
+// //             </FormControl>
+// //           </Box>
+// //         </Box>
+
+// //         {/* =================================================
+// //             FOOTER
+// //         ================================================= */}
+
+// //         <Box
+// //           sx={{
+// //             display: "flex",
+// //             gap: 2,
+// //             p: 3,
+// //             borderTop:
+// //               "1px solid #E5E7EB",
+// //             backgroundColor: "#fff",
+// //           }}
+// //         >
+// //           {/* CANCEL */}
+
+// //           <CommonButton
+// //             variant="outlined"
+// //             fullWidth
+// //             onClick={
+// //               handleClose
+// //             }
+// //             disabled={loading}
+// //           >
+// //             Cancel
+// //           </CommonButton>
+
+// //           {/* SAVE */}
+
+// //           <CommonButton
+// //             type="submit"
+// //             fullWidth
+// //             disabled={
+// //               loading ||
+// //               loadingOptions
+// //             }
+// //           >
+// //             {loading
+// //               ? "Saving..."
+// //               : "Save"}
+// //           </CommonButton>
+// //         </Box>
+// //       </Box>
+// //     </Drawer>
+// //   );
+// // }
+
+
+
 // import React, { useEffect, useState } from "react";
 // import {
 //   Drawer,
@@ -16,10 +2001,13 @@
 // import DrawerHeader from "../../../Components/common/DrawerHeader";
 // import CommonInput from "../../../Components/common/CommonInput";
 // import CommonButton from "../../../Components/common/CommonButton";
+// import { useToast } from "../../../Components/common/Toast";
 
 // import api from "../../../services/api";
 
 // export default function CreateTicketDrawer({ open, onClose }) {
+//   const { showToast } = useToast();
+
 //   // =====================================================
 //   // FORM DATA
 //   // =====================================================
@@ -30,10 +2018,7 @@
 //     ticketStatus: "",
 //     source: "",
 //     priority: "",
-
-//     // MULTIPLE TICKET OWNERS
 //     ticketOwners: [],
-
 //     associatedDeal: "",
 //   });
 
@@ -73,35 +2058,33 @@
 //           ? response.data
 //           : response.data?.results || response.data?.data || [];
 
-//         // -------------------------------------------------
-//         // ONLY CLOSED WON DEALS
-//         // -------------------------------------------------
-
 //         const closedWonDeals = dealsData.filter(
 //           (deal) =>
-//             deal.deal_stage?.toLowerCase() === "closed won"
+//             String(deal.deal_stage || "")
+//               .trim()
+//               .toLowerCase() === "closed won"
 //         );
 
 //         setDeals(closedWonDeals);
 
-//         console.log(
-//           "CLOSED WON DEALS:",
-//           closedWonDeals
-//         );
+//         console.log("CLOSED WON DEALS:", closedWonDeals);
 //       } catch (err) {
 //         console.error(
 //           "Error loading deals:",
 //           err.response?.data || err
 //         );
 
-//         setError("Failed to load Closed Won deals.");
+//         const message = "Failed to load Closed Won deals.";
+
+//         setError(message);
+//         showToast(message, "error");
 //       } finally {
 //         setLoadingOptions(false);
 //       }
 //     };
 
 //     fetchDeals();
-//   }, [open]);
+//   }, [open, showToast]);
 
 //   // =====================================================
 //   // LOAD DEAL OWNERS
@@ -123,45 +2106,23 @@
 //       setLoadingDealOwners(true);
 //       setError("");
 
-//       console.log(
-//         "========== LOADING DEAL OWNERS =========="
-//       );
-
+//       console.log("========== LOADING DEAL OWNERS ==========");
 //       console.log("DEAL ID:", dealId);
 
-//       const response = await api.get(
-//         `/deals/${dealId}/`
-//       );
+//       const response = await api.get(`/deals/${dealId}/`);
 
-//       console.log(
-//         "DEAL DETAILS RESPONSE:",
-//         response.data
-//       );
+//       console.log("DEAL DETAILS RESPONSE:", response.data);
 
-//       const dealData =
-//         response.data?.data || response.data;
+//       const dealData = response.data?.data || response.data;
 
-//       // -------------------------------------------------
-//       // GET DEAL OWNER DETAILS
-//       // -------------------------------------------------
+//       const owners = dealData?.deal_owner_details || [];
 
-//       const owners =
-//         dealData?.deal_owner_details || [];
-
-//       console.log(
-//         "DEAL OWNERS:",
-//         owners
-//       );
+//       console.log("DEAL OWNERS:", owners);
 
 //       setDealOwners(owners);
 
-//       // -------------------------------------------------
-//       // AUTOMATICALLY SELECT ALL DEAL OWNERS
-//       // -------------------------------------------------
-
-//       const ownerIds = owners.map(
-//         (owner) => Number(owner.id)
-//       );
+//       // Automatically select all Deal Owners
+//       const ownerIds = owners.map((owner) => Number(owner.id));
 
 //       setFormData((prev) => ({
 //         ...prev,
@@ -169,9 +2130,11 @@
 //       }));
 
 //       if (owners.length === 0) {
-//         setError(
-//           "No Deal Owners are available for the selected Deal."
-//         );
+//         const message =
+//           "No Deal Owners are available for the selected Deal.";
+
+//         setError(message);
+//         showToast(message, "warning");
 //       }
 //     } catch (err) {
 //       console.error(
@@ -186,9 +2149,10 @@
 //         ticketOwners: [],
 //       }));
 
-//       setError(
-//         "Failed to load Deal Owners."
-//       );
+//       const message = "Failed to load Deal Owners.";
+
+//       setError(message);
+//       showToast(message, "error");
 //     } finally {
 //       setLoadingDealOwners(false);
 //     }
@@ -201,10 +2165,7 @@
 //   const handleChange = (e) => {
 //     const { name, value } = e.target;
 
-//     // ---------------------------------------------------
-//     // ASSOCIATED DEAL
-//     // ---------------------------------------------------
-
+//     // Associated Deal
 //     if (name === "associatedDeal") {
 //       setFormData((prev) => ({
 //         ...prev,
@@ -219,10 +2180,7 @@
 //       return;
 //     }
 
-//     // ---------------------------------------------------
-//     // TICKET OWNERS
-//     // ---------------------------------------------------
-
+//     // Ticket Owners
 //     if (name === "ticketOwners") {
 //       setFormData((prev) => ({
 //         ...prev,
@@ -234,14 +2192,13 @@
 //       return;
 //     }
 
-//     // ---------------------------------------------------
-//     // NORMAL FIELDS
-//     // ---------------------------------------------------
-
+//     // Normal fields
 //     setFormData((prev) => ({
 //       ...prev,
 //       [name]: value,
 //     }));
+
+//     setError("");
 //   };
 
 //   // =====================================================
@@ -273,9 +2230,9 @@
 //     }
 
 //     return (
-//       `${owner.first_name || ""} ${
-//         owner.last_name || ""
-//       }`.trim() || owner.email
+//       `${owner.first_name || ""} ${owner.last_name || ""}`.trim() ||
+//       owner.email ||
+//       `User ${owner.id}`
 //     );
 //   };
 
@@ -286,55 +2243,55 @@
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
 
-//     console.log(
-//       "========== SAVE CLICKED =========="
-//     );
+//     console.log("========== SAVE CLICKED ==========");
 
 //     setError("");
 
-//     // -----------------------------------------------------
+//     // ===================================================
 //     // FRONTEND VALIDATION
-//     // -----------------------------------------------------
+//     // ===================================================
 
 //     if (
-//       !formData.ticketName ||
-//       !formData.description ||
+//       !formData.ticketName.trim() ||
+//       !formData.description.trim() ||
 //       !formData.ticketStatus ||
 //       !formData.source ||
 //       !formData.priority ||
 //       formData.ticketOwners.length === 0 ||
 //       !formData.associatedDeal
 //     ) {
-//       setError(
-//         "Please fill all required fields."
-//       );
+//       const message = "Please fill all required fields.";
+
+//       setError(message);
+
+//       showToast(message, "error");
 
 //       return;
 //     }
 
-//     // -----------------------------------------------------
+//     // ===================================================
 //     // VALIDATE TICKET OWNERS AGAINST DEAL OWNERS
-//     // -----------------------------------------------------
+//     // ===================================================
 
-//     const allowedOwnerIds = dealOwners.map(
-//       (owner) => Number(owner.id)
+//     const allowedOwnerIds = dealOwners.map((owner) =>
+//       Number(owner.id)
 //     );
 
-//     const selectedOwnerIds =
-//       formData.ticketOwners.map(
-//         (id) => Number(id)
-//       );
+//     const selectedOwnerIds = formData.ticketOwners.map((id) =>
+//       Number(id)
+//     );
 
-//     const invalidOwnerIds =
-//       selectedOwnerIds.filter(
-//         (id) =>
-//           !allowedOwnerIds.includes(id)
-//       );
+//     const invalidOwnerIds = selectedOwnerIds.filter(
+//       (id) => !allowedOwnerIds.includes(id)
+//     );
 
 //     if (invalidOwnerIds.length > 0) {
-//       setError(
-//         "Ticket Owners must be selected from the associated Deal Owners."
-//       );
+//       const message =
+//         "Ticket Owners must be selected from the associated Deal Owners.";
+
+//       setError(message);
+
+//       showToast(message, "error");
 
 //       return;
 //     }
@@ -342,23 +2299,18 @@
 //     try {
 //       setLoading(true);
 
-//       // ---------------------------------------------------
+//       // =================================================
 //       // PAYLOAD
-//       // ---------------------------------------------------
+//       // =================================================
 
 //       const payload = {
-//         ticket_name: formData.ticketName,
-//         description: formData.description,
+//         ticket_name: formData.ticketName.trim(),
+//         description: formData.description.trim(),
 //         ticket_status: formData.ticketStatus,
 //         source: formData.source,
 //         priority: formData.priority,
-
-//         // MULTIPLE OWNER IDS
-//         ticket_owners:
-//           selectedOwnerIds,
-
-//         associated_deal:
-//           Number(formData.associatedDeal),
+//         ticket_owners: selectedOwnerIds,
+//         associated_deal: Number(formData.associatedDeal),
 //       };
 
 //       console.log(
@@ -367,30 +2319,33 @@
 
 //       console.log(payload);
 
-//       // ---------------------------------------------------
+//       // =================================================
 //       // POST REQUEST
-//       // ---------------------------------------------------
+//       // =================================================
 
-//       const response = await api.post(
-//         "/tickets/",
-//         payload
-//       );
+//       const response = await api.post("/tickets/", payload);
 
-//       console.log(
-//         "========== TICKET CREATED =========="
-//       );
-
+//       console.log("========== TICKET CREATED ==========");
 //       console.log(response.data);
 
-//       // ---------------------------------------------------
+//       // =================================================
+//       // SUCCESS TOAST
+//       // =================================================
+
+//       showToast(
+//         "Ticket created successfully",
+//         "success"
+//       );
+
+//       // =================================================
 //       // RESET
-//       // ---------------------------------------------------
+//       // =================================================
 
 //       resetForm();
 
-//       // ---------------------------------------------------
+//       // =================================================
 //       // CLOSE DRAWER
-//       // ---------------------------------------------------
+//       // =================================================
 
 //       onClose();
 //     } catch (err) {
@@ -398,70 +2353,43 @@
 //         "========== CREATE TICKET ERROR =========="
 //       );
 
-//       console.error(
-//         "STATUS:",
-//         err.response?.status
-//       );
+//       console.error("STATUS:", err.response?.status);
+//       console.error("DATA:", err.response?.data);
+//       console.error("MESSAGE:", err.message);
 
-//       console.error(
-//         "DATA:",
-//         err.response?.data
-//       );
-
-//       console.error(
-//         "MESSAGE:",
-//         err.message
-//       );
-
-//       // ---------------------------------------------------
+//       // =================================================
 //       // SHOW BACKEND ERROR
-//       // ---------------------------------------------------
+//       // =================================================
 
-//       let errorMessage =
-//         "Failed to create ticket.";
+//       let errorMessage = "Failed to create ticket.";
 
 //       if (err.response?.data) {
-//         const backendError =
-//           err.response.data;
+//         const backendError = err.response.data;
 
-//         if (
-//           typeof backendError ===
-//           "string"
-//         ) {
-//           errorMessage =
-//             backendError;
-//         } else if (
-//           backendError.detail
-//         ) {
-//           errorMessage =
-//             backendError.detail;
-//         } else {
-//           errorMessage =
-//             Object.entries(
-//               backendError
-//             )
-//               .map(
-//                 ([
-//                   field,
-//                   messages,
-//                 ]) => {
-//                   const message =
-//                     Array.isArray(
-//                       messages
-//                     )
-//                       ? messages.join(
-//                           ", "
-//                         )
-//                       : messages;
+//         if (typeof backendError === "string") {
+//           errorMessage = backendError;
+//         } else if (backendError.detail) {
+//           errorMessage = backendError.detail;
+//         } else if (typeof backendError === "object") {
+//           errorMessage = Object.entries(backendError)
+//             .map(([field, messages]) => {
+//               const message = Array.isArray(messages)
+//                 ? messages.join(", ")
+//                 : String(messages);
 
-//                   return `${field}: ${message}`;
-//                 }
-//               )
-//               .join("\n");
+//               return `${field}: ${message}`;
+//             })
+//             .join("\n");
 //         }
 //       }
 
 //       setError(errorMessage);
+
+//       // =================================================
+//       // ERROR TOAST
+//       // =================================================
+
+//       showToast(errorMessage, "error");
 //     } finally {
 //       setLoading(false);
 //     }
@@ -502,19 +2430,14 @@
 //           bgcolor: "#fff",
 //         }}
 //       >
-
-//         {/* =================================================
-//             HEADER
-//         ================================================= */}
+//         {/* HEADER */}
 
 //         <DrawerHeader
 //           title="Create Ticket"
 //           onClose={handleClose}
 //         />
 
-//         {/* =================================================
-//             FORM CONTENT
-//         ================================================= */}
+//         {/* FORM CONTENT */}
 
 //         <Box
 //           sx={{
@@ -526,10 +2449,7 @@
 //             overflowY: "auto",
 //           }}
 //         >
-
-//           {/* =================================================
-//               ERROR
-//           ================================================= */}
+//           {/* ERROR */}
 
 //           {error && (
 //             <Box
@@ -537,16 +2457,14 @@
 //                 p: 1.5,
 //                 borderRadius: "8px",
 //                 backgroundColor: "#FEF2F2",
-//                 border:
-//                   "1px solid #FECACA",
+//                 border: "1px solid #FECACA",
 //               }}
 //             >
 //               <Typography
 //                 sx={{
 //                   color: "#DC2626",
 //                   fontSize: "13px",
-//                   whiteSpace:
-//                     "pre-line",
+//                   whiteSpace: "pre-line",
 //                 }}
 //               >
 //                 {error}
@@ -554,27 +2472,19 @@
 //             </Box>
 //           )}
 
-//           {/* =================================================
-//               TICKET NAME
-//           ================================================= */}
+//           {/* TICKET NAME */}
 
 //           <CommonInput
 //             label="Ticket Name"
 //             name="ticketName"
-//             value={
-//               formData.ticketName
-//             }
-//             onChange={
-//               handleChange
-//             }
+//             value={formData.ticketName}
+//             onChange={handleChange}
 //             placeholder="Enter ticket name"
 //             fullWidth
 //             required
 //           />
 
-//           {/* =================================================
-//               DESCRIPTION
-//           ================================================= */}
+//           {/* DESCRIPTION */}
 
 //           <Box>
 //             <Typography
@@ -586,14 +2496,7 @@
 //               }}
 //             >
 //               Description
-//               <span
-//                 style={{
-//                   color: "red",
-//                 }}
-//               >
-//                 {" "}
-//                 *
-//               </span>
+//               <span style={{ color: "red" }}> *</span>
 //             </Typography>
 
 //             <TextField
@@ -602,29 +2505,20 @@
 //               fullWidth
 //               multiline
 //               rows={4}
-//               value={
-//                 formData.description
-//               }
-//               onChange={
-//                 handleChange
-//               }
+//               value={formData.description}
+//               onChange={handleChange}
 //               required
 //               sx={{
-//                 "& .MuiOutlinedInput-root":
-//                   {
-//                     borderRadius:
-//                       "10px",
-//                   },
+//                 "& .MuiOutlinedInput-root": {
+//                   borderRadius: "10px",
+//                 },
 //               }}
 //             />
 //           </Box>
 
-//           {/* =================================================
-//               STATUS + SOURCE
-//           ================================================= */}
+//           {/* STATUS + SOURCE */}
 
 //           <Grid container spacing={2}>
-
 //             {/* STATUS */}
 
 //             <Grid size={6}>
@@ -637,14 +2531,7 @@
 //                 }}
 //               >
 //                 Ticket Status
-//                 <span
-//                   style={{
-//                     color: "red",
-//                   }}
-//                 >
-//                   {" "}
-//                   *
-//                 </span>
+//                 <span style={{ color: "red" }}> *</span>
 //               </Typography>
 
 //               <FormControl
@@ -659,37 +2546,22 @@
 //                 <Select
 //                   labelId="ticket-status-label"
 //                   name="ticketStatus"
-//                   value={
-//                     formData.ticketStatus
-//                   }
+//                   value={formData.ticketStatus}
 //                   label="Choose"
-//                   onChange={
-//                     handleChange
-//                   }
+//                   onChange={handleChange}
 //                 >
-//                   <MenuItem value="NEW">
-//                     New
-//                   </MenuItem>
-
-//                   <MenuItem value="OPEN">
-//                     Open
-//                   </MenuItem>
-
+//                   <MenuItem value="NEW">New</MenuItem>
+//                   <MenuItem value="OPEN">Open</MenuItem>
 //                   <MenuItem value="IN_PROGRESS">
 //                     In Progress
 //                   </MenuItem>
-
 //                   <MenuItem value="WAITING_ON_CONTACT">
 //                     Waiting on Contact
 //                   </MenuItem>
-
 //                   <MenuItem value="WAITING_ON_US">
 //                     Waiting on Us
 //                   </MenuItem>
-
-//                   <MenuItem value="CLOSED">
-//                     Closed
-//                   </MenuItem>
+//                   <MenuItem value="CLOSED">Closed</MenuItem>
 //                 </Select>
 //               </FormControl>
 //             </Grid>
@@ -706,14 +2578,7 @@
 //                 }}
 //               >
 //                 Source
-//                 <span
-//                   style={{
-//                     color: "red",
-//                   }}
-//                 >
-//                   {" "}
-//                   *
-//                 </span>
+//                 <span style={{ color: "red" }}> *</span>
 //               </Typography>
 
 //               <FormControl
@@ -728,37 +2593,20 @@
 //                 <Select
 //                   labelId="source-label"
 //                   name="source"
-//                   value={
-//                     formData.source
-//                   }
+//                   value={formData.source}
 //                   label="Choose"
-//                   onChange={
-//                     handleChange
-//                   }
+//                   onChange={handleChange}
 //                 >
-//                   <MenuItem value="CHAT">
-//                     Chat
-//                   </MenuItem>
-
-//                   <MenuItem value="EMAIL">
-//                     Email
-//                   </MenuItem>
-
-//                   <MenuItem value="PHONE">
-//                     Phone
-//                   </MenuItem>
-
-//                   <MenuItem value="WEB">
-//                     Web
-//                   </MenuItem>
+//                   <MenuItem value="CHAT">Chat</MenuItem>
+//                   <MenuItem value="EMAIL">Email</MenuItem>
+//                   <MenuItem value="PHONE">Phone</MenuItem>
+//                   <MenuItem value="WEB">Web</MenuItem>
 //                 </Select>
 //               </FormControl>
 //             </Grid>
 //           </Grid>
 
-//           {/* =================================================
-//               PRIORITY
-//           ================================================= */}
+//           {/* PRIORITY */}
 
 //           <Box>
 //             <Typography
@@ -770,14 +2618,7 @@
 //               }}
 //             >
 //               Priority
-//               <span
-//                 style={{
-//                   color: "red",
-//                 }}
-//               >
-//                 {" "}
-//                 *
-//               </span>
+//               <span style={{ color: "red" }}> *</span>
 //             </Typography>
 
 //             <FormControl
@@ -792,26 +2633,13 @@
 //               <Select
 //                 labelId="priority-label"
 //                 name="priority"
-//                 value={
-//                   formData.priority
-//                 }
+//                 value={formData.priority}
 //                 label="Choose"
-//                 onChange={
-//                   handleChange
-//                 }
+//                 onChange={handleChange}
 //               >
-//                 <MenuItem value="HIGH">
-//                   High
-//                 </MenuItem>
-
-//                 <MenuItem value="MEDIUM">
-//                   Medium
-//                 </MenuItem>
-
-//                 <MenuItem value="LOW">
-//                   Low
-//                 </MenuItem>
-
+//                 <MenuItem value="HIGH">High</MenuItem>
+//                 <MenuItem value="MEDIUM">Medium</MenuItem>
+//                 <MenuItem value="LOW">Low</MenuItem>
 //                 <MenuItem value="CRITICAL">
 //                   Critical
 //                 </MenuItem>
@@ -819,9 +2647,7 @@
 //             </FormControl>
 //           </Box>
 
-//           {/* =================================================
-//               TICKET OWNER - MULTI SELECT
-//           ================================================= */}
+//           {/* TICKET OWNER */}
 
 //           <Box>
 //             <Typography
@@ -833,14 +2659,7 @@
 //               }}
 //             >
 //               Ticket Owner
-//               <span
-//                 style={{
-//                   color: "red",
-//                 }}
-//               >
-//                 {" "}
-//                 *
-//               </span>
+//               <span style={{ color: "red" }}> *</span>
 //             </Typography>
 
 //             <FormControl
@@ -856,30 +2675,20 @@
 //                 labelId="ticket-owner-label"
 //                 multiple
 //                 name="ticketOwners"
-//                 value={
-//                   formData.ticketOwners
-//                 }
+//                 value={formData.ticketOwners}
 //                 label="Choose"
-//                 onChange={
-//                   handleChange
-//                 }
+//                 onChange={handleChange}
 //                 disabled={
 //                   !formData.associatedDeal ||
 //                   loadingDealOwners ||
 //                   dealOwners.length === 0
 //                 }
-//                 renderValue={(
-//                   selected
-//                 ) => {
-//                   if (
-//                     !formData.associatedDeal
-//                   ) {
+//                 renderValue={(selected) => {
+//                   if (!formData.associatedDeal) {
 //                     return "Choose";
 //                   }
 
-//                   if (
-//                     loadingDealOwners
-//                   ) {
+//                   if (loadingDealOwners) {
 //                     return "Loading...";
 //                   }
 
@@ -892,12 +2701,10 @@
 
 //                   return selected
 //                     .map((id) => {
-//                       const owner =
-//                         dealOwners.find(
-//                           (item) =>
-//                             Number(item.id) ===
-//                             Number(id)
-//                         );
+//                       const owner = dealOwners.find(
+//                         (item) =>
+//                           Number(item.id) === Number(id)
+//                       );
 
 //                       return owner
 //                         ? getOwnerName(owner)
@@ -936,9 +2743,7 @@
 //                         />
 
 //                         <ListItemText
-//                           primary={
-//                             ownerName
-//                           }
+//                           primary={ownerName}
 //                         />
 //                       </MenuItem>
 //                     );
@@ -948,9 +2753,7 @@
 //             </FormControl>
 //           </Box>
 
-//           {/* =================================================
-//               ASSOCIATED DEAL
-//           ================================================= */}
+//           {/* ASSOCIATED DEAL */}
 
 //           <Box>
 //             <Typography
@@ -962,14 +2765,7 @@
 //               }}
 //             >
 //               Associated Deal
-//               <span
-//                 style={{
-//                   color: "red",
-//                 }}
-//               >
-//                 {" "}
-//                 *
-//               </span>
+//               <span style={{ color: "red" }}> *</span>
 //             </Typography>
 
 //             <FormControl
@@ -984,23 +2780,16 @@
 //               <Select
 //                 labelId="associated-deal-label"
 //                 name="associatedDeal"
-//                 value={
-//                   formData.associatedDeal
-//                 }
+//                 value={formData.associatedDeal}
 //                 label="Choose"
-//                 onChange={
-//                   handleChange
-//                 }
-//                 disabled={
-//                   loadingOptions
-//                 }
+//                 onChange={handleChange}
+//                 disabled={loadingOptions}
 //               >
 //                 {loadingOptions ? (
 //                   <MenuItem disabled>
 //                     Loading deals...
 //                   </MenuItem>
-//                 ) : deals.length ===
-//                   0 ? (
+//                 ) : deals.length === 0 ? (
 //                   <MenuItem disabled>
 //                     No Closed Won deals available
 //                   </MenuItem>
@@ -1010,9 +2799,7 @@
 //                       key={deal.id}
 //                       value={deal.id}
 //                     >
-//                       {
-//                         deal.deal_name
-//                       }
+//                       {deal.deal_name}
 //                     </MenuItem>
 //                   ))
 //                 )}
@@ -1021,46 +2808,36 @@
 //           </Box>
 //         </Box>
 
-//         {/* =================================================
-//             FOOTER
-//         ================================================= */}
+//         {/* FOOTER */}
 
 //         <Box
 //           sx={{
 //             display: "flex",
 //             gap: 2,
 //             p: 3,
-//             borderTop:
-//               "1px solid #E5E7EB",
+//             borderTop: "1px solid #E5E7EB",
 //             backgroundColor: "#fff",
 //           }}
 //         >
-//           {/* CANCEL */}
-
 //           <CommonButton
 //             variant="outlined"
 //             fullWidth
-//             onClick={
-//               handleClose
-//             }
+//             onClick={handleClose}
 //             disabled={loading}
 //           >
 //             Cancel
 //           </CommonButton>
-
-//           {/* SAVE */}
 
 //           <CommonButton
 //             type="submit"
 //             fullWidth
 //             disabled={
 //               loading ||
-//               loadingOptions
+//               loadingOptions ||
+//               loadingDealOwners
 //             }
 //           >
-//             {loading
-//               ? "Saving..."
-//               : "Save"}
+//             {loading ? "Saving..." : "Save"}
 //           </CommonButton>
 //         </Box>
 //       </Box>
@@ -1068,918 +2845,6 @@
 //   );
 // }
 
-// import React, { useEffect, useState } from "react";
-// import {
-//   Drawer,
-//   Box,
-//   Grid,
-//   TextField,
-//   Typography,
-//   FormControl,
-//   InputLabel,
-//   MenuItem,
-//   Select,
-//   Checkbox,
-//   ListItemText,
-// } from "@mui/material";
-
-// import DrawerHeader from "../../../Components/common/DrawerHeader";
-// import CommonInput from "../../../Components/common/CommonInput";
-// import CommonButton from "../../../Components/common/CommonButton";
-
-// import api from "../../../services/api";
-
-// export default function CreateTicketDrawer({ open, onClose }) {
-//   // =====================================================
-//   // FORM DATA
-//   // =====================================================
-
-//   const [formData, setFormData] = useState({
-//     ticketName: "",
-//     description: "",
-//     ticketStatus: "",
-//     source: "",
-//     priority: "",
-
-//     // MULTIPLE TICKET OWNERS
-//     ticketOwners: [],
-
-//     associatedDeal: "",
-//   });
-
-//   // =====================================================
-//   // OPTIONS
-//   // =====================================================
-
-//   const [users, setUsers] = useState([]);
-//   const [deals, setDeals] = useState([]);
-
-//   // =====================================================
-//   // LOADING / ERROR
-//   // =====================================================
-
-//   const [loading, setLoading] = useState(false);
-//   const [loadingOptions, setLoadingOptions] = useState(false);
-//   const [error, setError] = useState("");
-
-//   // =====================================================
-//   // LOAD USERS + CLOSED WON DEALS
-//   // =====================================================
-
-//   useEffect(() => {
-//     if (!open) return;
-
-//     const fetchOptions = async () => {
-//       try {
-//         setLoadingOptions(true);
-//         setError("");
-
-//         const [usersResponse, dealsResponse] =
-//           await Promise.all([
-//             api.get("/accounts/users/"),
-//             api.get("/deals/"),
-//           ]);
-
-//         console.log(
-//           "USERS RESPONSE:",
-//           usersResponse.data
-//         );
-
-//         console.log(
-//           "DEALS RESPONSE:",
-//           dealsResponse.data
-//         );
-
-//         const usersData = Array.isArray(
-//           usersResponse.data
-//         )
-//           ? usersResponse.data
-//           : usersResponse.data.results || [];
-
-//         const dealsData = Array.isArray(
-//           dealsResponse.data
-//         )
-//           ? dealsResponse.data
-//           : dealsResponse.data.results || [];
-
-//         // -------------------------------------------------
-//         // ONLY CLOSED WON DEALS
-//         // -------------------------------------------------
-
-//         const closedWonDeals = dealsData.filter(
-//           (deal) =>
-//             deal.deal_stage?.toLowerCase() ===
-//             "closed won"
-//         );
-
-//         setUsers(usersData);
-//         setDeals(closedWonDeals);
-
-//         console.log(
-//           "CLOSED WON DEALS:",
-//           closedWonDeals
-//         );
-//       } catch (err) {
-//         console.error(
-//           "Error loading ticket options:",
-//           err.response?.data || err
-//         );
-
-//         setError(
-//           "Failed to load Ticket Owners or Deals."
-//         );
-//       } finally {
-//         setLoadingOptions(false);
-//       }
-//     };
-
-//     fetchOptions();
-//   }, [open]);
-
-//   // =====================================================
-//   // HANDLE INPUT CHANGE
-//   // =====================================================
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-
-//     setFormData((prev) => ({
-//       ...prev,
-//       [name]: value,
-//     }));
-//   };
-
-//   // =====================================================
-//   // RESET FORM
-//   // =====================================================
-
-//   const resetForm = () => {
-//     setFormData({
-//       ticketName: "",
-//       description: "",
-//       ticketStatus: "",
-//       source: "",
-//       priority: "",
-//       ticketOwners: [],
-//       associatedDeal: "",
-//     });
-
-//     setError("");
-//   };
-
-//   // =====================================================
-//   // CREATE TICKET
-//   // =====================================================
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     console.log(
-//       "========== SAVE CLICKED =========="
-//     );
-
-//     setError("");
-
-//     // -----------------------------------------------------
-//     // FRONTEND VALIDATION
-//     // -----------------------------------------------------
-
-//     if (
-//       !formData.ticketName ||
-//       !formData.description ||
-//       !formData.ticketStatus ||
-//       !formData.source ||
-//       !formData.priority ||
-//       formData.ticketOwners.length === 0 ||
-//       !formData.associatedDeal
-//     ) {
-//       setError(
-//         "Please fill all required fields."
-//       );
-
-//       return;
-//     }
-
-//     try {
-//       setLoading(true);
-
-//       // ---------------------------------------------------
-//       // PAYLOAD
-//       // ---------------------------------------------------
-
-//       const payload = {
-//         ticket_name: formData.ticketName,
-//         description: formData.description,
-//         ticket_status: formData.ticketStatus,
-//         source: formData.source,
-//         priority: formData.priority,
-
-//         // MULTIPLE OWNER IDS
-//         ticket_owners:
-//           formData.ticketOwners.map(
-//             (id) => Number(id)
-//           ),
-
-//         associated_deal:
-//           Number(formData.associatedDeal),
-//       };
-
-//       console.log(
-//         "========== CREATE TICKET PAYLOAD =========="
-//       );
-
-//       console.log(payload);
-
-//       // ---------------------------------------------------
-//       // POST REQUEST
-//       // ---------------------------------------------------
-
-//       const response = await api.post(
-//         "/tickets/",
-//         payload
-//       );
-
-//       console.log(
-//         "========== TICKET CREATED =========="
-//       );
-
-//       console.log(response.data);
-
-//       // ---------------------------------------------------
-//       // RESET
-//       // ---------------------------------------------------
-
-//       resetForm();
-
-//       // ---------------------------------------------------
-//       // CLOSE DRAWER
-//       // ---------------------------------------------------
-
-//       onClose();
-//     } catch (err) {
-//       console.error(
-//         "========== CREATE TICKET ERROR =========="
-//       );
-
-//       console.error(
-//         "STATUS:",
-//         err.response?.status
-//       );
-
-//       console.error(
-//         "DATA:",
-//         err.response?.data
-//       );
-
-//       console.error(
-//         "MESSAGE:",
-//         err.message
-//       );
-
-//       // ---------------------------------------------------
-//       // SHOW BACKEND ERROR
-//       // ---------------------------------------------------
-
-//       let errorMessage =
-//         "Failed to create ticket.";
-
-//       if (err.response?.data) {
-//         const backendError =
-//           err.response.data;
-
-//         if (
-//           typeof backendError ===
-//           "string"
-//         ) {
-//           errorMessage =
-//             backendError;
-//         } else if (
-//           backendError.detail
-//         ) {
-//           errorMessage =
-//             backendError.detail;
-//         } else {
-//           errorMessage =
-//             Object.entries(
-//               backendError
-//             )
-//               .map(
-//                 ([
-//                   field,
-//                   messages,
-//                 ]) => {
-//                   const message =
-//                     Array.isArray(
-//                       messages
-//                     )
-//                       ? messages.join(
-//                           ", "
-//                         )
-//                       : messages;
-
-//                   return `${field}: ${message}`;
-//                 }
-//               )
-//               .join("\n");
-//         }
-//       }
-
-//       setError(errorMessage);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   // =====================================================
-//   // CLOSE DRAWER
-//   // =====================================================
-
-//   const handleClose = () => {
-//     if (loading) return;
-
-//     resetForm();
-//     onClose();
-//   };
-
-//   // =====================================================
-//   // RENDER
-//   // =====================================================
-
-//   return (
-//     <Drawer
-//       anchor="right"
-//       open={open}
-//       onClose={handleClose}
-//     >
-//       <Box
-//         component="form"
-//         onSubmit={handleSubmit}
-//         sx={{
-//           width: {
-//             xs: "100vw",
-//             sm: 500,
-//           },
-//           height: "100%",
-//           display: "flex",
-//           flexDirection: "column",
-//           bgcolor: "#fff",
-//         }}
-//       >
-
-//         {/* =================================================
-//             HEADER
-//         ================================================= */}
-
-//         <DrawerHeader
-//           title="Create Ticket"
-//           onClose={handleClose}
-//         />
-
-//         {/* =================================================
-//             FORM CONTENT
-//         ================================================= */}
-
-//         <Box
-//           sx={{
-//             flex: 1,
-//             p: 3,
-//             display: "flex",
-//             flexDirection: "column",
-//             gap: 2,
-//             overflowY: "auto",
-//           }}
-//         >
-
-//           {/* =================================================
-//               ERROR
-//           ================================================= */}
-
-//           {error && (
-//             <Box
-//               sx={{
-//                 p: 1.5,
-//                 borderRadius: "8px",
-//                 backgroundColor: "#FEF2F2",
-//                 border:
-//                   "1px solid #FECACA",
-//               }}
-//             >
-//               <Typography
-//                 sx={{
-//                   color: "#DC2626",
-//                   fontSize: "13px",
-//                   whiteSpace:
-//                     "pre-line",
-//                 }}
-//               >
-//                 {error}
-//               </Typography>
-//             </Box>
-//           )}
-
-//           {/* =================================================
-//               TICKET NAME
-//           ================================================= */}
-
-//           <CommonInput
-//             label="Ticket Name"
-//             name="ticketName"
-//             value={
-//               formData.ticketName
-//             }
-//             onChange={
-//               handleChange
-//             }
-//             placeholder="Enter ticket name"
-//             fullWidth
-//             required
-//           />
-
-//           {/* =================================================
-//               DESCRIPTION
-//           ================================================= */}
-
-//           <Box>
-//             <Typography
-//               sx={{
-//                 mb: 1,
-//                 fontSize: "14px",
-//                 fontWeight: 600,
-//                 color: "#344054",
-//               }}
-//             >
-//               Description
-//               <span
-//                 style={{
-//                   color: "red",
-//                 }}
-//               >
-//                 {" "}
-//                 *
-//               </span>
-//             </Typography>
-
-//             <TextField
-//               name="description"
-//               placeholder="Enter description"
-//               fullWidth
-//               multiline
-//               rows={4}
-//               value={
-//                 formData.description
-//               }
-//               onChange={
-//                 handleChange
-//               }
-//               required
-//               sx={{
-//                 "& .MuiOutlinedInput-root":
-//                   {
-//                     borderRadius:
-//                       "10px",
-//                   },
-//               }}
-//             />
-//           </Box>
-
-//           {/* =================================================
-//               STATUS + SOURCE
-//           ================================================= */}
-
-//           <Grid container spacing={2}>
-
-//             {/* STATUS */}
-
-//             <Grid size={6}>
-//               <Typography
-//                 sx={{
-//                   mb: 1,
-//                   fontSize: "14px",
-//                   fontWeight: 600,
-//                   color: "#344054",
-//                 }}
-//               >
-//                 Ticket Status
-//                 <span
-//                   style={{
-//                     color: "red",
-//                   }}
-//                 >
-//                   {" "}
-//                   *
-//                 </span>
-//               </Typography>
-
-//               <FormControl
-//                 fullWidth
-//                 size="small"
-//                 required
-//               >
-//                 <InputLabel id="ticket-status-label">
-//                   Choose
-//                 </InputLabel>
-
-//                 <Select
-//                   labelId="ticket-status-label"
-//                   name="ticketStatus"
-//                   value={
-//                     formData.ticketStatus
-//                   }
-//                   label="Choose"
-//                   onChange={
-//                     handleChange
-//                   }
-//                 >
-//                   <MenuItem value="NEW">
-//                     New
-//                   </MenuItem>
-
-//                   <MenuItem value="OPEN">
-//                     Open
-//                   </MenuItem>
-
-//                   <MenuItem value="IN_PROGRESS">
-//                     In Progress
-//                   </MenuItem>
-
-//                   <MenuItem value="WAITING_ON_CONTACT">
-//                     Waiting on Contact
-//                   </MenuItem>
-
-//                   <MenuItem value="WAITING_ON_US">
-//                     Waiting on Us
-//                   </MenuItem>
-
-//                   <MenuItem value="CLOSED">
-//                     Closed
-//                   </MenuItem>
-//                 </Select>
-//               </FormControl>
-//             </Grid>
-
-//             {/* SOURCE */}
-
-//             <Grid size={6}>
-//               <Typography
-//                 sx={{
-//                   mb: 1,
-//                   fontSize: "14px",
-//                   fontWeight: 600,
-//                   color: "#344054",
-//                 }}
-//               >
-//                 Source
-//                 <span
-//                   style={{
-//                     color: "red",
-//                   }}
-//                 >
-//                   {" "}
-//                   *
-//                 </span>
-//               </Typography>
-
-//               <FormControl
-//                 fullWidth
-//                 size="small"
-//                 required
-//               >
-//                 <InputLabel id="source-label">
-//                   Choose
-//                 </InputLabel>
-
-//                 <Select
-//                   labelId="source-label"
-//                   name="source"
-//                   value={
-//                     formData.source
-//                   }
-//                   label="Choose"
-//                   onChange={
-//                     handleChange
-//                   }
-//                 >
-//                   <MenuItem value="CHAT">
-//                     Chat
-//                   </MenuItem>
-
-//                   <MenuItem value="EMAIL">
-//                     Email
-//                   </MenuItem>
-
-//                   <MenuItem value="PHONE">
-//                     Phone
-//                   </MenuItem>
-
-//                   <MenuItem value="WEB">
-//                     Web
-//                   </MenuItem>
-//                 </Select>
-//               </FormControl>
-//             </Grid>
-//           </Grid>
-
-//           {/* =================================================
-//               PRIORITY
-//           ================================================= */}
-
-//           <Box>
-//             <Typography
-//               sx={{
-//                 mb: 1,
-//                 fontSize: "14px",
-//                 fontWeight: 600,
-//                 color: "#344054",
-//               }}
-//             >
-//               Priority
-//               <span
-//                 style={{
-//                   color: "red",
-//                 }}
-//               >
-//                 {" "}
-//                 *
-//               </span>
-//             </Typography>
-
-//             <FormControl
-//               fullWidth
-//               size="small"
-//               required
-//             >
-//               <InputLabel id="priority-label">
-//                 Choose
-//               </InputLabel>
-
-//               <Select
-//                 labelId="priority-label"
-//                 name="priority"
-//                 value={
-//                   formData.priority
-//                 }
-//                 label="Choose"
-//                 onChange={
-//                   handleChange
-//                 }
-//               >
-//                 <MenuItem value="HIGH">
-//                   High
-//                 </MenuItem>
-
-//                 <MenuItem value="MEDIUM">
-//                   Medium
-//                 </MenuItem>
-
-//                 <MenuItem value="LOW">
-//                   Low
-//                 </MenuItem>
-
-//                 <MenuItem value="CRITICAL">
-//                   Critical
-//                 </MenuItem>
-//               </Select>
-//             </FormControl>
-//           </Box>
-
-//           {/* =================================================
-//               TICKET OWNER - MULTI SELECT
-//           ================================================= */}
-
-//           <Box>
-//             <Typography
-//               sx={{
-//                 mb: 1,
-//                 fontSize: "14px",
-//                 fontWeight: 600,
-//                 color: "#344054",
-//               }}
-//             >
-//               Ticket Owner
-//               <span
-//                 style={{
-//                   color: "red",
-//                 }}
-//               >
-//                 {" "}
-//                 *
-//               </span>
-//             </Typography>
-
-//             <FormControl
-//               fullWidth
-//               size="small"
-//               required
-//             >
-//               <InputLabel id="ticket-owner-label">
-//                 Choose
-//               </InputLabel>
-
-//               <Select
-//                 labelId="ticket-owner-label"
-//                 multiple
-//                 name="ticketOwners"
-//                 value={
-//                   formData.ticketOwners
-//                 }
-//                 label="Choose"
-//                 onChange={
-//                   handleChange
-//                 }
-//                 disabled={
-//                   loadingOptions
-//                 }
-//                 renderValue={(
-//                   selected
-//                 ) =>
-//                   selected
-//                     .map((id) => {
-//                       const user =
-//                         users.find(
-//                           (item) =>
-//                             String(
-//                               item.id
-//                             ) ===
-//                             String(id)
-//                         );
-
-//                       if (!user) {
-//                         return "";
-//                       }
-
-//                       return (
-//                         `${user.first_name || ""} ${
-//                           user.last_name || ""
-//                         }`.trim() ||
-//                         user.email
-//                       );
-//                     })
-//                     .filter(Boolean)
-//                     .join(", ")
-//                 }
-//               >
-//                 {loadingOptions ? (
-//                   <MenuItem disabled>
-//                     Loading users...
-//                   </MenuItem>
-//                 ) : users.length ===
-//                   0 ? (
-//                   <MenuItem disabled>
-//                     No users available
-//                   </MenuItem>
-//                 ) : (
-//                   users.map((user) => {
-//                     const userName =
-//                       `${user.first_name || ""} ${
-//                         user.last_name || ""
-//                       }`.trim() ||
-//                       user.email;
-
-//                     return (
-//                       <MenuItem
-//                         key={user.id}
-//                         value={
-//                           user.id
-//                         }
-//                       >
-//                         <Checkbox
-//                           checked={formData.ticketOwners.includes(
-//                             user.id
-//                           )}
-//                         />
-
-//                         <ListItemText
-//                           primary={
-//                             userName
-//                           }
-//                         />
-//                       </MenuItem>
-//                     );
-//                   })
-//                 )}
-//               </Select>
-//             </FormControl>
-//           </Box>
-
-//           {/* =================================================
-//               ASSOCIATED DEAL
-//           ================================================= */}
-
-//           <Box>
-//             <Typography
-//               sx={{
-//                 mb: 1,
-//                 fontSize: "14px",
-//                 fontWeight: 600,
-//                 color: "#344054",
-//               }}
-//             >
-//               Associated Deal
-//               <span
-//                 style={{
-//                   color: "red",
-//                 }}
-//               >
-//                 {" "}
-//                 *
-//               </span>
-//             </Typography>
-
-//             <FormControl
-//               fullWidth
-//               size="small"
-//               required
-//             >
-//               <InputLabel id="associated-deal-label">
-//                 Choose
-//               </InputLabel>
-
-//               <Select
-//                 labelId="associated-deal-label"
-//                 name="associatedDeal"
-//                 value={
-//                   formData.associatedDeal
-//                 }
-//                 label="Choose"
-//                 onChange={
-//                   handleChange
-//                 }
-//                 disabled={
-//                   loadingOptions
-//                 }
-//               >
-//                 {loadingOptions ? (
-//                   <MenuItem disabled>
-//                     Loading deals...
-//                   </MenuItem>
-//                 ) : deals.length ===
-//                   0 ? (
-//                   <MenuItem disabled>
-//                     No Closed Won deals available
-//                   </MenuItem>
-//                 ) : (
-//                   deals.map((deal) => (
-//                     <MenuItem
-//                       key={deal.id}
-//                       value={deal.id}
-//                     >
-//                       {
-//                         deal.deal_name
-//                       }
-//                     </MenuItem>
-//                   ))
-//                 )}
-//               </Select>
-//             </FormControl>
-//           </Box>
-//         </Box>
-
-//         {/* =================================================
-//             FOOTER
-//         ================================================= */}
-
-//         <Box
-//           sx={{
-//             display: "flex",
-//             gap: 2,
-//             p: 3,
-//             borderTop:
-//               "1px solid #E5E7EB",
-//             backgroundColor: "#fff",
-//           }}
-//         >
-//           {/* CANCEL */}
-
-//           <CommonButton
-//             variant="outlined"
-//             fullWidth
-//             onClick={
-//               handleClose
-//             }
-//             disabled={loading}
-//           >
-//             Cancel
-//           </CommonButton>
-
-//           {/* SAVE */}
-
-//           <CommonButton
-//             type="submit"
-//             fullWidth
-//             disabled={
-//               loading ||
-//               loadingOptions
-//             }
-//           >
-//             {loading
-//               ? "Saving..."
-//               : "Save"}
-//           </CommonButton>
-//         </Box>
-//       </Box>
-//     </Drawer>
-//   );
-// }
 
 
 
@@ -2035,7 +2900,9 @@ export default function CreateTicketDrawer({ open, onClose }) {
 
   const [loading, setLoading] = useState(false);
   const [loadingOptions, setLoadingOptions] = useState(false);
-  const [loadingDealOwners, setLoadingDealOwners] = useState(false);
+  const [loadingDealOwners, setLoadingDealOwners] =
+    useState(false);
+
   const [error, setError] = useState("");
 
   // =====================================================
@@ -2052,11 +2919,20 @@ export default function CreateTicketDrawer({ open, onClose }) {
 
         const response = await api.get("/deals/");
 
-        console.log("DEALS RESPONSE:", response.data);
+        console.log(
+          "========== DEALS RESPONSE =========="
+        );
+        console.log(response.data);
 
         const dealsData = Array.isArray(response.data)
           ? response.data
-          : response.data?.results || response.data?.data || [];
+          : response.data?.results ||
+            response.data?.data ||
+            [];
+
+        // -------------------------------------------------
+        // ONLY CLOSED WON DEALS
+        // -------------------------------------------------
 
         const closedWonDeals = dealsData.filter(
           (deal) =>
@@ -2067,14 +2943,18 @@ export default function CreateTicketDrawer({ open, onClose }) {
 
         setDeals(closedWonDeals);
 
-        console.log("CLOSED WON DEALS:", closedWonDeals);
+        console.log(
+          "CLOSED WON DEALS:",
+          closedWonDeals
+        );
       } catch (err) {
         console.error(
           "Error loading deals:",
           err.response?.data || err
         );
 
-        const message = "Failed to load Closed Won deals.";
+        const message =
+          "Failed to load Closed Won deals.";
 
         setError(message);
         showToast(message, "error");
@@ -2087,7 +2967,18 @@ export default function CreateTicketDrawer({ open, onClose }) {
   }, [open, showToast]);
 
   // =====================================================
-  // LOAD DEAL OWNERS
+  // LOAD ALL DEAL OWNERS
+  // =====================================================
+  //
+  // IMPORTANT:
+  //
+  // /deals/owners/
+  //
+  // returns ALL users who are Deal Owners of at least
+  // one Deal.
+  //
+  // It does NOT return normal CRM users.
+  //
   // =====================================================
 
   const loadDealOwners = async (dealId) => {
@@ -2106,40 +2997,148 @@ export default function CreateTicketDrawer({ open, onClose }) {
       setLoadingDealOwners(true);
       setError("");
 
-      console.log("========== LOADING DEAL OWNERS ==========");
-      console.log("DEAL ID:", dealId);
+      console.log(
+        "========== LOADING TICKET OWNERS =========="
+      );
 
-      const response = await api.get(`/deals/${dealId}/`);
+      console.log(
+        "ASSOCIATED DEAL ID:",
+        dealId
+      );
 
-      console.log("DEAL DETAILS RESPONSE:", response.data);
+      // =================================================
+      // GET:
+      //
+      // 1. Selected Deal
+      // 2. ALL Deal Owners
+      //
+      // =================================================
 
-      const dealData = response.data?.data || response.data;
+      const [dealResponse, ownersResponse] =
+        await Promise.all([
+          api.get(`/deals/${dealId}/`),
+          api.get("/deals/owners/"),
+        ]);
 
-      const owners = dealData?.deal_owner_details || [];
+      console.log(
+        "========== SELECTED DEAL RESPONSE =========="
+      );
 
-      console.log("DEAL OWNERS:", owners);
+      console.log(
+        dealResponse.data
+      );
 
-      setDealOwners(owners);
+      console.log(
+        "========== ALL DEAL OWNERS RESPONSE =========="
+      );
 
-      // Automatically select all Deal Owners
-      const ownerIds = owners.map((owner) => Number(owner.id));
+      console.log(
+        ownersResponse.data
+      );
+
+      // =================================================
+      // SELECTED DEAL DATA
+      // =================================================
+
+      const dealData =
+        dealResponse.data?.data ||
+        dealResponse.data;
+
+      // =================================================
+      // ALL DEAL OWNERS
+      // =================================================
+
+      const allOwnersData = Array.isArray(
+        ownersResponse.data
+      )
+        ? ownersResponse.data
+        : ownersResponse.data?.results ||
+          ownersResponse.data?.data ||
+          [];
+
+      console.log(
+        "ALL DEAL OWNERS:",
+        allOwnersData
+      );
+
+      // =================================================
+      // OWNERS OF SELECTED DEAL
+      // =================================================
+
+      const associatedDealOwners =
+        dealData?.deal_owner_details || [];
+
+      const associatedDealOwnerIds =
+        associatedDealOwners
+          .map((owner) => Number(owner.id))
+          .filter(
+            (id) => !Number.isNaN(id)
+          );
+
+      console.log(
+        "ASSOCIATED DEAL OWNERS:",
+        associatedDealOwners
+      );
+
+      console.log(
+        "ASSOCIATED DEAL OWNER IDS:",
+        associatedDealOwnerIds
+      );
+
+      // =================================================
+      // SET ALL DEAL OWNERS
+      // =================================================
+      //
+      // Example:
+      //
+      // Saji       -> unchecked
+      // Liha       -> checked
+      // Shirin     -> checked
+      // Mehak      -> unchecked
+      //
+      // =================================================
+
+      setDealOwners(allOwnersData);
 
       setFormData((prev) => ({
         ...prev,
-        ticketOwners: ownerIds,
+        ticketOwners:
+          associatedDealOwnerIds,
       }));
 
-      if (owners.length === 0) {
+      // =================================================
+      // NO DEAL OWNERS
+      // =================================================
+
+      if (allOwnersData.length === 0) {
         const message =
-          "No Deal Owners are available for the selected Deal.";
+          "No Deal Owners are available.";
 
         setError(message);
-        showToast(message, "warning");
+
+        showToast(
+          message,
+          "warning"
+        );
       }
     } catch (err) {
       console.error(
-        "Error loading Deal Owners:",
-        err.response?.data || err
+        "========== LOAD DEAL OWNERS ERROR =========="
+      );
+
+      console.error(
+        "STATUS:",
+        err.response?.status
+      );
+
+      console.error(
+        "DATA:",
+        err.response?.data
+      );
+
+      console.error(
+        "MESSAGE:",
+        err.message
       );
 
       setDealOwners([]);
@@ -2149,10 +3148,15 @@ export default function CreateTicketDrawer({ open, onClose }) {
         ticketOwners: [],
       }));
 
-      const message = "Failed to load Deal Owners.";
+      const message =
+        "Failed to load Deal Owners.";
 
       setError(message);
-      showToast(message, "error");
+
+      showToast(
+        message,
+        "error"
+      );
     } finally {
       setLoadingDealOwners(false);
     }
@@ -2165,34 +3169,58 @@ export default function CreateTicketDrawer({ open, onClose }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Associated Deal
+    // ===================================================
+    // ASSOCIATED DEAL
+    // ===================================================
+
     if (name === "associatedDeal") {
+      const newDealId = value;
+
+      // Immediately clear old owners
       setFormData((prev) => ({
         ...prev,
-        associatedDeal: value,
+        associatedDeal: newDealId,
         ticketOwners: [],
       }));
 
       setDealOwners([]);
 
-      loadDealOwners(value);
+      setError("");
+
+      // Load:
+      //
+      // 1. All Deal Owners
+      // 2. Owners of selected Deal
+      // 3. Automatically check selected Deal owners
+      //
+      loadDealOwners(newDealId);
 
       return;
     }
 
-    // Ticket Owners
+    // ===================================================
+    // TICKET OWNERS
+    // ===================================================
+
     if (name === "ticketOwners") {
+      const selectedValues = Array.isArray(value)
+        ? value.map((id) => Number(id))
+        : [];
+
       setFormData((prev) => ({
         ...prev,
-        ticketOwners: Array.isArray(value)
-          ? value.map((id) => Number(id))
-          : [],
+        ticketOwners: selectedValues,
       }));
+
+      setError("");
 
       return;
     }
 
-    // Normal fields
+    // ===================================================
+    // NORMAL FIELDS
+    // ===================================================
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -2217,6 +3245,7 @@ export default function CreateTicketDrawer({ open, onClose }) {
     });
 
     setDealOwners([]);
+
     setError("");
   };
 
@@ -2229,8 +3258,13 @@ export default function CreateTicketDrawer({ open, onClose }) {
       return "";
     }
 
+    const fullName =
+      `${owner.first_name || ""} ${
+        owner.last_name || ""
+      }`.trim();
+
     return (
-      `${owner.first_name || ""} ${owner.last_name || ""}`.trim() ||
+      fullName ||
       owner.email ||
       `User ${owner.id}`
     );
@@ -2243,12 +3277,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("========== SAVE CLICKED ==========");
+    console.log(
+      "========== SAVE CLICKED =========="
+    );
 
     setError("");
 
     // ===================================================
-    // FRONTEND VALIDATION
+    // REQUIRED FIELD VALIDATION
     // ===================================================
 
     if (
@@ -2260,57 +3296,90 @@ export default function CreateTicketDrawer({ open, onClose }) {
       formData.ticketOwners.length === 0 ||
       !formData.associatedDeal
     ) {
-      const message = "Please fill all required fields.";
+      const message =
+        "Please fill all required fields.";
 
       setError(message);
 
-      showToast(message, "error");
+      showToast(
+        message,
+        "error"
+      );
 
       return;
     }
 
     // ===================================================
-    // VALIDATE TICKET OWNERS AGAINST DEAL OWNERS
+    // VALIDATE SELECTED USERS
+    // ===================================================
+    //
+    // Ticket Owners can be selected from ANY
+    // Deal Owner.
+    //
+    // Normal CRM users are NOT allowed.
+    //
     // ===================================================
 
-    const allowedOwnerIds = dealOwners.map((owner) =>
-      Number(owner.id)
-    );
+    const allowedOwnerIds =
+      dealOwners.map((owner) =>
+        Number(owner.id)
+      );
 
-    const selectedOwnerIds = formData.ticketOwners.map((id) =>
-      Number(id)
-    );
+    const selectedOwnerIds =
+      formData.ticketOwners.map((id) =>
+        Number(id)
+      );
 
-    const invalidOwnerIds = selectedOwnerIds.filter(
-      (id) => !allowedOwnerIds.includes(id)
-    );
+    const invalidOwnerIds =
+      selectedOwnerIds.filter(
+        (id) =>
+          !allowedOwnerIds.includes(id)
+      );
 
     if (invalidOwnerIds.length > 0) {
       const message =
-        "Ticket Owners must be selected from the associated Deal Owners.";
+        "Ticket Owners must be selected from Deal Owners.";
 
       setError(message);
 
-      showToast(message, "error");
+      showToast(
+        message,
+        "error"
+      );
 
       return;
     }
+
+    // ===================================================
+    // CREATE TICKET
+    // ===================================================
 
     try {
       setLoading(true);
 
-      // =================================================
-      // PAYLOAD
-      // =================================================
-
       const payload = {
-        ticket_name: formData.ticketName.trim(),
-        description: formData.description.trim(),
-        ticket_status: formData.ticketStatus,
-        source: formData.source,
-        priority: formData.priority,
-        ticket_owners: selectedOwnerIds,
-        associated_deal: Number(formData.associatedDeal),
+        ticket_name:
+          formData.ticketName.trim(),
+
+        description:
+          formData.description.trim(),
+
+        ticket_status:
+          formData.ticketStatus,
+
+        source:
+          formData.source,
+
+        priority:
+          formData.priority,
+
+        ticket_owners:
+          selectedOwnerIds,
+
+        associated_deal:
+          Number(
+            formData.associatedDeal
+          ),
       };
 
       console.log(
@@ -2320,16 +3389,24 @@ export default function CreateTicketDrawer({ open, onClose }) {
       console.log(payload);
 
       // =================================================
-      // POST REQUEST
+      // POST
       // =================================================
 
-      const response = await api.post("/tickets/", payload);
+      const response = await api.post(
+        "/tickets/",
+        payload
+      );
 
-      console.log("========== TICKET CREATED ==========");
-      console.log(response.data);
+      console.log(
+        "========== TICKET CREATED =========="
+      );
+
+      console.log(
+        response.data
+      );
 
       // =================================================
-      // SUCCESS TOAST
+      // SUCCESS
       // =================================================
 
       showToast(
@@ -2344,7 +3421,7 @@ export default function CreateTicketDrawer({ open, onClose }) {
       resetForm();
 
       // =================================================
-      // CLOSE DRAWER
+      // CLOSE
       // =================================================
 
       onClose();
@@ -2353,43 +3430,77 @@ export default function CreateTicketDrawer({ open, onClose }) {
         "========== CREATE TICKET ERROR =========="
       );
 
-      console.error("STATUS:", err.response?.status);
-      console.error("DATA:", err.response?.data);
-      console.error("MESSAGE:", err.message);
+      console.error(
+        "STATUS:",
+        err.response?.status
+      );
+
+      console.error(
+        "DATA:",
+        err.response?.data
+      );
+
+      console.error(
+        "MESSAGE:",
+        err.message
+      );
 
       // =================================================
-      // SHOW BACKEND ERROR
+      // BACKEND ERROR
       // =================================================
 
-      let errorMessage = "Failed to create ticket.";
+      let errorMessage =
+        "Failed to create ticket.";
 
       if (err.response?.data) {
-        const backendError = err.response.data;
+        const backendError =
+          err.response.data;
 
-        if (typeof backendError === "string") {
-          errorMessage = backendError;
-        } else if (backendError.detail) {
-          errorMessage = backendError.detail;
-        } else if (typeof backendError === "object") {
-          errorMessage = Object.entries(backendError)
-            .map(([field, messages]) => {
-              const message = Array.isArray(messages)
-                ? messages.join(", ")
-                : String(messages);
+        if (
+          typeof backendError ===
+          "string"
+        ) {
+          errorMessage =
+            backendError;
+        } else if (
+          backendError.detail
+        ) {
+          errorMessage =
+            backendError.detail;
+        } else if (
+          typeof backendError ===
+          "object"
+        ) {
+          errorMessage =
+            Object.entries(
+              backendError
+            )
+              .map(
+                ([field, messages]) => {
+                  const message =
+                    Array.isArray(
+                      messages
+                    )
+                      ? messages.join(
+                          ", "
+                        )
+                      : String(messages);
 
-              return `${field}: ${message}`;
-            })
-            .join("\n");
+                  return `${field}: ${message}`;
+                }
+              )
+              .join("\n");
         }
       }
 
-      setError(errorMessage);
+      setError(
+        errorMessage
+      );
 
-      // =================================================
-      // ERROR TOAST
-      // =================================================
-
-      showToast(errorMessage, "error");
+      showToast(
+        errorMessage,
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -2403,6 +3514,7 @@ export default function CreateTicketDrawer({ open, onClose }) {
     if (loading) return;
 
     resetForm();
+
     onClose();
   };
 
@@ -2430,14 +3542,18 @@ export default function CreateTicketDrawer({ open, onClose }) {
           bgcolor: "#fff",
         }}
       >
-        {/* HEADER */}
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
         <DrawerHeader
           title="Create Ticket"
           onClose={handleClose}
         />
 
-        {/* FORM CONTENT */}
+        {/* =================================================
+            FORM CONTENT
+        ================================================= */}
 
         <Box
           sx={{
@@ -2449,22 +3565,27 @@ export default function CreateTicketDrawer({ open, onClose }) {
             overflowY: "auto",
           }}
         >
-          {/* ERROR */}
+          {/* =================================================
+              ERROR
+          ================================================= */}
 
           {error && (
             <Box
               sx={{
                 p: 1.5,
                 borderRadius: "8px",
-                backgroundColor: "#FEF2F2",
-                border: "1px solid #FECACA",
+                backgroundColor:
+                  "#FEF2F2",
+                border:
+                  "1px solid #FECACA",
               }}
             >
               <Typography
                 sx={{
                   color: "#DC2626",
                   fontSize: "13px",
-                  whiteSpace: "pre-line",
+                  whiteSpace:
+                    "pre-line",
                 }}
               >
                 {error}
@@ -2472,19 +3593,25 @@ export default function CreateTicketDrawer({ open, onClose }) {
             </Box>
           )}
 
-          {/* TICKET NAME */}
+          {/* =================================================
+              TICKET NAME
+          ================================================= */}
 
           <CommonInput
             label="Ticket Name"
             name="ticketName"
-            value={formData.ticketName}
+            value={
+              formData.ticketName
+            }
             onChange={handleChange}
             placeholder="Enter ticket name"
             fullWidth
             required
           />
 
-          {/* DESCRIPTION */}
+          {/* =================================================
+              DESCRIPTION
+          ================================================= */}
 
           <Box>
             <Typography
@@ -2496,7 +3623,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
               }}
             >
               Description
-              <span style={{ color: "red" }}> *</span>
+              <span
+                style={{
+                  color: "red",
+                }}
+              >
+                {" "}
+                *
+              </span>
             </Typography>
 
             <TextField
@@ -2505,20 +3639,29 @@ export default function CreateTicketDrawer({ open, onClose }) {
               fullWidth
               multiline
               rows={4}
-              value={formData.description}
+              value={
+                formData.description
+              }
               onChange={handleChange}
               required
               sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "10px",
-                },
+                "& .MuiOutlinedInput-root":
+                  {
+                    borderRadius:
+                      "10px",
+                  },
               }}
             />
           </Box>
 
-          {/* STATUS + SOURCE */}
+          {/* =================================================
+              STATUS + SOURCE
+          ================================================= */}
 
-          <Grid container spacing={2}>
+          <Grid
+            container
+            spacing={2}
+          >
             {/* STATUS */}
 
             <Grid size={6}>
@@ -2531,7 +3674,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
                 }}
               >
                 Ticket Status
-                <span style={{ color: "red" }}> *</span>
+                <span
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
               </Typography>
 
               <FormControl
@@ -2546,22 +3696,37 @@ export default function CreateTicketDrawer({ open, onClose }) {
                 <Select
                   labelId="ticket-status-label"
                   name="ticketStatus"
-                  value={formData.ticketStatus}
+                  value={
+                    formData.ticketStatus
+                  }
                   label="Choose"
-                  onChange={handleChange}
+                  onChange={
+                    handleChange
+                  }
                 >
-                  <MenuItem value="NEW">New</MenuItem>
-                  <MenuItem value="OPEN">Open</MenuItem>
+                  <MenuItem value="NEW">
+                    New
+                  </MenuItem>
+
+                  <MenuItem value="OPEN">
+                    Open
+                  </MenuItem>
+
                   <MenuItem value="IN_PROGRESS">
                     In Progress
                   </MenuItem>
+
                   <MenuItem value="WAITING_ON_CONTACT">
                     Waiting on Contact
                   </MenuItem>
+
                   <MenuItem value="WAITING_ON_US">
                     Waiting on Us
                   </MenuItem>
-                  <MenuItem value="CLOSED">Closed</MenuItem>
+
+                  <MenuItem value="CLOSED">
+                    Closed
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -2578,7 +3743,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
                 }}
               >
                 Source
-                <span style={{ color: "red" }}> *</span>
+                <span
+                  style={{
+                    color: "red",
+                  }}
+                >
+                  {" "}
+                  *
+                </span>
               </Typography>
 
               <FormControl
@@ -2593,20 +3765,37 @@ export default function CreateTicketDrawer({ open, onClose }) {
                 <Select
                   labelId="source-label"
                   name="source"
-                  value={formData.source}
+                  value={
+                    formData.source
+                  }
                   label="Choose"
-                  onChange={handleChange}
+                  onChange={
+                    handleChange
+                  }
                 >
-                  <MenuItem value="CHAT">Chat</MenuItem>
-                  <MenuItem value="EMAIL">Email</MenuItem>
-                  <MenuItem value="PHONE">Phone</MenuItem>
-                  <MenuItem value="WEB">Web</MenuItem>
+                  <MenuItem value="CHAT">
+                    Chat
+                  </MenuItem>
+
+                  <MenuItem value="EMAIL">
+                    Email
+                  </MenuItem>
+
+                  <MenuItem value="PHONE">
+                    Phone
+                  </MenuItem>
+
+                  <MenuItem value="WEB">
+                    Web
+                  </MenuItem>
                 </Select>
               </FormControl>
             </Grid>
           </Grid>
 
-          {/* PRIORITY */}
+          {/* =================================================
+              PRIORITY
+          ================================================= */}
 
           <Box>
             <Typography
@@ -2618,7 +3807,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
               }}
             >
               Priority
-              <span style={{ color: "red" }}> *</span>
+              <span
+                style={{
+                  color: "red",
+                }}
+              >
+                {" "}
+                *
+              </span>
             </Typography>
 
             <FormControl
@@ -2633,13 +3829,26 @@ export default function CreateTicketDrawer({ open, onClose }) {
               <Select
                 labelId="priority-label"
                 name="priority"
-                value={formData.priority}
+                value={
+                  formData.priority
+                }
                 label="Choose"
-                onChange={handleChange}
+                onChange={
+                  handleChange
+                }
               >
-                <MenuItem value="HIGH">High</MenuItem>
-                <MenuItem value="MEDIUM">Medium</MenuItem>
-                <MenuItem value="LOW">Low</MenuItem>
+                <MenuItem value="HIGH">
+                  High
+                </MenuItem>
+
+                <MenuItem value="MEDIUM">
+                  Medium
+                </MenuItem>
+
+                <MenuItem value="LOW">
+                  Low
+                </MenuItem>
+
                 <MenuItem value="CRITICAL">
                   Critical
                 </MenuItem>
@@ -2647,7 +3856,9 @@ export default function CreateTicketDrawer({ open, onClose }) {
             </FormControl>
           </Box>
 
-          {/* TICKET OWNER */}
+          {/* =================================================
+              TICKET OWNER
+          ================================================= */}
 
           <Box>
             <Typography
@@ -2659,7 +3870,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
               }}
             >
               Ticket Owner
-              <span style={{ color: "red" }}> *</span>
+              <span
+                style={{
+                  color: "red",
+                }}
+              >
+                {" "}
+                *
+              </span>
             </Typography>
 
             <FormControl
@@ -2675,20 +3893,30 @@ export default function CreateTicketDrawer({ open, onClose }) {
                 labelId="ticket-owner-label"
                 multiple
                 name="ticketOwners"
-                value={formData.ticketOwners}
+                value={
+                  formData.ticketOwners
+                }
                 label="Choose"
-                onChange={handleChange}
+                onChange={
+                  handleChange
+                }
                 disabled={
                   !formData.associatedDeal ||
                   loadingDealOwners ||
                   dealOwners.length === 0
                 }
-                renderValue={(selected) => {
-                  if (!formData.associatedDeal) {
+                renderValue={(
+                  selected
+                ) => {
+                  if (
+                    !formData.associatedDeal
+                  ) {
                     return "Choose";
                   }
 
-                  if (loadingDealOwners) {
+                  if (
+                    loadingDealOwners
+                  ) {
                     return "Loading...";
                   }
 
@@ -2701,16 +3929,24 @@ export default function CreateTicketDrawer({ open, onClose }) {
 
                   return selected
                     .map((id) => {
-                      const owner = dealOwners.find(
-                        (item) =>
-                          Number(item.id) === Number(id)
-                      );
+                      const owner =
+                        dealOwners.find(
+                          (item) =>
+                            Number(
+                              item.id
+                            ) ===
+                            Number(id)
+                        );
 
                       return owner
-                        ? getOwnerName(owner)
+                        ? getOwnerName(
+                            owner
+                          )
                         : "";
                     })
-                    .filter(Boolean)
+                    .filter(
+                      Boolean
+                    )
                     .join(", ");
                 }}
               >
@@ -2727,33 +3963,50 @@ export default function CreateTicketDrawer({ open, onClose }) {
                     No Deal Owners available
                   </MenuItem>
                 ) : (
-                  dealOwners.map((owner) => {
-                    const ownerName =
-                      getOwnerName(owner);
+                  dealOwners.map(
+                    (owner) => {
+                      const ownerId =
+                        Number(
+                          owner.id
+                        );
 
-                    return (
-                      <MenuItem
-                        key={owner.id}
-                        value={Number(owner.id)}
-                      >
-                        <Checkbox
-                          checked={formData.ticketOwners.includes(
-                            Number(owner.id)
-                          )}
-                        />
+                      const isSelected =
+                        formData.ticketOwners.includes(
+                          ownerId
+                        );
 
-                        <ListItemText
-                          primary={ownerName}
-                        />
-                      </MenuItem>
-                    );
-                  })
+                      return (
+                        <MenuItem
+                          key={
+                            owner.id
+                          }
+                          value={
+                            ownerId
+                          }
+                        >
+                          <Checkbox
+                            checked={
+                              isSelected
+                            }
+                          />
+
+                          <ListItemText
+                            primary={getOwnerName(
+                              owner
+                            )}
+                          />
+                        </MenuItem>
+                      );
+                    }
+                  )
                 )}
               </Select>
             </FormControl>
           </Box>
 
-          {/* ASSOCIATED DEAL */}
+          {/* =================================================
+              ASSOCIATED DEAL
+          ================================================= */}
 
           <Box>
             <Typography
@@ -2765,7 +4018,14 @@ export default function CreateTicketDrawer({ open, onClose }) {
               }}
             >
               Associated Deal
-              <span style={{ color: "red" }}> *</span>
+              <span
+                style={{
+                  color: "red",
+                }}
+              >
+                {" "}
+                *
+              </span>
             </Typography>
 
             <FormControl
@@ -2780,10 +4040,16 @@ export default function CreateTicketDrawer({ open, onClose }) {
               <Select
                 labelId="associated-deal-label"
                 name="associatedDeal"
-                value={formData.associatedDeal}
+                value={
+                  formData.associatedDeal
+                }
                 label="Choose"
-                onChange={handleChange}
-                disabled={loadingOptions}
+                onChange={
+                  handleChange
+                }
+                disabled={
+                  loadingOptions
+                }
               >
                 {loadingOptions ? (
                   <MenuItem disabled>
@@ -2794,35 +4060,49 @@ export default function CreateTicketDrawer({ open, onClose }) {
                     No Closed Won deals available
                   </MenuItem>
                 ) : (
-                  deals.map((deal) => (
-                    <MenuItem
-                      key={deal.id}
-                      value={deal.id}
-                    >
-                      {deal.deal_name}
-                    </MenuItem>
-                  ))
+                  deals.map(
+                    (deal) => (
+                      <MenuItem
+                        key={
+                          deal.id
+                        }
+                        value={
+                          deal.id
+                        }
+                      >
+                        {
+                          deal.deal_name
+                        }
+                      </MenuItem>
+                    )
+                  )
                 )}
               </Select>
             </FormControl>
           </Box>
         </Box>
 
-        {/* FOOTER */}
+        {/* =================================================
+            FOOTER
+        ================================================= */}
 
         <Box
           sx={{
             display: "flex",
             gap: 2,
             p: 3,
-            borderTop: "1px solid #E5E7EB",
-            backgroundColor: "#fff",
+            borderTop:
+              "1px solid #E5E7EB",
+            backgroundColor:
+              "#fff",
           }}
         >
           <CommonButton
             variant="outlined"
             fullWidth
-            onClick={handleClose}
+            onClick={
+              handleClose
+            }
             disabled={loading}
           >
             Cancel
@@ -2837,7 +4117,9 @@ export default function CreateTicketDrawer({ open, onClose }) {
               loadingDealOwners
             }
           >
-            {loading ? "Saving..." : "Save"}
+            {loading
+              ? "Saving..."
+              : "Save"}
           </CommonButton>
         </Box>
       </Box>
